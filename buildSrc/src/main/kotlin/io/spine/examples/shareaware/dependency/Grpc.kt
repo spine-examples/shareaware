@@ -24,21 +24,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Spine
+package io.spine.examples.shareaware.dependency
 
-/*
- * Add the Gradle plugin for bootstrapping projects built with Spine.
- * See: https://github.com/SpineEventEngine/bootstrap
- */
-plugins {
-    id("io.spine.tools.gradle.bootstrap")
-}
-
-spine {
-    assembleModel()
-    enableJava()
-}
-
-dependencies {
-    implementation(Spine.Server.lib)
+// https://github.com/grpc/grpc-java
+object Grpc {
+    const val version = "1.47.0"
+    const val lib = "io.grpc:grpc-netty:${version}"
 }

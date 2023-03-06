@@ -24,21 +24,52 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Spine
+import io.spine.examples.shareaware.dependency.Grpc
+import io.spine.examples.shareaware.dependency.Guava
+import io.spine.examples.shareaware.dependency.JUnit
+import io.spine.examples.shareaware.dependency.Truth
 
-/*
- * Add the Gradle plugin for bootstrapping projects built with Spine.
- * See: https://github.com/SpineEventEngine/bootstrap
+/**
+ * Configures repositories, adds dependencies and forces transitive dependencies.
+ *
+ * Dependencies are contained within dependency objects in the
+ * [io.spine.examples.shareaware.dependency] package. These objects allow configuration of
+ * dependency properties (e.g. version).
  */
+
 plugins {
-    id("io.spine.tools.gradle.bootstrap")
+    java
 }
 
-spine {
-    assembleModel()
-    enableJava()
+repositories {
+    mavenLocal()
+    gradlePluginPortal()
+    mavenCentral()
+    maven {
+        url = uri("https://spine.mycloudrepo.io/public/repositories/releases")
+        mavenContent {
+            releasesOnly()
+        }
+    }
 }
 
 dependencies {
-    implementation(Spine.Server.lib)
+    implementation(Guava.lib)
+    runtimeOnly(Grpc.lib)
+    testImplementation(JUnit.Params.lib)
+    testImplementation(JUnit.Api.lib)
+    testRuntimeOnly(JUnit.Runner.lib)
+}
+
+configurations {
+    all {
+        resolutionStrategy {
+            force(
+                Guava.lib,
+                Truth.lib,
+                Truth.Extensions.Java8.lib,
+                Truth.Extensions.Proto.lib
+            )
+        }
+    }
 }

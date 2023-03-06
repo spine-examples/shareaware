@@ -24,21 +24,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Spine
-
-/*
- * Add the Gradle plugin for bootstrapping projects built with Spine.
- * See: https://github.com/SpineEventEngine/bootstrap
+/**
+ * Configures test-running tasks in a project.
+ *
+ * Explicitly instructs to discover and execute JUnit tests.
  */
-plugins {
-    id("io.spine.tools.gradle.bootstrap")
-}
 
-spine {
-    assembleModel()
-    enableJava()
-}
-
-dependencies {
-    implementation(Spine.Server.lib)
+tasks.withType<Test> {
+    useJUnitPlatform {
+        includeEngines("junit-jupiter")
+    }
 }

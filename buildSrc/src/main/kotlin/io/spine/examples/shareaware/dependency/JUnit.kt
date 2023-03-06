@@ -24,21 +24,21 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Spine
+package io.spine.examples.shareaware.dependency
 
-/*
- * Add the Gradle plugin for bootstrapping projects built with Spine.
- * See: https://github.com/SpineEventEngine/bootstrap
- */
-plugins {
-    id("io.spine.tools.gradle.bootstrap")
-}
+// https://junit.org/junit5
+object JUnit {
+    const val version = "5.8.2"
 
-spine {
-    assembleModel()
-    enableJava()
-}
+    object Api {
+        const val lib = "org.junit.jupiter:junit-jupiter-api:${version}"
+    }
 
-dependencies {
-    implementation(Spine.Server.lib)
+    object Params {
+        const val lib = "org.junit.jupiter:junit-jupiter-params:${version}"
+    }
+
+    object Runner {
+        const val lib = "org.junit.jupiter:junit-jupiter-engine:${version}"
+    }
 }

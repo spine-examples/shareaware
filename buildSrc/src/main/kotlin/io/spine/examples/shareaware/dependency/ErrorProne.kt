@@ -24,21 +24,31 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Spine
+package io.spine.examples.shareaware.dependency
 
-/*
- * Add the Gradle plugin for bootstrapping projects built with Spine.
- * See: https://github.com/SpineEventEngine/bootstrap
- */
-plugins {
-    id("io.spine.tools.gradle.bootstrap")
-}
+// https://github.com/google/error-prone
+object ErrorProne {
+    private const val group = "com.google.errorprone"
 
-spine {
-    assembleModel()
-    enableJava()
-}
+    object CorePlugin {
+        const val version = "2.10.0"
+        const val lib = "${group}:error_prone_core:${version}"
+    }
 
-dependencies {
-    implementation(Spine.Server.lib)
+    object JavacPlugin {
+        const val version = "9+181-r4173-1"
+        const val lib = "${group}:javac:${version}"
+    }
+
+    // https://github.com/tbroyer/gradle-errorprone-plugin
+    object GradlePlugin {
+        const val id = "net.ltgt.errorprone"
+
+        /**
+         * The version of this plugin is already specified in `buildSrc/build.gradle.kts` file.
+         * Thus, when applying the plugin in projects build files, only the [id] should be used.
+         */
+        const val version = "2.0.2"
+        const val lib = "net.ltgt.gradle:gradle-errorprone-plugin:${version}"
+    }
 }

@@ -24,21 +24,32 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Spine
-
-/*
- * Add the Gradle plugin for bootstrapping projects built with Spine.
- * See: https://github.com/SpineEventEngine/bootstrap
+/**
+ * Configures the `Javac`.
+ *
+ * This plugin performs the following configuration:
+ * - sets source and target compatibility to Java 8;
+ * - states the encoding of source files;
+ * - enables warnings about deprecated and unchecked code.
  */
+
 plugins {
-    id("io.spine.tools.gradle.bootstrap")
+    java
 }
 
-spine {
-    assembleModel()
-    enableJava()
+val javaVersion = JavaVersion.VERSION_1_8
+java {
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
 }
 
-dependencies {
-    implementation(Spine.Server.lib)
+tasks.withType<JavaCompile> {
+    with(options) {
+        /*
+         * Explicitly state the encoding of the source files, ensuring the correct
+         * execution of the `javac` task.
+         */
+        encoding = "UTF-8"
+        compilerArgs.addAll(listOf("-Xlint:unchecked", "-Xlint:deprecation"))
+    }
 }
