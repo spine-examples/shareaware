@@ -1,0 +1,19 @@
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+# IntelliJ IDEA modules and interim config files.
+*.iml
+.idea/*.xml
+.idea/.name
+.idea/artifacts
+.idea/libraries
+.idea/modules
+.idea/shelf
+
+# Do not ignore the following IDEA settings
+!.idea/misc.xml
+!.idea/codeStyleSettings.xml
+!.idea/codeStyles/
+!.idea/copyright/
