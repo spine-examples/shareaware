@@ -24,25 +24,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+package io.spine.examples.shareaware.dependency
 
-package spine_examples.shareaware;
-
-import "spine/options.proto";
-
-option (type_url_prefix) = "type.spine.io";
-option java_package = "io.spine.examples.shareaware";
-option java_multiple_files = true;
-
-import "spine_examples/shareaware/identifiers.proto";
-import "spine_examples/shareaware/currency.proto";
-
-// A price in a particular currency.
-message Price {
-
-  // The numeric value of the price.
-  double value = 1;
-
-  // The currency of the price.
-  Currency currency = 2;
+object Money {
+    const val version = "1.5.0"
+    const val lib = "io.spine:spine-money:${version}";
 }

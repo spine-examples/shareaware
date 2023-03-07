@@ -30,12 +30,12 @@ package spine_examples.shareaware;
 
 import "spine/options.proto";
 
-option (type_url_prefix) = "type.spine.io";
+option (type_url_prefix) = "type.shareaware.spine.io";
 option java_package = "io.spine.examples.shareaware";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
-import "spine_examples/shareaware/price.proto";
+import "spine/money/money.proto";
 
 // Represents a rule for notifying a user when a share price meets a desired price.
 message NotificationRule {
@@ -44,5 +44,5 @@ message NotificationRule {
   ShareId share = 1 [(required) = true];
 
   // The price of the share that the user wants to be notified about.
-  Price wantedPrice = 2 [(required) = true];
+  spine.money.Money wanted_price = 2 [(required) = true];
 }

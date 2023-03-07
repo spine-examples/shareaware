@@ -30,7 +30,7 @@ package spine_examples.shareaware;
 
 import "spine/options.proto";
 
-option (type_url_prefix) = "type.spine.io";
+option (type_url_prefix) = "type.shareaware.spine.io";
 option java_package = "io.spine.examples.shareaware";
 option java_outer_classname = "WatchlistProto";
 option java_multiple_files = true;
@@ -43,7 +43,7 @@ message Watchlist {
   option (entity) = { kind: AGGREGATE };
 
   // The ID of the watchlist.
-  WatchlistId id = 1 [(required) = true];
+  WatchlistId id = 1;
 
   // The name of the watchlist.
   string name = 2 [(required) = true];

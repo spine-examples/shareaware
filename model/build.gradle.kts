@@ -25,6 +25,7 @@
  */
 
 import io.spine.examples.shareaware.dependency.JavaX
+import io.spine.examples.shareaware.dependency.Money
 import io.spine.examples.shareaware.dependency.Spine
 
 /*
@@ -43,4 +44,5 @@ spine {
 dependencies {
     implementation(Spine.Server.lib)
     implementation(JavaX.annotations)
+    implementation(Money.lib)
 }
