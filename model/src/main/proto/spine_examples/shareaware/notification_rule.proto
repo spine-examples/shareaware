@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package spine_examples.shareaware;
+
+import "spine/options.proto";
+
+option (type_url_prefix) = "type.spine.io";
+option java_package = "io.spine.examples.shareaware";
+option java_multiple_files = true;
+
+import "spine_examples/shareaware/identifiers.proto";
+import "spine_examples/shareaware/price.proto";
+
+// Represents a rule for notifying a user when a share price meets a desired price.
+message NotificationRule {
+
+  // The ID of the share that notification rule belongs to.
+  ShareId share = 1 [(required) = true];
+
+  // The price of the share that the user wants to be notified about.
+  Price wantedPrice = 2 [(required) = true];
+}

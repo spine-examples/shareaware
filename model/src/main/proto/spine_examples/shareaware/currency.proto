@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package spine_examples.shareaware;
+
+import "spine/options.proto";
+
+option (type_url_prefix) = "type.spine.io";
+option java_package = "io.spine.examples.shareaware";
+option java_multiple_files = true;
+
+import "spine_examples/shareaware/identifiers.proto";
+
+// Represents a currency using its ISO code.
+message Currency {
+
+  // The iso code of currency.
+  string iso_code = 1;
+}

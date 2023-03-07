@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package spine_examples.shareaware;
+
+import "spine/options.proto";
+
+option (type_url_prefix) = "type.spine.io";
+option java_package = "io.spine.examples.shareaware";
+option java_outer_classname = "IdentifiersProto";
+option java_multiple_files = true;
+
+// Identifies a watchlist in the scope of the application.
+message WatchlistId {
+  string uuid = 1 [(required) = true];
+}
+
+// Identifies a share in the scope of the application.
+message ShareId {
+  string uuid = 1 [(required) = true];
+}
