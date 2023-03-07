@@ -43,7 +43,7 @@ message Watchlist {
   option (entity) = { kind: AGGREGATE };
 
   // The ID of the watchlist.
-  WatchlistId watchlist = 1;
+  WatchlistId id = 1 [(required) = true];
 
   // The name of the watchlist.
   string name = 2 [(required) = true];
