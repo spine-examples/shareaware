@@ -26,19 +26,19 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware;
+package spine_examples.shareaware.watchlist;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware";
-option java_outer_classname = "UserListsProto";
+option java_package = "io.spine.examples.shareaware.watchlist";
+option java_outer_classname = "UserWatchlistsProto";
 option java_multiple_files = true;
 
 // Displays all user's watchlists.
-message UserLists {
+message UserWatchlists {
     option (entity).kind = PROJECTION;
 
-    // Names of the user watchlists.
+    // Names of the user's watchlists.
     repeated string name = 1;
 }
