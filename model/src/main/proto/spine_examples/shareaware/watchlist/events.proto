@@ -40,9 +40,9 @@ import "spine_examples/shareaware/identifiers.proto";
 // A new watchlist has been created.
 message WatchlistCreated {
 
-  // The ID of the created watchlist.
-  WatchlistId watchlist = 1;
+    // The ID of the created watchlist.
+    WatchlistId watchlist = 1;
 
-  // The name of the created watchlist.
-  string name = 2 [(required) = true];
+    // The name of the created watchlist.
+    string name = 2 [(required) = true];
 }
