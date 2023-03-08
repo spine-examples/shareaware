@@ -26,23 +26,23 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware.event;
+package spine_examples.shareaware.watchlist.command;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.event";
-option java_outer_classname = "EventsProto";
+option java_package = "io.spine.examples.shareaware.watchlist.command";
+option java_outer_classname = "CommandsProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
 
-// A new watchlist has been created.
-message WatchlistCreated {
+// A command to create a new watchlist.
+message CreateWatchlist {
 
-    // The ID of the created watchlist.
-    WatchlistId watchlist = 1;
+  // The ID of the watchlist to create.
+  WatchlistId watchlist = 1;
 
-    // The name of the created watchlist.
-    string name = 2 [(required) = true];
+  // The name of the watchlist.
+  string name = 2 [(required) = true];
 }
