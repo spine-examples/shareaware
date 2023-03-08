@@ -48,4 +48,11 @@ object Spine {
          */
         const val lib = "io.spine.tools:spine-bootstrap:${version}";
     }
+
+    // https://github.com/SpineEventEngine/money
+    object Money {
+        const val version = "1.5.0"
+
+        const val lib = "io.spine:spine-money:${version}";
+    }
 }

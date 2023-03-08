@@ -24,7 +24,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Money
 import io.spine.examples.shareaware.dependency.Spine
 
 /*
@@ -42,5 +41,5 @@ spine {
 
 dependencies {
     implementation(Spine.Server.lib)
-    implementation(Money.lib)
+    implementation(Spine.Money.lib)
 }
