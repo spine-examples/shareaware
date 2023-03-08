@@ -24,22 +24,33 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Spine
+syntax = "proto3";
 
-/*
- * Add the Gradle plugin for bootstrapping projects built with Spine.
- * See: https://github.com/SpineEventEngine/bootstrap
- */
-plugins {
-    id("io.spine.tools.gradle.bootstrap")
-}
+package spine_examples.shareaware.watchlist;
 
-spine {
-    assembleModel()
-    enableJava()
-}
+import "spine/options.proto";
 
-dependencies {
-    implementation(Spine.Server.lib)
-    implementation(Spine.Money.lib)
+option (type_url_prefix) = "type.shareaware.spine.io";
+option java_package = "io.spine.examples.shareaware.watchlist";
+option java_outer_classname = "UserWatchlistsProto";
+option java_multiple_files = true;
+
+import "spine_examples/shareaware/identifiers.proto";
+
+// Displays all user's watchlists.
+message UserWatchlists {
+    option (entity).kind = PROJECTION;
+
+    // User's watchlists.
+    repeated WatchlistView watchlist = 1;
+
+    // Represents a view of a single watchlist.
+    message WatchlistView {
+
+        // The ID of the watchlist that name belongs to.
+        WatchlistId id = 1;
+
+        // The name of the watchlist.
+        string name = 2;
+    }
 }

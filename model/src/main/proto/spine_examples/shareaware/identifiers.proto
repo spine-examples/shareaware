@@ -24,22 +24,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Spine
+syntax = "proto3";
 
-/*
- * Add the Gradle plugin for bootstrapping projects built with Spine.
- * See: https://github.com/SpineEventEngine/bootstrap
- */
-plugins {
-    id("io.spine.tools.gradle.bootstrap")
+package spine_examples.shareaware;
+
+import "spine/options.proto";
+
+option (type_url_prefix) = "type.shareaware.spine.io";
+option java_package = "io.spine.examples.shareaware";
+option java_outer_classname = "IdentifiersProto";
+option java_multiple_files = true;
+
+// Identifies a watchlist in the scope of the application.
+message WatchlistId {
+    string uuid = 1 [(required) = true];
 }
 
-spine {
-    assembleModel()
-    enableJava()
-}
-
-dependencies {
-    implementation(Spine.Server.lib)
-    implementation(Spine.Money.lib)
+// Identifies a share in the scope of the application.
+message ShareId {
+    string uuid = 1 [(required) = true];
 }
