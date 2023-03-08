@@ -37,7 +37,7 @@ import io.spine.server.command.Assign;
 /**
  * A Watchlist aggregate handles the logic of watchlist creation.
  */
-final public class WatchlistAggregate extends Aggregate<WatchlistId, Watchlist, Watchlist.Builder> {
+public final class WatchlistAggregate extends Aggregate<WatchlistId, Watchlist, Watchlist.Builder> {
 
     /**
      * Handles the command to create a watchlist.
