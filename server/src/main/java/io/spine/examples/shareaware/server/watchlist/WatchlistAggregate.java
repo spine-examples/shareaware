@@ -24,23 +24,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
- * Add the Gradle plugin for bootstrapping projects built with Spine.
- * See: https://github.com/SpineEventEngine/bootstrap
+package io.spine.examples.shareaware.server.watchlist;
+
+import io.spine.examples.shareaware.WatchlistId;
+import io.spine.examples.shareaware.watchlist.Watchlist;
+import io.spine.examples.shareaware.watchlist.command.CreateWatchlist;
+import io.spine.examples.shareaware.watchlist.event.WatchlistCreated;
+import io.spine.server.aggregate.Aggregate;
+import io.spine.server.aggregate.Apply;
+import io.spine.server.command.Assign;
+
+/**
+ * A Watchlist aggregate handles the logic of watchlist creation.
  */
-plugins {
-    id("io.spine.tools.gradle.bootstrap")
-}
+final public class WatchlistAggregate extends Aggregate<WatchlistId, Watchlist, Watchlist.Builder> {
 
-spine {
-    /*
-     * Add and configure required dependencies for developing a Spine-based Java server.
-     * See: https://github.com/SpineEventEngine/bootstrap#java-projects
+    /**
+     * Handles the command to create a watchlist.
      */
-    enableJava().server()
-    forceDependencies = true
-}
+    @Assign
+    WatchlistCreated handle(CreateWatchlist c) {
+        return WatchlistCreated
+                .newBuilder()
+                .setWatchlist(c.getWatchlist())
+                .setName(c.getName())
+                .vBuild();
+    }
 
-dependencies {
-    implementation(project(":model"))
+    @Apply
+    private void event(WatchlistCreated e) {
+        builder().setId(e.getWatchlist())
+                 .setName(e.getName());
+    }
 }
