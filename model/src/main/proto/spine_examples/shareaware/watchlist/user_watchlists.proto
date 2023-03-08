@@ -35,10 +35,22 @@ option java_package = "io.spine.examples.shareaware.watchlist";
 option java_outer_classname = "UserWatchlistsProto";
 option java_multiple_files = true;
 
+import "spine_examples/shareaware/identifiers.proto";
+
 // Displays all user's watchlists.
 message UserWatchlists {
     option (entity).kind = PROJECTION;
 
-    // Names of the user's watchlists.
-    repeated string name = 1;
+    // User's watchlists.
+    repeated WatchlistView watchlist = 1;
+
+    // Represents a view of a single watchlist.
+    message WatchlistView {
+
+        // The ID of the watchlist that name belongs to.
+        WatchlistId id = 1;
+
+        // The name of the watchlist.
+        string name = 2;
+    }
 }
