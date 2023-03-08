@@ -37,10 +37,10 @@ option java_multiple_files = true;
 
 // Identifies a watchlist in the scope of the application.
 message WatchlistId {
-  string uuid = 1 [(required) = true];
+    string uuid = 1 [(required) = true];
 }
 
 // Identifies a share in the scope of the application.
 message ShareId {
-  string uuid = 1 [(required) = true];
+    string uuid = 1 [(required) = true];
 }

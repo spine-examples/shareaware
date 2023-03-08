@@ -26,31 +26,23 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware;
+package spine_examples.shareaware.event;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware";
-option java_outer_classname = "WatchlistProto";
+option java_package = "io.spine.examples.shareaware.event";
+option java_outer_classname = "EventsProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
-import "spine_examples/shareaware/notification_rule.proto";
 
-// Represents a list of watched shares.
-message Watchlist {
-  option (entity) = { kind: AGGREGATE };
+// A new watchlist has been created.
+message WatchlistCreated {
 
-  // The ID of the watchlist.
-  WatchlistId id = 1;
+    // The ID of the created watchlist.
+    WatchlistId watchlist = 1;
 
-  // The name of the watchlist.
-  string name = 2 [(required) = true];
-
-  //The list of shares that are watched by the watchlist.
-  repeated ShareId share = 3;
-
-  // The list of notification rules that the watchlist operates on.
-  repeated NotificationRule notification_rule = 4;
+    // The name of the created watchlist.
+    string name = 2 [(required) = true];
 }
