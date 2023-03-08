@@ -48,4 +48,9 @@ subprojects {
      * issues of Error Prone.
      */
     apply<ErrorProneConfigurationPlugin>()
+
+    /*
+     * Configure test-running tasks.
+     */
+    apply<TestsConfigurationPlugin>()
 }
