@@ -35,9 +35,9 @@ import io.spine.server.route.EventRoute;
 import io.spine.server.route.EventRouting;
 
 /**
- * Manages instances of user watchlists projections.
+ * Manages instances of {@code UserWatchlists} projections.
  */
-public class UserWatchlistsRepository
+public final class UserWatchlistsRepository
         extends ProjectionRepository<UserId, UserWatchlistsProjection, UserWatchlists> {
 
     @OverridingMethodsMustInvokeSuper

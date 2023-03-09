@@ -40,7 +40,7 @@ public final class TradingContext {
     static final String NAME = "Trading";
 
     /**
-     * Prevents instantiation of this utility class.
+     * Prevents instantiation of this class.
      */
     private TradingContext() {
     }

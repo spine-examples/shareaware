@@ -42,7 +42,7 @@ import static io.spine.examples.shareaware.watchlist.UserWatchlists.*;
 import static io.spine.testing.TestValues.randomString;
 
 @DisplayName("`UserWatchlistsProjection` should")
-public class UserWatchlistsProjectionTest extends ContextAwareTest {
+public final class UserWatchlistsProjectionTest extends ContextAwareTest {
 
     private CreateWatchlist firstCommand;
 

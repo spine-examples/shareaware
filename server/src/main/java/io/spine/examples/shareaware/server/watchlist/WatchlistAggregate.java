@@ -35,7 +35,7 @@ import io.spine.server.aggregate.Apply;
 import io.spine.server.command.Assign;
 
 /**
- * A Watchlist aggregate handles the logic of watchlist creation.
+ * A list of shares watched by a particular ShareAware user.
  */
 public final class WatchlistAggregate extends Aggregate<WatchlistId, Watchlist, Watchlist.Builder> {
 
