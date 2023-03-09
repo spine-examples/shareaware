@@ -46,6 +46,6 @@ public class UserWatchlistsRepository
         super.setupEventRouting(routing);
 
         routing.route(WatchlistCreated.class,
-                      (event, context) -> EventRoute.withId(event.getUser()));
+                      (event, context) -> EventRoute.withId(event.getOwner()));
     }
 }

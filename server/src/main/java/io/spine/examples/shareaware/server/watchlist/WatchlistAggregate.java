@@ -46,7 +46,7 @@ public final class WatchlistAggregate extends Aggregate<WatchlistId, Watchlist, 
     WatchlistCreated handle(CreateWatchlist c) {
         return WatchlistCreated
                 .newBuilder()
-                .setUser(c.getUser())
+                .setOwner(c.getUser())
                 .setWatchlist(c.getWatchlist())
                 .setName(c.getName())
                 .vBuild();

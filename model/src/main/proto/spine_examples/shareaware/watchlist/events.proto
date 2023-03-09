@@ -44,8 +44,8 @@ message WatchlistCreated {
     // The ID of the created watchlist.
     WatchlistId watchlist = 1;
 
-    // The ID of the user who created the watchlist.
-    spine.core.UserId user = 2;
+    // The ID of the watchlist owner.
+    spine.core.UserId owner = 2 [(required) = true];
 
     // The name of the created watchlist.
     string name = 3 [(required) = true];

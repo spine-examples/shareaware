@@ -93,7 +93,7 @@ class WatchlistTest extends ContextAwareTest {
         void event() {
             WatchlistCreated expected = WatchlistCreated
                     .newBuilder()
-                    .setUser(command.getUser())
+                    .setOwner(command.getUser())
                     .setWatchlist(command.getWatchlist())
                     .setName(command.getName())
                     .vBuild();

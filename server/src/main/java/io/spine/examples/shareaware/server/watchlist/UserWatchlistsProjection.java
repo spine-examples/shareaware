@@ -46,7 +46,7 @@ final class UserWatchlistsProjection
                                                .setId(e.getWatchlist())
                                                .setName(e.getName())
                                                .vBuild();
-        builder().setId(e.getUser())
+        builder().setId(e.getOwner())
                 .addWatchlist(watchlist);
     }
 }
