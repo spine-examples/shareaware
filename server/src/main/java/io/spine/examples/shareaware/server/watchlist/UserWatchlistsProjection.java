@@ -18,11 +18,11 @@ public final class UserWatchlistsProjection
     @Subscribe
     void on(WatchlistCreated e) {
 
-        WatchlistView watchlistView = WatchlistView.newBuilder()
+        WatchlistView watchlist = WatchlistView.newBuilder()
                                                    .setId(e.getWatchlist())
                                                    .setName(e.getName())
                                                    .vBuild();
 
-        builder().addWatchlist(watchlistView);
+        builder().setId(e.getUser()).addWatchlist(watchlist);
     }
 }

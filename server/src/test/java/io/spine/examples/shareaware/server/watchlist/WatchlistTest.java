@@ -36,8 +36,9 @@ class WatchlistTest extends ContextAwareTest {
         @BeforeEach
         void setupWatchlist() {
 
-            UserId.Builder user = UserId.newBuilder()
-                                        .setValue(randomString());
+            UserId user = UserId.newBuilder()
+                                .setValue(randomString())
+                                .vBuild();
 
             command = CreateWatchlist
                     .newBuilder()
