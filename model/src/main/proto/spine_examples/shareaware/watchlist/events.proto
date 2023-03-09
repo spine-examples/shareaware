@@ -36,6 +36,7 @@ option java_outer_classname = "EventsProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
+import "spine/core/user_id.proto";
 
 // A new watchlist has been created.
 message WatchlistCreated {
@@ -43,6 +44,9 @@ message WatchlistCreated {
     // The ID of the created watchlist.
     WatchlistId watchlist = 1;
 
+    // The ID of the user who created the watchlist.
+    spine.core.UserId user = 2;
+
     // The name of the created watchlist.
-    string name = 2 [(required) = true];
+    string name = 3 [(required) = true];
 }

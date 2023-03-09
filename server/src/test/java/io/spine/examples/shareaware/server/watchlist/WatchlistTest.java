@@ -1,5 +1,6 @@
 package io.spine.examples.shareaware.server.watchlist;
 
+import io.spine.core.UserId;
 import io.spine.examples.shareaware.WatchlistId;
 import io.spine.examples.shareaware.server.TradingContext;
 import io.spine.examples.shareaware.watchlist.Watchlist;
@@ -35,8 +36,12 @@ class WatchlistTest extends ContextAwareTest {
         @BeforeEach
         void setupWatchlist() {
 
+            UserId.Builder user = UserId.newBuilder()
+                                        .setValue(randomString());
+
             command = CreateWatchlist
                     .newBuilder()
+                    .setUser(user)
                     .setWatchlist(WatchlistId.generate())
                     .setName(randomString())
                     .vBuild();
@@ -62,6 +67,7 @@ class WatchlistTest extends ContextAwareTest {
 
             WatchlistCreated expected = WatchlistCreated
                     .newBuilder()
+                    .setUser(command.getUser())
                     .setWatchlist(command.getWatchlist())
                     .setName(command.getName())
                     .vBuild();

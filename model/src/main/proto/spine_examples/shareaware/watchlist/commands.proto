@@ -36,6 +36,7 @@ option java_outer_classname = "CommandsProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
+import "spine/core/user_id.proto";
 
 // A command to create a new watchlist.
 message CreateWatchlist {
@@ -43,6 +44,9 @@ message CreateWatchlist {
     // The ID of the watchlist to create.
     WatchlistId watchlist = 1;
 
+    // The ID of the user who wants to create a watchlist.
+    spine.core.UserId user = 2;
+
     // The name of the watchlist.
-    string name = 2 [(required) = true];
+    string name = 3 [(required) = true];
 }
