@@ -1,6 +1,7 @@
 package io.spine.examples.shareaware.server;
 
 import io.spine.examples.shareaware.server.watchlist.UserWatchlistsProjection;
+import io.spine.examples.shareaware.server.watchlist.UserWatchlistsRepository;
 import io.spine.examples.shareaware.server.watchlist.WatchlistAggregate;
 import io.spine.server.BoundedContext;
 import io.spine.server.BoundedContextBuilder;
@@ -28,6 +29,6 @@ public final class TradingContext {
         return BoundedContext
                 .singleTenant(NAME)
                 .add(DefaultRepository.of(WatchlistAggregate.class))
-                .add(DefaultRepository.of(UserWatchlistsProjection.class));
+                .add(new UserWatchlistsRepository());
     }
 }
