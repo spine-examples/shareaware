@@ -37,7 +37,6 @@ import io.spine.testing.server.EventSubject;
 import io.spine.testing.server.blackbox.ContextAwareTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Nested;
 
 import static io.spine.testing.TestValues.randomString;
 
@@ -74,10 +73,10 @@ public final class WatchlistTest extends ContextAwareTest {
         context().assertEvent(expected);
     }
 
-    private CreateWatchlist generateCommand() {
+    private static CreateWatchlist generateCommand() {
         return CreateWatchlist
                 .newBuilder()
-                .setUser(GivenUserId.newUuid())
+                .setUser(GivenUserId.generated())
                 .setWatchlist(WatchlistId.generate())
                 .setName(randomString())
                 .vBuild();
