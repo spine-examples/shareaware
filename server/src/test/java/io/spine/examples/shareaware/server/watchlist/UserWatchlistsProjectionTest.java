@@ -5,22 +5,26 @@ import io.spine.core.UserId;
 import io.spine.examples.shareaware.WatchlistId;
 import io.spine.examples.shareaware.server.TradingContext;
 import io.spine.examples.shareaware.watchlist.UserWatchlists;
-import io.spine.examples.shareaware.watchlist.Watchlist;
 import io.spine.examples.shareaware.watchlist.command.CreateWatchlist;
 import io.spine.server.BoundedContextBuilder;
 import io.spine.testing.server.blackbox.ContextAwareTest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static io.spine.examples.shareaware.watchlist.UserWatchlists.*;
 import static io.spine.testing.TestValues.randomString;
 
+@DisplayName("`UserWatchlistsProjection` should")
 public class UserWatchlistsProjectionTest extends ContextAwareTest {
 
-    private CreateWatchlist command;
-    private CreateWatchlist second;
+    private CreateWatchlist firstCommand;
+
+    private CreateWatchlist secondCommand;
 
     private ProtoSubject entityState;
+
+    private UserId user;
 
     @Override
     protected BoundedContextBuilder contextBuilder() {
@@ -29,28 +33,26 @@ public class UserWatchlistsProjectionTest extends ContextAwareTest {
 
     @BeforeEach
     void setupWatchlists() {
-        WatchlistId watchlistId = WatchlistId.generate();
 
-        UserId user = UserId.newBuilder()
+        user = UserId.newBuilder()
                             .setValue(randomString())
                             .vBuild();
 
-        command = CreateWatchlist
+        firstCommand = CreateWatchlist
                 .newBuilder()
                 .setUser(user)
-                .setWatchlist(watchlistId)
+                .setWatchlist(WatchlistId.generate())
                 .setName("1")
                 .vBuild();
 
-//        WatchlistId secondId = WatchlistId.generate();
-//
-//        second = CreateWatchlist
-//                .newBuilder()
-//                .setWatchlist(secondId)
-//                .setName("2")
-//                .vBuild();
+        secondCommand = CreateWatchlist
+                .newBuilder()
+                .setUser(user)
+                .setWatchlist(WatchlistId.generate())
+                .setName("2")
+                .vBuild();
 
-        context().receivesCommand(command);
+        context().receivesCommands(firstCommand, secondCommand);
 
         entityState = context()
                 .assertEntity(user, UserWatchlistsProjection.class)
@@ -58,17 +60,34 @@ public class UserWatchlistsProjectionTest extends ContextAwareTest {
     }
 
     @Test
+    @DisplayName("have the state with the ID of the user")
+    void entity() {
+        UserWatchlists expected = UserWatchlists
+                .newBuilder()
+                .setId(user)
+                .build();
+
+        entityState.isInstanceOf(UserWatchlists.class);
+        entityState.comparingExpectedFieldsOnly()
+                   .isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("have watchlists")
     void watchlists() {
 
-        UserWatchlists expected = UserWatchlists.newBuilder()
-                                                .setId(command.getUser())
-                                                .addWatchlist(WatchlistView.newBuilder()
-                                                                           .setId(command.getWatchlist())
-                                                                           .setName(command.getName())
-                                                                           .vBuild())
-                                                .vBuild();
-
-//        context().assertState(command.getWatchlist(), expected);
+        UserWatchlists expected = UserWatchlists
+                .newBuilder()
+                .setId(firstCommand.getUser())
+                .addWatchlist(WatchlistView.newBuilder()
+                                           .setId(firstCommand.getWatchlist())
+                                           .setName(firstCommand.getName())
+                                           .vBuild())
+                .addWatchlist(WatchlistView.newBuilder()
+                                           .setId(secondCommand.getWatchlist())
+                                           .setName(secondCommand.getName())
+                                           .vBuild())
+                .vBuild();
 
         entityState.isEqualTo(expected);
     }
