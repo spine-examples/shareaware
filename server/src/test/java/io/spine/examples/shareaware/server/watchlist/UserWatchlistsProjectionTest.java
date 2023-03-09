@@ -58,17 +58,9 @@ public final class UserWatchlistsProjectionTest extends ContextAwareTest {
 
         context().receivesCommands(firstCommand, secondCommand);
 
-        WatchlistView firstWatchlist = WatchlistView
-                .newBuilder()
-                .setId(firstCommand.getWatchlist())
-                .setName(firstCommand.getName())
-                .vBuild();
+        WatchlistView firstWatchlist = generateWatchlistView(firstCommand);
 
-        WatchlistView secondWatchlist = WatchlistView
-                .newBuilder()
-                .setId(secondCommand.getWatchlist())
-                .setName(secondCommand.getName())
-                .vBuild();
+        WatchlistView secondWatchlist = generateWatchlistView(secondCommand);
 
         UserWatchlists expected = UserWatchlists
                 .newBuilder()
@@ -86,6 +78,14 @@ public final class UserWatchlistsProjectionTest extends ContextAwareTest {
                 .setUser(user)
                 .setWatchlist(WatchlistId.generate())
                 .setName(watchlistName)
+                .vBuild();
+    }
+
+    private WatchlistView generateWatchlistView(CreateWatchlist command) {
+        return WatchlistView
+                .newBuilder()
+                .setId(command.getWatchlist())
+                .setName(command.getName())
                 .vBuild();
     }
 }
