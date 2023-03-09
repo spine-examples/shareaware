@@ -35,7 +35,7 @@ import io.spine.server.projection.Projection;
 import static io.spine.examples.shareaware.watchlist.UserWatchlists.*;
 
 /**
- * Builds display information for all user's watchlists.
+ * Manages instances of {@code UserWatchlists} projections.
  */
 final class UserWatchlistsProjection
         extends Projection<UserId, UserWatchlists, UserWatchlists.Builder> {

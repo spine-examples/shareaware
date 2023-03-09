@@ -26,18 +26,17 @@
 
 package io.spine.examples.shareaware.server.watchlist;
 
-import io.spine.core.UserId;
 import io.spine.examples.shareaware.WatchlistId;
 import io.spine.examples.shareaware.server.TradingContext;
 import io.spine.examples.shareaware.watchlist.Watchlist;
 import io.spine.examples.shareaware.watchlist.command.CreateWatchlist;
 import io.spine.examples.shareaware.watchlist.event.WatchlistCreated;
 import io.spine.server.BoundedContextBuilder;
+import io.spine.testing.core.given.GivenUserId;
 import io.spine.testing.server.EventSubject;
 import io.spine.testing.server.blackbox.ContextAwareTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 
 import static io.spine.testing.TestValues.randomString;
@@ -54,31 +53,16 @@ class WatchlistTest extends ContextAwareTest {
      * Verifies that a command to create a watchlist generates corresponding event.
      */
     @Nested
-    @DisplayName("create a watchlist")
+    @DisplayName("allow creation")
     class Creation {
-
-        private CreateWatchlist command;
-
-        @BeforeEach
-        void setupWatchlist() {
-            UserId user = UserId
-                    .newBuilder()
-                    .setValue(randomString())
-                    .vBuild();
-
-            command = CreateWatchlist
-                    .newBuilder()
-                    .setUser(user)
-                    .setWatchlist(WatchlistId.generate())
-                    .setName(randomString())
-                    .vBuild();
-
-            context().receivesCommand(command);
-        }
 
         @Test
         @DisplayName("as entity with the `Watchlist` state")
         void entity() {
+            CreateWatchlist command = generateCommand();
+
+            context().receivesCommand(command);
+
             Watchlist expected = Watchlist
                     .newBuilder()
                     .setId(command.getWatchlist())
@@ -91,6 +75,10 @@ class WatchlistTest extends ContextAwareTest {
         @Test
         @DisplayName("emitting the `WatchlistCreated` event")
         void event() {
+            CreateWatchlist command = generateCommand();
+
+            context().receivesCommand(command);
+
             WatchlistCreated expected = WatchlistCreated
                     .newBuilder()
                     .setOwner(command.getUser())
@@ -105,6 +93,15 @@ class WatchlistTest extends ContextAwareTest {
             assertEvents.hasSize(1);
 
             context().assertEvent(expected);
+        }
+
+        private CreateWatchlist generateCommand() {
+            return CreateWatchlist
+                    .newBuilder()
+                    .setUser(GivenUserId.newUuid())
+                    .setWatchlist(WatchlistId.generate())
+                    .setName(randomString())
+                    .vBuild();
         }
     }
 }
