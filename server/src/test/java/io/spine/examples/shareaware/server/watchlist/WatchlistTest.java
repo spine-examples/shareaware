@@ -42,7 +42,7 @@ import org.junit.jupiter.api.Nested;
 import static io.spine.testing.TestValues.randomString;
 
 @DisplayName("`Watchlist` should")
-class WatchlistTest extends ContextAwareTest {
+public final class WatchlistTest extends ContextAwareTest {
 
     @Override
     protected BoundedContextBuilder contextBuilder() {
