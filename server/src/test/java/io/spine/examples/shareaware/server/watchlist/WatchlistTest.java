@@ -49,59 +49,37 @@ public final class WatchlistTest extends ContextAwareTest {
         return TradingContext.newBuilder();
     }
 
-    /**
-     * Verifies that a command to create a watchlist generates corresponding event.
-     */
-    @Nested
-    @DisplayName("allow creation")
-    class Creation {
+    @Test
+    @DisplayName("allow the creation and emit the `WatchlistCreated` event")
+    void event() {
+        CreateWatchlist command = generateCommand();
+        context().receivesCommand(command);
+        WatchlistCreated expected = WatchlistCreated
+                .newBuilder()
+                .setOwner(command.getUser())
+                .setWatchlist(command.getWatchlist())
+                .setName(command.getName())
+                .vBuild();
+        EventSubject assertEvents = context()
+                .assertEvents()
+                .withType(WatchlistCreated.class);
+        Watchlist expectedState = Watchlist
+                .newBuilder()
+                .setId(command.getWatchlist())
+                .setName(command.getName())
+                .vBuild();
 
-        @Test
-        @DisplayName("as entity with the `Watchlist` state")
-        void entity() {
-            CreateWatchlist command = generateCommand();
+        assertEvents.hasSize(1);
+        context().assertState(command.getWatchlist(), expectedState);
+        context().assertEvent(expected);
+    }
 
-            context().receivesCommand(command);
-
-            Watchlist expected = Watchlist
-                    .newBuilder()
-                    .setId(command.getWatchlist())
-                    .setName(command.getName())
-                    .vBuild();
-
-            context().assertState(command.getWatchlist(), expected);
-        }
-
-        @Test
-        @DisplayName("emitting the `WatchlistCreated` event")
-        void event() {
-            CreateWatchlist command = generateCommand();
-
-            context().receivesCommand(command);
-
-            WatchlistCreated expected = WatchlistCreated
-                    .newBuilder()
-                    .setOwner(command.getUser())
-                    .setWatchlist(command.getWatchlist())
-                    .setName(command.getName())
-                    .vBuild();
-
-            EventSubject assertEvents = context()
-                    .assertEvents()
-                    .withType(WatchlistCreated.class);
-
-            assertEvents.hasSize(1);
-
-            context().assertEvent(expected);
-        }
-
-        private CreateWatchlist generateCommand() {
-            return CreateWatchlist
-                    .newBuilder()
-                    .setUser(GivenUserId.newUuid())
-                    .setWatchlist(WatchlistId.generate())
-                    .setName(randomString())
-                    .vBuild();
-        }
+    private CreateWatchlist generateCommand() {
+        return CreateWatchlist
+                .newBuilder()
+                .setUser(GivenUserId.newUuid())
+                .setWatchlist(WatchlistId.generate())
+                .setName(randomString())
+                .vBuild();
     }
 }

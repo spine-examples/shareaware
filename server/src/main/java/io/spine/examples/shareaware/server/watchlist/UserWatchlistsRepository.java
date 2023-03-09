@@ -44,7 +44,6 @@ public final class UserWatchlistsRepository
     @Override
     protected void setupEventRouting(EventRouting<UserId> routing) {
         super.setupEventRouting(routing);
-
         routing.route(WatchlistCreated.class,
                       (event, context) -> EventRoute.withId(event.getOwner()));
     }

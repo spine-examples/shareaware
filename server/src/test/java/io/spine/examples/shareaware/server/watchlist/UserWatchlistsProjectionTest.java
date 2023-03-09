@@ -48,31 +48,25 @@ public final class UserWatchlistsProjectionTest extends ContextAwareTest {
     }
 
     @Test
-    @DisplayName("have watchlists")
+    @DisplayName("display all user's watchlists, as soon as they are created")
     void watchlists() {
         UserId user = GivenUserId.generated();
-
         CreateWatchlist firstCommand = generateCommand(user, "first");
-
         CreateWatchlist secondCommand = generateCommand(user, "second");
-
-        context().receivesCommands(firstCommand, secondCommand);
-
         WatchlistView firstWatchlist = generateWatchlistView(firstCommand);
-
         WatchlistView secondWatchlist = generateWatchlistView(secondCommand);
-
         UserWatchlists expected = UserWatchlists
                 .newBuilder()
                 .setId(firstCommand.getUser())
                 .addWatchlist(firstWatchlist)
                 .addWatchlist(secondWatchlist)
                 .vBuild();
+        context().receivesCommands(firstCommand, secondCommand);
 
         context().assertState(user, expected);
     }
 
-    private CreateWatchlist generateCommand(UserId user, String watchlistName) {
+    private static CreateWatchlist generateCommand(UserId user, String watchlistName) {
         return CreateWatchlist
                 .newBuilder()
                 .setUser(user)
@@ -81,7 +75,7 @@ public final class UserWatchlistsProjectionTest extends ContextAwareTest {
                 .vBuild();
     }
 
-    private WatchlistView generateWatchlistView(CreateWatchlist command) {
+    private static WatchlistView generateWatchlistView(CreateWatchlist command) {
         return WatchlistView
                 .newBuilder()
                 .setId(command.getWatchlist())
