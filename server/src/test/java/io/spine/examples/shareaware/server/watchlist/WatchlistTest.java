@@ -61,10 +61,10 @@ class WatchlistTest extends ContextAwareTest {
 
         @BeforeEach
         void setupWatchlist() {
-
-            UserId user = UserId.newBuilder()
-                                .setValue(randomString())
-                                .vBuild();
+            UserId user = UserId
+                    .newBuilder()
+                    .setValue(randomString())
+                    .vBuild();
 
             command = CreateWatchlist
                     .newBuilder()
@@ -79,11 +79,11 @@ class WatchlistTest extends ContextAwareTest {
         @Test
         @DisplayName("as entity with the `Watchlist` state")
         void entity() {
-
-            Watchlist expected = Watchlist.newBuilder()
-                                          .setId(command.getWatchlist())
-                                          .setName(command.getName())
-                                          .vBuild();
+            Watchlist expected = Watchlist
+                    .newBuilder()
+                    .setId(command.getWatchlist())
+                    .setName(command.getName())
+                    .vBuild();
 
             context().assertState(command.getWatchlist(), expected);
         }
@@ -91,7 +91,6 @@ class WatchlistTest extends ContextAwareTest {
         @Test
         @DisplayName("emitting the `WatchlistCreated` event")
         void event() {
-
             WatchlistCreated expected = WatchlistCreated
                     .newBuilder()
                     .setUser(command.getUser())

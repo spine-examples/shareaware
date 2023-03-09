@@ -43,12 +43,11 @@ public final class TradingContext {
      * Prevents instantiation of this utility class.
      */
     private TradingContext() {
-
     }
 
     /**
-     * Creates {@code BoundedContextBuilder} for the Trading context and fills it with
-     * repositories.
+     * Creates {@code BoundedContextBuilder} for the Trading context
+     * and fills it with repositories.
      */
     public static BoundedContextBuilder newBuilder() {
         return BoundedContext

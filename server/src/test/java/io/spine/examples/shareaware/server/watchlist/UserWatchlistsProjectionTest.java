@@ -59,10 +59,10 @@ public class UserWatchlistsProjectionTest extends ContextAwareTest {
 
     @BeforeEach
     void setupWatchlists() {
-
-        user = UserId.newBuilder()
-                            .setValue(randomString())
-                            .vBuild();
+        user = UserId
+                .newBuilder()
+                .setValue(randomString())
+                .vBuild();
 
         firstCommand = CreateWatchlist
                 .newBuilder()
@@ -101,18 +101,17 @@ public class UserWatchlistsProjectionTest extends ContextAwareTest {
     @Test
     @DisplayName("have watchlists")
     void watchlists() {
-
         UserWatchlists expected = UserWatchlists
                 .newBuilder()
                 .setId(firstCommand.getUser())
                 .addWatchlist(WatchlistView.newBuilder()
-                                           .setId(firstCommand.getWatchlist())
-                                           .setName(firstCommand.getName())
-                                           .vBuild())
+                                      .setId(firstCommand.getWatchlist())
+                                      .setName(firstCommand.getName())
+                                      .vBuild())
                 .addWatchlist(WatchlistView.newBuilder()
-                                           .setId(secondCommand.getWatchlist())
-                                           .setName(secondCommand.getName())
-                                           .vBuild())
+                                      .setId(secondCommand.getWatchlist())
+                                      .setName(secondCommand.getName())
+                                      .vBuild())
                 .vBuild();
 
         entityState.isEqualTo(expected);
