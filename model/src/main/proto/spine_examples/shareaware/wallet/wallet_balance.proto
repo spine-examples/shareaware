@@ -35,15 +35,15 @@ option java_package = "io.spine.examples.shareaware.wallet";
 option java_outer_classname = "WalletBalanceProto";
 option java_multiple_files = true;
 
-import "spine/core/user_id.proto";
 import "spine/money/money.proto";
+import "spine_examples/shareaware/identifiers.proto";
 
 // Displays the user's wallet balance.
 message WalletBalance {
     option (entity).kind = PROJECTION;
 
     // The ID of the user's wallet.
-    spine.core.UserId id = 1;
+    WalletId id = 1;
 
     // The balance of the user's wallet.
     spine.money.Money balance = 2 [(required) = true];

@@ -26,7 +26,7 @@
 
 package io.spine.examples.shareaware.server.wallet;
 
-import io.spine.core.UserId;
+import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.command.CreateWallet;
 import io.spine.examples.shareaware.wallet.event.WalletCreated;
@@ -40,7 +40,7 @@ import io.spine.server.command.Assign;
  * The Wallet aggregate is responsible for managing the money
  * of a particular ShareAware user.
  */
-public final class WalletAggregate extends Aggregate<UserId, Wallet, Wallet.Builder> {
+public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Builder> {
 
     /**
      * Handles the command to create a wallet.

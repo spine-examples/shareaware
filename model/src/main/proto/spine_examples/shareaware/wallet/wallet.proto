@@ -37,13 +37,14 @@ option java_multiple_files = true;
 
 import "spine/core/user_id.proto";
 import "spine/money/money.proto";
+import "spine_examples/shareaware/identifiers.proto";
 
 // Represents an amount of user's money.
 message Wallet {
     option (entity) = {kind: AGGREGATE};
 
     // The ID of the wallet.
-    spine.core.UserId id = 1;
+    WalletId id = 1;
 
     // The balance of the wallet.
     spine.money.Money balance = 2;
