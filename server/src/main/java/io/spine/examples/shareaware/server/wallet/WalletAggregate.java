@@ -40,7 +40,7 @@ import io.spine.server.command.Assign;
  * The Wallet aggregate is responsible for managing the money
  * of a particular ShareAware user.
  */
-public class WalletAggregate extends Aggregate<UserId, Wallet, Wallet.Builder> {
+public final class WalletAggregate extends Aggregate<UserId, Wallet, Wallet.Builder> {
 
     /**
      * Handles the command to create a wallet.

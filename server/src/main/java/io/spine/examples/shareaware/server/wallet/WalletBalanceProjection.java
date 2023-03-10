@@ -6,12 +6,16 @@ import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.event.WalletCreated;
 import io.spine.server.projection.Projection;
 
-public class WalletBalanceProjection
+/**
+ * Manages instances of {@code WalletBalance} projections.
+ */
+final class WalletBalanceProjection
         extends Projection<UserId, WalletBalance, WalletBalance.Builder> {
 
     @Subscribe
     void on(WalletCreated e) {
         builder()
-                .setId(e.getWallet());
+                .setId(e.getWallet())
+                .setBalance(e.getBalance());
     }
 }
