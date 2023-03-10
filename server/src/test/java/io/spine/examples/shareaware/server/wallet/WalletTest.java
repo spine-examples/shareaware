@@ -40,7 +40,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("`Wallet` should")
-public class WalletTest extends ContextAwareTest {
+public final class WalletTest extends ContextAwareTest {
 
     @Override
     protected BoundedContextBuilder contextBuilder() {
