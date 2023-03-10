@@ -36,10 +36,14 @@ option java_outer_classname = "EventsProto";
 option java_multiple_files = true;
 
 import "spine/core/user_id.proto";
+import "spine/money/money.proto";
 
 // A new wallet has been created.
 message WalletCreated {
 
     // The ID of the created wallet.
     spine.core.UserId wallet = 1;
+
+    // The initial balance of the wallet.
+    spine.money.Money balance = 2;
 }

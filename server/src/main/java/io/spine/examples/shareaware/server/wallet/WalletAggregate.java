@@ -37,8 +37,8 @@ import io.spine.server.aggregate.Apply;
 import io.spine.server.command.Assign;
 
 /**
- * The Wallet aggregate is responsible for managing replenishment, withdrawal,
- * and reservation of user's money.
+ * The Wallet aggregate is responsible for managing the money
+ * of a particular ShareAware user.
  */
 public class WalletAggregate extends Aggregate<UserId, Wallet, Wallet.Builder> {
 
@@ -50,19 +50,23 @@ public class WalletAggregate extends Aggregate<UserId, Wallet, Wallet.Builder> {
         return WalletCreated
                 .newBuilder()
                 .setWallet(c.getWallet())
+                .setBalance(emptyMoneyValue())
                 .vBuild();
     }
 
     @Apply
     private void event(WalletCreated e) {
-        Money initialMoneyAmount = Money
+        builder().setId(e.getWallet())
+                 .setBalance(e.getBalance())
+                 .setReservedMoney(emptyMoneyValue());
+    }
+
+    private static Money emptyMoneyValue() {
+        return Money
                 .newBuilder()
                 .setCurrency(Currency.USD)
                 .setUnits(0)
                 .setNanos(0)
                 .vBuild();
-        builder().setId(e.getWallet())
-                 .setBalance(initialMoneyAmount)
-                 .setReservedMoney(initialMoneyAmount);
     }
 }

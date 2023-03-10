@@ -58,25 +58,29 @@ public class WalletTest extends ContextAwareTest {
         WalletCreated expectedEvent = WalletCreated
                 .newBuilder()
                 .setWallet(command.getWallet())
+                .setBalance(emptyMoneyValue())
                 .vBuild();
         EventSubject assertEvents = context()
                 .assertEvents()
                 .withType(WalletCreated.class);
-        Money expectedMoneyAmount = Money
-                .newBuilder()
-                .setCurrency(Currency.USD)
-                .setUnits(0)
-                .setNanos(0)
-                .vBuild();
         Wallet expectedState = Wallet
                 .newBuilder()
                 .setId(command.getWallet())
-                .setBalance(expectedMoneyAmount)
-                .setReservedMoney(expectedMoneyAmount)
+                .setBalance(emptyMoneyValue())
+                .setReservedMoney(emptyMoneyValue())
                 .vBuild();
 
         assertEvents.hasSize(1);
         context().assertState(command.getWallet(), expectedState);
         context().assertEvent(expectedEvent);
+    }
+
+    private static Money emptyMoneyValue() {
+        return Money
+                .newBuilder()
+                .setCurrency(Currency.USD)
+                .setUnits(0)
+                .setNanos(0)
+                .vBuild();
     }
 }
