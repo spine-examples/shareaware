@@ -24,29 +24,31 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+package io.spine.examples.shareaware.server.watchlist;
 
-package spine_examples.shareaware.watchlist;
+import io.spine.core.Subscribe;
+import io.spine.core.UserId;
+import io.spine.examples.shareaware.watchlist.UserWatchlists;
+import io.spine.examples.shareaware.watchlist.event.WatchlistCreated;
+import io.spine.server.projection.Projection;
 
-import "spine/options.proto";
+import static io.spine.examples.shareaware.watchlist.UserWatchlists.*;
 
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.watchlist.command";
-option java_outer_classname = "CommandsProto";
-option java_multiple_files = true;
+/**
+ * Manages instances of {@code UserWatchlists} projections.
+ */
+final class UserWatchlistsProjection
+        extends Projection<UserId, UserWatchlists, UserWatchlists.Builder> {
 
-import "spine_examples/shareaware/identifiers.proto";
-import "spine/core/user_id.proto";
-
-// A command to create a new watchlist.
-message CreateWatchlist {
-
-    // The ID of the watchlist to create.
-    WatchlistId watchlist = 1;
-
-    // The ID of the user who wants to create a watchlist.
-    spine.core.UserId user = 2;
-
-    // The name of the watchlist.
-    string name = 3 [(required) = true];
+    @Subscribe
+    void on(WatchlistCreated e) {
+        WatchlistView watchlist = WatchlistView
+                .newBuilder()
+                .setId(e.getWatchlist())
+                .setName(e.getName())
+                .vBuild();
+        builder()
+                .setId(e.getOwner())
+                .addWatchlist(watchlist);
+    }
 }

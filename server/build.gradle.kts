@@ -24,29 +24,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+/*
+ * Add the Gradle plugin for bootstrapping projects built with Spine.
+ * See: https://github.com/SpineEventEngine/bootstrap
+ */
+plugins {
+    id("io.spine.tools.gradle.bootstrap")
+}
 
-package spine_examples.shareaware.watchlist;
+spine {
+    /*
+     * Add and configure required dependencies for developing a Spine-based Java server.
+     * See: https://github.com/SpineEventEngine/bootstrap#java-projects
+     */
+    enableJava().server()
+    forceDependencies = true
+}
 
-import "spine/options.proto";
-
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.watchlist.command";
-option java_outer_classname = "CommandsProto";
-option java_multiple_files = true;
-
-import "spine_examples/shareaware/identifiers.proto";
-import "spine/core/user_id.proto";
-
-// A command to create a new watchlist.
-message CreateWatchlist {
-
-    // The ID of the watchlist to create.
-    WatchlistId watchlist = 1;
-
-    // The ID of the user who wants to create a watchlist.
-    spine.core.UserId user = 2;
-
-    // The name of the watchlist.
-    string name = 3 [(required) = true];
+dependencies {
+    implementation(project(":model"))
 }

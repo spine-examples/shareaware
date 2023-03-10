@@ -48,7 +48,7 @@ message Watchlist {
     // The name of the watchlist.
     string name = 2 [(required) = true];
 
-    //The list of shares that are watched by the watchlist.
+    // The list of shares that are watched by the watchlist.
     repeated ShareId share = 3;
 
     // The list of notification rules that the watchlist operates on.

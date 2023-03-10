@@ -24,29 +24,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+package io.spine.examples.shareaware.server.watchlist;
 
-package spine_examples.shareaware.watchlist;
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import io.spine.core.UserId;
+import io.spine.examples.shareaware.watchlist.UserWatchlists;
+import io.spine.examples.shareaware.watchlist.event.WatchlistCreated;
+import io.spine.server.projection.ProjectionRepository;
+import io.spine.server.route.EventRoute;
+import io.spine.server.route.EventRouting;
 
-import "spine/options.proto";
+/**
+ * Manages instances of {@code UserWatchlists} projections.
+ */
+public final class UserWatchlistsRepository
+        extends ProjectionRepository<UserId, UserWatchlistsProjection, UserWatchlists> {
 
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.watchlist.command";
-option java_outer_classname = "CommandsProto";
-option java_multiple_files = true;
-
-import "spine_examples/shareaware/identifiers.proto";
-import "spine/core/user_id.proto";
-
-// A command to create a new watchlist.
-message CreateWatchlist {
-
-    // The ID of the watchlist to create.
-    WatchlistId watchlist = 1;
-
-    // The ID of the user who wants to create a watchlist.
-    spine.core.UserId user = 2;
-
-    // The name of the watchlist.
-    string name = 3 [(required) = true];
+    @OverridingMethodsMustInvokeSuper
+    @Override
+    protected void setupEventRouting(EventRouting<UserId> routing) {
+        super.setupEventRouting(routing);
+        routing.route(WatchlistCreated.class,
+                      (event, context) -> EventRoute.withId(event.getOwner()));
+    }
 }

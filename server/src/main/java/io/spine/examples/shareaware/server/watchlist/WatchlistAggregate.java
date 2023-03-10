@@ -24,29 +24,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+package io.spine.examples.shareaware.server.watchlist;
 
-package spine_examples.shareaware.watchlist;
+import io.spine.examples.shareaware.WatchlistId;
+import io.spine.examples.shareaware.watchlist.Watchlist;
+import io.spine.examples.shareaware.watchlist.command.CreateWatchlist;
+import io.spine.examples.shareaware.watchlist.event.WatchlistCreated;
+import io.spine.server.aggregate.Aggregate;
+import io.spine.server.aggregate.Apply;
+import io.spine.server.command.Assign;
 
-import "spine/options.proto";
+/**
+ * A list of shares watched by a particular ShareAware user.
+ */
+public final class WatchlistAggregate extends Aggregate<WatchlistId, Watchlist, Watchlist.Builder> {
 
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.watchlist.command";
-option java_outer_classname = "CommandsProto";
-option java_multiple_files = true;
+    /**
+     * Handles the command to create a watchlist.
+     */
+    @Assign
+    WatchlistCreated handle(CreateWatchlist c) {
+        return WatchlistCreated
+                .newBuilder()
+                .setOwner(c.getUser())
+                .setWatchlist(c.getWatchlist())
+                .setName(c.getName())
+                .vBuild();
+    }
 
-import "spine_examples/shareaware/identifiers.proto";
-import "spine/core/user_id.proto";
-
-// A command to create a new watchlist.
-message CreateWatchlist {
-
-    // The ID of the watchlist to create.
-    WatchlistId watchlist = 1;
-
-    // The ID of the user who wants to create a watchlist.
-    spine.core.UserId user = 2;
-
-    // The name of the watchlist.
-    string name = 3 [(required) = true];
+    @Apply
+    private void event(WatchlistCreated e) {
+        builder().setId(e.getWatchlist())
+                 .setName(e.getName());
+    }
 }

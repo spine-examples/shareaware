@@ -26,3 +26,4 @@
 
 rootProject.name = "ShareAware"
 include("model")
+include("server")

@@ -24,29 +24,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+package io.spine.examples.shareaware.server;
 
-package spine_examples.shareaware.watchlist;
+import io.spine.examples.shareaware.server.watchlist.UserWatchlistsRepository;
+import io.spine.examples.shareaware.server.watchlist.WatchlistAggregate;
+import io.spine.server.BoundedContext;
+import io.spine.server.BoundedContextBuilder;
+import io.spine.server.DefaultRepository;
 
-import "spine/options.proto";
+/**
+ * Configures Trading Bounded Context with repositories.
+ */
+public final class TradingContext {
 
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.watchlist.command";
-option java_outer_classname = "CommandsProto";
-option java_multiple_files = true;
+    static final String NAME = "Trading";
 
-import "spine_examples/shareaware/identifiers.proto";
-import "spine/core/user_id.proto";
+    /**
+     * Prevents instantiation of this class.
+     */
+    private TradingContext() {
+    }
 
-// A command to create a new watchlist.
-message CreateWatchlist {
-
-    // The ID of the watchlist to create.
-    WatchlistId watchlist = 1;
-
-    // The ID of the user who wants to create a watchlist.
-    spine.core.UserId user = 2;
-
-    // The name of the watchlist.
-    string name = 3 [(required) = true];
+    /**
+     * Creates {@code BoundedContextBuilder} for the Trading context
+     * and fills it with repositories.
+     */
+    public static BoundedContextBuilder newBuilder() {
+        return BoundedContext
+                .singleTenant(NAME)
+                .add(DefaultRepository.of(WatchlistAggregate.class))
+                .add(new UserWatchlistsRepository());
+    }
 }
