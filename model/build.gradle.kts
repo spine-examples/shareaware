@@ -41,5 +41,4 @@ spine {
 
 dependencies {
     implementation(Spine.Server.lib)
-    implementation(Spine.Money.lib)
 }

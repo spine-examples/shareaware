@@ -27,6 +27,7 @@
 import io.spine.examples.shareaware.dependency.Grpc
 import io.spine.examples.shareaware.dependency.Guava
 import io.spine.examples.shareaware.dependency.JUnit
+import io.spine.examples.shareaware.dependency.Spine
 import io.spine.examples.shareaware.dependency.Truth
 
 /**
@@ -54,6 +55,7 @@ repositories {
 }
 
 dependencies {
+    implementation(Spine.Money.lib)
     implementation(Guava.lib)
     runtimeOnly(Grpc.lib)
     testImplementation(JUnit.Params.lib)

@@ -45,5 +45,4 @@ spine {
 
 dependencies {
     implementation(project(":model"))
-    implementation(Spine.Money.lib)
 }
