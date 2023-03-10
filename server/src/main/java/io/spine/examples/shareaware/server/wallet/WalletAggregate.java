@@ -24,37 +24,45 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server;
+package io.spine.examples.shareaware.server.wallet;
 
-import io.spine.examples.shareaware.server.wallet.WalletAggregate;
-import io.spine.examples.shareaware.server.watchlist.UserWatchlistsRepository;
-import io.spine.examples.shareaware.server.watchlist.WatchlistAggregate;
-import io.spine.server.BoundedContext;
-import io.spine.server.BoundedContextBuilder;
-import io.spine.server.DefaultRepository;
+import io.spine.core.UserId;
+import io.spine.examples.shareaware.wallet.Wallet;
+import io.spine.examples.shareaware.wallet.command.CreateWallet;
+import io.spine.examples.shareaware.wallet.event.WalletCreated;
+import io.spine.money.Currency;
+import io.spine.money.Money;
+import io.spine.server.aggregate.Aggregate;
+import io.spine.server.aggregate.Apply;
+import io.spine.server.command.Assign;
 
 /**
- * Configures Trading Bounded Context with repositories.
+ * The Wallet aggregate is responsible for managing replenishment, withdrawal,
+ * and reservation of user's money.
  */
-public final class TradingContext {
-
-    static final String NAME = "Trading";
+public class WalletAggregate extends Aggregate<UserId, Wallet, Wallet.Builder> {
 
     /**
-     * Prevents instantiation of this class.
+     * Handles the command to create a wallet.
      */
-    private TradingContext() {
+    @Assign
+    WalletCreated handle(CreateWallet c) {
+        return WalletCreated
+                .newBuilder()
+                .setWallet(c.getWallet())
+                .vBuild();
     }
 
-    /**
-     * Creates {@code BoundedContextBuilder} for the Trading context
-     * and fills it with repositories.
-     */
-    public static BoundedContextBuilder newBuilder() {
-        return BoundedContext
-                .singleTenant(NAME)
-                .add(DefaultRepository.of(WatchlistAggregate.class))
-                .add(DefaultRepository.of(WalletAggregate.class))
-                .add(new UserWatchlistsRepository());
+    @Apply
+    private void event(WalletCreated e) {
+        Money initialMoneyAmount = Money
+                .newBuilder()
+                .setCurrency(Currency.USD)
+                .setUnits(0)
+                .setNanos(0)
+                .vBuild();
+        builder().setId(e.getWallet())
+                 .setBalance(initialMoneyAmount)
+                 .setReservedMoney(initialMoneyAmount);
     }
 }
