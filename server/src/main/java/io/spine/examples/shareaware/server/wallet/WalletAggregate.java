@@ -50,7 +50,7 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
         return WalletCreated
                 .newBuilder()
                 .setWallet(c.getWallet())
-                .setBalance(emptyMoneyValue())
+                .setBalance(zeroMoneyValue())
                 .vBuild();
     }
 
@@ -58,10 +58,10 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
     private void event(WalletCreated e) {
         builder().setId(e.getWallet())
                  .setBalance(e.getBalance())
-                 .setReservedMoney(emptyMoneyValue());
+                 .setReservedMoney(zeroMoneyValue());
     }
 
-    private static Money emptyMoneyValue() {
+    private static Money zeroMoneyValue() {
         return Money
                 .newBuilder()
                 .setCurrency(Currency.USD)
