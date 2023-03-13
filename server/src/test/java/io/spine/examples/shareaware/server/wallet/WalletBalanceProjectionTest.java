@@ -38,7 +38,7 @@ import io.spine.testing.server.blackbox.ContextAwareTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("`WalletBalance` should")
+@DisplayName("`WalletBalanceProjection` should")
 public final class WalletBalanceProjectionTest extends ContextAwareTest {
 
     @Override
