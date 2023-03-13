@@ -50,5 +50,8 @@ message Wallet {
     spine.money.Money balance = 2;
 
     // An amount of reserved money.
+    //
+    // This field is used for money safety while the withdrawal transaction is in process.
+    //
     spine.money.Money reserved_money = 3;
 }
