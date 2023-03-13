@@ -25,7 +25,7 @@
  */
 
 /**
- * Provides ShareAware `Wallet` commands and common commands interfaces.
+ * Provides ShareAware Wallet commands and common commands interfaces.
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault

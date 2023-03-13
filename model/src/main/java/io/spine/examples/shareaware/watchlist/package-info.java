@@ -25,7 +25,7 @@
  */
 
 /**
- * This package contains `Watchlist` data types of the ShareAware application.
+ * This package contains Watchlist data types of the ShareAware application.
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault

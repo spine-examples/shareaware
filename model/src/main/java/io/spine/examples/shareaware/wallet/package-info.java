@@ -25,7 +25,7 @@
  */
 
 /**
- * This package contains `Wallet` data types of the ShareAware application.
+ * This package contains Wallet data types of the ShareAware application.
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault

@@ -25,7 +25,7 @@
  */
 
 /**
- * Provides ShareAware `Wallet` events and common event interfaces.
+ * Provides ShareAware Wallet events and common event interfaces.
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault

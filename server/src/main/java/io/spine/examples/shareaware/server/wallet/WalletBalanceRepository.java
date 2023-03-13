@@ -35,7 +35,7 @@ import io.spine.server.route.EventRoute;
 import io.spine.server.route.EventRouting;
 
 /**
- * Manages instances of {@code Wallet} projections.
+ * Manages instances of {@code WalletBalanceProjection}.
  */
 public final class WalletBalanceRepository
         extends ProjectionRepository<WalletId, WalletBalanceProjection, WalletBalance> {

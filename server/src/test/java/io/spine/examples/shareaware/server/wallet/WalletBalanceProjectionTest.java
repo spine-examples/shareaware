@@ -47,7 +47,7 @@ public final class WalletBalanceProjectionTest extends ContextAwareTest {
     }
 
     @Test
-    @DisplayName("display an empty balance, as soon as the wallet created")
+    @DisplayName("display a zero balance, as soon as the wallet created")
     void balance() {
         WalletId wallet = WalletId
                 .newBuilder()

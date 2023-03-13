@@ -25,7 +25,7 @@
  */
 
 /**
- * Provides ShareAware `Watchlist` events and common event interfaces.
+ * Provides ShareAware Watchlist events and common event interfaces.
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault

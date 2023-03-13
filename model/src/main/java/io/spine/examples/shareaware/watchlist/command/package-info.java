@@ -25,7 +25,7 @@
  */
 
 /**
- * Provides ShareAware `Watchlist` commands and common commands interfaces.
+ * Provides ShareAware Watchlist commands and common commands interfaces.
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault
