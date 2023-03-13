@@ -26,33 +26,41 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware;
+package spine_examples.shareaware.investments;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware";
-option java_outer_classname = "IdentifiersProto";
+option java_package = "io.spine.examples.shareaware.investments";
+option java_outer_classname = "InvestmentsProto";
 option java_multiple_files = true;
 
-import "spine/core/user_id.proto";
+import "spine_examples/shareaware/identifiers.proto";
+import "google/protobuf/timestamp.proto";
+import "spine/money/money.proto";
 
-// Identifies a watchlist in the scope of the application.
-message WatchlistId {
-    string uuid = 1 [(required) = true];
-}
+// Represents a list of users' investments.
+message Investments {
+    option (entity) = { kind: AGGREGATE };
 
-// Identifies a share in the scope of the application.
-message ShareId {
-    string uuid = 1 [(required) = true];
-}
+    // The ID of the investments.
+    InvestmentsId id = 1;
 
-// Identifies a wallet in the scope of the application.
-message WalletId {
-    spine.core.UserId owner = 1 [(required) = true];
-}
+    // User's investments.
+    repeated Investment investment = 2 [(required) = true];
 
-// Identifies an investments.
-message InvestmentsId {
-    spine.core.UserId owner = 1 [(required) = true];
+    //
+    message Investment {
+        // The ID of the purchased share.
+        ShareId share = 1;
+
+        // The quantity of purchased shares.
+        int32 quantity = 2 [(required) = true];
+
+        // The date of shares purchase.
+        google.protobuf.Timestamp purchase_date = 3 [(required) = true];
+
+        // The purchase price of the singular share.
+        spine.money.Money purchase_price = 4 [(required) = true];
+    }
 }

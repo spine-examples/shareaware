@@ -26,33 +26,20 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware;
+package spine_examples.shareaware.investments;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware";
-option java_outer_classname = "IdentifiersProto";
+option java_package = "io.spine.examples.shareaware.investments.command";
+option java_outer_classname = "CommandsProto";
 option java_multiple_files = true;
 
-import "spine/core/user_id.proto";
+import "spine_examples/shareaware/identifiers.proto";
 
-// Identifies a watchlist in the scope of the application.
-message WatchlistId {
-    string uuid = 1 [(required) = true];
-}
+// A command to create a new investments.
+message CreateInvestments {
 
-// Identifies a share in the scope of the application.
-message ShareId {
-    string uuid = 1 [(required) = true];
-}
-
-// Identifies a wallet in the scope of the application.
-message WalletId {
-    spine.core.UserId owner = 1 [(required) = true];
-}
-
-// Identifies an investments.
-message InvestmentsId {
-    spine.core.UserId owner = 1 [(required) = true];
+    // The ID of the investments to create.
+    InvestmentsId investments = 1;
 }
