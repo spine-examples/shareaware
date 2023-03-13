@@ -47,11 +47,18 @@ message Wallet {
     WalletId id = 1;
 
     // The balance of the wallet.
+    //
+    // The currently available(not reserved) amount of the user's money that the user can spend or cash out.
+    // Also, the balance can be replenished from the bank account or by selling shares.
+    // The current currency for the balance is United States Dollar.
+    //
     spine.money.Money balance = 2;
 
     // An amount of reserved money.
     //
-    // This field is used for money safety while the withdrawal transaction is in process.
+    // This amount is considered reserved, because there may be pending operations against this wallet,
+    // that may imply spendings. It is not possible to use the reserved amount directly,
+    // other than in scope of these pending operations.
     //
     spine.money.Money reserved_money = 3;
 }
