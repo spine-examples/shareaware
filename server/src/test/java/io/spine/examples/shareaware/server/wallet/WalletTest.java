@@ -28,6 +28,7 @@ package io.spine.examples.shareaware.server.wallet;
 
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.server.TradingContext;
+import io.spine.examples.shareaware.server.given.GivenMoney;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.command.CreateWallet;
 import io.spine.examples.shareaware.wallet.event.WalletCreated;
@@ -51,17 +52,17 @@ public final class WalletTest extends ContextAwareTest {
     @DisplayName("allow the creation and emit the `WalletCreated` event")
     void event() {
         WalletId wallet = givenId();
-        CreateWallet command = command(wallet);
+        CreateWallet command = createWallet(wallet);
         WalletCreated expectedEvent = WalletCreated
                 .newBuilder()
                 .setWallet(wallet)
-                .setBalance(zeroMoneyValue())
+                .setBalance(GivenMoney.zero())
                 .vBuild();
         Wallet expectedState = Wallet
                 .newBuilder()
                 .setId(wallet)
-                .setBalance(zeroMoneyValue())
-                .setReservedMoney(zeroMoneyValue())
+                .setBalance(GivenMoney.zero())
+                .setReservedMoney(GivenMoney.zero())
                 .vBuild();
         context().receivesCommand(command);
         EventSubject assertEvents = context()

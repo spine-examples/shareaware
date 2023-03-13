@@ -6,7 +6,7 @@ import io.spine.money.Currency;
 import io.spine.money.Money;
 import io.spine.testing.core.given.GivenUserId;
 
-public class WalletTestEnv {
+public final class WalletTestEnv {
 
     /**
      * Prevents instantiation of this test environment.
@@ -21,19 +21,10 @@ public class WalletTestEnv {
                 .vBuild();
     }
 
-    public static CreateWallet command(WalletId id) {
+    public static CreateWallet createWallet(WalletId id) {
         return CreateWallet
                 .newBuilder()
                 .setWallet(id)
-                .vBuild();
-    }
-
-    public static Money zeroMoneyValue() {
-        return Money
-                .newBuilder()
-                .setCurrency(Currency.USD)
-                .setUnits(0)
-                .setNanos(0)
                 .vBuild();
     }
 }
