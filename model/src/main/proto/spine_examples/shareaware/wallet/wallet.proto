@@ -48,9 +48,9 @@ message Wallet {
 
     // The balance of the wallet.
     //
-    // The currently available(not reserved) amount of the user's money that the user can spend or cash out.
+    // The currently available (not reserved) amount of the user's money that the user can spend or cash out.
     // Also, the balance can be replenished from the bank account or by selling shares.
-    // The current currency for the balance is United States Dollar.
+    // The currency for the balance is United States Dollar.
     //
     spine.money.Money balance = 2;
 

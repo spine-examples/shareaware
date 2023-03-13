@@ -3,7 +3,7 @@ package io.spine.examples.shareaware.server.given;
 import io.spine.money.Currency;
 import io.spine.money.Money;
 
-public class GivenMoney {
+public final class GivenMoney {
 
     /**
      * Prevents instantiation of this utility class.
@@ -19,5 +19,4 @@ public class GivenMoney {
                 .setNanos(0)
                 .vBuild();
     }
-
 }
