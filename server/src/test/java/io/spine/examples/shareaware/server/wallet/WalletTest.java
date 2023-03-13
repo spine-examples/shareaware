@@ -31,14 +31,13 @@ import io.spine.examples.shareaware.server.TradingContext;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.command.CreateWallet;
 import io.spine.examples.shareaware.wallet.event.WalletCreated;
-import io.spine.money.Currency;
-import io.spine.money.Money;
 import io.spine.server.BoundedContextBuilder;
-import io.spine.testing.core.given.GivenUserId;
 import io.spine.testing.server.EventSubject;
 import io.spine.testing.server.blackbox.ContextAwareTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
 
 @DisplayName("`Wallet` should")
 public final class WalletTest extends ContextAwareTest {
@@ -51,14 +50,8 @@ public final class WalletTest extends ContextAwareTest {
     @Test
     @DisplayName("allow the creation and emit the `WalletCreated` event")
     void event() {
-        WalletId wallet = WalletId
-                .newBuilder()
-                .setOwner(GivenUserId.generated())
-                .vBuild();
-        CreateWallet command = CreateWallet
-                .newBuilder()
-                .setWallet(wallet)
-                .vBuild();
+        WalletId wallet = givenId();
+        CreateWallet command = command(wallet);
         WalletCreated expectedEvent = WalletCreated
                 .newBuilder()
                 .setWallet(wallet)
@@ -78,14 +71,5 @@ public final class WalletTest extends ContextAwareTest {
         assertEvents.hasSize(1);
         context().assertState(wallet, expectedState);
         context().assertEvent(expectedEvent);
-    }
-
-    private static Money zeroMoneyValue() {
-        return Money
-                .newBuilder()
-                .setCurrency(Currency.USD)
-                .setUnits(0)
-                .setNanos(0)
-                .vBuild();
     }
 }
