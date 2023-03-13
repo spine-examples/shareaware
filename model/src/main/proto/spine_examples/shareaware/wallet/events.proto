@@ -24,21 +24,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Spine
+syntax = "proto3";
 
-/*
- * Add the Gradle plugin for bootstrapping projects built with Spine.
- * See: https://github.com/SpineEventEngine/bootstrap
- */
-plugins {
-    id("io.spine.tools.gradle.bootstrap")
-}
+package spine_examples.shareaware.wallet;
 
-spine {
-    assembleModel()
-    enableJava()
-}
+import "spine/options.proto";
 
-dependencies {
-    implementation(Spine.Server.lib)
+option (type_url_prefix) = "type.shareaware.spine.io";
+option java_package = "io.spine.examples.shareaware.wallet.event";
+option java_outer_classname = "EventsProto";
+option java_multiple_files = true;
+
+import "spine/money/money.proto";
+import "spine_examples/shareaware/identifiers.proto";
+
+// A new wallet has been created.
+message WalletCreated {
+
+    // The ID of the created wallet.
+    WalletId wallet = 1;
+
+    // The initial balance of the wallet.
+    spine.money.Money balance = 2;
 }

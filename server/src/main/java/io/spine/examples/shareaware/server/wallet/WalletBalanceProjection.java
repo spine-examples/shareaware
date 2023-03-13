@@ -24,21 +24,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Spine
+package io.spine.examples.shareaware.server.wallet;
 
-/*
- * Add the Gradle plugin for bootstrapping projects built with Spine.
- * See: https://github.com/SpineEventEngine/bootstrap
+import io.spine.core.Subscribe;
+import io.spine.examples.shareaware.WalletId;
+import io.spine.examples.shareaware.wallet.WalletBalance;
+import io.spine.examples.shareaware.wallet.event.WalletCreated;
+import io.spine.server.projection.Projection;
+
+/**
+ * Manages instances of {@code WalletBalance} projections.
  */
-plugins {
-    id("io.spine.tools.gradle.bootstrap")
-}
+final class WalletBalanceProjection
+        extends Projection<WalletId, WalletBalance, WalletBalance.Builder> {
 
-spine {
-    assembleModel()
-    enableJava()
-}
-
-dependencies {
-    implementation(Spine.Server.lib)
+    @Subscribe
+    void on(WalletCreated e) {
+        builder()
+                .setId(e.getWallet())
+                .setBalance(e.getBalance());
+    }
 }

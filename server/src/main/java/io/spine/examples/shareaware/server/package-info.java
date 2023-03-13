@@ -24,21 +24,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Spine
-
-/*
- * Add the Gradle plugin for bootstrapping projects built with Spine.
- * See: https://github.com/SpineEventEngine/bootstrap
+/**
+ * Provides server-side code of the ShareAware example application.
  */
-plugins {
-    id("io.spine.tools.gradle.bootstrap")
-}
+@BoundedContext(TradingContext.NAME)
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.examples.shareaware.server;
 
-spine {
-    assembleModel()
-    enableJava()
-}
+import io.spine.core.BoundedContext;
 
-dependencies {
-    implementation(Spine.Server.lib)
-}
+import javax.annotation.CheckReturnValue;
+import javax.annotation.ParametersAreNonnullByDefault;

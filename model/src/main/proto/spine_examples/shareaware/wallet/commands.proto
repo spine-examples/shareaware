@@ -24,21 +24,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Spine
+syntax = "proto3";
 
-/*
- * Add the Gradle plugin for bootstrapping projects built with Spine.
- * See: https://github.com/SpineEventEngine/bootstrap
- */
-plugins {
-    id("io.spine.tools.gradle.bootstrap")
-}
+package spine_examples.shareaware.wallet;
 
-spine {
-    assembleModel()
-    enableJava()
-}
+import "spine/options.proto";
 
-dependencies {
-    implementation(Spine.Server.lib)
+option (type_url_prefix) = "type.shareaware.spine.io";
+option java_package = "io.spine.examples.shareaware.wallet.command";
+option java_outer_classname = "CommandsProto";
+option java_multiple_files = true;
+
+import "spine_examples/shareaware/identifiers.proto";
+
+// A command to create a new wallet.
+message CreateWallet {
+
+    // The ID of the wallet to create.
+    WalletId wallet = 1;
 }

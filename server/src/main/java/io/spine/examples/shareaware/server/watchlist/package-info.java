@@ -24,21 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Spine
-
-/*
- * Add the Gradle plugin for bootstrapping projects built with Spine.
- * See: https://github.com/SpineEventEngine/bootstrap
+/**
+ * Provides server-side classes for working with Watchlist.
  */
-plugins {
-    id("io.spine.tools.gradle.bootstrap")
-}
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.examples.shareaware.server.watchlist;
 
-spine {
-    assembleModel()
-    enableJava()
-}
-
-dependencies {
-    implementation(Spine.Server.lib)
-}
+import javax.annotation.CheckReturnValue;
+import javax.annotation.ParametersAreNonnullByDefault;

@@ -24,21 +24,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Spine
+package io.spine.examples.shareaware.server.wallet;
 
-/*
- * Add the Gradle plugin for bootstrapping projects built with Spine.
- * See: https://github.com/SpineEventEngine/bootstrap
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import io.spine.examples.shareaware.WalletId;
+import io.spine.examples.shareaware.wallet.WalletBalance;
+import io.spine.examples.shareaware.wallet.event.WalletCreated;
+import io.spine.server.projection.ProjectionRepository;
+import io.spine.server.route.EventRoute;
+import io.spine.server.route.EventRouting;
+
+/**
+ * Manages instances of {@code WalletBalanceProjection}.
  */
-plugins {
-    id("io.spine.tools.gradle.bootstrap")
-}
+public final class WalletBalanceRepository
+        extends ProjectionRepository<WalletId, WalletBalanceProjection, WalletBalance> {
 
-spine {
-    assembleModel()
-    enableJava()
-}
-
-dependencies {
-    implementation(Spine.Server.lib)
+    @OverridingMethodsMustInvokeSuper
+    @Override
+    protected void setupEventRouting(EventRouting<WalletId> routing) {
+        super.setupEventRouting(routing);
+        routing.route(WalletCreated.class,
+                      (event, context) -> EventRoute.withId(event.getWallet()));
+    }
 }

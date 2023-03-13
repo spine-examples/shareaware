@@ -26,28 +26,39 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware;
+package spine_examples.shareaware.wallet;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware";
-option java_outer_classname = "IdentifiersProto";
+option java_package = "io.spine.examples.shareaware.wallet";
+option java_outer_classname = "WalletProto";
 option java_multiple_files = true;
 
 import "spine/core/user_id.proto";
+import "spine/money/money.proto";
+import "spine_examples/shareaware/identifiers.proto";
 
-// Identifies a watchlist.
-message WatchlistId {
-    string uuid = 1 [(required) = true];
-}
+// Represents an amount of user's money.
+message Wallet {
+    option (entity) = {kind: AGGREGATE};
 
-// Identifies a share.
-message ShareId {
-    string uuid = 1 [(required) = true];
-}
+    // The ID of the wallet.
+    WalletId id = 1;
 
-// Identifies a wallet.
-message WalletId {
-    spine.core.UserId owner = 1 [(required) = true];
+    // The balance of the wallet.
+    //
+    // The currently available (not reserved) amount of the user's money that the user can spend or cash out.
+    // Also, the balance can be replenished from the bank account or by selling shares.
+    // The currency for the balance is United States Dollar.
+    //
+    spine.money.Money balance = 2;
+
+    // An amount of reserved money.
+    //
+    // This amount is considered reserved, because there may be pending operations against this wallet,
+    // that may imply spendings. It is not possible to use the reserved amount directly,
+    // other than in scope of these pending operations.
+    //
+    spine.money.Money reserved_money = 3;
 }
