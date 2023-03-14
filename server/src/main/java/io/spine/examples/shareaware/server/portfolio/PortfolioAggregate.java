@@ -24,40 +24,32 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+package io.spine.examples.shareaware.server.portfolio;
 
-package spine_examples.shareaware;
+import io.spine.examples.shareaware.PortfolioId;
+import io.spine.examples.shareaware.portfolio.Portfolio;
+import io.spine.examples.shareaware.portfolio.command.CreatePortfolio;
+import io.spine.examples.shareaware.portfolio.event.PortfolioCreated;
+import io.spine.server.aggregate.Aggregate;
+import io.spine.server.aggregate.Apply;
+import io.spine.server.command.Assign;
 
-import "spine/options.proto";
+/**
+ * The Portfolio aggregate is responsible for managing investments
+ * of a particular ShareAware user.
+ */
+public final class PortfolioAggregate extends Aggregate<PortfolioId, Portfolio, Portfolio.Builder> {
 
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware";
-option java_outer_classname = "IdentifiersProto";
-option java_multiple_files = true;
+    @Assign
+    PortfolioCreated handle(CreatePortfolio c) {
+        return PortfolioCreated
+                .newBuilder()
+                .setPortfolio(c.getPortfolio())
+                .vBuild();
+    }
 
-import "spine/core/user_id.proto";
-
-// Identifies a watchlist.
-message WatchlistId {
-    string uuid = 1 [(required) = true];
-}
-
-// Identifies a share.
-message ShareId {
-    string uuid = 1 [(required) = true];
-}
-
-// Identifies a wallet.
-message WalletId {
-    spine.core.UserId owner = 1 [(required) = true];
-}
-
-// Identifies an investment.
-message InvestmentId {
-    ShareId type = 1 [(required) = true];
-}
-
-// Identifies a portfolio.
-message PortfolioId {
-    spine.core.UserId owner = 1 [(required) = true];
+    @Apply
+    private void event(PortfolioCreated e) {
+        builder().setId(e.getPortfolio());
+    }
 }
