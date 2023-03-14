@@ -24,43 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+/**
+ * Provides ShareAware Portfolio events and common event interfaces.
+ */
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.examples.shareaware.portfolio.event;
 
-package spine_examples.shareaware.investments;
-
-import "spine/options.proto";
-
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.investments";
-option java_outer_classname = "InvestmentsProto";
-option java_multiple_files = true;
-
-import "spine_examples/shareaware/identifiers.proto";
-import "google/protobuf/timestamp.proto";
-import "spine/money/money.proto";
-
-// Represents a list of users' investments.
-message Investments {
-    option (entity) = { kind: AGGREGATE };
-
-    // The ID of the investments.
-    InvestmentsId id = 1;
-
-    // User's investments.
-    repeated Investment investment = 2 [(required) = true];
-
-    //
-    message Investment {
-        // The ID of the purchased share.
-        ShareId share = 1;
-
-        // The quantity of purchased shares.
-        int32 quantity = 2 [(required) = true];
-
-        // The date of shares purchase.
-        google.protobuf.Timestamp purchase_date = 3 [(required) = true];
-
-        // The purchase price of the singular share.
-        spine.money.Money purchase_price = 4 [(required) = true];
-    }
-}
+import javax.annotation.CheckReturnValue;
+import javax.annotation.ParametersAreNonnullByDefault;

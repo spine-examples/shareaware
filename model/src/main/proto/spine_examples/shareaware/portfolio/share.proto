@@ -26,20 +26,26 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware.investments;
+package spine_examples.shareaware.portfolio;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.investments.command";
-option java_outer_classname = "CommandsProto";
+option java_package = "io.spine.examples.shareaware.portfolio";
+option java_outer_classname = "ShareProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
+import "spine/money/money.proto";
 
-// A command to create a new investments.
-message CreateInvestments {
+// The meta-information about the share from the market.
+message Share {
+    // The ID of the share.
+    ShareId id = 1;
 
-    // The ID of the investments to create.
-    InvestmentsId investments = 1;
+    // The current share price.
+    spine.money.Money price = 2 [(required) = true];
+
+    // The icon of the share.
+    bytes icon = 3 [(required) = true];
 }

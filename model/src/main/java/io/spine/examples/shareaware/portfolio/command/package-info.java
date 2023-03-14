@@ -24,22 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+/**
+ * Provides ShareAware Portfolio commands and common commands interfaces.
+ */
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.examples.shareaware.portfolio.command;
 
-package spine_examples.shareaware.investments;
-
-import "spine/options.proto";
-
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.investments.event";
-option java_outer_classname = "EventsProto";
-option java_multiple_files = true;
-
-import "spine_examples/shareaware/identifiers.proto";
-
-// A new investments has been created.
-message InvestmentsCreated {
-
-    // The ID of the created investments.
-    InvestmentsId investments = 1;
-}
+import javax.annotation.CheckReturnValue;
+import javax.annotation.ParametersAreNonnullByDefault;
