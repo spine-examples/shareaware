@@ -31,29 +31,30 @@ package spine_examples.shareaware.wallet;
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.wallet.event";
-option java_outer_classname = "EventsProto";
+option java_package = "io.spine.examples.shareaware.wallet";
+option java_outer_classname = "CommandsProto";
 option java_multiple_files = true;
 
-import "spine/money/money.proto";
 import "spine_examples/shareaware/identifiers.proto";
+import "spine/money/money.proto";
+import "spine_examples/shareaware/wallet/card.proto";
+import "spine/core/user_id.proto";
 
-// A new wallet has been created.
-message WalletCreated {
+// A command to replenish the wallet.
+message ReplenishWallet {
 
-    // The ID of the created wallet.
-    WalletId wallet = 1;
+    // The ID of the replenishment process.
+    ReplenishmentId replenishment = 1;
 
-    // The initial balance of the wallet.
-    spine.money.Money balance = 2;
-}
+    // The ID of the user who wants to replenish the wallet.
+    spine.core.UserId user = 2 [(required) = true];
 
-// The wallet balance has been recharged.
-message BalanceRecharged {
+    // The id of the user's wallet to replenish.
+    WalletId wallet  = 3 [(required) = true];
 
-    // The ID of the wallet whose balance was recharged.
-    WalletId wallet = 1;
+    // The information about the user's card.
+    Card card = 4 [(required) = true];
 
-    // The amount of money by which the wallet balance was recharged.
-    spine.money.Money money_amount = 2 [(required) = true];
+    // The amount of money by which the wallet wants to be replenished.
+    spine.money.Money money_amount = 5 [(required) = true];
 }

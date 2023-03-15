@@ -26,34 +26,28 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware.wallet;
+package spine_examples.shareaware.payment_gateway;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.wallet.event";
-option java_outer_classname = "EventsProto";
+option java_package = "io.spine.examples.shareaware.payment_gateway.command";
+option java_outer_classname = "CommandsProto";
 option java_multiple_files = true;
 
 import "spine/money/money.proto";
+import "spine_examples/shareaware/wallet/card.proto";
 import "spine_examples/shareaware/identifiers.proto";
 
-// A new wallet has been created.
-message WalletCreated {
+// A command to transfer money from user's card to the ShareAware bank account.
+message TransferMoneyFromUser {
 
-    // The ID of the created wallet.
-    WalletId wallet = 1;
+    // The ID of the payment gateway.
+    PaymentGatewayId gateway = 1;
 
-    // The initial balance of the wallet.
-    spine.money.Money balance = 2;
-}
+    // The information about the user's card.
+    spine_examples.shareaware.wallet.Card card = 2 [(required) = true];
 
-// The wallet balance has been recharged.
-message BalanceRecharged {
-
-    // The ID of the wallet whose balance was recharged.
-    WalletId wallet = 1;
-
-    // The amount of money by which the wallet balance was recharged.
-    spine.money.Money money_amount = 2 [(required) = true];
+    // The amount of money to transfer.
+    spine.money.Money transaction_amount = 3 [(required) = true];
 }

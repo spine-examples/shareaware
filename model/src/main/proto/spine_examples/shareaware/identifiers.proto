@@ -51,3 +51,13 @@ message ShareId {
 message WalletId {
     spine.core.UserId owner = 1 [(required) = true];
 }
+
+// Identifies a wallet replenishment process.
+message ReplenishmentId {
+    string uuid = 1 [(required) = true];
+}
+
+// Identifies a payment gateway.
+message PaymentGatewayId {
+    ReplenishmentId id = 1 [(required) = true];
+}

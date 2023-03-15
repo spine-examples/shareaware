@@ -62,3 +62,17 @@ message Wallet {
     //
     spine.money.Money reserved_money = 3;
 }
+
+// The process of wallet replenishment.
+message WalletReplenishment {
+    option (entity).kind = PROCESS_MANAGER;
+
+    // The ID of the replenishment process.
+    ReplenishmentId id = 1;
+
+    // The ID of the wallet to replenish.
+    WalletId wallet = 2;
+
+    // The ID of the user who owns the wallet.
+    spine.core.UserId user = 3 [(required) = true];
+}

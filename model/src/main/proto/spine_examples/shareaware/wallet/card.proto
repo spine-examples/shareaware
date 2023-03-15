@@ -31,29 +31,16 @@ package spine_examples.shareaware.wallet;
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.wallet.event";
-option java_outer_classname = "EventsProto";
+option java_package = "io.spine.examples.shareaware.wallet";
+option java_outer_classname = "CardProto";
 option java_multiple_files = true;
 
-import "spine/money/money.proto";
-import "spine_examples/shareaware/identifiers.proto";
+// The information about user bank card.
+message Card {
 
-// A new wallet has been created.
-message WalletCreated {
+    // The number of the user's bank card.
+    string number = 1 [(required) = true];
 
-    // The ID of the created wallet.
-    WalletId wallet = 1;
-
-    // The initial balance of the wallet.
-    spine.money.Money balance = 2;
-}
-
-// The wallet balance has been recharged.
-message BalanceRecharged {
-
-    // The ID of the wallet whose balance was recharged.
-    WalletId wallet = 1;
-
-    // The amount of money by which the wallet balance was recharged.
-    spine.money.Money money_amount = 2 [(required) = true];
+    // The CVV code of user's bank card.
+    int32 CVV = 2 [(range) = "[100..999]"];
 }

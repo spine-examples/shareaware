@@ -36,10 +36,21 @@ option java_outer_classname = "CommandsProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
+import "spine/money/money.proto";
 
 // A command to create a new wallet.
 message CreateWallet {
 
     // The ID of the wallet to create.
     WalletId wallet = 1;
+}
+
+// A command to recharge the balance of wallet.
+message RechargeBalance {
+
+    // The ID of the wallet whose balance must be recharged.
+    WalletId wallet = 1;
+
+    // The amount of money by which the wallet balance must be recharged.
+    spine.money.Money money_amount = 2 [(required) = true];
 }
