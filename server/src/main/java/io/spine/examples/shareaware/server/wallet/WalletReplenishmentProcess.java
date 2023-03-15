@@ -30,6 +30,7 @@ import io.spine.examples.shareaware.PaymentGatewayId;
 import io.spine.examples.shareaware.ReplenishmentId;
 import io.spine.examples.shareaware.payment_gateway.command.TransferMoneyFromUser;
 import io.spine.examples.shareaware.payment_gateway.event.MoneyTransferredFromUser;
+import io.spine.examples.shareaware.server.payment_gateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.wallet.Iban;
 import io.spine.examples.shareaware.wallet.WalletReplenishment;
 import io.spine.examples.shareaware.wallet.command.RechargeBalance;
@@ -43,14 +44,19 @@ import io.spine.server.procman.ProcessManager;
 final class WalletReplenishmentProcess
         extends ProcessManager<ReplenishmentId, WalletReplenishment, WalletReplenishment.Builder> {
 
+    private static final Iban shareAwareIban = Iban
+            .newBuilder()
+            .setValue("UA227452600000367849267457823")
+            .build();
+
     @Command
     TransferMoneyFromUser on(ReplenishWallet c) {
         initState(c);
         return TransferMoneyFromUser
                 .newBuilder()
-                .setGateway(PaymentGatewayId.generate()) // Change
+                .setGateway(PaymentGatewayProcess.id)
                 .setReplenishmentProcess(c.getReplenishment())
-                .setRecipient(Iban.getDefaultInstance()) //Change
+                .setRecipient(shareAwareIban)
                 .setSender(c.getIban())
                 .setTransactionAmount(c.getMoneyAmount())
                 .vBuild();
