@@ -26,12 +26,12 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware.watchlist;
+package spine_examples.shareaware.wallet;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.watchlist.event";
+option java_package = "io.spine.examples.shareaware.wallet.replenishment_event";
 option java_outer_classname = "EventsProto";
 option java_multiple_files = true;
 

@@ -24,37 +24,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+package io.spine.examples.shareaware.server.wallet;
 
-package spine_examples.shareaware.wallet;
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import io.spine.examples.shareaware.ReplenishmentId;
+import io.spine.examples.shareaware.payment_gateway.event.MoneyTransferredFromUser;
+import io.spine.examples.shareaware.wallet.WalletReplenishment;
+import io.spine.examples.shareaware.wallet.replenishment_command.ReplenishWallet;
+import io.spine.server.procman.ProcessManagerRepository;
+import io.spine.server.route.CommandRoute;
+import io.spine.server.route.CommandRouting;
+import io.spine.server.route.EventRoute;
+import io.spine.server.route.EventRouting;
 
-import "spine/options.proto";
+public class WalletReplenishmentRepository
+        extends ProcessManagerRepository<ReplenishmentId, WalletReplenishmentProcess, WalletReplenishment> {
 
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.wallet.replenishment_command";
-option java_outer_classname = "CommandsProto";
-option java_multiple_files = true;
-
-import "spine_examples/shareaware/identifiers.proto";
-import "spine/money/money.proto";
-import "spine_examples/shareaware/wallet/card.proto";
-import "spine/core/user_id.proto";
-
-// A command to replenish the wallet.
-message ReplenishWallet {
-
-    // The ID of the replenishment process.
-    ReplenishmentId replenishment = 1;
-
-    // The ID of the user who wants to replenish the wallet.
-    spine.core.UserId user = 2 [(required) = true];
-
-    // The id of the user's wallet to replenish.
-    WalletId wallet  = 3 [(required) = true];
-
-    // The information about the user's card.
-    Card card = 4 [(required) = true];
-
-    // The amount of money by which the wallet wants to be replenished.
-    spine.money.Money money_amount = 5 [(required) = true];
+    @OverridingMethodsMustInvokeSuper
+    @Override
+    protected void setupEventRouting(EventRouting<ReplenishmentId> routing) {
+        super.setupEventRouting(routing);
+        routing.route(MoneyTransferredFromUser.class,
+                      (event, context) -> EventRoute.withId(event.getReplenishmentProcess()));
+    }
 }
