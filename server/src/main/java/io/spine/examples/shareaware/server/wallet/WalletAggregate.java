@@ -29,6 +29,8 @@ package io.spine.examples.shareaware.server.wallet;
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.command.CreateWallet;
+import io.spine.examples.shareaware.wallet.command.RechargeBalance;
+import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
 import io.spine.examples.shareaware.wallet.event.WalletCreated;
 import io.spine.money.Currency;
 import io.spine.money.Money;
@@ -68,5 +70,23 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
                 .setUnits(0)
                 .setNanos(0)
                 .vBuild();
+    }
+
+    @Assign
+    BalanceRecharged handle(RechargeBalance c) {
+        rechargeBalance(c.getMoneyAmount());
+        return BalanceRecharged.
+                newBuilder()
+                .setWallet(c.getWallet())
+                .setMoneyAmount(c.getMoneyAmount())
+                .setReplenishmentProcess(c.getReplenishmentProcess())
+                .vBuild();
+    }
+
+    private void rechargeBalance(Money rechargeAmount) {
+        Money rechargedBalance = MoneyCalculator
+                .summarize(state().getBalance(), rechargeAmount);
+        builder()
+                .setBalance(rechargedBalance);
     }
 }

@@ -47,7 +47,7 @@ final class WalletReplenishmentProcess
     private static final Iban shareAwareIban = Iban
             .newBuilder()
             .setValue("UA227452600000367849267457823")
-            .build();
+            .vBuild();
 
     @Command
     TransferMoneyFromUser on(ReplenishWallet c) {
@@ -66,8 +66,7 @@ final class WalletReplenishmentProcess
         builder()
                 .setId(c.getReplenishment())
                 .setWallet(c.getWallet())
-                .setUser(c.getUser())
-                .vBuild();
+                .setUser(c.getUser());
     }
 
     @React
