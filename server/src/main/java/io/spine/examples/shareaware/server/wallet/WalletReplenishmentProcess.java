@@ -30,6 +30,7 @@ import io.spine.examples.shareaware.PaymentGatewayId;
 import io.spine.examples.shareaware.ReplenishmentId;
 import io.spine.examples.shareaware.payment_gateway.command.TransferMoneyFromUser;
 import io.spine.examples.shareaware.payment_gateway.event.MoneyTransferredFromUser;
+import io.spine.examples.shareaware.wallet.Iban;
 import io.spine.examples.shareaware.wallet.WalletReplenishment;
 import io.spine.examples.shareaware.wallet.command.RechargeBalance;
 import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
@@ -48,7 +49,9 @@ final class WalletReplenishmentProcess
         return TransferMoneyFromUser
                 .newBuilder()
                 .setGateway(PaymentGatewayId.generate()) // Change
-                .setCard(c.getCard())
+                .setReplenishmentProcess(c.getReplenishment())
+                .setRecipient(Iban.getDefaultInstance()) //Change
+                .setSender(c.getIban())
                 .setTransactionAmount(c.getMoneyAmount())
                 .vBuild();
     }
@@ -66,6 +69,7 @@ final class WalletReplenishmentProcess
         return RechargeBalance
                 .newBuilder()
                 .setWallet(state().getWallet())
+                .setReplenishmentProcess(state().getId())
                 .setMoneyAmount(e.getTransactionAmount())
                 .vBuild();
     }

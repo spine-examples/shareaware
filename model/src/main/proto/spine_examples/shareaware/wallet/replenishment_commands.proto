@@ -37,7 +37,7 @@ option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
 import "spine/money/money.proto";
-import "spine_examples/shareaware/wallet/card.proto";
+import "spine_examples/shareaware/wallet/iban.proto";
 import "spine/core/user_id.proto";
 
 // A command to replenish the wallet.
@@ -52,8 +52,8 @@ message ReplenishWallet {
     // The id of the user's wallet to replenish.
     WalletId wallet  = 3 [(required) = true];
 
-    // The information about the user's card.
-    Card card = 4 [(required) = true];
+    // The IBAN of the user.
+    Iban iban = 4 [(required) = true];
 
     // The amount of money by which the wallet wants to be replenished.
     spine.money.Money money_amount = 5 [(required) = true];

@@ -31,29 +31,13 @@ package spine_examples.shareaware.wallet;
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.wallet.command";
-option java_outer_classname = "CommandsProto";
+option java_package = "io.spine.examples.shareaware.wallet";
+option java_outer_classname = "IbanProto";
 option java_multiple_files = true;
 
-import "spine_examples/shareaware/identifiers.proto";
-import "spine/money/money.proto";
+// The International Bank Account Number (IBAN).
+message Iban {
 
-// A command to create a new wallet.
-message CreateWallet {
-
-    // The ID of the wallet to create.
-    WalletId wallet = 1;
-}
-
-// A command to recharge the balance of wallet.
-message RechargeBalance {
-
-    // The ID of the wallet whose balance must be recharged.
-    WalletId wallet = 1;
-
-    // The ID of the replenishment process invokes the balance recharging.
-    ReplenishmentId replenishment_process = 2 [(required) = true];
-
-    // The amount of money by which the wallet balance must be recharged.
-    spine.money.Money money_amount = 3 [(required) = true];
+    // The value of an IBAN.
+    string value = 1;
 }

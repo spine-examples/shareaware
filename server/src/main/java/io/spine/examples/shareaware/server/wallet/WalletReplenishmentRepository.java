@@ -30,10 +30,8 @@ import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.examples.shareaware.ReplenishmentId;
 import io.spine.examples.shareaware.payment_gateway.event.MoneyTransferredFromUser;
 import io.spine.examples.shareaware.wallet.WalletReplenishment;
-import io.spine.examples.shareaware.wallet.replenishment_command.ReplenishWallet;
+import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
 import io.spine.server.procman.ProcessManagerRepository;
-import io.spine.server.route.CommandRoute;
-import io.spine.server.route.CommandRouting;
 import io.spine.server.route.EventRoute;
 import io.spine.server.route.EventRouting;
 
@@ -46,5 +44,7 @@ public class WalletReplenishmentRepository
         super.setupEventRouting(routing);
         routing.route(MoneyTransferredFromUser.class,
                       (event, context) -> EventRoute.withId(event.getReplenishmentProcess()));
+        routing.route(BalanceRecharged.class, (
+                event, context) -> EventRoute.withId(event.getReplenishmentProcess()));
     }
 }
