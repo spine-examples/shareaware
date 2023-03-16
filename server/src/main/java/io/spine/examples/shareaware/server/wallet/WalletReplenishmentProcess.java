@@ -27,9 +27,9 @@
 package io.spine.examples.shareaware.server.wallet;
 
 import io.spine.examples.shareaware.ReplenishmentId;
-import io.spine.examples.shareaware.payment_gateway.command.TransferMoneyFromUser;
-import io.spine.examples.shareaware.payment_gateway.event.MoneyTransferredFromUser;
-import io.spine.examples.shareaware.payment_gateway.rejection.Rejections.MoneyCannotBeTransferredFromUser;
+import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyFromUser;
+import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredFromUser;
+import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredFromUser;
 import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.wallet.Iban;
 import io.spine.examples.shareaware.wallet.WalletReplenishment;

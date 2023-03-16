@@ -24,37 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+/**
+ * Provides ShareAware PaymentGateway rejections.
+ */
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.examples.shareaware.paymentgateway.rejection;
 
-package spine_examples.shareaware.payment_gateway;
-
-import "spine/options.proto";
-
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.paymentgateway.command";
-option java_outer_classname = "CommandsProto";
-option java_multiple_files = true;
-
-import "spine/money/money.proto";
-import "spine_examples/shareaware/wallet/card.proto";
-import "spine_examples/shareaware/identifiers.proto";
-import "spine_examples/shareaware/wallet/iban.proto";
-
-// A command to transfer money from one bank account to another.
-message TransferMoneyFromUser {
-
-    // The ID of the payment gateway.
-    PaymentGatewayId gateway = 1;
-
-    // The ID of the replenishment process that wants to transfer money.
-    ReplenishmentId replenishment_process = 2 [(required) = true];
-
-    // The IBAN of the sender.
-    spine_examples.shareaware.wallet.Iban sender = 3 [(required) = true];
-
-    // The IBAN of the recipient.
-    spine_examples.shareaware.wallet.Iban recipient = 4 [(required) = true];
-
-    // The amount of money to transfer.
-    spine.money.Money transaction_amount = 5 [(required) = true];
-}
+import javax.annotation.CheckReturnValue;
+import javax.annotation.ParametersAreNonnullByDefault;

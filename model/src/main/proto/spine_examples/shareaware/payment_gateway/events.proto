@@ -31,7 +31,7 @@ package spine_examples.shareaware.payment_gateway;
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.payment_gateway.event";
+option java_package = "io.spine.examples.shareaware.paymentgateway.event";
 option java_outer_classname = "EventsProto";
 option java_multiple_files = true;
 
