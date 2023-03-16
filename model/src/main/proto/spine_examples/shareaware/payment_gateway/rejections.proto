@@ -26,37 +26,22 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware.wallet;
+package spine_examples.shareaware.payment_gateway;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.wallet.replenishment_event";
-option java_outer_classname = "EventsProto";
-option java_multiple_files = true;
+option java_package = "io.spine.examples.shareaware.payment_gateway.rejection";
+option java_multiple_files = false;
 
-import "spine/money/money.proto";
 import "spine_examples/shareaware/identifiers.proto";
 
-// The wallet has been replenished.
-message WalletReplenished {
+// Money cannot be transferred from user due to error in external payment system.
+message MoneyCannotBeTransferredFromUser {
 
-    // The ID of successfully finished replenishment process.
+    // The ID of the replenishment process that caused failed transaction.
     ReplenishmentId replenishment = 1;
 
-    // The ID of the replenished wallet.
-    WalletId wallet = 2 [(required) = true];
-
-    // The amount of money by which the wallet was replenished.
-    spine.money.Money money_amount = 3 [(required) = true];
-}
-
-// The wallet has not been replenished.
-message WalletNotReplenished {
-
-    // The ID of successfully finished replenishment process.
-    ReplenishmentId replenishment = 1;
-
-    // The cause why the wallet has not been replenished.
+    // The cause why the transaction failed.
     string cause = 2;
 }

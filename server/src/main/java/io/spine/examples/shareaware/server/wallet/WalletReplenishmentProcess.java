@@ -29,12 +29,14 @@ package io.spine.examples.shareaware.server.wallet;
 import io.spine.examples.shareaware.ReplenishmentId;
 import io.spine.examples.shareaware.payment_gateway.command.TransferMoneyFromUser;
 import io.spine.examples.shareaware.payment_gateway.event.MoneyTransferredFromUser;
+import io.spine.examples.shareaware.payment_gateway.rejection.Rejections.MoneyCannotBeTransferredFromUser;
 import io.spine.examples.shareaware.server.payment_gateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.wallet.Iban;
 import io.spine.examples.shareaware.wallet.WalletReplenishment;
 import io.spine.examples.shareaware.wallet.command.RechargeBalance;
 import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
 import io.spine.examples.shareaware.wallet.replenishment_command.ReplenishWallet;
+import io.spine.examples.shareaware.wallet.replenishment_event.WalletNotReplenished;
 import io.spine.examples.shareaware.wallet.replenishment_event.WalletReplenished;
 import io.spine.server.command.Command;
 import io.spine.server.event.React;
@@ -87,4 +89,15 @@ final class WalletReplenishmentProcess
                 .setMoneyAmount(e.getMoneyAmount())
                 .vBuild();
     }
+
+    @React
+    WalletNotReplenished on(MoneyCannotBeTransferredFromUser r) {
+        setArchived(true);
+        return WalletNotReplenished
+                .newBuilder()
+                .setReplenishment(r.getReplenishment())
+                .setCause(r.getCause())
+                .vBuild();
+    }
+
 }
