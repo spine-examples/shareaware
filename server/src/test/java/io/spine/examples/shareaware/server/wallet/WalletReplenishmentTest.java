@@ -30,7 +30,6 @@ import io.spine.examples.shareaware.ReplenishmentId;
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.payment_gateway.command.TransferMoneyFromUser;
 import io.spine.examples.shareaware.server.TradingContext;
-import io.spine.examples.shareaware.server.given.GivenIban;
 import io.spine.examples.shareaware.server.given.GivenMoney;
 import io.spine.examples.shareaware.server.payment_gateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.wallet.Wallet;
@@ -173,7 +172,7 @@ public class WalletReplenishmentTest extends ContextAwareTest {
                     .setReplenishmentProcess(replenishment)
                     .setTransactionAmount(replenishmentAmount)
                     .setSender(command.getIban())
-                    .setRecipient(GivenIban.generatedWith("UA227452600000367849267457823"))
+                    .setRecipient(WalletReplenishmentProcess.shareAwareIban)
                     .vBuild();
 
             context().assertCommands()

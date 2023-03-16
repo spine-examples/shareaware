@@ -43,7 +43,7 @@ import io.spine.server.procman.ProcessManager;
 final class WalletReplenishmentProcess
         extends ProcessManager<ReplenishmentId, WalletReplenishment, WalletReplenishment.Builder> {
 
-    private static final Iban shareAwareIban = Iban
+    static final Iban shareAwareIban = Iban
             .newBuilder()
             .setValue("UA227452600000367849267457823")
             .vBuild();
