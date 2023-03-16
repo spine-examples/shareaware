@@ -47,6 +47,6 @@ message Share {
     // The current share price.
     spine.money.Money price = 2 [(required) = true];
 
-    // The icon of the share.
-    bytes icon = 3 [(required) = true];
+    // The logo of the company that issued these share.
+    bytes company_logo = 3 [(required) = true];
 }
