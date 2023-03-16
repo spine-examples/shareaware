@@ -54,7 +54,7 @@ message WalletReplenished {
 // The wallet has not been replenished.
 message WalletNotReplenished {
 
-    // The ID of successfully finished replenishment process.
+    // The ID of failed replenishment process.
     ReplenishmentId replenishment = 1;
 
     // The cause why the wallet has not been replenished.

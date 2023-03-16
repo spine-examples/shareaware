@@ -38,6 +38,5 @@ option java_multiple_files = true;
 // The International Bank Account Number (IBAN).
 message Iban {
 
-    // The value of an IBAN.
     string value = 1;
 }
