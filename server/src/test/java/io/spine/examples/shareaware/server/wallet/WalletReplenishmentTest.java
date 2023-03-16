@@ -53,7 +53,7 @@ import static io.spine.examples.shareaware.server.given.WalletTestEnv.replenishW
 import static io.spine.examples.shareaware.server.given.WalletTestEnv.setupWallet;
 
 @DisplayName("`WalletReplenishment` should")
-public class WalletReplenishmentTest extends ContextAwareTest {
+public final class WalletReplenishmentTest extends ContextAwareTest {
 
     @Override
     protected BoundedContextBuilder contextBuilder() {

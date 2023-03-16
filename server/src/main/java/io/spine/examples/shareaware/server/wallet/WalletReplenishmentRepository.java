@@ -38,7 +38,7 @@ import io.spine.server.route.EventRouting;
 /**
  * Manages instances of {@link WalletReplenishmentProcess}.
  */
-public class WalletReplenishmentRepository
+public final class WalletReplenishmentRepository
         extends ProcessManagerRepository<ReplenishmentId, WalletReplenishmentProcess, WalletReplenishment> {
 
     @OverridingMethodsMustInvokeSuper
