@@ -24,32 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.payment_gateway;
+/**
+ * Provides server-side classes for working with imitation of the PaymentSystem.
+ */
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.examples.shareaware.server.paymentgateway;
 
-import io.spine.examples.shareaware.PaymentGatewayId;
-import io.spine.examples.shareaware.payment_gateway.PaymentGateway;
-import io.spine.examples.shareaware.payment_gateway.command.TransferMoneyFromUser;
-import io.spine.examples.shareaware.payment_gateway.event.MoneyTransferredFromUser;
-import io.spine.server.command.Assign;
-import io.spine.server.procman.ProcessManager;
-
-// The imitation of the external payment system.
-public class PaymentGatewayProcess extends ProcessManager<PaymentGatewayId, PaymentGateway, PaymentGateway.Builder> {
-
-    // The hardcoded ID for this imitation.
-    public static final PaymentGatewayId id = PaymentGatewayId
-            .newBuilder()
-            .setUuid("ImitationOfExternalPaymentSystem")
-            .vBuild();
-
-    // Emits the event when the transaction was successful.
-    @Assign
-    MoneyTransferredFromUser on(TransferMoneyFromUser c) {
-        return MoneyTransferredFromUser
-                .newBuilder()
-                .setGateway(c.getGateway())
-                .setReplenishmentProcess(c.getReplenishmentProcess())
-                .setTransactionAmount(c.getTransactionAmount())
-                .vBuild();
-    }
-}
+import javax.annotation.CheckReturnValue;
+import javax.annotation.ParametersAreNonnullByDefault;

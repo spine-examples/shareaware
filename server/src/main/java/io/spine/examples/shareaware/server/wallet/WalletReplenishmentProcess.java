@@ -30,7 +30,7 @@ import io.spine.examples.shareaware.ReplenishmentId;
 import io.spine.examples.shareaware.payment_gateway.command.TransferMoneyFromUser;
 import io.spine.examples.shareaware.payment_gateway.event.MoneyTransferredFromUser;
 import io.spine.examples.shareaware.payment_gateway.rejection.Rejections.MoneyCannotBeTransferredFromUser;
-import io.spine.examples.shareaware.server.payment_gateway.PaymentGatewayProcess;
+import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.wallet.Iban;
 import io.spine.examples.shareaware.wallet.WalletReplenishment;
 import io.spine.examples.shareaware.wallet.command.RechargeBalance;

@@ -26,7 +26,7 @@
 
 package io.spine.examples.shareaware.server;
 
-import io.spine.examples.shareaware.server.payment_gateway.PaymentGatewayProcess;
+import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.server.wallet.WalletAggregate;
 import io.spine.examples.shareaware.server.wallet.WalletBalanceRepository;
 import io.spine.examples.shareaware.server.wallet.WalletReplenishmentRepository;
