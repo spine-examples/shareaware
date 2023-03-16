@@ -24,32 +24,29 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.portfolio;
+syntax = "proto3";
 
-import io.spine.examples.shareaware.PortfolioId;
-import io.spine.examples.shareaware.portfolio.Portfolio;
-import io.spine.examples.shareaware.portfolio.command.CreatePortfolio;
-import io.spine.examples.shareaware.portfolio.event.PortfolioCreated;
-import io.spine.server.aggregate.Aggregate;
-import io.spine.server.aggregate.Apply;
-import io.spine.server.command.Assign;
+package spine_examples.shareaware.investment;
 
-/**
- * The Portfolio aggregate is responsible for managing investments
- * of a particular ShareAware user.
- */
-public final class PortfolioAggregate extends Aggregate<PortfolioId, Portfolio, Portfolio.Builder> {
+import "spine/options.proto";
 
-    @Assign
-    PortfolioCreated handle(CreatePortfolio c) {
-        return PortfolioCreated
-                .newBuilder()
-                .setPortfolio(c.getPortfolio())
-                .vBuild();
-    }
+option (type_url_prefix) = "type.shareaware.spine.io";
+option java_package = "io.spine.examples.shareaware.investment";
+option java_outer_classname = "ShareProto";
+option java_multiple_files = true;
 
-    @Apply
-    private void event(PortfolioCreated e) {
-        builder().setId(e.getPortfolio());
-    }
+import "spine_examples/shareaware/identifiers.proto";
+import "spine/money/money.proto";
+
+// The meta-information about the share from the market.
+message Share {
+
+    // The ID of the share.
+    ShareId id = 1;
+
+    // The current share price.
+    spine.money.Money price = 2 [(required) = true];
+
+    // The icon of the share.
+    bytes icon = 3 [(required) = true];
 }

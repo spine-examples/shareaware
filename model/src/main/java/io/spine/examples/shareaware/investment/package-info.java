@@ -25,11 +25,11 @@
  */
 
 /**
- * Provides ShareAware Portfolio commands and common commands interfaces.
+ * This package contains Investment data types of the ShareAware application.
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault
-package io.spine.examples.shareaware.portfolio.command;
+package io.spine.examples.shareaware.investment;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.ParametersAreNonnullByDefault;

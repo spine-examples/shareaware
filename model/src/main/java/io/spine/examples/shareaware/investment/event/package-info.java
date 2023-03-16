@@ -25,11 +25,11 @@
  */
 
 /**
- * Provides server-side classes for working with Portfolio.
+ * Provides ShareAware Investment events and common event interfaces.
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault
-package io.spine.examples.shareaware.server.portfolio;
+package io.spine.examples.shareaware.investment.event;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.ParametersAreNonnullByDefault;

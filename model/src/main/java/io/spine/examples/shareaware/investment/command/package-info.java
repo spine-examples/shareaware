@@ -24,27 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+/**
+ * Provides ShareAware Investment commands and common commands interfaces.
+ */
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.examples.shareaware.investment.command;
 
-package spine_examples.shareaware.portfolio;
-
-import "spine/options.proto";
-
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.portfolio";
-option java_outer_classname = "PortfolioProto";
-option java_multiple_files = true;
-
-import "spine_examples/shareaware/identifiers.proto";
-import "spine_examples/shareaware/portfolio/investment.proto";
-
-// Represents a list of all user's investments.
-message Portfolio {
-    option (entity) = {kind: AGGREGATE};
-
-    // The ID of the portfolio.
-    PortfolioId id = 1;
-
-    // User's investments.
-    repeated Investment investment = 2;
-}
+import javax.annotation.CheckReturnValue;
+import javax.annotation.ParametersAreNonnullByDefault;

@@ -26,21 +26,23 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware.portfolio;
+package spine_examples.shareaware.investment;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.portfolio";
+option java_package = "io.spine.examples.shareaware.investment";
 option java_outer_classname = "InvestmentProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
-import "spine_examples/shareaware/portfolio/share.proto";
+import "spine_examples/shareaware/investment/share.proto";
 import "spine/core/user_id.proto";
 
 // Represents users' investment into singular type of the share.
 message Investment {
+    option (entity) = {kind: AGGREGATE};
+
     // The ID of the investment.
     InvestmentId id = 1;
 

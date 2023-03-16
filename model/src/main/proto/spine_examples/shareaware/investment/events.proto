@@ -24,12 +24,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
- * Provides ShareAware Portfolio events and common event interfaces.
- */
-@CheckReturnValue
-@ParametersAreNonnullByDefault
-package io.spine.examples.shareaware.portfolio.event;
+syntax = "proto3";
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.ParametersAreNonnullByDefault;
+package spine_examples.shareaware.investment;
+
+import "spine/options.proto";
+
+option (type_url_prefix) = "type.shareaware.spine.io";
+option java_package = "io.spine.examples.shareaware.investment.event";
+option java_outer_classname = "EventsProto";
+option java_multiple_files = true;
+
+import "spine_examples/shareaware/identifiers.proto";
+
+// A new portfolio has been created.
+message PortfolioCreated {
+
+    // The ID of the created portfolio.
+    PortfolioId portfolio = 1;
+}
