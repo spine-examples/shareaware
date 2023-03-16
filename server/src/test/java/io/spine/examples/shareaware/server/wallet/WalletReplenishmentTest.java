@@ -28,9 +28,13 @@ package io.spine.examples.shareaware.server.wallet;
 
 import io.spine.examples.shareaware.ReplenishmentId;
 import io.spine.examples.shareaware.WalletId;
+import io.spine.examples.shareaware.payment_gateway.command.TransferMoneyFromUser;
 import io.spine.examples.shareaware.server.TradingContext;
+import io.spine.examples.shareaware.server.given.GivenIban;
 import io.spine.examples.shareaware.server.given.GivenMoney;
+import io.spine.examples.shareaware.server.payment_gateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.wallet.Wallet;
+import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.WalletReplenishment;
 import io.spine.examples.shareaware.wallet.command.RechargeBalance;
 import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
@@ -83,29 +87,6 @@ public class WalletReplenishmentTest extends ContextAwareTest {
         }
 
         @Test
-        @DisplayName("sending the `RechargeBalance` command")
-        void command() {
-            WalletId wallet = setupWallet(context());
-            Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
-            ReplenishmentId replenishment = ReplenishmentId.generate();
-            ReplenishWallet command = replenishWallet(wallet,
-                                                      replenishment,
-                                                      replenishmentAmount);
-            context().receivesCommand(command);
-            RechargeBalance expected = RechargeBalance
-                    .newBuilder()
-                    .setWallet(wallet)
-                    .setReplenishmentProcess(replenishment)
-                    .setMoneyAmount(replenishmentAmount)
-                    .vBuild();
-
-            context().assertCommands()
-                     .withType(RechargeBalance.class)
-                     .message(0)
-                     .isEqualTo(expected);
-        }
-
-        @Test
         @DisplayName("emitting the `BalanceRecharged` event")
         void event() {
             WalletId wallet = setupWallet(context());
@@ -127,8 +108,36 @@ public class WalletReplenishmentTest extends ContextAwareTest {
     }
 
     @Nested
+    @DisplayName("update the `WalletBalance` projection")
+    class UpdateWalletBalanceProjection {
+
+        @Test
+        @DisplayName("to 1000 USD")
+        void balance() {
+            WalletId wallet = setupWallet(context());
+            Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
+            ReplenishmentId replenishment = ReplenishmentId.generate();
+            ReplenishWallet firstReplenishment = replenishWallet(wallet,
+                                                                 ReplenishmentId.generate(),
+                                                                 replenishmentAmount);
+            ReplenishWallet secondReplenishment = replenishWallet(wallet,
+                                                                  ReplenishmentId.generate(),
+                                                                  replenishmentAmount);
+            Money expectedBalance = MoneyCalculator.summarize(replenishmentAmount,
+                                                              replenishmentAmount);
+            WalletBalance expected = WalletBalance
+                    .newBuilder()
+                    .setId(wallet)
+                    .setBalance(expectedBalance)
+                    .vBuild();
+            context().receivesCommands(firstReplenishment, secondReplenishment);
+        }
+    }
+
+    @Nested
     @DisplayName("be led by `WalletReplenishmentProcess`")
     class State {
+
         @Test
         @DisplayName("with state")
         void entity() {
@@ -148,28 +157,76 @@ public class WalletReplenishmentTest extends ContextAwareTest {
             context().assertState(replenishment, expectedReplenishment);
         }
 
-    }
-    @Test
-    @DisplayName("which emits the `WalletReplenished` event and archives itself after it")
-    void event() {
-        WalletId wallet = setupWallet(context());
-        Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
-        ReplenishmentId replenishment = ReplenishmentId.generate();
-        ReplenishWallet replenishWalletCommand = replenishWallet(wallet,
-                                                                 replenishment,
-                                                                 replenishmentAmount);
+        @Test
+        @DisplayName("which sends the `TransferMoney` command")
+        void commandToTransferMoney() {
+            WalletId wallet = setupWallet(context());
+            Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
+            ReplenishmentId replenishment = ReplenishmentId.generate();
+            ReplenishWallet command = replenishWallet(wallet,
+                                                      replenishment,
+                                                      replenishmentAmount);
+            context().receivesCommand(command);
+            TransferMoneyFromUser expected = TransferMoneyFromUser
+                    .newBuilder()
+                    .setGateway(PaymentGatewayProcess.id)
+                    .setReplenishmentProcess(replenishment)
+                    .setTransactionAmount(replenishmentAmount)
+                    .setSender(command.getIban())
+                    .setRecipient(GivenIban.generatedWith("UA227452600000367849267457823"))
+                    .vBuild();
 
-        WalletReplenished event = WalletReplenished
-                .newBuilder()
-                .setReplenishment(replenishment)
-                .setWallet(wallet)
-                .setMoneyAmount(replenishmentAmount)
-                .vBuild();
-        context().receivesCommand(replenishWalletCommand);
+            context().assertCommands()
+                     .withType(TransferMoneyFromUser.class)
+                     .message(0)
+                     .isEqualTo(expected);
+        }
 
-        context().assertEvent(event);
-        context().assertEntity(replenishment, WalletReplenishmentProcess.class)
-                 .archivedFlag()
-                 .isTrue();
+        @Test
+        @DisplayName("which sends the `RechargeBalance` command")
+        void commandToRechargeBalance() {
+            WalletId wallet = setupWallet(context());
+            Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
+            ReplenishmentId replenishment = ReplenishmentId.generate();
+            ReplenishWallet command = replenishWallet(wallet,
+                                                      replenishment,
+                                                      replenishmentAmount);
+            context().receivesCommand(command);
+            RechargeBalance expected = RechargeBalance
+                    .newBuilder()
+                    .setWallet(wallet)
+                    .setReplenishmentProcess(replenishment)
+                    .setMoneyAmount(replenishmentAmount)
+                    .vBuild();
+
+            context().assertCommands()
+                     .withType(RechargeBalance.class)
+                     .message(0)
+                     .isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("which emits the `WalletReplenished` event and archives itself after it")
+        void event() {
+            WalletId wallet = setupWallet(context());
+            Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
+            ReplenishmentId replenishment = ReplenishmentId.generate();
+            ReplenishWallet replenishWalletCommand = replenishWallet(wallet,
+                                                                     replenishment,
+                                                                     replenishmentAmount);
+
+            WalletReplenished event = WalletReplenished
+                    .newBuilder()
+                    .setReplenishment(replenishment)
+                    .setWallet(wallet)
+                    .setMoneyAmount(replenishmentAmount)
+                    .vBuild();
+            context().receivesCommand(replenishWalletCommand);
+
+            context().assertEvent(event);
+            context().assertEntity(replenishment, WalletReplenishmentProcess.class)
+                     .archivedFlag()
+                     .isTrue();
+        }
     }
 }
