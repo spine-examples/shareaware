@@ -38,7 +38,7 @@ option java_multiple_files = true;
 import "spine_examples/shareaware/identifiers.proto";
 import "spine/money/money.proto";
 
-// A money has been transferred from user's card to ShareAware bank account.
+// A money has been transferred from user to another bank account.
 message MoneyTransferredFromUser {
 
     // The ID of the payment gateway in which the transaction ended successfully.

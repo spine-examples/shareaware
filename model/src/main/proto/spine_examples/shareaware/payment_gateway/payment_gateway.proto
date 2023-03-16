@@ -42,5 +42,5 @@ message PaymentGateway {
     option (entity) = {kind: PROCESS_MANAGER};
 
     // The ID of the payment system.
-    PaymentGatewayId gateway = 1;
+    PaymentGatewayId id = 1;
 }

@@ -36,11 +36,10 @@ option java_outer_classname = "CommandsProto";
 option java_multiple_files = true;
 
 import "spine/money/money.proto";
-import "spine_examples/shareaware/wallet/card.proto";
 import "spine_examples/shareaware/identifiers.proto";
 import "spine_examples/shareaware/wallet/iban.proto";
 
-// A command to transfer money from one bank account to another.
+// A command to transfer money from user to another bank account.
 message TransferMoneyFromUser {
 
     // The ID of the payment gateway.
