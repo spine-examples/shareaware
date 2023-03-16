@@ -26,19 +26,19 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware.investment;
+package spine_examples.shareaware;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.investment";
+option java_package = "io.spine.examples.shareaware";
 option java_outer_classname = "ShareProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
 import "spine/money/money.proto";
 
-// The meta-information about the share from the market.
+// A share sold on the market.
 message Share {
 
     // The ID of the share.

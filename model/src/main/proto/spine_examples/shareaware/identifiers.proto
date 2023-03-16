@@ -54,10 +54,5 @@ message WalletId {
 
 // Identifies an investment.
 message InvestmentId {
-    ShareId type = 1 [(required) = true];
-}
-
-// Identifies a portfolio.
-message PortfolioId {
-    spine.core.UserId owner = 1 [(required) = true];
+    ShareId share = 1 [(required) = true];
 }

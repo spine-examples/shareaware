@@ -25,7 +25,7 @@
  */
 
 /**
- * Provides ShareAware Investment commands and common commands interfaces.
+ * Provides ShareAware Investment commands and common command interfaces.
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault

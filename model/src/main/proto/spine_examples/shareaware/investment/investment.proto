@@ -36,27 +36,28 @@ option java_outer_classname = "InvestmentProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
-import "spine_examples/shareaware/investment/share.proto";
+import "spine_examples/shareaware/share.proto";
 import "spine/core/user_id.proto";
 
-// Represents users' investment into singular type of the share.
+// Represents users' investment into shares of a single type.
 message Investment {
     option (entity) = {kind: AGGREGATE};
 
     // The ID of the investment.
     InvestmentId id = 1;
 
-    // The share in which the investment was made.
-    Share share = 2 [(required) = true];
-
-    // The quantity of sellable and not reserved shares.
-    int32 shares_quantity = 3 [(required) = true];
-
-    // A quantity of reserved shares.
+    // How many shares are available to sell.
     //
-    // This quantity is considered reserved, because there may be pending sales operations against this investment.
-    // It is not possible to use the reserved quantity of shares directly,
-    // other than in the scope of these pending operations.
+    // Does not include those which are reserved. See `shares_reserved` field.
     //
-    int32 reserved_shares_quantity = 4;
+    int32 shares_available = 3 [(required) = true];
+
+    // How many shares are reserved for pending operations.
+    //
+    // Any ongoing share sale operation would reserve the corresponding number of shares
+    // within this Investment, so that they could not be spent on something else.
+    // It is not possible to use the reserved shares directly for a new sale operation,
+    // but rather they should be used in scope of these pending operations.
+    //
+    int32 shares_reserved = 4;
 }
