@@ -52,13 +52,12 @@ final class MoneyCalculator {
     static Money summarize(Money firstTerm, Money secondTerm) {
         Preconditions.checkState(firstTerm.getCurrency() == secondTerm.getCurrency(),
                                  "Cannot calculate two `Money` objects with different currencies.");
+        Preconditions.checkState(firstTerm.getUnits() >= 0 && secondTerm.getUnits() >= 0);
         Preconditions2.checkBounds(firstTerm.getNanos(), "firstTerm.nanos", 0, MAX_NANOS_AMOUNT);
         Preconditions2.checkBounds(secondTerm.getNanos(), "secondTerm.nanos", 0, MAX_NANOS_AMOUNT);
 
         int summarizedNanos = firstTerm.getNanos() + secondTerm.getNanos();
-        long summarizedUnits = Preconditions2.checkPositive(firstTerm.getUnits()) +
-                Preconditions2.checkPositive(secondTerm.getUnits());
-
+        long summarizedUnits = firstTerm.getUnits() + secondTerm.getUnits();
         if (summarizedNanos / NANOS_IN_UNIT >= 1) {
             summarizedUnits++;
             summarizedNanos -= NANOS_IN_UNIT;

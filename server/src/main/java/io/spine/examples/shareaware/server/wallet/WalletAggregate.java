@@ -58,9 +58,10 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
 
     @Apply
     private void event(WalletCreated e) {
-        builder().setId(e.getWallet())
-                 .setBalance(e.getBalance())
-                 .setReservedMoney(zeroMoneyValue());
+        builder()
+                .setId(e.getWallet())
+                .setBalance(e.getBalance())
+                .setReservedMoney(zeroMoneyValue());
     }
 
     private static Money zeroMoneyValue() {
@@ -74,18 +75,18 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
 
     @Assign
     BalanceRecharged handle(RechargeBalance c) {
-        rechargeBalance(c.getMoneyAmount());
-        return BalanceRecharged.
-                newBuilder()
+        return BalanceRecharged
+                .newBuilder()
                 .setWallet(c.getWallet())
                 .setMoneyAmount(c.getMoneyAmount())
                 .setReplenishmentProcess(c.getReplenishmentProcess())
                 .vBuild();
     }
 
-    private void rechargeBalance(Money rechargeAmount) {
+    @Apply
+    private void event(BalanceRecharged e) {
         Money rechargedBalance = MoneyCalculator
-                .summarize(state().getBalance(), rechargeAmount);
+                .summarize(state().getBalance(), e.getMoneyAmount());
         builder()
                 .setBalance(rechargedBalance);
     }

@@ -46,15 +46,12 @@ message ReplenishWallet {
     // The ID of the replenishment process.
     ReplenishmentId replenishment = 1;
 
-    // The ID of the user who wants to replenish the wallet.
-    spine.core.UserId user = 2 [(required) = true];
-
     // The id of the user's wallet to replenish.
-    WalletId wallet  = 3 [(required) = true];
+    WalletId wallet = 2 [(required) = true];
 
     // The IBAN of the user.
-    Iban iban = 4 [(required) = true];
+    Iban iban = 3 [(required) = true];
 
     // The amount of money by which the wallet wants to be replenished.
-    spine.money.Money money_amount = 5 [(required) = true];
+    spine.money.Money money_amount = 4 [(required) = true];
 }

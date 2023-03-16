@@ -26,7 +26,6 @@
 
 package io.spine.examples.shareaware.server.wallet;
 
-import io.spine.examples.shareaware.PaymentGatewayId;
 import io.spine.examples.shareaware.ReplenishmentId;
 import io.spine.examples.shareaware.payment_gateway.command.TransferMoneyFromUser;
 import io.spine.examples.shareaware.payment_gateway.event.MoneyTransferredFromUser;
@@ -65,11 +64,10 @@ final class WalletReplenishmentProcess
     private void initState(ReplenishWallet c) {
         builder()
                 .setId(c.getReplenishment())
-                .setWallet(c.getWallet())
-                .setUser(c.getUser());
+                .setWallet(c.getWallet());
     }
 
-    @React
+    @Command
     RechargeBalance on(MoneyTransferredFromUser e) {
         return RechargeBalance
                 .newBuilder()
