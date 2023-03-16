@@ -35,6 +35,9 @@ import io.spine.server.procman.ProcessManagerRepository;
 import io.spine.server.route.EventRoute;
 import io.spine.server.route.EventRouting;
 
+/**
+ * Manages instances of {@link WalletReplenishmentProcess}.
+ */
 public class WalletReplenishmentRepository
         extends ProcessManagerRepository<ReplenishmentId, WalletReplenishmentProcess, WalletReplenishment> {
 

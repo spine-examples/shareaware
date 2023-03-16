@@ -42,6 +42,9 @@ import io.spine.server.command.Command;
 import io.spine.server.event.React;
 import io.spine.server.procman.ProcessManager;
 
+/**
+ * Coordinates the replenishment of user's wallet.
+ */
 final class WalletReplenishmentProcess
         extends ProcessManager<ReplenishmentId, WalletReplenishment, WalletReplenishment.Builder> {
 
@@ -50,6 +53,9 @@ final class WalletReplenishmentProcess
             .setValue("UA227452600000367849267457823")
             .vBuild();
 
+    /**
+     * Issues a command to transfer money from user bank account to ShareAware bank account.
+     */
     @Command
     TransferMoneyFromUser on(ReplenishWallet c) {
         initState(c);
@@ -69,6 +75,10 @@ final class WalletReplenishmentProcess
                 .setWallet(c.getWallet());
     }
 
+    /**
+     * Issues a command to recharge wallet balance
+     * when the transaction to the ShareAware bank account has been completed.
+     */
     @Command
     RechargeBalance on(MoneyTransferredFromUser e) {
         return RechargeBalance
@@ -79,6 +89,9 @@ final class WalletReplenishmentProcess
                 .vBuild();
     }
 
+    /**
+     * Terminates the process when the wallet has been replenished.
+     */
     @React
     WalletReplenished on(BalanceRecharged e) {
         setArchived(true);
@@ -90,6 +103,9 @@ final class WalletReplenishmentProcess
                 .vBuild();
     }
 
+    /**
+     * Terminates the process when the transaction to the ShareAware bank account has been failed.
+     */
     @React
     WalletNotReplenished on(MoneyCannotBeTransferredFromUser r) {
         setArchived(true);
