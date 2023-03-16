@@ -33,16 +33,22 @@ import io.spine.examples.shareaware.payment_gateway.event.MoneyTransferredFromUs
 import io.spine.server.command.Assign;
 import io.spine.server.procman.ProcessManager;
 
-// The imitation of the external payment system.
+/**
+ * The imitation of the external payment system.
+ */
 public class PaymentGatewayProcess extends ProcessManager<PaymentGatewayId, PaymentGateway, PaymentGateway.Builder> {
 
-    // The hardcoded ID for this imitation.
+    /**
+     * The hardcoded ID for this imitation.
+     */
     public static final PaymentGatewayId id = PaymentGatewayId
             .newBuilder()
             .setUuid("ImitationOfExternalPaymentSystem")
             .vBuild();
 
-    // Emits the event when the transaction was successful.
+    /**
+     * Emits the event when the transaction was successful.
+     */
     @Assign
     MoneyTransferredFromUser on(TransferMoneyFromUser c) {
         return MoneyTransferredFromUser

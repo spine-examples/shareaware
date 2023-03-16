@@ -31,7 +31,7 @@ import io.spine.money.Money;
 import io.spine.util.Preconditions2;
 
 /**
- * The calculator for `spine.Money`.
+ * The calculator for {@code spine.Money}.
  * <p>
  * Note: work properly only with currencies that contain 100 coins in one unit.
  */
@@ -47,7 +47,7 @@ final class MoneyCalculator {
     }
 
     /**
-     * Calculates the sum of two Money objects with the same currency.
+     * Calculates the sum of two {@code Money} objects with the same currency.
      */
     static Money summarize(Money firstTerm, Money secondTerm) {
         Preconditions.checkState(firstTerm.getCurrency() == secondTerm.getCurrency(),
