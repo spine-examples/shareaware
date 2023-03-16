@@ -137,7 +137,7 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
 
     @Nested
     @DisplayName("be led by `WalletReplenishmentProcess`")
-    class Process {
+    class ReplenishmentProcess {
 
         @Test
         @DisplayName("with state")
