@@ -28,7 +28,7 @@ package io.spine.examples.shareaware.server.wallet;
 
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.examples.shareaware.ReplenishmentId;
-import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredFromUser;
+import io.spine.examples.shareaware.payment_gateway.event.MoneyTransferredFromUser;
 import io.spine.examples.shareaware.wallet.WalletReplenishment;
 import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
 import io.spine.server.procman.ProcessManagerRepository;

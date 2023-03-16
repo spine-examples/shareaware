@@ -29,7 +29,7 @@
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault
-package io.spine.examples.shareaware.paymentgateway.command;
+package io.spine.examples.shareaware.payment_gateway.command;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.ParametersAreNonnullByDefault;
