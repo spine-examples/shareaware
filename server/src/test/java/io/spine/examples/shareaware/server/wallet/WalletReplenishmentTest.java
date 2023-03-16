@@ -29,6 +29,7 @@ package io.spine.examples.shareaware.server.wallet;
 import io.spine.examples.shareaware.ReplenishmentId;
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.payment_gateway.command.TransferMoneyFromUser;
+import io.spine.examples.shareaware.payment_gateway.rejection.Rejections.MoneyCannotBeTransferredFromUser;
 import io.spine.examples.shareaware.server.TradingContext;
 import io.spine.examples.shareaware.server.given.GivenMoney;
 import io.spine.examples.shareaware.server.payment_gateway.PaymentGatewayProcess;
@@ -38,6 +39,7 @@ import io.spine.examples.shareaware.wallet.WalletReplenishment;
 import io.spine.examples.shareaware.wallet.command.RechargeBalance;
 import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
 import io.spine.examples.shareaware.wallet.replenishment_command.ReplenishWallet;
+import io.spine.examples.shareaware.wallet.replenishment_event.WalletNotReplenished;
 import io.spine.examples.shareaware.wallet.replenishment_event.WalletReplenished;
 import io.spine.money.Currency;
 import io.spine.money.Money;
@@ -135,7 +137,7 @@ public class WalletReplenishmentTest extends ContextAwareTest {
 
     @Nested
     @DisplayName("be led by `WalletReplenishmentProcess`")
-    class State {
+    class Process {
 
         @Test
         @DisplayName("with state")
@@ -223,6 +225,29 @@ public class WalletReplenishmentTest extends ContextAwareTest {
             context().receivesCommand(replenishWalletCommand);
 
             context().assertEvent(event);
+            context().assertEntity(replenishment, WalletReplenishmentProcess.class)
+                     .archivedFlag()
+                     .isTrue();
+        }
+
+        @Test
+        @DisplayName("which emits the `WalletNotReplenished` event and archives itself after it")
+        void rejection() {
+            ReplenishmentId replenishment = ReplenishmentId.generate();
+            String cause = "Cause of the rejection";
+            MoneyCannotBeTransferredFromUser rejection = MoneyCannotBeTransferredFromUser
+                    .newBuilder()
+                    .setReplenishment(replenishment)
+                    .setCause(cause)
+                    .vBuild();
+            WalletNotReplenished expected = WalletNotReplenished
+                    .newBuilder()
+                    .setReplenishment(replenishment)
+                    .setCause(cause)
+                    .vBuild();
+            context().receivesEvent(rejection);
+
+            context().assertEvent(expected);
             context().assertEntity(replenishment, WalletReplenishmentProcess.class)
                      .archivedFlag()
                      .isTrue();
