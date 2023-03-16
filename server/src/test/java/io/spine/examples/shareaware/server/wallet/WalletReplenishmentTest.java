@@ -32,6 +32,7 @@ import io.spine.examples.shareaware.server.TradingContext;
 import io.spine.examples.shareaware.server.given.GivenMoney;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.WalletReplenishment;
+import io.spine.examples.shareaware.wallet.command.RechargeBalance;
 import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
 import io.spine.examples.shareaware.wallet.replenishment_command.ReplenishWallet;
 import io.spine.examples.shareaware.wallet.replenishment_event.WalletReplenished;
@@ -82,6 +83,29 @@ public class WalletReplenishmentTest extends ContextAwareTest {
         }
 
         @Test
+        @DisplayName("sending the `RechargeBalance` command")
+        void command() {
+            WalletId wallet = setupWallet(context());
+            Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
+            ReplenishmentId replenishment = ReplenishmentId.generate();
+            ReplenishWallet command = replenishWallet(wallet,
+                                                      replenishment,
+                                                      replenishmentAmount);
+            context().receivesCommand(command);
+            RechargeBalance expected = RechargeBalance
+                    .newBuilder()
+                    .setWallet(wallet)
+                    .setReplenishmentProcess(replenishment)
+                    .setMoneyAmount(replenishmentAmount)
+                    .vBuild();
+
+            context().assertCommands()
+                     .withType(RechargeBalance.class)
+                     .message(0)
+                     .isEqualTo(expected);
+        }
+
+        @Test
         @DisplayName("emitting the `BalanceRecharged` event")
         void event() {
             WalletId wallet = setupWallet(context());
@@ -102,7 +126,31 @@ public class WalletReplenishmentTest extends ContextAwareTest {
         }
     }
 
+    @Nested
+    @DisplayName("be led by `WalletReplenishmentProcess`")
+    class State {
+        @Test
+        @DisplayName("with state")
+        void entity() {
+            WalletId wallet = setupWallet(context());
+            Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
+            ReplenishmentId replenishment = ReplenishmentId.generate();
+            ReplenishWallet replenishWalletCommand = replenishWallet(wallet,
+                                                                     replenishment,
+                                                                     replenishmentAmount);
+            WalletReplenishment expectedReplenishment = WalletReplenishment
+                    .newBuilder()
+                    .setWallet(wallet)
+                    .setId(replenishment)
+                    .vBuild();
+            context().receivesCommand(replenishWalletCommand);
+
+            context().assertState(replenishment, expectedReplenishment);
+        }
+
+    }
     @Test
+    @DisplayName("which emits the `WalletReplenished` event and archives itself after it")
     void event() {
         WalletId wallet = setupWallet(context());
         Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
@@ -117,14 +165,8 @@ public class WalletReplenishmentTest extends ContextAwareTest {
                 .setWallet(wallet)
                 .setMoneyAmount(replenishmentAmount)
                 .vBuild();
-        WalletReplenishment expectedReplenishment = WalletReplenishment
-                .newBuilder()
-                .setWallet(wallet)
-                .setId(replenishment)
-                .vBuild();
         context().receivesCommand(replenishWalletCommand);
 
-        context().assertState(replenishment, expectedReplenishment);
         context().assertEvent(event);
         context().assertEntity(replenishment, WalletReplenishmentProcess.class)
                  .archivedFlag()
