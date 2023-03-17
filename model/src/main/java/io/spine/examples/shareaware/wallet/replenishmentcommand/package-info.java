@@ -25,11 +25,11 @@
  */
 
 /**
- * Provides ShareAware WalletReplenishment events and common event interfaces.
+ * Defines commands and related interfaces for the wallet replenishment process.
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault
-package io.spine.examples.shareaware.wallet.replenishment_event;
+package io.spine.examples.shareaware.wallet.replenishmentcommand;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.ParametersAreNonnullByDefault;

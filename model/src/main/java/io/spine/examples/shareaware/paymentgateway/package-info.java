@@ -25,11 +25,11 @@
  */
 
 /**
- * Provides ShareAware WalletReplenishment events and common event interfaces.
+ * This package contains PaymentGateway data types of the ShareAware application.
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault
-package io.spine.examples.shareaware.wallet.replenishment_command;
+package io.spine.examples.shareaware.paymentgateway;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.ParametersAreNonnullByDefault;

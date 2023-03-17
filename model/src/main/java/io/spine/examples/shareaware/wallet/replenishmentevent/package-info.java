@@ -25,11 +25,11 @@
  */
 
 /**
- * Provides ShareAware PaymentGateway commands and common command interfaces.
+ * Defines events and related interfaces for the wallet replenishment process.
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault
-package io.spine.examples.shareaware.payment_gateway.command;
+package io.spine.examples.shareaware.wallet.replenishmentevent;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.ParametersAreNonnullByDefault;

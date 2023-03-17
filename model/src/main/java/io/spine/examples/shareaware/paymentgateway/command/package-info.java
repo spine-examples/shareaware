@@ -25,11 +25,11 @@
  */
 
 /**
- * Provides ShareAware PaymentGateway events and common event interfaces.
+ * Includes payment gateway commands and related interfaces.
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault
-package io.spine.examples.shareaware.payment_gateway.event;
+package io.spine.examples.shareaware.paymentgateway.command;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.ParametersAreNonnullByDefault;

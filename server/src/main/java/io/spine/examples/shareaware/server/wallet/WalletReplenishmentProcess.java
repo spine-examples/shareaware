@@ -27,17 +27,17 @@
 package io.spine.examples.shareaware.server.wallet;
 
 import io.spine.examples.shareaware.ReplenishmentId;
-import io.spine.examples.shareaware.payment_gateway.command.TransferMoneyFromUser;
-import io.spine.examples.shareaware.payment_gateway.event.MoneyTransferredFromUser;
-import io.spine.examples.shareaware.payment_gateway.rejection.Rejections.MoneyCannotBeTransferredFromUser;
+import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyFromUser;
+import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredFromUser;
+import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredFromUser;
 import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.wallet.Iban;
 import io.spine.examples.shareaware.wallet.WalletReplenishment;
 import io.spine.examples.shareaware.wallet.command.RechargeBalance;
 import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
-import io.spine.examples.shareaware.wallet.replenishment_command.ReplenishWallet;
-import io.spine.examples.shareaware.wallet.replenishment_event.WalletNotReplenished;
-import io.spine.examples.shareaware.wallet.replenishment_event.WalletReplenished;
+import io.spine.examples.shareaware.wallet.replenishmentcommand.ReplenishWallet;
+import io.spine.examples.shareaware.wallet.replenishmentevent.WalletNotReplenished;
+import io.spine.examples.shareaware.wallet.replenishmentevent.WalletReplenished;
 import io.spine.server.command.Command;
 import io.spine.server.event.React;
 import io.spine.server.procman.ProcessManager;

@@ -27,9 +27,9 @@
 package io.spine.examples.shareaware.server.paymentgateway;
 
 import io.spine.examples.shareaware.PaymentGatewayId;
-import io.spine.examples.shareaware.payment_gateway.PaymentGateway;
-import io.spine.examples.shareaware.payment_gateway.command.TransferMoneyFromUser;
-import io.spine.examples.shareaware.payment_gateway.event.MoneyTransferredFromUser;
+import io.spine.examples.shareaware.paymentgateway.PaymentGateway;
+import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyFromUser;
+import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredFromUser;
 import io.spine.server.command.Assign;
 import io.spine.server.procman.ProcessManager;
 
