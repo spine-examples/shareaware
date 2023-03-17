@@ -61,3 +61,8 @@ message ReplenishmentId {
 message PaymentGatewayId {
     string uuid = 1 [(required) = true];
 }
+
+// Identifies a wallet withdrawal process.
+message WithdrawalId {
+    string uuid = 1 [(required) = true];
+}

@@ -57,3 +57,45 @@ message RechargeBalance {
     // The amount of money by which the wallet balance must be recharged.
     spine.money.Money money_amount = 3 [(required) = true];
 }
+
+// A command to reserve money for pending withdrawal operation.
+message ReserveMoney {
+
+    // The ID of the wallet on which the money wanted to be reserved.
+    WalletId wallet = 1;
+
+    // The ID of the pending withdrawal process.
+    WithdrawalId withdrawal_process = 2 [(required) = true];
+
+    // Wanted amount of money to be reserved.
+    spine.money.Money money_amount = 3 [(required) = true];
+}
+
+// A command to debit the reserved money.
+//
+// This command means that money that was reserved before by the wallet withdrawal process
+// needs to be completely debited.
+// Only this process with its specific ID can withdraw the money reserved by it before
+//
+message DebitReservedMoney {
+
+    // The ID of the wallet where money was reserved.
+    WalletId wallet = 1;
+
+    // The ID of the process that wants to debit the reserved money.
+    WithdrawalId withdrawal_process = 2 [(required) = true];
+}
+
+// A command to cancel money reservation.
+//
+// This command means that something went wrong in the wallet withdrawal process
+// and now the money reservation that was made before needs to be canceled.
+//
+message CancelMoneyReservation {
+
+    // The ID of the wallet where money was reserved.
+    WalletId wallet = 1;
+
+    // The ID of the process that wants to cancel the money reservation.
+    WithdrawalId withdrawal_process = 2 [(required) = true];
+}
