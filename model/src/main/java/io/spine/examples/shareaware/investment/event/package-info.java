@@ -25,7 +25,7 @@
  */
 
 /**
- * Defines events related to `Investment` and their interfaces.
+ * Defines events related to `Investment`, and their interfaces.
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault
