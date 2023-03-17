@@ -25,7 +25,7 @@
  */
 
 /**
- * This package contains Investment data types of the ShareAware application.
+ * This package contains `Investment` data types.
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault

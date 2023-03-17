@@ -25,7 +25,7 @@
  */
 
 /**
- * Provides ShareAware Investment events and common event interfaces.
+ * Defines events related to `Investment` and their interfaces.
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault
