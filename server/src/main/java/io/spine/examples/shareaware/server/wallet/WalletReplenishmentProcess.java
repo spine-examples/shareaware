@@ -85,7 +85,7 @@ final class WalletReplenishmentProcess
                 .newBuilder()
                 .setWallet(state().getWallet())
                 .setReplenishmentProcess(state().getId())
-                .setMoneyAmount(e.getTransactionAmount())
+                .setMoneyAmount(e.getAmount())
                 .vBuild();
     }
 

@@ -44,9 +44,9 @@ message MoneyTransferredFromUser {
     // The ID of the payment gateway in which the transaction ended successfully.
     PaymentGatewayId gateway = 1;
 
-    // The Id of the replenishment process that has invoked the transaction.
+    // The ID of the replenishment process that has initiated the transaction.
     ReplenishmentId replenishment_process = 2 [(required) = true];
 
     // The amount of money that was transferred.
-    spine.money.Money transaction_amount = 3 [(required) = true];
+    spine.money.Money amount = 3 [(required) = true];
 }

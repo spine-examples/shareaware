@@ -55,7 +55,7 @@ public class PaymentGatewayProcess extends ProcessManager<PaymentGatewayId, Paym
                 .newBuilder()
                 .setGateway(c.getGateway())
                 .setReplenishmentProcess(c.getReplenishmentProcess())
-                .setTransactionAmount(c.getAmount())
+                .setAmount(c.getAmount())
                 .vBuild();
     }
 }

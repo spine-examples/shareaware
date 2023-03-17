@@ -42,6 +42,6 @@ message MoneyCannotBeTransferredFromUser {
     // The ID of the replenishment process that caused failed transaction.
     ReplenishmentId replenishment = 1;
 
-    // The cause why the transaction failed.
+    // Why the transaction failed.
     string cause = 2;
 }
