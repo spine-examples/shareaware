@@ -32,7 +32,7 @@ public final class WalletTestEnv {
     }
 
     public static ReplenishWallet
-    replenishWallet(WalletId wallet, ReplenishmentId replenishment, Money amount) {
+    replenish(WalletId wallet, ReplenishmentId replenishment, Money amount) {
         Iban iban = Iban
                 .newBuilder()
                 .setValue("FI211234569876543210")

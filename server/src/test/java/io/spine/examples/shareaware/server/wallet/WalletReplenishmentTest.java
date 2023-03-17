@@ -49,7 +49,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.replenishWallet;
+import static io.spine.examples.shareaware.server.given.WalletTestEnv.replenish;
 import static io.spine.examples.shareaware.server.given.WalletTestEnv.setupWallet;
 
 @DisplayName("`WalletReplenishment` should")
@@ -69,12 +69,12 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         void entity() {
             WalletId wallet = setupWallet(context());
             Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
-            ReplenishWallet firstReplenishment = replenishWallet(wallet,
-                                                                 ReplenishmentId.generate(),
-                                                                 replenishmentAmount);
-            ReplenishWallet secondReplenishment = replenishWallet(wallet,
-                                                                  ReplenishmentId.generate(),
-                                                                  replenishmentAmount);
+            ReplenishWallet firstReplenishment = replenish(wallet,
+                                                           ReplenishmentId.generate(),
+                                                           replenishmentAmount);
+            ReplenishWallet secondReplenishment = replenish(wallet,
+                                                            ReplenishmentId.generate(),
+                                                            replenishmentAmount);
             Money expectedBalance = MoneyCalculator.sum(replenishmentAmount,
                                                         replenishmentAmount);
             Wallet expectedWallet = Wallet
@@ -93,9 +93,9 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
             WalletId wallet = setupWallet(context());
             Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
             ReplenishmentId replenishment = ReplenishmentId.generate();
-            ReplenishWallet command = replenishWallet(wallet,
-                                                      replenishment,
-                                                      replenishmentAmount);
+            ReplenishWallet command = replenish(wallet,
+                                                replenishment,
+                                                replenishmentAmount);
             context().receivesCommand(command);
             BalanceRecharged expected = BalanceRecharged
                     .newBuilder()
@@ -118,12 +118,12 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
             WalletId wallet = setupWallet(context());
             Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
             ReplenishmentId replenishment = ReplenishmentId.generate();
-            ReplenishWallet firstReplenishment = replenishWallet(wallet,
-                                                                 ReplenishmentId.generate(),
-                                                                 replenishmentAmount);
-            ReplenishWallet secondReplenishment = replenishWallet(wallet,
-                                                                  ReplenishmentId.generate(),
-                                                                  replenishmentAmount);
+            ReplenishWallet firstReplenishment = replenish(wallet,
+                                                           ReplenishmentId.generate(),
+                                                           replenishmentAmount);
+            ReplenishWallet secondReplenishment = replenish(wallet,
+                                                            ReplenishmentId.generate(),
+                                                            replenishmentAmount);
             Money expectedBalance = MoneyCalculator.sum(replenishmentAmount,
                                                         replenishmentAmount);
             WalletBalance expected = WalletBalance
@@ -145,9 +145,9 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
             WalletId wallet = setupWallet(context());
             Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
             ReplenishmentId replenishment = ReplenishmentId.generate();
-            ReplenishWallet replenishWalletCommand = replenishWallet(wallet,
-                                                                     replenishment,
-                                                                     replenishmentAmount);
+            ReplenishWallet replenishWalletCommand = replenish(wallet,
+                                                               replenishment,
+                                                               replenishmentAmount);
             WalletReplenishment expectedReplenishment = WalletReplenishment
                     .newBuilder()
                     .setWallet(wallet)
@@ -164,9 +164,9 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
             WalletId wallet = setupWallet(context());
             Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
             ReplenishmentId replenishment = ReplenishmentId.generate();
-            ReplenishWallet command = replenishWallet(wallet,
-                                                      replenishment,
-                                                      replenishmentAmount);
+            ReplenishWallet command = replenish(wallet,
+                                                replenishment,
+                                                replenishmentAmount);
             context().receivesCommand(command);
             TransferMoneyFromUser expected = TransferMoneyFromUser
                     .newBuilder()
@@ -189,9 +189,9 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
             WalletId wallet = setupWallet(context());
             Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
             ReplenishmentId replenishment = ReplenishmentId.generate();
-            ReplenishWallet command = replenishWallet(wallet,
-                                                      replenishment,
-                                                      replenishmentAmount);
+            ReplenishWallet command = replenish(wallet,
+                                                replenishment,
+                                                replenishmentAmount);
             context().receivesCommand(command);
             RechargeBalance expected = RechargeBalance
                     .newBuilder()
@@ -212,9 +212,9 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
             WalletId wallet = setupWallet(context());
             Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
             ReplenishmentId replenishment = ReplenishmentId.generate();
-            ReplenishWallet replenishWalletCommand = replenishWallet(wallet,
-                                                                     replenishment,
-                                                                     replenishmentAmount);
+            ReplenishWallet replenishWalletCommand = replenish(wallet,
+                                                               replenishment,
+                                                               replenishmentAmount);
 
             WalletReplenished event = WalletReplenished
                     .newBuilder()
