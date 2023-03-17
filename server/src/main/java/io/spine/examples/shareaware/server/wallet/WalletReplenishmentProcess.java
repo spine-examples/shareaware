@@ -50,7 +50,7 @@ final class WalletReplenishmentProcess
 
     static final Iban shareAwareIban = Iban
             .newBuilder()
-            .setValue("UA227452600000367849267457823")
+            .setValue("DE75512108001245126199")
             .vBuild();
 
     /**

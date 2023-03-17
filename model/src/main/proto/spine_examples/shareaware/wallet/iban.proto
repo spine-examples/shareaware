@@ -38,5 +38,7 @@ option java_multiple_files = true;
 // The International Bank Account Number (IBAN).
 message Iban {
 
-    string value = 1;
+    string value = 1 [(required) = true,
+        (pattern).regex = "^([A-Z]{2}\\d{2})\\s?([A-Z\\d]{4}\\s?){2,7}([A-Z\\d]{1,4}\\s?)?$",
+        (pattern).msg_format = "IBAN is not valid. IBAN format: [country code][check digits][Basic Bank Account Number]."];
 }

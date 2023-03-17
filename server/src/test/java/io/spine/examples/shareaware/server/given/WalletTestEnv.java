@@ -35,7 +35,7 @@ public final class WalletTestEnv {
                                                   Money amount) {
         Iban iban = Iban
                 .newBuilder()
-                .setValue("EE376589036489234678298641089")
+                .setValue("FI211234569876543210")
                 .vBuild();
         return ReplenishWallet
                 .newBuilder()
