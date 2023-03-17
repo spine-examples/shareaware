@@ -55,5 +55,5 @@ message TransferMoneyFromUser {
     spine_examples.shareaware.wallet.Iban recipient = 4 [(required) = true];
 
     // The amount of money to transfer.
-    spine.money.Money transaction_amount = 5 [(required) = true];
+    spine.money.Money amount = 5 [(required) = true];
 }

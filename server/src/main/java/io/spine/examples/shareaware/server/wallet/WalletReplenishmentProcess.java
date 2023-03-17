@@ -65,7 +65,7 @@ final class WalletReplenishmentProcess
                 .setReplenishmentProcess(c.getReplenishment())
                 .setRecipient(shareAwareIban)
                 .setSender(c.getIban())
-                .setTransactionAmount(c.getMoneyAmount())
+                .setAmount(c.getMoneyAmount())
                 .vBuild();
     }
 
