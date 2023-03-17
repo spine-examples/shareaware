@@ -31,8 +31,8 @@ public final class WalletTestEnv {
                 .vBuild();
     }
 
-    public static ReplenishWallet replenishWallet(WalletId wallet, ReplenishmentId replenishment,
-                                                  Money amount) {
+    public static ReplenishWallet
+    replenishWallet(WalletId wallet, ReplenishmentId replenishment, Money amount) {
         Iban iban = Iban
                 .newBuilder()
                 .setValue("FI211234569876543210")
@@ -46,6 +46,10 @@ public final class WalletTestEnv {
                 .vBuild();
     }
 
+    /**
+     * Creates a {@code Wallet} in {@code context} by sending {@code CreateWallet} command to it.
+     * @return the ID of created {@code Wallet}.
+     */
     public static WalletId setupWallet(BlackBoxContext context) {
         WalletId wallet = givenId();
         CreateWallet command = createWallet(wallet);
