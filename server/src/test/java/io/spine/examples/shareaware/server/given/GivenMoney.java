@@ -28,4 +28,13 @@ public final class GivenMoney {
                 .setNanos(0)
                 .vBuild();
     }
+
+    public static Money generatedWith(long units, int nanos, Currency currency) {
+        return Money
+                .newBuilder()
+                .setCurrency(currency)
+                .setUnits(units)
+                .setNanos(nanos)
+                .vBuild();
+    }
 }
