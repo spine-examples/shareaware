@@ -37,7 +37,7 @@ option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
 
-// Shares has been added to `Investment`.
+// Shares have been added to `Investment`.
 message SharesAdded {
 
     // The ID of the share that has been added.

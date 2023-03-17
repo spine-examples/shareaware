@@ -39,7 +39,7 @@ import "spine_examples/shareaware/identifiers.proto";
 import "spine_examples/shareaware/share.proto";
 import "spine/core/user_id.proto";
 
-// Represents users' investment into shares of a single type.
+// Represents user's investment into shares of a single type.
 message Investment {
     option (entity) = {kind: AGGREGATE};
 
