@@ -60,8 +60,7 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
     private void event(WalletCreated e) {
         builder()
                 .setId(e.getWallet())
-                .setBalance(e.getBalance())
-                .setReservedMoney(zeroMoneyValue());
+                .setBalance(e.getBalance());
     }
 
     private static Money zeroMoneyValue() {
