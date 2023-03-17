@@ -61,7 +61,7 @@ final class WalletReplenishmentProcess
         initState(c);
         return TransferMoneyFromUser
                 .newBuilder()
-                .setGateway(PaymentGatewayProcess.id)
+                .setGateway(PaymentGatewayProcess.ID)
                 .setReplenishmentProcess(c.getReplenishment())
                 .setRecipient(shareAwareIban)
                 .setSender(c.getIban())

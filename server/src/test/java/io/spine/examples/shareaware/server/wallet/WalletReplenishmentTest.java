@@ -170,7 +170,7 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
             context().receivesCommand(command);
             TransferMoneyFromUser expected = TransferMoneyFromUser
                     .newBuilder()
-                    .setGateway(PaymentGatewayProcess.id)
+                    .setGateway(PaymentGatewayProcess.ID)
                     .setReplenishmentProcess(replenishment)
                     .setAmount(replenishmentAmount)
                     .setSender(command.getIban())

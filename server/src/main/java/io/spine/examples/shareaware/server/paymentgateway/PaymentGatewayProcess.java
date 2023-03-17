@@ -36,12 +36,16 @@ import io.spine.server.procman.ProcessManager;
 /**
  * The imitation of the external payment system.
  */
-public class PaymentGatewayProcess extends ProcessManager<PaymentGatewayId, PaymentGateway, PaymentGateway.Builder> {
+public final class PaymentGatewayProcess
+        extends ProcessManager<PaymentGatewayId, PaymentGateway, PaymentGateway.Builder> {
 
     /**
      * The hardcoded ID for this imitation.
+     * <p>
+     * Only one instance of this process can exist in context,
+     * so all matching signals would be routed to the instance with this ID.
      */
-    public static final PaymentGatewayId id = PaymentGatewayId
+    public static final PaymentGatewayId ID = PaymentGatewayId
             .newBuilder()
             .setUuid("ImitationOfExternalPaymentSystem")
             .vBuild();
