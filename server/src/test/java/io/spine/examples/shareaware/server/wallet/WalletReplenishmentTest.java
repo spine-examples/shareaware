@@ -75,8 +75,8 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
             ReplenishWallet secondReplenishment = replenishWallet(wallet,
                                                                   ReplenishmentId.generate(),
                                                                   replenishmentAmount);
-            Money expectedBalance = MoneyCalculator.summarize(replenishmentAmount,
-                                                              replenishmentAmount);
+            Money expectedBalance = MoneyCalculator.sum(replenishmentAmount,
+                                                        replenishmentAmount);
             Wallet expectedWallet = Wallet
                     .newBuilder()
                     .setId(wallet)
@@ -124,8 +124,8 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
             ReplenishWallet secondReplenishment = replenishWallet(wallet,
                                                                   ReplenishmentId.generate(),
                                                                   replenishmentAmount);
-            Money expectedBalance = MoneyCalculator.summarize(replenishmentAmount,
-                                                              replenishmentAmount);
+            Money expectedBalance = MoneyCalculator.sum(replenishmentAmount,
+                                                        replenishmentAmount);
             WalletBalance expected = WalletBalance
                     .newBuilder()
                     .setId(wallet)

@@ -50,8 +50,8 @@ final class WalletBalanceProjection
     @Subscribe
     void on(WalletReplenished e) {
         Money replenishedBalance = MoneyCalculator
-                .summarize(state().getBalance(),
-                           e.getMoneyAmount());
+                .sum(state().getBalance(),
+                     e.getMoneyAmount());
         builder()
                 .setBalance(replenishedBalance);
     }

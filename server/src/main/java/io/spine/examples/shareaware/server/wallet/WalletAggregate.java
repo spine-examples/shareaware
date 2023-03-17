@@ -86,7 +86,7 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
     @Apply
     private void event(BalanceRecharged e) {
         Money rechargedBalance = MoneyCalculator
-                .summarize(state().getBalance(), e.getMoneyAmount());
+                .sum(state().getBalance(), e.getMoneyAmount());
         builder()
                 .setBalance(rechargedBalance);
     }

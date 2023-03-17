@@ -30,10 +30,12 @@ import com.google.common.base.Preconditions;
 import io.spine.money.Money;
 import io.spine.util.Preconditions2;
 
+import static com.google.common.base.Preconditions.*;
+import static io.spine.util.Preconditions2.*;
+
 /**
  * The calculator for {@code spine.Money}.
- * <p>
- * Note: work properly only with currencies that contain 100 coins in one unit.
+ * <p> Please note, this implementation works properly only with currencies containing 100 coins in one unit.
  */
 final class MoneyCalculator {
 
@@ -49,15 +51,17 @@ final class MoneyCalculator {
     /**
      * Calculates the sum of two {@code Money} objects with the same currency.
      */
-    static Money summarize(Money firstTerm, Money secondTerm) {
-        Preconditions.checkState(firstTerm.getCurrency() == secondTerm.getCurrency(),
+    static Money sum(Money first, Money second) {
+        checkNotNull(first);
+        checkNotNull(second);
+        checkState(first.getCurrency() == second.getCurrency(),
                                  "Cannot calculate two `Money` objects with different currencies.");
-        Preconditions.checkState(firstTerm.getUnits() >= 0 && secondTerm.getUnits() >= 0);
-        Preconditions2.checkBounds(firstTerm.getNanos(), "firstTerm.nanos", 0, MAX_NANOS_AMOUNT);
-        Preconditions2.checkBounds(secondTerm.getNanos(), "secondTerm.nanos", 0, MAX_NANOS_AMOUNT);
+        checkState(first.getUnits() >= 0 && second.getUnits() >= 0);
+        checkBounds(first.getNanos(), "first.nanos", 0, MAX_NANOS_AMOUNT);
+        checkBounds(second.getNanos(), "second.nanos", 0, MAX_NANOS_AMOUNT);
 
-        int summarizedNanos = firstTerm.getNanos() + secondTerm.getNanos();
-        long summarizedUnits = firstTerm.getUnits() + secondTerm.getUnits();
+        int summarizedNanos = first.getNanos() + second.getNanos();
+        long summarizedUnits = first.getUnits() + second.getUnits();
         if (summarizedNanos / NANOS_IN_UNIT >= 1) {
             summarizedUnits++;
             summarizedNanos -= NANOS_IN_UNIT;
@@ -66,7 +70,7 @@ final class MoneyCalculator {
                 .newBuilder()
                 .setNanos(summarizedNanos)
                 .setUnits(summarizedUnits)
-                .setCurrency(firstTerm.getCurrency())
+                .setCurrency(first.getCurrency())
                 .vBuild();
     }
 }
