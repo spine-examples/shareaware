@@ -42,7 +42,7 @@ import "spine/money/money.proto";
 // A command to withdraw money from user's wallet.
 message WithdrawMoney {
 
-    // The iD of the withdrawal process.
+    // The ID of the withdrawal process.
     WithdrawalId withdrawal_process = 1;
 
     // The ID of the user's wallet where to withdraw money.
