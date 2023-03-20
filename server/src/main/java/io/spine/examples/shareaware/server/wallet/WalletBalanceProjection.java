@@ -30,7 +30,7 @@ import io.spine.core.Subscribe;
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.event.WalletCreated;
-import io.spine.examples.shareaware.wallet.replenishmentevent.WalletReplenished;
+import io.spine.examples.shareaware.wallet.event.WalletReplenished;
 import io.spine.money.Money;
 import io.spine.server.projection.Projection;
 

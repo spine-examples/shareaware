@@ -35,9 +35,9 @@ import io.spine.examples.shareaware.wallet.Iban;
 import io.spine.examples.shareaware.wallet.WalletReplenishment;
 import io.spine.examples.shareaware.wallet.command.RechargeBalance;
 import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
-import io.spine.examples.shareaware.wallet.replenishmentcommand.ReplenishWallet;
-import io.spine.examples.shareaware.wallet.replenishmentevent.WalletNotReplenished;
-import io.spine.examples.shareaware.wallet.replenishmentevent.WalletReplenished;
+import io.spine.examples.shareaware.wallet.command.ReplenishWallet;
+import io.spine.examples.shareaware.wallet.event.WalletNotReplenished;
+import io.spine.examples.shareaware.wallet.event.WalletReplenished;
 import io.spine.server.command.Command;
 import io.spine.server.event.React;
 import io.spine.server.procman.ProcessManager;
@@ -115,5 +115,4 @@ final class WalletReplenishmentProcess
                 .setCause(r.getCause())
                 .vBuild();
     }
-
 }
