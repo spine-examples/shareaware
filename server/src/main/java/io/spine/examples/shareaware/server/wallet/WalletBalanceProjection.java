@@ -34,6 +34,8 @@ import io.spine.examples.shareaware.wallet.event.WalletReplenished;
 import io.spine.money.Money;
 import io.spine.server.projection.Projection;
 
+import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.*;
+
 /**
  * Manages instances of {@code WalletBalance} projections.
  */
@@ -49,10 +51,7 @@ final class WalletBalanceProjection
 
     @Subscribe
     void on(WalletReplenished e) {
-        Money replenishedBalance = MoneyCalculator
-                .sum(state().getBalance(),
-                     e.getMoneyAmount());
-        builder()
-                .setBalance(replenishedBalance);
+        Money replenishedBalance = sum(state().getBalance(), e.getMoneyAmount());
+        builder().setBalance(replenishedBalance);
     }
 }

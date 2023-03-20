@@ -42,7 +42,7 @@ public final class PaymentGatewayProcess
     /**
      * The hardcoded ID for this imitation.
      *
-     * <p> Only one instance of this process can exist in context,
+     * <p>Only one instance of this process can exist in context,
      * so all matching signals would be routed to the instance with this ID.
      */
     public static final PaymentGatewayId ID = PaymentGatewayId

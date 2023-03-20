@@ -69,15 +69,13 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         void entity() {
             WalletId wallet =
                     setupWallet(context());
-            Money replenishmentAmount =
-                    moneyOf(500, Currency.USD);
             ReplenishWallet firstReplenishment =
-                    replenish(wallet, replenishmentAmount);
+                    replenish(wallet);
             ReplenishWallet secondReplenishment =
-                    replenish(wallet, replenishmentAmount);
+                    replenish(wallet);
             Money expectedBalance =
-                    MoneyCalculator.sum(replenishmentAmount,
-                                        replenishmentAmount);
+                    MoneyCalculator.sum(firstReplenishment.getMoneyAmount(),
+                                        secondReplenishment.getMoneyAmount());
             Wallet expectedWallet = Wallet
                     .newBuilder()
                     .setId(wallet)
@@ -91,12 +89,14 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         @Test
         @DisplayName("emitting the `BalanceRecharged` event")
         void event() {
+            WalletId wallet =
+                    setupWallet(context());
             ReplenishWallet command =
-                    replenish(context());
+                    replenish(wallet);
             context().receivesCommand(command);
             BalanceRecharged expected = BalanceRecharged
                     .newBuilder()
-                    .setWallet(command.getWallet())
+                    .setWallet(wallet)
                     .setMoneyAmount(command.getMoneyAmount())
                     .setReplenishmentProcess(command.getReplenishment())
                     .vBuild();
@@ -128,8 +128,8 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
                     .setId(wallet)
                     .setBalance(expectedBalance)
                     .vBuild();
-
             context().receivesCommands(firstReplenishment, secondReplenishment);
+
             context().assertState(wallet, expected);
         }
     }
@@ -141,12 +141,14 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         @Test
         @DisplayName("with state")
         void entity() {
+            WalletId wallet =
+                    setupWallet(context());
             ReplenishWallet command =
-                    replenish(context());
+                    replenish(wallet);
             ReplenishmentId replenishment = command.getReplenishment();
             WalletReplenishment expectedReplenishment = WalletReplenishment
                     .newBuilder()
-                    .setWallet(command.getWallet())
+                    .setWallet(wallet)
                     .setId(replenishment)
                     .vBuild();
             context().receivesCommand(command);
@@ -157,9 +159,10 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         @Test
         @DisplayName("which sends the `TransferMoney` command")
         void commandToTransferMoney() {
+            WalletId wallet =
+                    setupWallet(context());
             ReplenishWallet command =
-                    replenish(context());
-            context().receivesCommand(command);
+                    replenish(wallet);
             TransferMoneyFromUser expected = TransferMoneyFromUser
                     .newBuilder()
                     .setGateway(PaymentGatewayProcess.ID)
@@ -168,6 +171,7 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
                     .setSender(command.getIban())
                     .setRecipient(WalletReplenishmentProcess.shareAwareIban)
                     .vBuild();
+            context().receivesCommand(command);
 
             context().assertCommands()
                      .withType(TransferMoneyFromUser.class)
@@ -178,15 +182,17 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         @Test
         @DisplayName("which sends the `RechargeBalance` command")
         void commandToRechargeBalance() {
+            WalletId wallet =
+                    setupWallet(context());
             ReplenishWallet command =
-                    replenish(context());
-            context().receivesCommand(command);
+                    replenish(wallet);
             RechargeBalance expected = RechargeBalance
                     .newBuilder()
-                    .setWallet(command.getWallet())
+                    .setWallet(wallet)
                     .setReplenishmentProcess(command.getReplenishment())
                     .setMoneyAmount(command.getMoneyAmount())
                     .vBuild();
+            context().receivesCommand(command);
 
             context().assertCommands()
                      .withType(RechargeBalance.class)
@@ -197,13 +203,15 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         @Test
         @DisplayName("which emits the `WalletReplenished` event and archives itself after it")
         void event() {
+            WalletId wallet =
+                    setupWallet(context());
             ReplenishWallet command =
-                    replenish(context());
+                    replenish(wallet);
             ReplenishmentId replenishment = command.getReplenishment();
             WalletReplenished event = WalletReplenished
                     .newBuilder()
                     .setReplenishment(replenishment)
-                    .setWallet(command.getWallet())
+                    .setWallet(wallet)
                     .setMoneyAmount(command.getMoneyAmount())
                     .vBuild();
             context().receivesCommand(command);
