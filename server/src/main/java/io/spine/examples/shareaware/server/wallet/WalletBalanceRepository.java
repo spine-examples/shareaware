@@ -30,9 +30,12 @@ import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.event.WalletCreated;
+import io.spine.examples.shareaware.wallet.event.WalletReplenished;
 import io.spine.server.projection.ProjectionRepository;
 import io.spine.server.route.EventRoute;
 import io.spine.server.route.EventRouting;
+
+import static io.spine.server.route.EventRoute.*;
 
 /**
  * Manages instances of {@code WalletBalanceProjection}.
@@ -45,6 +48,8 @@ public final class WalletBalanceRepository
     protected void setupEventRouting(EventRouting<WalletId> routing) {
         super.setupEventRouting(routing);
         routing.route(WalletCreated.class,
-                      (event, context) -> EventRoute.withId(event.getWallet()));
+                      (event, context) -> withId(event.getWallet()));
+        routing.route(WalletReplenished.class,
+                      (event, context) -> withId(event.getWallet()));
     }
 }

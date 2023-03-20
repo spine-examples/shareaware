@@ -5,9 +5,12 @@ import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.wallet.Iban;
 import io.spine.examples.shareaware.wallet.command.CreateWallet;
 import io.spine.examples.shareaware.wallet.command.ReplenishWallet;
+import io.spine.money.Currency;
 import io.spine.money.Money;
 import io.spine.testing.core.given.GivenUserId;
 import io.spine.testing.server.blackbox.BlackBoxContext;
+
+import static io.spine.examples.shareaware.server.given.GivenMoney.moneyOf;
 
 public final class WalletTestEnv {
 
@@ -31,12 +34,16 @@ public final class WalletTestEnv {
                 .vBuild();
     }
 
+    /**
+     * Replenishes the existing wallet.
+     */
     public static ReplenishWallet
-    replenish(WalletId wallet, ReplenishmentId replenishment, Money amount) {
+    replenish(WalletId wallet, Money amount) {
         Iban iban = Iban
                 .newBuilder()
                 .setValue("FI211234569876543210")
                 .vBuild();
+        ReplenishmentId replenishment = ReplenishmentId.generate();
         return ReplenishWallet
                 .newBuilder()
                 .setWallet(wallet)
@@ -44,6 +51,15 @@ public final class WalletTestEnv {
                 .setIban(iban)
                 .setMoneyAmount(amount)
                 .vBuild();
+    }
+
+    /**
+     * Creates and replenishes the wallet on 500 USD.
+     */
+    public static ReplenishWallet replenish(BlackBoxContext context) {
+        WalletId wallet = setupWallet(context);
+        Money replenishmentAmount = moneyOf(500, Currency.USD);
+        return replenish(wallet, replenishmentAmount);
     }
 
     /**
