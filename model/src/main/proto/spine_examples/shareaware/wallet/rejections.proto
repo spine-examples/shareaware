@@ -38,7 +38,7 @@ import "spine_examples/shareaware/identifiers.proto";
 import "spine/money/money.proto";
 
 // Money cannot be reserved due to insufficient funds in the wallet.
-message InsufficientMoney {
+message InsufficientFunds {
 
     // The ID of the wallet has no such amount of money to reserve.
     WalletId wallet = 1;
