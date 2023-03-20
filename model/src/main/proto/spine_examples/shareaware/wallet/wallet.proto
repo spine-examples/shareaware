@@ -55,14 +55,14 @@ message Wallet {
     //
     spine.money.Money balance = 2;
 
-    // The binding of `WithdrawalId` to the amount of money reserved by it.
+    // The reserved amounts of money per operation which performed the reservation.
     //
     // Many withdrawal operations may interact with this wallet
     // and make money reservations for their needs.
     // The amount of money is considered reserved because no one can use this amount
     // except the operation that reserved it.
     //
-    // The first generic in the `reserved_money` map is meant to be the `WithdrawalId` value.
+    // The first generic in the `reserved_money` map is meant to be the `WithdrawalId.uuid`.
     //
     map<string, spine.money.Money> reserved_money = 3;
 }
