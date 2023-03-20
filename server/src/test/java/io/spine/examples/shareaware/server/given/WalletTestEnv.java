@@ -37,8 +37,7 @@ public final class WalletTestEnv {
     /**
      * Generates {@code ReplenishWallet} command.
      */
-    public static ReplenishWallet
-    replenish(WalletId wallet, Money amount) {
+    public static ReplenishWallet replenish(WalletId wallet, Money amount) {
         Iban iban = Iban
                 .newBuilder()
                 .setValue("FI211234569876543210")
@@ -54,10 +53,9 @@ public final class WalletTestEnv {
     }
 
     /**
-     * Creates the {@code Wallet} and generates {@code ReplenishWallet} command on 500 USD for it.
+     * Generates {@code ReplenishWallet} command on 500 USD for the wallet.
      */
-    public static ReplenishWallet replenish(BlackBoxContext context) {
-        WalletId wallet = setupWallet(context);
+    public static ReplenishWallet replenish(WalletId wallet) {
         Money replenishmentAmount = moneyOf(500, Currency.USD);
         return replenish(wallet, replenishmentAmount);
     }
