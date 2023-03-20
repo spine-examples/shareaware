@@ -35,6 +35,8 @@ import io.spine.server.procman.ProcessManagerRepository;
 import io.spine.server.route.EventRoute;
 import io.spine.server.route.EventRouting;
 
+import static io.spine.server.route.EventRoute.*;
+
 /**
  * Manages instances of {@link WalletReplenishmentProcess}.
  */
@@ -46,8 +48,8 @@ public final class WalletReplenishmentRepository
     protected void setupEventRouting(EventRouting<ReplenishmentId> routing) {
         super.setupEventRouting(routing);
         routing.route(MoneyTransferredFromUser.class,
-                      (event, context) -> EventRoute.withId(event.getReplenishmentProcess()));
+                      (event, context) -> withId(event.getReplenishmentProcess()));
         routing.route(BalanceRecharged.class, (
-                event, context) -> EventRoute.withId(event.getReplenishmentProcess()));
+                event, context) -> withId(event.getReplenishmentProcess()));
     }
 }

@@ -61,16 +61,16 @@ final class MoneyCalculator {
         checkBounds(first.getNanos(), "first.nanos", 0, MAX_NANOS_AMOUNT);
         checkBounds(second.getNanos(), "second.nanos", 0, MAX_NANOS_AMOUNT);
 
-        int summarizedNanos = first.getNanos() + second.getNanos();
-        long summarizedUnits = first.getUnits() + second.getUnits();
-        if (summarizedNanos / NANOS_IN_UNIT >= 1) {
-            summarizedUnits++;
-            summarizedNanos -= NANOS_IN_UNIT;
+        int resultNanos = first.getNanos() + second.getNanos();
+        long resultUnits = first.getUnits() + second.getUnits();
+        if (resultNanos / NANOS_IN_UNIT >= 1) {
+            resultUnits++;
+            resultNanos -= NANOS_IN_UNIT;
         }
         return Money
                 .newBuilder()
-                .setNanos(summarizedNanos)
-                .setUnits(summarizedUnits)
+                .setNanos(resultNanos)
+                .setUnits(resultUnits)
                 .setCurrency(first.getCurrency())
                 .vBuild();
     }
