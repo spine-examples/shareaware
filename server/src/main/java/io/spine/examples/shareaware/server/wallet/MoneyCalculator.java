@@ -35,6 +35,7 @@ import static io.spine.util.Preconditions2.*;
 
 /**
  * The calculator for {@code spine.Money}.
+ *
  * <p> Please note, this implementation works properly only with currencies containing 100 coins in one unit.
  */
 final class MoneyCalculator {

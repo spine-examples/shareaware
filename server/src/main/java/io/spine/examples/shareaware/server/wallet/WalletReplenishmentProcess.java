@@ -115,5 +115,4 @@ final class WalletReplenishmentProcess
                 .setCause(r.getCause())
                 .vBuild();
     }
-
 }

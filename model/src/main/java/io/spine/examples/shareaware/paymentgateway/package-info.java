@@ -25,7 +25,7 @@
  */
 
 /**
- * This package contains PaymentGateway data types of the ShareAware application.
+ * This package contains payment gateway data types of the ShareAware application.
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault
