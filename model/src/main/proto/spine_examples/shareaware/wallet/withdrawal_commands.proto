@@ -31,8 +31,8 @@ package spine_examples.shareaware.wallet;
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.wallet.withdrawalcommand";
-option java_outer_classname = "CommandsProto";
+option java_package = "io.spine.examples.shareaware.wallet.command";
+option java_outer_classname = "WithdrawalCommandsProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
