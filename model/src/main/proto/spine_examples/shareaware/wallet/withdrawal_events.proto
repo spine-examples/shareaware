@@ -51,3 +51,13 @@ message MoneyWithdrawn {
     // The amount of money that was withdrawn.
     spine.money.Money amount  = 3 [(required) = true];
 }
+
+// Money has not been withdrawn from wallet.
+message MoneyNotWithdrawn {
+
+    // The ID of the failed withdrawal process.
+    WithdrawalId withdrawal_process = 1;
+
+    // Why the money has not been withdrawn.
+    string cause = 2;
+}

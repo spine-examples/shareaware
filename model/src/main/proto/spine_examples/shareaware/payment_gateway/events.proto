@@ -51,7 +51,7 @@ message MoneyTransferredFromUser {
     spine.money.Money amount = 3 [(required) = true];
 }
 
-// A money has been transferred to user from another bank account.
+// A money has been transferred to a user from another bank account.
 message MoneyTransferredToUser {
 
     // The ID of the payment gateway in which the transaction ended successfully.

@@ -58,7 +58,7 @@ message TransferMoneyFromUser {
     spine.money.Money amount = 5 [(required) = true];
 }
 
-// A command to transfer money to user from another bank account.
+// A command to transfer money to a user from another bank account.
 message TransferMoneyToUser {
 
     // The ID of the payment gateway.
