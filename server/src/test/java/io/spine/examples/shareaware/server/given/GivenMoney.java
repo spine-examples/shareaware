@@ -20,7 +20,7 @@ public final class GivenMoney {
                 .vBuild();
     }
 
-    public static Money generatedWith(long units, Currency currency) {
+    public static Money moneyOf(long units, Currency currency) {
         return Money
                 .newBuilder()
                 .setCurrency(currency)
@@ -29,7 +29,7 @@ public final class GivenMoney {
                 .vBuild();
     }
 
-    public static Money generatedWith(long units, int nanos, Currency currency) {
+    public static Money moneyOf(long units, int nanos, Currency currency) {
         return Money
                 .newBuilder()
                 .setCurrency(currency)

@@ -49,6 +49,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import static io.spine.examples.shareaware.server.given.GivenMoney.*;
 import static io.spine.examples.shareaware.server.given.WalletTestEnv.replenish;
 import static io.spine.examples.shareaware.server.given.WalletTestEnv.setupWallet;
 
@@ -68,7 +69,7 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         @DisplayName("for 1000 USD")
         void entity() {
             WalletId wallet = setupWallet(context());
-            Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
+            Money replenishmentAmount = moneyOf(500, Currency.USD);
             ReplenishWallet firstReplenishment = replenish(wallet,
                                                            ReplenishmentId.generate(),
                                                            replenishmentAmount);
@@ -91,7 +92,7 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         @DisplayName("emitting the `BalanceRecharged` event")
         void event() {
             WalletId wallet = setupWallet(context());
-            Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
+            Money replenishmentAmount = moneyOf(500, Currency.USD);
             ReplenishmentId replenishment = ReplenishmentId.generate();
             ReplenishWallet command = replenish(wallet,
                                                 replenishment,
@@ -116,7 +117,7 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         @DisplayName("to 1000 USD")
         void balance() {
             WalletId wallet = setupWallet(context());
-            Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
+            Money replenishmentAmount = moneyOf(500, Currency.USD);
             ReplenishmentId replenishment = ReplenishmentId.generate();
             ReplenishWallet firstReplenishment = replenish(wallet,
                                                            ReplenishmentId.generate(),
@@ -143,7 +144,7 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         @DisplayName("with state")
         void entity() {
             WalletId wallet = setupWallet(context());
-            Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
+            Money replenishmentAmount = moneyOf(500, Currency.USD);
             ReplenishmentId replenishment = ReplenishmentId.generate();
             ReplenishWallet replenishWalletCommand = replenish(wallet,
                                                                replenishment,
@@ -162,7 +163,7 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         @DisplayName("which sends the `TransferMoney` command")
         void commandToTransferMoney() {
             WalletId wallet = setupWallet(context());
-            Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
+            Money replenishmentAmount = moneyOf(500, Currency.USD);
             ReplenishmentId replenishment = ReplenishmentId.generate();
             ReplenishWallet command = replenish(wallet,
                                                 replenishment,
@@ -187,7 +188,7 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         @DisplayName("which sends the `RechargeBalance` command")
         void commandToRechargeBalance() {
             WalletId wallet = setupWallet(context());
-            Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
+            Money replenishmentAmount = moneyOf(500, Currency.USD);
             ReplenishmentId replenishment = ReplenishmentId.generate();
             ReplenishWallet command = replenish(wallet,
                                                 replenishment,
@@ -210,7 +211,7 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         @DisplayName("which emits the `WalletReplenished` event and archives itself after it")
         void event() {
             WalletId wallet = setupWallet(context());
-            Money replenishmentAmount = GivenMoney.generatedWith(500, Currency.USD);
+            Money replenishmentAmount = moneyOf(500, Currency.USD);
             ReplenishmentId replenishment = ReplenishmentId.generate();
             ReplenishWallet replenishWalletCommand = replenish(wallet,
                                                                replenishment,

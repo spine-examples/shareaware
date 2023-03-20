@@ -37,6 +37,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import static com.google.common.truth.Truth.*;
+import static io.spine.examples.shareaware.server.given.GivenMoney.*;
 
 @DisplayName("`MoneyCalculator` should")
 final class MoneyCalculatorTest extends UtilityClassTest<MoneyCalculator> {
@@ -56,9 +57,9 @@ final class MoneyCalculatorTest extends UtilityClassTest<MoneyCalculator> {
             int firstUnits, int firstNanos,
             int secondUnits, int secondNanos,
             int expectedUnits, int expectedNanos) {
-        Money first = GivenMoney.generatedWith(firstUnits, firstNanos, Currency.USD);
-        Money second = GivenMoney.generatedWith(secondUnits, secondNanos, Currency.USD);
-        Money expected = GivenMoney.generatedWith(expectedUnits, expectedNanos, Currency.USD);
+        Money first = moneyOf(firstUnits, firstNanos, Currency.USD);
+        Money second = moneyOf(secondUnits, secondNanos, Currency.USD);
+        Money expected = moneyOf(expectedUnits, expectedNanos, Currency.USD);
         Money actual = MoneyCalculator.sum(first, second);
 
         assertThat(actual).isEqualTo(expected);
@@ -67,8 +68,8 @@ final class MoneyCalculatorTest extends UtilityClassTest<MoneyCalculator> {
     @Test
     @DisplayName("throw an `IllegalStateException` when `Money` objects have different currencies")
     void differentCurrencies() {
-        Money first = GivenMoney.generatedWith(20, Currency.USD);
-        Money second = GivenMoney.generatedWith(30, Currency.UAH);
+        Money first = moneyOf(20, Currency.USD);
+        Money second = moneyOf(30, Currency.UAH);
 
         IllegalStateException exception =
                 Assertions.assertThrows(IllegalStateException.class,
@@ -84,8 +85,8 @@ final class MoneyCalculatorTest extends UtilityClassTest<MoneyCalculator> {
             "-10, 10"
     })
     void negativeUnits(int firstUnits, int secondUnits) {
-        Money first = GivenMoney.generatedWith(firstUnits, Currency.USD);
-        Money second = GivenMoney.generatedWith(secondUnits, Currency.USD);
+        Money first = moneyOf(firstUnits, Currency.USD);
+        Money second = moneyOf(secondUnits, Currency.USD);
 
         IllegalStateException exception =
                 Assertions.assertThrows(IllegalStateException.class,
@@ -93,14 +94,14 @@ final class MoneyCalculatorTest extends UtilityClassTest<MoneyCalculator> {
     }
 
     @ParameterizedTest
-    @DisplayName("throw an `IllegalArgumentException` when `Money` units out of 0..100 range")
+    @DisplayName("throw an `IllegalArgumentException` when `Money` units are outside of 0..100 range")
     @CsvSource({
             "120, 50",
             "10, -10"
     })
     void outOfBounds(int firstNanos, int secondNanos) {
-        Money first = GivenMoney.generatedWith(0, firstNanos, Currency.USD);
-        Money second = GivenMoney.generatedWith(0, secondNanos, Currency.USD);
+        Money first = moneyOf(0, firstNanos, Currency.USD);
+        Money second = moneyOf(0, secondNanos, Currency.USD);
 
         IllegalArgumentException exception =
                 Assertions.assertThrows(IllegalArgumentException.class,
