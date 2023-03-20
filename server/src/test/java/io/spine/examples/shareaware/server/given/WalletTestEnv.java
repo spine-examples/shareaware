@@ -35,7 +35,7 @@ public final class WalletTestEnv {
     }
 
     /**
-     * Replenishes the existing wallet.
+     * Generates {@code ReplenishWallet} command.
      */
     public static ReplenishWallet
     replenish(WalletId wallet, Money amount) {
@@ -54,7 +54,7 @@ public final class WalletTestEnv {
     }
 
     /**
-     * Creates and replenishes the wallet on 500 USD.
+     * Creates the {@code Wallet} and generates {@code ReplenishWallet} command on 500 USD for it.
      */
     public static ReplenishWallet replenish(BlackBoxContext context) {
         WalletId wallet = setupWallet(context);
