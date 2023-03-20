@@ -32,27 +32,21 @@ import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
 option java_package = "io.spine.examples.shareaware";
-option java_outer_classname = "IdentifiersProto";
+option java_outer_classname = "ShareProto";
 option java_multiple_files = true;
 
-import "spine/core/user_id.proto";
+import "spine_examples/shareaware/identifiers.proto";
+import "spine/money/money.proto";
 
-// Identifies a watchlist.
-message WatchlistId {
-    string uuid = 1 [(required) = true];
-}
+// A share sold on the market.
+message Share {
 
-// Identifies a share.
-message ShareId {
-    string uuid = 1 [(required) = true];
-}
+    // The ID of the share.
+    ShareId id = 1;
 
-// Identifies a wallet.
-message WalletId {
-    spine.core.UserId owner = 1 [(required) = true];
-}
+    // The current share price.
+    spine.money.Money price = 2 [(required) = true];
 
-// Identifies an investment.
-message InvestmentId {
-    ShareId share = 1 [(required) = true];
+    // The logo of the company that issued this share.
+    bytes company_logo = 3 [(required) = true];
 }

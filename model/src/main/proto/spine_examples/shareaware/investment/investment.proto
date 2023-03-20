@@ -26,33 +26,38 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware;
+package spine_examples.shareaware.investment;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware";
-option java_outer_classname = "IdentifiersProto";
+option java_package = "io.spine.examples.shareaware.investment";
+option java_outer_classname = "InvestmentProto";
 option java_multiple_files = true;
 
+import "spine_examples/shareaware/identifiers.proto";
+import "spine_examples/shareaware/share.proto";
 import "spine/core/user_id.proto";
 
-// Identifies a watchlist.
-message WatchlistId {
-    string uuid = 1 [(required) = true];
-}
+// Represents user's investment into shares of a single type.
+message Investment {
+    option (entity) = {kind: AGGREGATE};
 
-// Identifies a share.
-message ShareId {
-    string uuid = 1 [(required) = true];
-}
+    // The ID of the investment.
+    InvestmentId id = 1;
 
-// Identifies a wallet.
-message WalletId {
-    spine.core.UserId owner = 1 [(required) = true];
-}
+    // How many shares are available to sell.
+    //
+    // Does not include those which are reserved. See `shares_reserved` field.
+    //
+    int32 shares_available = 2 [(required) = true];
 
-// Identifies an investment.
-message InvestmentId {
-    ShareId share = 1 [(required) = true];
+    // How many shares are reserved for pending operations.
+    //
+    // Any ongoing share sale operation would reserve the corresponding number of shares
+    // within this Investment, so that they could not be spent on something else.
+    // It is not possible to use the reserved shares directly for a new sale operation,
+    // but rather they should be used in scope of these pending operations.
+    //
+    int32 shares_reserved = 3;
 }
