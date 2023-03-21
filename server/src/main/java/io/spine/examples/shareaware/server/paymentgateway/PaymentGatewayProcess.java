@@ -29,7 +29,9 @@ package io.spine.examples.shareaware.server.paymentgateway;
 import io.spine.examples.shareaware.PaymentGatewayId;
 import io.spine.examples.shareaware.paymentgateway.PaymentGateway;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyFromUser;
+import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredFromUser;
+import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
 import io.spine.server.command.Assign;
 import io.spine.server.procman.ProcessManager;
 
@@ -51,7 +53,7 @@ public final class PaymentGatewayProcess
             .vBuild();
 
     /**
-     * Emits the event when the transaction was successful.
+     * Emits the event when the money has been transferred from the user's bank account.
      */
     @Assign
     MoneyTransferredFromUser on(TransferMoneyFromUser c) {
@@ -59,6 +61,19 @@ public final class PaymentGatewayProcess
                 .newBuilder()
                 .setGateway(c.getGateway())
                 .setReplenishmentProcess(c.getReplenishmentProcess())
+                .setAmount(c.getAmount())
+                .vBuild();
+    }
+
+    /**
+     * Emits the event when the money has been transferred to the user's bank account.
+     */
+    @Assign
+    MoneyTransferredToUser on(TransferMoneyToUser c) {
+        return MoneyTransferredToUser
+                .newBuilder()
+                .setGetaway(c.getGateway())
+                .setWithdrawalProcess(c.getWithdrawalProcess())
                 .setAmount(c.getAmount())
                 .vBuild();
     }
