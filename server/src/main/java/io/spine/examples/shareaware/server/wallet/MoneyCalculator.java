@@ -89,9 +89,9 @@ final class MoneyCalculator {
      * Returns true if the first {@code Money} object is greater than or equal to the second {@code Money} object,
      * or false otherwise.
      */
-    static boolean isGreaterOrEqual(Money first, Money second) {
+    static boolean isGreater(Money first, Money second) {
         checkArguments(first, second);
-        if (first.getUnits() > second.getUnits() || first.equals(second)) {
+        if (first.getUnits() > second.getUnits()) {
             return true;
         }
         if (first.getUnits() < second.getUnits()){

@@ -28,15 +28,24 @@ package io.spine.examples.shareaware.server.wallet;
 
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.wallet.Wallet;
+import io.spine.examples.shareaware.wallet.command.CancelMoneyReservation;
 import io.spine.examples.shareaware.wallet.command.CreateWallet;
+import io.spine.examples.shareaware.wallet.command.DebitReservedMoney;
 import io.spine.examples.shareaware.wallet.command.RechargeBalance;
+import io.spine.examples.shareaware.wallet.command.ReserveMoney;
 import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
+import io.spine.examples.shareaware.wallet.event.MoneyReservationCanceled;
+import io.spine.examples.shareaware.wallet.event.MoneyReserved;
+import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
 import io.spine.examples.shareaware.wallet.event.WalletCreated;
+import io.spine.examples.shareaware.wallet.rejection.InsufficientFunds;
 import io.spine.money.Currency;
 import io.spine.money.Money;
 import io.spine.server.aggregate.Aggregate;
 import io.spine.server.aggregate.Apply;
 import io.spine.server.command.Assign;
+
+import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.*;
 
 /**
  * The Wallet aggregate is responsible for managing the money
@@ -84,8 +93,72 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
 
     @Apply
     private void event(BalanceRecharged e) {
-        Money newBalance =
-                MoneyCalculator.sum(state().getBalance(), e.getMoneyAmount());
+        Money newBalance = sum(state().getBalance(), e.getMoneyAmount());
         builder().setBalance(newBalance);
+    }
+
+    @Assign
+    MoneyReserved on(ReserveMoney c) throws InsufficientFunds {
+        if (isGreater(c.getMoneyAmount(), state().getBalance())) {
+            throw InsufficientFunds
+                    .newBuilder()
+                    .setWallet(c.getWallet())
+                    .setAmount(c.getMoneyAmount())
+                    .build();
+        }
+        return MoneyReserved
+                .newBuilder()
+                .setWallet(c.getWallet())
+                .setWithdrawalProcess(c.getWithdrawalProcess())
+                .setAmount(c.getMoneyAmount())
+                .vBuild();
+    }
+
+    @Apply
+    private void event(MoneyReserved e) {
+        Money newBalance = subtract(state().getBalance(), e.getAmount());
+        String withdrawalId = e.getWithdrawalProcess()
+                               .getUuid();
+        builder()
+                .setBalance(newBalance)
+                .putReservedMoney(withdrawalId, e.getAmount());
+    }
+
+    @Assign
+    ReservedMoneyDebited on(DebitReservedMoney c) {
+        Money reservedAmount = state()
+                .getReservedMoneyOrThrow(c.getWithdrawalProcess()
+                                          .getUuid());
+        return ReservedMoneyDebited
+                .newBuilder()
+                .setWithdrawalProcess(c.getWithdrawalProcess())
+                .setWallet(c.getWallet())
+                .setAmount(reservedAmount)
+                .vBuild();
+    }
+
+    @Apply
+    private void event(ReservedMoneyDebited e) {
+        String withdrawalId = e.getWithdrawalProcess()
+                               .getUuid();
+        builder().removeReservedMoney(withdrawalId);
+    }
+
+    @Assign
+    MoneyReservationCanceled on(CancelMoneyReservation e) {
+        return MoneyReservationCanceled
+                .newBuilder()
+                .setWithdrawalProcess(e.getWithdrawalProcess())
+                .setWallet(e.getWallet())
+                .vBuild();
+    }
+
+    @Apply
+    private void event(MoneyReservationCanceled e) {
+        Money reservedAmount = state()
+                .getReservedMoneyOrThrow(e.getWithdrawalProcess()
+                                          .getUuid());
+        Money restoredBalance = sum(state().getBalance(), reservedAmount);
+        builder().setBalance(restoredBalance);
     }
 }
