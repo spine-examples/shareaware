@@ -103,6 +103,7 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
             throw InsufficientFunds
                     .newBuilder()
                     .setWallet(c.getWallet())
+                    .setWithdrawalProcess(c.getWithdrawalProcess())
                     .setAmount(c.getMoneyAmount())
                     .build();
         }

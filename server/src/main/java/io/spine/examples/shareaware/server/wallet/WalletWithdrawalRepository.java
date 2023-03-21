@@ -29,10 +29,12 @@ package io.spine.examples.shareaware.server.wallet;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.examples.shareaware.WithdrawalId;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
+import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredToUser;
 import io.spine.examples.shareaware.wallet.WalletWithdrawal;
 import io.spine.examples.shareaware.wallet.event.MoneyReservationCanceled;
 import io.spine.examples.shareaware.wallet.event.MoneyReserved;
 import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
+import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
 import io.spine.server.procman.ProcessManagerRepository;
 import io.spine.server.route.EventRouting;
 
@@ -55,6 +57,10 @@ public class WalletWithdrawalRepository
         routing.route(ReservedMoneyDebited.class,
                       (event, context) -> withId(event.getWithdrawalProcess()));
         routing.route(MoneyReservationCanceled.class,
+                      (event, context) -> withId(event.getWithdrawalProcess()));
+        routing.route(InsufficientFunds.class,
+                      (event, context) -> withId(event.getWithdrawalProcess()));
+        routing.route(MoneyCannotBeTransferredToUser.class,
                       (event, context) -> withId(event.getWithdrawalProcess()));
     }
 }

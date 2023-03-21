@@ -30,6 +30,7 @@ import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.server.wallet.WalletAggregate;
 import io.spine.examples.shareaware.server.wallet.WalletBalanceRepository;
 import io.spine.examples.shareaware.server.wallet.WalletReplenishmentRepository;
+import io.spine.examples.shareaware.server.wallet.WalletWithdrawalRepository;
 import io.spine.examples.shareaware.server.watchlist.UserWatchlistsRepository;
 import io.spine.examples.shareaware.server.watchlist.WatchlistAggregate;
 import io.spine.server.BoundedContext;
@@ -59,6 +60,7 @@ public final class TradingContext {
                 .add(DefaultRepository.of(WatchlistAggregate.class))
                 .add(DefaultRepository.of(WalletAggregate.class))
                 .add(DefaultRepository.of(PaymentGatewayProcess.class))
+                .add(new WalletWithdrawalRepository())
                 .add(new WalletReplenishmentRepository())
                 .add(new WalletBalanceRepository())
                 .add(new UserWatchlistsRepository());
