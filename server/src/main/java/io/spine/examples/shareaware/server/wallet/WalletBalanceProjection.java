@@ -29,6 +29,7 @@ package io.spine.examples.shareaware.server.wallet;
 import io.spine.core.Subscribe;
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.wallet.WalletBalance;
+import io.spine.examples.shareaware.wallet.event.MoneyWithdrawn;
 import io.spine.examples.shareaware.wallet.event.WalletCreated;
 import io.spine.examples.shareaware.wallet.event.WalletReplenished;
 import io.spine.money.Money;
@@ -53,5 +54,11 @@ final class WalletBalanceProjection
     void on(WalletReplenished e) {
         Money replenishedBalance = sum(state().getBalance(), e.getMoneyAmount());
         builder().setBalance(replenishedBalance);
+    }
+
+    @Subscribe
+    void on(MoneyWithdrawn e) {
+        Money reducedBalance = subtract(state().getBalance(), e.getAmount());
+        builder().setBalance(reducedBalance);
     }
 }

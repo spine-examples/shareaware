@@ -29,6 +29,7 @@ package io.spine.examples.shareaware.server.wallet;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.wallet.WalletBalance;
+import io.spine.examples.shareaware.wallet.event.MoneyWithdrawn;
 import io.spine.examples.shareaware.wallet.event.WalletCreated;
 import io.spine.examples.shareaware.wallet.event.WalletReplenished;
 import io.spine.server.projection.ProjectionRepository;
@@ -50,6 +51,8 @@ public final class WalletBalanceRepository
         routing.route(WalletCreated.class,
                       (event, context) -> withId(event.getWallet()));
         routing.route(WalletReplenished.class,
+                      (event, context) -> withId(event.getWallet()));
+        routing.route(MoneyWithdrawn.class,
                       (event, context) -> withId(event.getWallet()));
     }
 }
