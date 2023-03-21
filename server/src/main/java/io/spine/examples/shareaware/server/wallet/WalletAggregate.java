@@ -156,10 +156,13 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
 
     @Apply
     private void event(MoneyReservationCanceled e) {
+        String withdrawalId = e.getWithdrawalProcess()
+                       .getUuid();
         Money reservedAmount = state()
-                .getReservedMoneyOrThrow(e.getWithdrawalProcess()
-                                          .getUuid());
+                .getReservedMoneyOrThrow(withdrawalId);
         Money restoredBalance = sum(state().getBalance(), reservedAmount);
-        builder().setBalance(restoredBalance);
+        builder()
+                .setBalance(restoredBalance)
+                .removeReservedMoney(withdrawalId);
     }
 }

@@ -29,12 +29,12 @@ package io.spine.examples.shareaware.server.wallet;
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.WithdrawalId;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
-import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredToUser;
-import io.spine.examples.shareaware.server.TradingContext;
+import io.spine.examples.shareaware.server.TradingTestContext;
 import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.WalletWithdrawal;
+import io.spine.examples.shareaware.wallet.command.CancelMoneyReservation;
 import io.spine.examples.shareaware.wallet.command.DebitReservedMoney;
 import io.spine.examples.shareaware.wallet.command.ReserveMoney;
 import io.spine.examples.shareaware.wallet.command.WithdrawMoney;
@@ -59,7 +59,7 @@ public class WalletWithdrawalTest extends ContextAwareTest {
 
     @Override
     protected BoundedContextBuilder contextBuilder() {
-        return TradingContext.newBuilder();
+        return TradingTestContext.newBuilder();
     }
 
     @Nested
@@ -141,6 +141,24 @@ public class WalletWithdrawalTest extends ContextAwareTest {
             context().receivesCommand(command);
 
             context().assertEvent(expected);
+        }
+
+        @Test
+        @DisplayName("emitting the `MoneyReservationCanceled` event")
+        void cancelMoneyReservation() {
+            Wallet wallet =
+                    setupReplenishedWallet(context());
+            WithdrawMoney command =
+                    withdrawWithIllegalIban(wallet.getId());
+            MoneyReservationCanceled event = MoneyReservationCanceled
+                    .newBuilder()
+                    .setWallet(wallet.getId())
+                    .setWithdrawalProcess(command.getWithdrawalProcess())
+                    .vBuild();
+            context().receivesCommand(command);
+
+            context().assertState(wallet.getId(), wallet);
+            context().assertEvent(event);
         }
     }
 
@@ -281,7 +299,8 @@ public class WalletWithdrawalTest extends ContextAwareTest {
         }
 
         @Test
-        void insufficientMoney() {
+        @DisplayName("which emits the `WalletNotWithdrawn` event when insufficient funds on the wallet")
+        void insufficientFunds() {
             WalletId wallet =
                     setupWallet(context());
             WithdrawMoney command =
@@ -299,43 +318,43 @@ public class WalletWithdrawalTest extends ContextAwareTest {
                      .isTrue();
         }
 
-//        @Test
-//        void moneyCannotBeTransferred() {
-//            WithdrawalId withdrawal = WithdrawalId.generate();
-//            MoneyCannotBeTransferredToUser rejection = MoneyCannotBeTransferredToUser
-//                    .newBuilder()
-//                    .setWithdrawalProcess(withdrawal)
-//                    .vBuild();
-//            MoneyNotWithdrawn expected = MoneyNotWithdrawn
-//                    .newBuilder()
-//                    .setWithdrawalProcess(withdrawal)
-//                    .vBuild();
-//            context().receivesEvent(rejection);
-//
-//            context().assertEvent(expected);
-//            context().assertEntity(withdrawal, WalletWithdrawalProcess.class)
-//                     .archivedFlag()
-//                     .isTrue();
-//        }
+        @Test
+        @DisplayName("which sends `CancelMoneyReservation` command when something went wrong in payment system")
+        void moneyCannotBeTransferredToUser() {
+            Wallet wallet =
+                    setupReplenishedWallet(context());
+            WithdrawMoney command =
+                    withdrawWithIllegalIban(wallet.getId());
+            CancelMoneyReservation expected = CancelMoneyReservation
+                    .newBuilder()
+                    .setWallet(command.getWallet())
+                    .setWithdrawalProcess(command.getWithdrawalProcess())
+                    .vBuild();
+            context().receivesCommand(command);
 
-//        @Test
-//        void moneyReservationCanceled() {
-//            WithdrawalId withdrawal = WithdrawalId.generate();
-//            MoneyReservationCanceled event = MoneyReservationCanceled
-//                    .newBuilder()
-//                    .setWallet(givenId())
-//                    .setWithdrawalProcess(withdrawal)
-//                    .vBuild();
-//            MoneyNotWithdrawn expected = MoneyNotWithdrawn
-//                    .newBuilder()
-//                    .setWithdrawalProcess(withdrawal)
-//                    .vBuild();
-//            context().receivesEvent(event);
-//
-//            context().assertEvent(expected);
-//            context().assertEntity(withdrawal, WalletWithdrawalProcess.class)
-//                     .archivedFlag()
-//                     .isTrue();
-//        }
+            context().assertCommands()
+                     .withType(CancelMoneyReservation.class)
+                     .message(0)
+                     .isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("which emits the `WalletNotWithdrawn` event when money reservation was canceled")
+        void moneyReservationCanceled() {
+            Wallet wallet =
+                    setupReplenishedWallet(context());
+            WithdrawMoney command =
+                    withdrawWithIllegalIban(wallet.getId());
+            MoneyNotWithdrawn expected = MoneyNotWithdrawn
+                    .newBuilder()
+                    .setWithdrawalProcess(command.getWithdrawalProcess())
+                    .vBuild();
+            context().receivesCommand(command);
+
+            context().assertEvent(expected);
+            context().assertEntity(command.getWithdrawalProcess(), WalletWithdrawalProcess.class)
+                     .archivedFlag()
+                     .isTrue();
+        }
     }
 }
