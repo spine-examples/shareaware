@@ -89,8 +89,8 @@ abstract class MoneyCalculatorAbstractTest extends UtilityClassTest<MoneyCalcula
         IllegalStateException exception =
                 Assertions.assertThrows(IllegalStateException.class,
                                         () -> operation.apply(first, second));
-        assertThat(exception.getMessage()).
-                isEqualTo("Cannot calculate two `Money` objects with different currencies.");
+        assertThat(exception.getMessage())
+                .isEqualTo("Cannot calculate two `Money` objects with different currencies.");
     }
 
     private static <R> void testNegativeUnits(BiFunction<Money, Money, R> operation) {

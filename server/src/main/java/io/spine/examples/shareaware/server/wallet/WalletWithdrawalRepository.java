@@ -41,9 +41,9 @@ import io.spine.server.route.EventRouting;
 import static io.spine.server.route.EventRoute.*;
 
 /**
- * Manages  instances of {@link WalletWithdrawalProcess}.
+ * Manages instances of {@link WalletWithdrawalProcess}.
  */
-public class WalletWithdrawalRepository
+public final class WalletWithdrawalRepository
         extends ProcessManagerRepository<WithdrawalId, WalletWithdrawalProcess, WalletWithdrawal> {
 
     @OverridingMethodsMustInvokeSuper

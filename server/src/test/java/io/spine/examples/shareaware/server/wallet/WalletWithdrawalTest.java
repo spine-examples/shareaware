@@ -60,7 +60,7 @@ import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
 import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.*;
 
 @DisplayName("`WalletWithdrawal` should")
-public class WalletWithdrawalTest extends ContextAwareTest {
+public final class WalletWithdrawalTest extends ContextAwareTest {
 
     @BeforeAll
     static void beforeAll() {
@@ -156,7 +156,6 @@ public class WalletWithdrawalTest extends ContextAwareTest {
         @Test
         @DisplayName("emitting the `MoneyReservationCanceled` event")
         void cancelMoneyReservation() {
-            ControllablePaymentGatewayProcess.switchToRejectionMode();
             Wallet wallet =
                     setupReplenishedWallet(context());
             WithdrawMoney command =
@@ -166,6 +165,7 @@ public class WalletWithdrawalTest extends ContextAwareTest {
                     .setWallet(wallet.getId())
                     .setWithdrawalProcess(command.getWithdrawalProcess())
                     .vBuild();
+            ControllablePaymentGatewayProcess.switchToRejectionMode();
             context().receivesCommand(command);
 
             context().assertState(wallet.getId(), wallet);
@@ -333,7 +333,6 @@ public class WalletWithdrawalTest extends ContextAwareTest {
         @Test
         @DisplayName("which sends `CancelMoneyReservation` command when something went wrong in payment system")
         void moneyCannotBeTransferredToUser() {
-            ControllablePaymentGatewayProcess.switchToRejectionMode();
             Wallet wallet =
                     setupReplenishedWallet(context());
             WithdrawMoney command =
@@ -343,6 +342,7 @@ public class WalletWithdrawalTest extends ContextAwareTest {
                     .setWallet(command.getWallet())
                     .setWithdrawalProcess(command.getWithdrawalProcess())
                     .vBuild();
+            ControllablePaymentGatewayProcess.switchToRejectionMode();
             context().receivesCommand(command);
 
             context().assertCommands()
@@ -355,7 +355,6 @@ public class WalletWithdrawalTest extends ContextAwareTest {
         @Test
         @DisplayName("which emits the `WalletNotWithdrawn` event when money reservation was canceled")
         void moneyReservationCanceled() {
-            ControllablePaymentGatewayProcess.switchToRejectionMode();
             Wallet wallet =
                     setupReplenishedWallet(context());
             WithdrawMoney command =
@@ -364,6 +363,7 @@ public class WalletWithdrawalTest extends ContextAwareTest {
                     .newBuilder()
                     .setWithdrawalProcess(command.getWithdrawalProcess())
                     .vBuild();
+            ControllablePaymentGatewayProcess.switchToRejectionMode();
             context().receivesCommand(command);
 
             context().assertEvent(expected);

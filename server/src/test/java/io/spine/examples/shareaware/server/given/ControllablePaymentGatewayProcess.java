@@ -32,17 +32,24 @@ import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyFromUser
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredFromUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
+import io.spine.examples.shareaware.paymentgateway.rejection.MoneyCannotBeTransferredFromUser;
 import io.spine.examples.shareaware.paymentgateway.rejection.MoneyCannotBeTransferredToUser;
 import io.spine.server.command.Assign;
 import io.spine.server.procman.ProcessManager;
 
-public class ControllablePaymentGatewayProcess
+public final class ControllablePaymentGatewayProcess
         extends ProcessManager<PaymentGatewayId, PaymentGateway, PaymentGateway.Builder> {
 
     private static boolean rejectionMode = false;
 
     @Assign
-    MoneyTransferredFromUser on(TransferMoneyFromUser c) {
+    MoneyTransferredFromUser on(TransferMoneyFromUser c) throws MoneyCannotBeTransferredFromUser {
+        if (rejectionMode) {
+            throw MoneyCannotBeTransferredFromUser
+                    .newBuilder()
+                    .setReplenishment(c.getReplenishmentProcess())
+                    .build();
+        }
         return MoneyTransferredFromUser
                 .newBuilder()
                 .setGateway(c.getGateway())
