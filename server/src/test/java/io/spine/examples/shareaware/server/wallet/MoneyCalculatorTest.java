@@ -27,7 +27,10 @@
 package io.spine.examples.shareaware.server.wallet;
 
 import io.spine.money.Currency;
+import io.spine.money.Money;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.provider.Arguments;
 
@@ -92,5 +95,28 @@ final class MoneyCalculatorTest extends MoneyCalculatorAbstractTest {
                         moneyOf(90, 50, Currency.USD),
                         false)
         );
+    }
+
+    @Test
+    @DisplayName("should validate arguments when calculating the sum")
+    void validateSum() {
+        testValidation(MoneyCalculator::sum);
+    }
+
+    @Test
+    @DisplayName("should validate arguments when calculating the difference")
+    void validateSubtract() {
+        Money smaller = moneyOf(20, 20, Currency.USD);
+        Money greater = moneyOf(40, 20, Currency.USD);
+
+        testValidation(MoneyCalculator::subtract);
+        Assertions.assertThrows(IllegalStateException.class,
+                                () -> MoneyCalculator.subtract(smaller, greater));
+    }
+
+    @Test
+    @DisplayName("should validate arguments when determining which of the object are greater")
+    void validateIsGreater() {
+        testValidation(MoneyCalculator::isGreater);
     }
 }

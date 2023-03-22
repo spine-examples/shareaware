@@ -61,15 +61,18 @@ abstract class MoneyCalculatorAbstractTest extends UtilityClassTest<MoneyCalcula
     void testIsGreater(Money first, Money second, boolean expected) {
         testBooleanCalculation(first, second, expected, MoneyCalculator::isGreater);
     }
+    <R> void testValidation(BiFunction<Money, Money, R> operation) {
+        testDifferentCurrencies(operation);
+        testNegativeUnits(operation);
+        testNanosOutOfBounds(operation);
+    }
 
     private static void testMathCalculation(Money first, Money second, Money expected,
                                             BiFunction<Money, Money, Money> operation) {
         Money actual = operation.apply(first, second);
 
         assertThat(actual).isEqualTo(expected);
-        testDifferentCurrencies(operation);
-        testNegativeUnits(operation);
-        testNanosOutOfBounds(operation);
+
     }
 
     private static void testBooleanCalculation(Money first, Money second, boolean expected,
@@ -77,9 +80,6 @@ abstract class MoneyCalculatorAbstractTest extends UtilityClassTest<MoneyCalcula
         boolean actual = operation.apply(first, second);
 
         assertThat(actual).isEqualTo(expected);
-        testDifferentCurrencies(operation);
-        testNegativeUnits(operation);
-        testNanosOutOfBounds(operation);
     }
 
     private static <R> void testDifferentCurrencies(BiFunction<Money, Money, R> operation) {

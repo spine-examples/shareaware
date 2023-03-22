@@ -71,6 +71,7 @@ final class MoneyCalculator {
      */
     static Money subtract(Money first, Money second) {
         checkArguments(first, second);
+        checkState(isGreater(first, second) || first.equals(second));
         int resultNanos = first.getNanos() - second.getNanos();
         long resultUnits = first.getUnits() - second.getUnits();
         if (resultNanos < 0) {
@@ -86,7 +87,7 @@ final class MoneyCalculator {
     }
 
     /**
-     * Returns true if the first {@code Money} object is greater than or equal to the second {@code Money} object,
+     * Returns true if the first {@code Money} object is greater than the second {@code Money} object,
      * or false otherwise.
      */
     static boolean isGreater(Money first, Money second) {
