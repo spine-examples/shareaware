@@ -62,7 +62,7 @@ message Wallet {
     // The amount of money is considered reserved because no one can use this amount
     // except the operation that reserved it.
     //
-    // The first generic in the `reserved_money` map is meant to be the `WithdrawalId.uuid`.
+    // Keys in this map correspond to `WithdrawalId.uuid` values.
     //
     map<string, spine.money.Money> reserved_money = 3;
 }
