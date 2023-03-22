@@ -67,7 +67,7 @@ final class MoneyCalculator {
     }
 
     /**
-     * Subtracts the first {@code Money} argument from the second.
+     * Subtracts the second {@code Money} argument from the first.
      */
     static Money subtract(Money first, Money second) {
         checkArguments(first, second);
