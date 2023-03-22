@@ -30,7 +30,7 @@ import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.WithdrawalId;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
-import io.spine.examples.shareaware.server.TradingTestContext;
+import io.spine.examples.shareaware.server.given.WithdrawalTestContext;
 import io.spine.examples.shareaware.server.given.ControllablePaymentGatewayProcess;
 import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.wallet.Wallet;
@@ -69,7 +69,7 @@ public class WalletWithdrawalTest extends ContextAwareTest {
 
     @Override
     protected BoundedContextBuilder contextBuilder() {
-        return TradingTestContext.newBuilder();
+        return WithdrawalTestContext.newBuilder();
     }
 
     @Nested

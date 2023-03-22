@@ -24,9 +24,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server;
+package io.spine.examples.shareaware.server.given;
 
-import io.spine.examples.shareaware.server.given.ControllablePaymentGatewayProcess;
 import io.spine.examples.shareaware.server.wallet.WalletAggregate;
 import io.spine.examples.shareaware.server.wallet.WalletBalanceRepository;
 import io.spine.examples.shareaware.server.wallet.WalletReplenishmentRepository;
@@ -37,14 +36,14 @@ import io.spine.server.BoundedContext;
 import io.spine.server.BoundedContextBuilder;
 import io.spine.server.DefaultRepository;
 
-public final class TradingTestContext {
+public final class WithdrawalTestContext {
 
-    static final String NAME = "Testing";
+    private static final String NAME = "WithdrawalTest";
 
     /**
      * Prevents instantiation of this class.
      */
-    private TradingTestContext() {
+    private WithdrawalTestContext() {
     }
 
     public static BoundedContextBuilder newBuilder() {
