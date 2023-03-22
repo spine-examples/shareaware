@@ -235,7 +235,7 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
                     .newBuilder()
                     .setWithdrawalProcess(command.getWithdrawalProcess())
                     .setWallet(command.getWallet())
-                    .setMoneyAmount(command.getAmount())
+                    .setAmount(command.getAmount())
                     .vBuild();
             context().receivesCommand(command);
 

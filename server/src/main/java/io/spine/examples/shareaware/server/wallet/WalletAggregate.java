@@ -99,19 +99,19 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
 
     @Assign
     MoneyReserved on(ReserveMoney c) throws InsufficientFunds {
-        if (isGreater(c.getMoneyAmount(), state().getBalance())) {
+        if (isGreater(c.getAmount(), state().getBalance())) {
             throw InsufficientFunds
                     .newBuilder()
                     .setWallet(c.getWallet())
                     .setWithdrawalProcess(c.getWithdrawalProcess())
-                    .setAmount(c.getMoneyAmount())
+                    .setAmount(c.getAmount())
                     .build();
         }
         return MoneyReserved
                 .newBuilder()
                 .setWallet(c.getWallet())
                 .setWithdrawalProcess(c.getWithdrawalProcess())
-                .setAmount(c.getMoneyAmount())
+                .setAmount(c.getAmount())
                 .vBuild();
     }
 
