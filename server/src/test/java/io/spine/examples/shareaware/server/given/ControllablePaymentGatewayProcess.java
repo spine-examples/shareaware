@@ -33,17 +33,13 @@ import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredFromUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
 import io.spine.examples.shareaware.paymentgateway.rejection.MoneyCannotBeTransferredToUser;
-import io.spine.examples.shareaware.wallet.Iban;
 import io.spine.server.command.Assign;
 import io.spine.server.procman.ProcessManager;
 
-public class PaymentGatewayProcessTestImpl
+public class ControllablePaymentGatewayProcess
         extends ProcessManager<PaymentGatewayId, PaymentGateway, PaymentGateway.Builder> {
 
-    static final Iban ILLEGAL_IBAN = Iban
-            .newBuilder()
-            .setValue("DE7551210800124512200")
-            .vBuild();
+    private static boolean rejectionMode = false;
 
     @Assign
     MoneyTransferredFromUser on(TransferMoneyFromUser c) {
@@ -60,7 +56,7 @@ public class PaymentGatewayProcessTestImpl
      */
     @Assign
     MoneyTransferredToUser on(TransferMoneyToUser c) throws MoneyCannotBeTransferredToUser {
-        if (c.getRecipient().equals(ILLEGAL_IBAN)) {
+        if (rejectionMode) {
             throw MoneyCannotBeTransferredToUser
                     .newBuilder()
                     .setWithdrawalProcess(c.getWithdrawalProcess())
@@ -73,5 +69,13 @@ public class PaymentGatewayProcessTestImpl
                 .setWithdrawalProcess(c.getWithdrawalProcess())
                 .setAmount(c.getAmount())
                 .vBuild();
+    }
+
+    public static void switchToRejectionMode() {
+        rejectionMode = true;
+    }
+
+    public static void switchToEventsMode() {
+        rejectionMode = false;
     }
 }

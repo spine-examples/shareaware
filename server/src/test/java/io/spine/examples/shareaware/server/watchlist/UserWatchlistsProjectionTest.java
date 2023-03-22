@@ -28,7 +28,7 @@ package io.spine.examples.shareaware.server.watchlist;
 
 import io.spine.core.UserId;
 import io.spine.examples.shareaware.WatchlistId;
-import io.spine.examples.shareaware.server.TradingTestContext;
+import io.spine.examples.shareaware.server.TradingContext;
 import io.spine.examples.shareaware.watchlist.UserWatchlists;
 import io.spine.examples.shareaware.watchlist.command.CreateWatchlist;
 import io.spine.server.BoundedContextBuilder;
@@ -44,7 +44,7 @@ public final class UserWatchlistsProjectionTest extends ContextAwareTest {
 
     @Override
     protected BoundedContextBuilder contextBuilder() {
-        return TradingTestContext.newBuilder();
+        return TradingContext.newBuilder();
     }
 
     @Test

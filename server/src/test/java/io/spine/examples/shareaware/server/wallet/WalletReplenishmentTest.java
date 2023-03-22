@@ -30,7 +30,7 @@ import io.spine.examples.shareaware.ReplenishmentId;
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyFromUser;
 import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredFromUser;
-import io.spine.examples.shareaware.server.TradingTestContext;
+import io.spine.examples.shareaware.server.TradingContext;
 import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.WalletBalance;
@@ -57,7 +57,7 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
 
     @Override
     protected BoundedContextBuilder contextBuilder() {
-        return TradingTestContext.newBuilder();
+        return TradingContext.newBuilder();
     }
 
     @DisplayName("replenish the wallet balance")

@@ -26,7 +26,7 @@
 
 package io.spine.examples.shareaware.server;
 
-import io.spine.examples.shareaware.server.given.PaymentGatewayProcessTestImpl;
+import io.spine.examples.shareaware.server.given.ControllablePaymentGatewayProcess;
 import io.spine.examples.shareaware.server.wallet.WalletAggregate;
 import io.spine.examples.shareaware.server.wallet.WalletBalanceRepository;
 import io.spine.examples.shareaware.server.wallet.WalletReplenishmentRepository;
@@ -52,7 +52,7 @@ public final class TradingTestContext {
                 .singleTenant(NAME)
                 .add(DefaultRepository.of(WatchlistAggregate.class))
                 .add(DefaultRepository.of(WalletAggregate.class))
-                .add(DefaultRepository.of(PaymentGatewayProcessTestImpl.class))
+                .add(DefaultRepository.of(ControllablePaymentGatewayProcess.class))
                 .add(new WalletWithdrawalRepository())
                 .add(new WalletReplenishmentRepository())
                 .add(new WalletBalanceRepository())

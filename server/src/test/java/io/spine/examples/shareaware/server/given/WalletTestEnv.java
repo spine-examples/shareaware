@@ -96,14 +96,4 @@ public final class WalletTestEnv {
                 .setAmount(moneyOf(200, Currency.USD))
                 .vBuild();
     }
-
-    public static WithdrawMoney withdrawWithIllegalIban(WalletId wallet) {
-        return WithdrawMoney
-                .newBuilder()
-                .setWithdrawalProcess(WithdrawalId.generate())
-                .setWallet(wallet)
-                .setRecipient(PaymentGatewayProcessTestImpl.ILLEGAL_IBAN)
-                .setAmount(moneyOf(200, Currency.USD))
-                .vBuild();
-    }
 }
