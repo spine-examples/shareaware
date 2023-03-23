@@ -47,7 +47,7 @@ import io.spine.server.event.React;
 import io.spine.server.procman.ProcessManager;
 
 /**
- * Coordinates the withdrawal of the user's wallet.
+ * Coordinates the money withdrawal from the user's wallet.
  */
 public final class WalletWithdrawalProcess
         extends ProcessManager<WithdrawalId, WalletWithdrawal, WalletWithdrawal.Builder> {

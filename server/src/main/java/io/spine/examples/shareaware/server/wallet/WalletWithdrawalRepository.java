@@ -51,16 +51,16 @@ public final class WalletWithdrawalRepository
     protected void setupEventRouting(EventRouting<WithdrawalId> routing) {
         super.setupEventRouting(routing);
         routing.route(MoneyTransferredToUser.class,
-                      (event, context) -> withId(event.getWithdrawalProcess()));
-        routing.route(MoneyReserved.class,
-                      (event, context) -> withId(event.getWithdrawalProcess()));
-        routing.route(ReservedMoneyDebited.class,
-                      (event, context) -> withId(event.getWithdrawalProcess()));
-        routing.route(MoneyReservationCanceled.class,
-                      (event, context) -> withId(event.getWithdrawalProcess()));
-        routing.route(InsufficientFunds.class,
-                      (event, context) -> withId(event.getWithdrawalProcess()));
-        routing.route(MoneyCannotBeTransferredToUser.class,
+                      (event, context) -> withId(event.getWithdrawalProcess()))
+               .route(MoneyReserved.class,
+                      (event, context) -> withId(event.getWithdrawalProcess()))
+               .route(ReservedMoneyDebited.class,
+                      (event, context) -> withId(event.getWithdrawalProcess()))
+               .route(MoneyReservationCanceled.class,
+                      (event, context) -> withId(event.getWithdrawalProcess()))
+               .route(InsufficientFunds.class,
+                      (event, context) -> withId(event.getWithdrawalProcess()))
+               .route(MoneyCannotBeTransferredToUser.class,
                       (event, context) -> withId(event.getWithdrawalProcess()));
     }
 }
