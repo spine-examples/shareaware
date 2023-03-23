@@ -51,7 +51,7 @@ public final class WithdrawalTestContext {
                 .singleTenant(NAME)
                 .add(DefaultRepository.of(WatchlistAggregate.class))
                 .add(DefaultRepository.of(WalletAggregate.class))
-                .add(DefaultRepository.of(ControllablePaymentGatewayProcess.class))
+                .add(DefaultRepository.of(RejectControllablePaymentSystem.class))
                 .add(new WalletWithdrawalRepository())
                 .add(new WalletReplenishmentRepository())
                 .add(new WalletBalanceRepository())

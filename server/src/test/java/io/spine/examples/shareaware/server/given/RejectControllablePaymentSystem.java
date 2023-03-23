@@ -37,11 +37,21 @@ import io.spine.examples.shareaware.paymentgateway.rejection.MoneyCannotBeTransf
 import io.spine.server.command.Assign;
 import io.spine.server.procman.ProcessManager;
 
-public final class ControllablePaymentGatewayProcess
+/**
+ * The test implementation of {@code PaymentGatewayProcess} with rejection mode.
+ *
+ * <p>When {@code RejectControllablePaymentSystem} is in rejection mode,
+ * it will reject all commands directed at it and vice versa.
+ */
+public final class RejectControllablePaymentSystem
         extends ProcessManager<PaymentGatewayId, PaymentGateway, PaymentGateway.Builder> {
 
     private static boolean rejectionMode = false;
 
+    /**
+     * Emits the {@code TransferMoneyFromUser} event when rejection mode if off
+     * otherwise throws the {@code MoneyCannotBeTransferredFromUser} rejection.
+     */
     @Assign
     MoneyTransferredFromUser on(TransferMoneyFromUser c) throws MoneyCannotBeTransferredFromUser {
         if (rejectionMode) {
@@ -59,7 +69,8 @@ public final class ControllablePaymentGatewayProcess
     }
 
     /**
-     * Emits the event when the money has been transferred to the user's bank account.
+     * Emits the {@code MoneyTransferredToUser} event when rejection mode if off
+     * otherwise throws the {@code MoneyCannotBeTransferredToUser} rejection.
      */
     @Assign
     MoneyTransferredToUser on(TransferMoneyToUser c) throws MoneyCannotBeTransferredToUser {
