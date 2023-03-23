@@ -46,12 +46,18 @@ public final class WithdrawalTestContext {
     private WithdrawalTestContext() {
     }
 
+    /**
+     * Creates the {@link BoundedContextBuilder} for testing the wallet withdrawal flow.
+     *
+     * <p>Replaces {@code PaymentGatewayProcess} on {@code RejectControllablePaymentGatewayProcess}
+     * for rejection control.
+     */
     public static BoundedContextBuilder newBuilder() {
         return BoundedContext
                 .singleTenant(NAME)
                 .add(DefaultRepository.of(WatchlistAggregate.class))
                 .add(DefaultRepository.of(WalletAggregate.class))
-                .add(DefaultRepository.of(RejectControllablePaymentSystem.class))
+                .add(DefaultRepository.of(RejectControllablePaymentGatewayProcess.class))
                 .add(new WalletWithdrawalRepository())
                 .add(new WalletReplenishmentRepository())
                 .add(new WalletBalanceRepository())

@@ -69,15 +69,15 @@ public final class WalletTestEnv {
      *
      * @return the ID of created {@code Wallet}.
      */
-    public static WalletId setupWallet(BlackBoxContext context) {
+    public static WalletId setUpWallet(BlackBoxContext context) {
         WalletId wallet = givenId();
         CreateWallet command = createWallet(wallet);
         context.receivesCommand(command);
         return wallet;
     }
 
-    public static Wallet setupReplenishedWallet(BlackBoxContext context) {
-        WalletId wallet = setupWallet(context);
+    public static Wallet setUpReplenishedWallet(BlackBoxContext context) {
+        WalletId wallet = setUpWallet(context);
         ReplenishWallet command = replenish(wallet);
         context.receivesCommand(command);
         return Wallet

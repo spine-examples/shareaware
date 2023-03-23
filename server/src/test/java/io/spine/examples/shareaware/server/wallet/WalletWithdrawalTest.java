@@ -31,7 +31,7 @@ import io.spine.examples.shareaware.WithdrawalId;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
 import io.spine.examples.shareaware.server.given.WithdrawalTestContext;
-import io.spine.examples.shareaware.server.given.RejectControllablePaymentSystem;
+import io.spine.examples.shareaware.server.given.RejectControllablePaymentGatewayProcess;
 import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.WalletBalance;
@@ -80,7 +80,7 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("for 400 USD")
         void entity() {
             Wallet wallet =
-                    setupReplenishedWallet(context());
+                    setUpReplenishedWallet(context());
             WithdrawMoney firstWithdraw =
                     withdraw(wallet.getId());
             WithdrawMoney secondWithdraw =
@@ -103,7 +103,7 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("emitting the `ReservedMoneyDebited` event")
         void debitMoney() {
             Wallet wallet =
-                    setupReplenishedWallet(context());
+                    setUpReplenishedWallet(context());
             WithdrawMoney command =
                     withdraw(wallet.getId());
             Money reducedBalance = subtract(wallet.getBalance(), command.getAmount());
@@ -122,7 +122,7 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("emitting the `MoneyReserved` event")
         void reserveMoney() {
             Wallet wallet =
-                    setupReplenishedWallet(context());
+                    setUpReplenishedWallet(context());
             WithdrawMoney command =
                     withdraw(wallet.getId());
             MoneyReserved expected = MoneyReserved
@@ -140,7 +140,7 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("emitting the `InsufficientFunds` rejection")
         void insufficientFunds() {
             WalletId wallet =
-                    setupWallet(context());
+                    setUpWallet(context());
             WithdrawMoney command =
                     withdraw(wallet);
             InsufficientFunds expected = InsufficientFunds
@@ -158,7 +158,7 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("emitting the `MoneyReservationCanceled` event")
         void cancelMoneyReservation() {
             Wallet wallet =
-                    setupReplenishedWallet(context());
+                    setUpReplenishedWallet(context());
             WithdrawMoney command =
                     withdraw(wallet.getId());
             MoneyReservationCanceled event = MoneyReservationCanceled
@@ -166,12 +166,12 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
                     .setWallet(wallet.getId())
                     .setWithdrawalProcess(command.getWithdrawalProcess())
                     .vBuild();
-            RejectControllablePaymentSystem.switchToRejectionMode();
+            RejectControllablePaymentGatewayProcess.switchToRejectionMode();
             context().receivesCommand(command);
 
             context().assertState(wallet.getId(), wallet);
             context().assertEvent(event);
-            RejectControllablePaymentSystem.switchToEventsMode();
+            RejectControllablePaymentGatewayProcess.switchToEventsMode();
         }
     }
 
@@ -182,7 +182,7 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @Test
         void balance() {
             Wallet wallet =
-                    setupReplenishedWallet(context());
+                    setUpReplenishedWallet(context());
             WithdrawMoney firstWithdraw =
                     withdraw(wallet.getId());
             WithdrawMoney secondWithdraw =
@@ -210,7 +210,7 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("with state")
         void entity() {
             Wallet wallet =
-                    setupReplenishedWallet(context());
+                    setUpReplenishedWallet(context());
             WithdrawMoney command =
                     withdraw(wallet.getId());
             WithdrawalId withdrawalId = command.getWithdrawalProcess();
@@ -229,7 +229,7 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("which send the `ReserveMoney` command")
         void reserveMoney() {
             Wallet wallet =
-                    setupReplenishedWallet(context());
+                    setUpReplenishedWallet(context());
             WithdrawMoney command =
                     withdraw(wallet.getId());
             ReserveMoney expected = ReserveMoney
@@ -250,7 +250,7 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("which sends the `TransferMoneyToUser` command")
         void transferMoneyToUser() {
             Wallet wallet =
-                    setupReplenishedWallet(context());
+                    setUpReplenishedWallet(context());
             WithdrawMoney command =
                     withdraw(wallet.getId());
             TransferMoneyToUser expected = TransferMoneyToUser
@@ -273,7 +273,7 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("which sends the `DebitReservedMoney` command")
         void debitReservedMoney() {
             Wallet wallet =
-                    setupReplenishedWallet(context());
+                    setUpReplenishedWallet(context());
             WithdrawMoney command =
                     withdraw(wallet.getId());
             DebitReservedMoney expected = DebitReservedMoney
@@ -293,7 +293,7 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("which emits the `WalletWithdrawn` event and archives itself after it")
         void event() {
             Wallet wallet =
-                    setupReplenishedWallet(context());
+                    setUpReplenishedWallet(context());
             WithdrawMoney command =
                     withdraw(wallet.getId());
             WithdrawalId withdrawal = command.getWithdrawalProcess();
@@ -316,7 +316,7 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("which emits the `WalletNotWithdrawn` event when insufficient funds on the wallet")
         void insufficientFunds() {
             WalletId wallet =
-                    setupWallet(context());
+                    setUpWallet(context());
             WithdrawMoney command =
                     withdraw(wallet);
             WithdrawalId withdrawal = command.getWithdrawalProcess();
@@ -336,7 +336,7 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("which sends `CancelMoneyReservation` command when something went wrong in payment system")
         void moneyCannotBeTransferredToUser() {
             Wallet wallet =
-                    setupReplenishedWallet(context());
+                    setUpReplenishedWallet(context());
             WithdrawMoney command =
                     withdraw(wallet.getId());
             CancelMoneyReservation expected = CancelMoneyReservation
@@ -344,35 +344,35 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
                     .setWallet(command.getWallet())
                     .setWithdrawalProcess(command.getWithdrawalProcess())
                     .vBuild();
-            RejectControllablePaymentSystem.switchToRejectionMode();
+            RejectControllablePaymentGatewayProcess.switchToRejectionMode();
             context().receivesCommand(command);
 
             context().assertCommands()
                      .withType(CancelMoneyReservation.class)
                      .message(0)
                      .isEqualTo(expected);
-            RejectControllablePaymentSystem.switchToEventsMode();
+            RejectControllablePaymentGatewayProcess.switchToEventsMode();
         }
 
         @Test
         @DisplayName("which emits the `WalletNotWithdrawn` event when money reservation was canceled")
         void moneyReservationCanceled() {
             Wallet wallet =
-                    setupReplenishedWallet(context());
+                    setUpReplenishedWallet(context());
             WithdrawMoney command =
                     withdraw(wallet.getId());
             MoneyNotWithdrawn expected = MoneyNotWithdrawn
                     .newBuilder()
                     .setWithdrawalProcess(command.getWithdrawalProcess())
                     .vBuild();
-            RejectControllablePaymentSystem.switchToRejectionMode();
+            RejectControllablePaymentGatewayProcess.switchToRejectionMode();
             context().receivesCommand(command);
 
             context().assertEvent(expected);
             context().assertEntity(command.getWithdrawalProcess(), WalletWithdrawalProcess.class)
                      .archivedFlag()
                      .isTrue();
-            RejectControllablePaymentSystem.switchToEventsMode();
+            RejectControllablePaymentGatewayProcess.switchToEventsMode();
         }
     }
 
@@ -384,7 +384,7 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("which emit the `MoneyTransferredToUser` event")
         void transferMoney() {
             Wallet wallet =
-                    setupReplenishedWallet(context());
+                    setUpReplenishedWallet(context());
             WithdrawMoney command =
                     withdraw(wallet.getId());
             MoneyTransferredToUser expected = MoneyTransferredToUser

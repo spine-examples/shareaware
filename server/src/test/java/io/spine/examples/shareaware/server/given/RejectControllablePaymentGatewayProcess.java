@@ -43,7 +43,7 @@ import io.spine.server.procman.ProcessManager;
  * <p>When {@code RejectControllablePaymentSystem} is in rejection mode,
  * it will reject all commands directed at it and vice versa.
  */
-public final class RejectControllablePaymentSystem
+public final class RejectControllablePaymentGatewayProcess
         extends ProcessManager<PaymentGatewayId, PaymentGateway, PaymentGateway.Builder> {
 
     private static boolean rejectionMode = false;
