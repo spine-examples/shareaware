@@ -29,7 +29,6 @@ package io.spine.examples.shareaware.server.wallet;
 import io.spine.money.Currency;
 import io.spine.money.Money;
 import io.spine.testing.UtilityClassTest;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -37,7 +36,15 @@ import java.util.function.BiFunction;
 
 import static com.google.common.truth.Truth.assertThat;
 import static io.spine.examples.shareaware.server.given.GivenMoney.moneyOf;
+import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * The abstract base designed for {@link MoneyCalculator} testing.
+ *
+ * <p>Inheritors must fill parametrized tests for most common {@link MoneyCalculator} operations with arguments.
+ * Also, there are generic methods for testing math and boolean operations
+ * in case {@code MoneyCalculator} will extend.
+ */
 abstract class MoneyCalculatorAbstractTest extends UtilityClassTest<MoneyCalculator> {
 
     MoneyCalculatorAbstractTest() {
@@ -61,6 +68,7 @@ abstract class MoneyCalculatorAbstractTest extends UtilityClassTest<MoneyCalcula
     void testIsGreater(Money first, Money second, boolean expected) {
         testBooleanCalculation(first, second, expected, MoneyCalculator::isGreater);
     }
+
     <R> void testValidation(BiFunction<Money, Money, R> operation) {
         testDifferentCurrencies(operation);
         testNegativeUnits(operation);
@@ -72,7 +80,6 @@ abstract class MoneyCalculatorAbstractTest extends UtilityClassTest<MoneyCalcula
         Money actual = operation.apply(first, second);
 
         assertThat(actual).isEqualTo(expected);
-
     }
 
     private static void testBooleanCalculation(Money first, Money second, boolean expected,
@@ -87,7 +94,7 @@ abstract class MoneyCalculatorAbstractTest extends UtilityClassTest<MoneyCalcula
         Money second = moneyOf(30, Currency.UAH);
 
         IllegalStateException exception =
-                Assertions.assertThrows(IllegalStateException.class,
+                assertThrows(IllegalStateException.class,
                                         () -> operation.apply(first, second));
         assertThat(exception.getMessage())
                 .isEqualTo("Cannot calculate two `Money` objects with different currencies.");
@@ -97,9 +104,9 @@ abstract class MoneyCalculatorAbstractTest extends UtilityClassTest<MoneyCalcula
         Money positiveUnits = moneyOf(20, Currency.USD);
         Money negativeUnits = moneyOf(-50, Currency.USD);
 
-        Assertions.assertThrows(IllegalStateException.class,
+        assertThrows(IllegalStateException.class,
                                 () -> operation.apply(positiveUnits, negativeUnits));
-        Assertions.assertThrows(IllegalStateException.class,
+        assertThrows(IllegalStateException.class,
                                 () -> operation.apply(negativeUnits, positiveUnits));
     }
 
@@ -107,9 +114,9 @@ abstract class MoneyCalculatorAbstractTest extends UtilityClassTest<MoneyCalcula
         Money positiveUnits = moneyOf(0, 120, Currency.USD);
         Money negativeUnits = moneyOf(0, -10, Currency.USD);
 
-        Assertions.assertThrows(IllegalArgumentException.class,
+        assertThrows(IllegalArgumentException.class,
                                 () -> operation.apply(positiveUnits, negativeUnits));
-        Assertions.assertThrows(IllegalArgumentException.class,
+        assertThrows(IllegalArgumentException.class,
                                 () -> operation.apply(negativeUnits, positiveUnits));
     }
 }
