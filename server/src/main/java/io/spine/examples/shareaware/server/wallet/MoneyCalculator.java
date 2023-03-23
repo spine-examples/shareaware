@@ -26,7 +26,9 @@
 
 package io.spine.examples.shareaware.server.wallet;
 
+import io.spine.money.Currency;
 import io.spine.money.Money;
+import io.spine.money.MoneyAmount;
 
 import static com.google.common.base.Preconditions.*;
 import static io.spine.util.Preconditions2.*;
@@ -101,6 +103,15 @@ final class MoneyCalculator {
         return first.getNanos() > second.getNanos();
     }
 
+    /**
+     * Checks the two {@code Money} objects for:
+     * <ul>
+     *     <li>being non-nullable</li>
+     *     <li>being the same currency</li>
+     *     <li>their units to be non-negative</li>
+     *     <li>their nanos to be in 0..100 range</li>
+     * </ul>
+     */
     private static void checkArguments(Money first, Money second) {
         checkNotNull(first);
         checkNotNull(second);

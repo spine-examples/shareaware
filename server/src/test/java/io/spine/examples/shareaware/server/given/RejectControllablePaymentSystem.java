@@ -38,7 +38,7 @@ import io.spine.server.command.Assign;
 import io.spine.server.procman.ProcessManager;
 
 /**
- * The test implementation of {@code PaymentGatewayProcess} with rejection mode.
+ * The test imitation of {@code PaymentGatewayProcess} with rejection mode.
  *
  * <p>When {@code RejectControllablePaymentSystem} is in rejection mode,
  * it will reject all commands directed at it and vice versa.
