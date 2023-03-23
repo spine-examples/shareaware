@@ -63,6 +63,7 @@ message BalanceRecharged {
 
 // Money has been reserved in the wallet.
 message MoneyReserved {
+    option (is).java_type = "WithdrawalEvent";
 
     // The ID of the wallet where money has been reserved.
     WalletId wallet = 1;
@@ -76,6 +77,7 @@ message MoneyReserved {
 
 // The reserved money has been debited.
 message ReservedMoneyDebited {
+    option (is).java_type = "WithdrawalEvent";
 
     // The ID of the wallet where reserved money has been debited.
     WalletId wallet = 1;
@@ -89,6 +91,7 @@ message ReservedMoneyDebited {
 
 // The money reservation has been canceled.
 message MoneyReservationCanceled {
+    option (is).java_type = "WithdrawalEvent";
 
     // The ID of the wallet where money reservation was canceled.
     WalletId wallet = 1;

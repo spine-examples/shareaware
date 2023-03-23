@@ -65,7 +65,7 @@ final class MoneyCalculatorTest extends MoneyCalculatorAbstractTest {
         return Stream.of(
                 arguments(usd(20, 50), usd(20, 50), false),
                 arguments(usd(26, 10), usd(25, 50), true),
-                arguments(usd(40, 50), false)
+                arguments(usd(40, 50), usd(40, 60), false)
         );
     }
 

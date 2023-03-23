@@ -35,6 +35,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.function.BiFunction;
 
 import static com.google.common.truth.Truth.assertThat;
+import static io.spine.examples.shareaware.server.given.GivenMoney.moneyOf;
 import static io.spine.examples.shareaware.server.given.GivenMoney.usd;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -90,8 +91,8 @@ abstract class MoneyCalculatorAbstractTest extends UtilityClassTest<MoneyCalcula
     }
 
     private static <R> void testDifferentCurrencies(BiFunction<Money, Money, R> operation) {
-        Money first = usd(20);
-        Money second = usd(30);
+        Money first = moneyOf(20, Currency.UAH);
+        Money second = moneyOf(30, Currency.USD);
 
         IllegalStateException exception =
                 assertThrows(IllegalStateException.class,

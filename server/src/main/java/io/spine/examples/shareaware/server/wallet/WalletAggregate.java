@@ -38,6 +38,7 @@ import io.spine.examples.shareaware.wallet.event.MoneyReservationCanceled;
 import io.spine.examples.shareaware.wallet.event.MoneyReserved;
 import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
 import io.spine.examples.shareaware.wallet.event.WalletCreated;
+import io.spine.examples.shareaware.wallet.event.WithdrawalEvent;
 import io.spine.examples.shareaware.wallet.rejection.InsufficientFunds;
 import io.spine.money.Currency;
 import io.spine.money.Money;
@@ -118,8 +119,7 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
     @Apply
     private void event(MoneyReserved e) {
         Money newBalance = subtract(state().getBalance(), e.getAmount());
-        String withdrawalId = e.getWithdrawalProcess()
-                               .getUuid();
+        String withdrawalId = extractWithdrawalIdValue(e);
         builder()
                 .setBalance(newBalance)
                 .putReservedMoney(withdrawalId, e.getAmount());
@@ -137,8 +137,7 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
 
     @Apply
     private void event(ReservedMoneyDebited e) {
-        String withdrawalId = e.getWithdrawalProcess()
-                               .getUuid();
+        String withdrawalId = extractWithdrawalIdValue(e);
         builder().removeReservedMoney(withdrawalId);
     }
 
@@ -153,12 +152,15 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
 
     @Apply
     private void event(MoneyReservationCanceled e) {
-        String withdrawalId = e.getWithdrawalProcess()
-                               .getUuid();
+        String withdrawalId = extractWithdrawalIdValue(e);
         Money reservedAmount = state().getReservedMoneyOrThrow(withdrawalId);
         Money restoredBalance = sum(state().getBalance(), reservedAmount);
         builder()
                 .setBalance(restoredBalance)
                 .removeReservedMoney(withdrawalId);
+    }
+
+    private static String extractWithdrawalIdValue(WithdrawalEvent e) {
+        return e.getWithdrawalProcess().getUuid();
     }
 }
