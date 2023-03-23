@@ -37,4 +37,12 @@ public final class GivenMoney {
                 .setNanos(nanos)
                 .vBuild();
     }
+
+    public static Money usd(long units, int nanos) {
+        return moneyOf(units, nanos, Currency.USD);
+    }
+
+    public static Money usd(long units) {
+        return moneyOf(units, Currency.USD);
+    }
 }

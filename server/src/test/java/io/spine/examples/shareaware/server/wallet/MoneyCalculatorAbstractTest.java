@@ -35,7 +35,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.function.BiFunction;
 
 import static com.google.common.truth.Truth.assertThat;
-import static io.spine.examples.shareaware.server.given.GivenMoney.moneyOf;
+import static io.spine.examples.shareaware.server.given.GivenMoney.usd;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -90,8 +90,8 @@ abstract class MoneyCalculatorAbstractTest extends UtilityClassTest<MoneyCalcula
     }
 
     private static <R> void testDifferentCurrencies(BiFunction<Money, Money, R> operation) {
-        Money first = moneyOf(20, Currency.USD);
-        Money second = moneyOf(30, Currency.UAH);
+        Money first = usd(20);
+        Money second = usd(30);
 
         IllegalStateException exception =
                 assertThrows(IllegalStateException.class,
@@ -101,8 +101,8 @@ abstract class MoneyCalculatorAbstractTest extends UtilityClassTest<MoneyCalcula
     }
 
     private static <R> void testNegativeUnits(BiFunction<Money, Money, R> operation) {
-        Money positiveUnits = moneyOf(20, Currency.USD);
-        Money negativeUnits = moneyOf(-50, Currency.USD);
+        Money positiveUnits = usd(20);
+        Money negativeUnits = usd(-50);
 
         assertThrows(IllegalStateException.class,
                                 () -> operation.apply(positiveUnits, negativeUnits));
@@ -111,8 +111,8 @@ abstract class MoneyCalculatorAbstractTest extends UtilityClassTest<MoneyCalcula
     }
 
     private static <R> void testNanosOutOfBounds(BiFunction<Money, Money, R> operation) {
-        Money positiveUnits = moneyOf(0, 120, Currency.USD);
-        Money negativeUnits = moneyOf(0, -10, Currency.USD);
+        Money positiveUnits = usd(0, 120);
+        Money negativeUnits = usd(0, -10);
 
         assertThrows(IllegalArgumentException.class,
                                 () -> operation.apply(positiveUnits, negativeUnits));

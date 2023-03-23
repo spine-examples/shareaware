@@ -26,7 +26,6 @@
 
 package io.spine.examples.shareaware.server.wallet;
 
-import io.spine.money.Currency;
 import io.spine.money.Money;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -46,54 +45,27 @@ final class MoneyCalculatorTest extends MoneyCalculatorAbstractTest {
     @DisplayName("calculate the sum of two `Money` objects")
     Stream<Arguments> sum() {
         return Stream.of(
-                of(
-                        moneyOf(20, 50, Currency.USD),
-                        moneyOf(20, 50, Currency.USD),
-                        moneyOf(41, Currency.USD)),
-                of(
-                        moneyOf(50, Currency.USD),
-                        moneyOf(25, 50, Currency.USD),
-                        moneyOf(75, 50, Currency.USD)),
-                of(
-                        moneyOf(100, 90, Currency.USD),
-                        moneyOf(50, 20, Currency.USD),
-                        moneyOf(151, 10, Currency.USD))
+                arguments(usd(20, 50), usd(20, 50), usd(41, 0)),
+                arguments(usd(50), usd(25, 50), usd(75, 50)),
+                arguments(usd(100, 90), usd(50, 20), usd(151, 10))
         );
     }
 
     @DisplayName("calculate the difference of two `Money` objects")
     Stream<Arguments> subtract() {
         return Stream.of(
-                of(
-                        moneyOf(20, 50, Currency.USD),
-                        moneyOf(20, 50, Currency.USD),
-                        moneyOf(0, Currency.USD)),
-                of(
-                        moneyOf(26, 10, Currency.USD),
-                        moneyOf(25, 50, Currency.USD),
-                        moneyOf(0, 60, Currency.USD)),
-                of(
-                        moneyOf(100, 50, Currency.USD),
-                        moneyOf(90, 50, Currency.USD),
-                        moneyOf(10, Currency.USD))
+                arguments(usd(20, 50), usd(20, 50), usd(0)),
+                arguments(usd(26, 10), usd(25, 50), usd(0, 60)),
+                arguments(usd(100, 50), usd(90, 50), usd(10))
         );
     }
 
     @DisplayName("determine if the `Money` object is greater then the second")
     Stream<Arguments> isGreater() {
         return Stream.of(
-                of(
-                        moneyOf(20, 50, Currency.USD),
-                        moneyOf(20, 50, Currency.USD),
-                        false),
-                of(
-                        moneyOf(26, 10, Currency.USD),
-                        moneyOf(25, 50, Currency.USD),
-                        true),
-                of(
-                        moneyOf(40, 50, Currency.USD),
-                        moneyOf(90, 50, Currency.USD),
-                        false)
+                arguments(usd(20, 50), usd(20, 50), false),
+                arguments(usd(26, 10), usd(25, 50), true),
+                arguments(usd(40, 50), false)
         );
     }
 
@@ -106,8 +78,8 @@ final class MoneyCalculatorTest extends MoneyCalculatorAbstractTest {
     @Test
     @DisplayName("should validate arguments when calculating the difference")
     void validateSubtract() {
-        Money smaller = moneyOf(20, 20, Currency.USD);
-        Money greater = moneyOf(40, 20, Currency.USD);
+        Money smaller = usd(20, 20);
+        Money greater = usd(40, 20);
 
         testValidation(MoneyCalculator::subtract);
         Assertions.assertThrows(IllegalStateException.class,
