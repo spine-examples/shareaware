@@ -66,7 +66,7 @@ public final class PaymentGatewayProcess
     }
 
     /**
-     * Emits the event when the money has been transferred to the user's bank account.
+     * Transfers money to the user's card emitting the {@code MoneyTransferredToUser} event.
      */
     @Assign
     MoneyTransferredToUser on(TransferMoneyToUser c) {
