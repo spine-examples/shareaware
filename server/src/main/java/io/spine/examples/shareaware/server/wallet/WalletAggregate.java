@@ -127,14 +127,11 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
 
     @Assign
     ReservedMoneyDebited on(DebitReservedMoney c) {
-        Money reservedAmount = state()
-                .getReservedMoneyOrThrow(c.getWithdrawalProcess()
-                                          .getUuid());
         return ReservedMoneyDebited
                 .newBuilder()
                 .setWithdrawalProcess(c.getWithdrawalProcess())
                 .setWallet(c.getWallet())
-                .setAmount(reservedAmount)
+                .setCurrentBalance(state().getBalance())
                 .vBuild();
     }
 

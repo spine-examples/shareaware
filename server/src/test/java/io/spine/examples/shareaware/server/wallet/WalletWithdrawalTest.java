@@ -106,11 +106,12 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
                     setupReplenishedWallet(context());
             WithdrawMoney command =
                     withdraw(wallet.getId());
+            Money reducedBalance = subtract(wallet.getBalance(), command.getAmount());
             ReservedMoneyDebited expected = ReservedMoneyDebited
                     .newBuilder()
                     .setWithdrawalProcess(command.getWithdrawalProcess())
                     .setWallet(wallet.getId())
-                    .setAmount(command.getAmount())
+                    .setCurrentBalance(reducedBalance)
                     .vBuild();
             context().receivesCommand(command);
 
@@ -296,11 +297,12 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
             WithdrawMoney command =
                     withdraw(wallet.getId());
             WithdrawalId withdrawal = command.getWithdrawalProcess();
+            Money reducedBalance = subtract(wallet.getBalance(), command.getAmount());
             MoneyWithdrawn expected = MoneyWithdrawn
                     .newBuilder()
                     .setWithdrawalProcess(withdrawal)
                     .setWallet(command.getWallet())
-                    .setAmount(command.getAmount())
+                    .setCurrentBalance(reducedBalance)
                     .vBuild();
             context().receivesCommand(command);
 

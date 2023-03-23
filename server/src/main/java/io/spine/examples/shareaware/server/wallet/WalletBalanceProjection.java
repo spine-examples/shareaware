@@ -58,7 +58,6 @@ final class WalletBalanceProjection
 
     @Subscribe
     void on(MoneyWithdrawn e) {
-        Money reducedBalance = subtract(state().getBalance(), e.getAmount());
-        builder().setBalance(reducedBalance);
+        builder().setBalance(e.getCurrentBalance());
     }
 }

@@ -125,7 +125,7 @@ public final class WalletWithdrawalProcess
                 .newBuilder()
                 .setWithdrawalProcess(e.getWithdrawalProcess())
                 .setWallet(e.getWallet())
-                .setAmount(e.getAmount())
+                .setCurrentBalance(e.getCurrentBalance())
                 .vBuild();
     }
 

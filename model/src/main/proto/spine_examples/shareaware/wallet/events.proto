@@ -83,8 +83,8 @@ message ReservedMoneyDebited {
     // The ID of the withdrawal process that debited the reserved money.
     WithdrawalId withdrawal_process = 2 [(required) = true];
 
-    // The amount of money that has been debited.
-    spine.money.Money amount = 3 [(required) = true];
+    // The current wallet balance after the reserved money was debited.
+    spine.money.Money current_balance = 3 [(required) = true];
 }
 
 // The money reservation has been canceled.
