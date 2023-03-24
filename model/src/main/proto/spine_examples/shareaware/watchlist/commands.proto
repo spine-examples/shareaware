@@ -52,7 +52,7 @@ message CreateWatchlist {
     string name = 3 [(required) = true];
 }
 
-// A wish of the user to watch for the share.
+// Tells that some user wants to observe changes in pricing for some share.
 message WatchShare {
 
     // The ID of the watchlist where user wants share to be watched.

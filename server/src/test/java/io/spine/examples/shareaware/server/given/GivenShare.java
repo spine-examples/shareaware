@@ -34,6 +34,9 @@ import io.spine.money.Money;
 import static io.spine.examples.shareaware.server.given.GivenMoney.*;
 import static io.spine.testing.TestValues.*;
 
+/**
+ * Factory methods for creating {@link Share} test objects.
+ */
 final class GivenShare {
 
     /**
