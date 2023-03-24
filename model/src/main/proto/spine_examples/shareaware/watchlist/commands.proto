@@ -37,7 +37,6 @@ option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
 import "spine/core/user_id.proto";
-import "spine_examples/shareaware/share.proto";
 
 // A command to create a new watchlist.
 message CreateWatchlist {
@@ -61,6 +60,6 @@ message WatchShare {
     // The ID of the user who wants to watch for the share.
     spine.core.UserId user = 2 [(required) = true];
 
-    // The share to watch for.
-    Share share = 3 [(required) = true];
+    // The ID of the share to watch for.
+    ShareId share = 3 [(required) = true];
 }

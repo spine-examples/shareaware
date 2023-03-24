@@ -27,7 +27,7 @@
 package io.spine.examples.shareaware.server.given;
 
 import io.spine.core.UserId;
-import io.spine.examples.shareaware.Share;
+import io.spine.examples.shareaware.ShareId;
 import io.spine.examples.shareaware.WatchlistId;
 import io.spine.examples.shareaware.watchlist.Watchlist;
 import io.spine.examples.shareaware.watchlist.command.CreateWatchlist;
@@ -35,7 +35,6 @@ import io.spine.examples.shareaware.watchlist.command.WatchShare;
 import io.spine.testing.core.given.GivenUserId;
 import io.spine.testing.server.blackbox.BlackBoxContext;
 
-import static io.spine.examples.shareaware.server.given.GivenShare.*;
 import static io.spine.testing.TestValues.randomString;
 
 public final class WatchlistTestEnv {
@@ -66,20 +65,12 @@ public final class WatchlistTestEnv {
                 .vBuild();
     }
 
-    private static WatchShare watchShare(WatchlistId watchlist, UserId owner, Share share) {
+    public static WatchShare watchShare(WatchlistId watchlist, UserId owner) {
         return WatchShare
                 .newBuilder()
                 .setWatchlist(watchlist)
                 .setUser(owner)
-                .setShare(share)
+                .setShare(ShareId.generate())
                 .vBuild();
-    }
-
-    public static WatchShare watchTeslaShare(WatchlistId watchlist, UserId owner) {
-        return watchShare(watchlist, owner, tesla());
-    }
-
-    public static WatchShare watchAppleShare(WatchlistId watchlist, UserId owner) {
-        return watchShare(watchlist, owner, apple());
     }
 }

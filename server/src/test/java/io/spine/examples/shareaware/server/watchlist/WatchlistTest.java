@@ -88,7 +88,7 @@ public final class WatchlistTest extends ContextAwareTest {
         @DisplayName("and emit the `ShareWatched` event")
         void event() {
             Watchlist watchlist = setUpWatchlist(context());
-            WatchShare command = watchTeslaShare(watchlist.getId(), watchlist.getOwner());
+            WatchShare command = watchShare(watchlist.getId(), watchlist.getOwner());
             ShareWatched expected = ShareWatched
                     .newBuilder()
                     .setWatchlist(command.getWatchlist())
@@ -104,13 +104,13 @@ public final class WatchlistTest extends ContextAwareTest {
         @DisplayName("by adding share to watchlist")
         void state() {
             Watchlist watchlist = setUpWatchlist(context());
-            WatchShare watchTeslaShare = watchTeslaShare(watchlist.getId(), watchlist.getOwner());
-            WatchShare watchAppleShare = watchAppleShare(watchlist.getId(), watchlist.getOwner());
-            context().receivesCommands(watchTeslaShare, watchAppleShare);
+            WatchShare firstCommand = watchShare(watchlist.getId(), watchlist.getOwner());
+            WatchShare secondCommand = watchShare(watchlist.getId(), watchlist.getOwner());
+            context().receivesCommands(firstCommand, secondCommand);
             Watchlist expected = watchlist
                     .toBuilder()
-                    .addShare(watchTeslaShare.getShare())
-                    .addShare(watchAppleShare.getShare())
+                    .addShare(firstCommand.getShare())
+                    .addShare(secondCommand.getShare())
                     .buildPartial();
 
             context().assertState(watchlist.getId(), expected);

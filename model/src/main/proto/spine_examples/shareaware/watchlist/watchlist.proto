@@ -38,7 +38,6 @@ option java_multiple_files = true;
 import "spine_examples/shareaware/identifiers.proto";
 import "spine_examples/shareaware/watchlist/notification_rule.proto";
 import "spine/core/user_id.proto";
-import "spine_examples/shareaware/share.proto";
 
 // Represents a list of watched shares.
 message Watchlist {
@@ -54,7 +53,7 @@ message Watchlist {
     string name = 3 [(required) = true];
 
     // The list of shares that are watched by the watchlist.
-    repeated Share share = 4 [(distinct) = true];
+    repeated ShareId share = 4 [(distinct) = true];
 
     // The list of notification rules that the watchlist operates on.
     repeated NotificationRule notification_rule = 5;
