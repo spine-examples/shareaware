@@ -26,38 +26,30 @@
 
 package io.spine.examples.shareaware.server.wallet;
 
-import io.spine.core.Subscribe;
-import io.spine.examples.shareaware.WalletId;
-import io.spine.examples.shareaware.wallet.WalletBalance;
-import io.spine.examples.shareaware.wallet.event.MoneyWithdrawn;
-import io.spine.examples.shareaware.wallet.event.WalletCreated;
-import io.spine.examples.shareaware.wallet.event.WalletReplenished;
-import io.spine.money.Money;
-import io.spine.server.projection.Projection;
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import io.spine.examples.shareaware.ReplenishmentId;
+import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredFromUser;
+import io.spine.examples.shareaware.wallet.WalletReplenishment;
+import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
+import io.spine.server.procman.ProcessManagerRepository;
+import io.spine.server.route.EventRoute;
+import io.spine.server.route.EventRouting;
 
-import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.*;
+import static io.spine.server.route.EventRoute.*;
 
 /**
- * Manages instances of {@code WalletBalance} projections.
+ * Manages instances of {@link WalletReplenishmentProcess}.
  */
-final class WalletBalanceProjection
-        extends Projection<WalletId, WalletBalance, WalletBalance.Builder> {
+public final class WalletReplenishmentRepository
+        extends ProcessManagerRepository<ReplenishmentId, WalletReplenishmentProcess, WalletReplenishment> {
 
-    @Subscribe
-    void on(WalletCreated e) {
-        builder()
-                .setId(e.getWallet())
-                .setBalance(e.getBalance());
-    }
-
-    @Subscribe
-    void on(WalletReplenished e) {
-        Money replenishedBalance = sum(state().getBalance(), e.getMoneyAmount());
-        builder().setBalance(replenishedBalance);
-    }
-
-    @Subscribe
-    void on(MoneyWithdrawn e) {
-        builder().setBalance(e.getCurrentBalance());
+    @OverridingMethodsMustInvokeSuper
+    @Override
+    protected void setupEventRouting(EventRouting<ReplenishmentId> routing) {
+        super.setupEventRouting(routing);
+        routing.route(MoneyTransferredFromUser.class,
+                      (event, context) -> withId(event.getReplenishmentProcess()));
+        routing.route(BalanceRecharged.class, (
+                event, context) -> withId(event.getReplenishmentProcess()));
     }
 }

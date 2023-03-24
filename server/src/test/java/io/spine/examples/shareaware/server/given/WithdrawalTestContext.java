@@ -24,9 +24,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server;
+package io.spine.examples.shareaware.server.given;
 
-import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.server.wallet.WalletAggregate;
 import io.spine.examples.shareaware.server.wallet.WalletBalanceRepository;
 import io.spine.examples.shareaware.server.wallet.WalletReplenishmentRepository;
@@ -37,29 +36,28 @@ import io.spine.server.BoundedContext;
 import io.spine.server.BoundedContextBuilder;
 import io.spine.server.DefaultRepository;
 
-/**
- * Configures Trading Bounded Context with repositories.
- */
-public final class TradingContext {
+public final class WithdrawalTestContext {
 
-    static final String NAME = "Trading";
+    private static final String NAME = "WithdrawalTest";
 
     /**
      * Prevents instantiation of this class.
      */
-    private TradingContext() {
+    private WithdrawalTestContext() {
     }
 
     /**
-     * Creates {@code BoundedContextBuilder} for the Trading context
-     * and fills it with repositories.
+     * Creates the {@link BoundedContextBuilder} for testing the wallet withdrawal flow.
+     *
+     * <p>Replaces {@code PaymentGatewayProcess} on {@code RejectingPaymentProcess}
+     * for rejection control.
      */
     public static BoundedContextBuilder newBuilder() {
         return BoundedContext
                 .singleTenant(NAME)
                 .add(DefaultRepository.of(WatchlistAggregate.class))
                 .add(DefaultRepository.of(WalletAggregate.class))
-                .add(DefaultRepository.of(PaymentGatewayProcess.class))
+                .add(DefaultRepository.of(RejectingPaymentProcess.class))
                 .add(new WalletWithdrawalRepository())
                 .add(new WalletReplenishmentRepository())
                 .add(new WalletBalanceRepository())
