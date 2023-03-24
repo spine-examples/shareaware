@@ -40,10 +40,10 @@ import io.spine.server.procman.ProcessManager;
 /**
  * The test imitation of {@code PaymentGatewayProcess} with rejection mode.
  *
- * <p>When {@code RejectControllablePaymentSystem} is in rejection mode,
+ * <p>When {@code RejectingPaymentProcess} is in rejection mode,
  * it will reject all commands directed at it and vice versa.
  */
-public final class RejectControllablePaymentGatewayProcess
+public final class RejectingPaymentProcess
         extends ProcessManager<PaymentGatewayId, PaymentGateway, PaymentGateway.Builder> {
 
     private static boolean rejectionMode = false;

@@ -31,7 +31,7 @@ import io.spine.examples.shareaware.WithdrawalId;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
 import io.spine.examples.shareaware.server.given.WithdrawalTestContext;
-import io.spine.examples.shareaware.server.given.RejectControllablePaymentGatewayProcess;
+import io.spine.examples.shareaware.server.given.RejectingPaymentProcess;
 import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.WalletBalance;
@@ -160,12 +160,12 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
                     .setWallet(wallet.getId())
                     .setWithdrawalProcess(command.getWithdrawalProcess())
                     .vBuild();
-            RejectControllablePaymentGatewayProcess.switchToRejectionMode();
+            RejectingPaymentProcess.switchToRejectionMode();
             context().receivesCommand(command);
 
             context().assertState(wallet.getId(), wallet);
             context().assertEvent(event);
-            RejectControllablePaymentGatewayProcess.switchToEventsMode();
+            RejectingPaymentProcess.switchToEventsMode();
         }
     }
 
@@ -321,14 +321,14 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
                     .setWallet(command.getWallet())
                     .setWithdrawalProcess(command.getWithdrawalProcess())
                     .vBuild();
-            RejectControllablePaymentGatewayProcess.switchToRejectionMode();
+            RejectingPaymentProcess.switchToRejectionMode();
             context().receivesCommand(command);
 
             context().assertCommands()
                      .withType(CancelMoneyReservation.class)
                      .message(0)
                      .isEqualTo(expected);
-            RejectControllablePaymentGatewayProcess.switchToEventsMode();
+            RejectingPaymentProcess.switchToEventsMode();
         }
 
         @Test
@@ -340,14 +340,14 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
                     .newBuilder()
                     .setWithdrawalProcess(command.getWithdrawalProcess())
                     .vBuild();
-            RejectControllablePaymentGatewayProcess.switchToRejectionMode();
+            RejectingPaymentProcess.switchToRejectionMode();
             context().receivesCommand(command);
 
             context().assertEvent(expected);
             context().assertEntity(command.getWithdrawalProcess(), WalletWithdrawalProcess.class)
                      .archivedFlag()
                      .isTrue();
-            RejectControllablePaymentGatewayProcess.switchToEventsMode();
+            RejectingPaymentProcess.switchToEventsMode();
         }
     }
 

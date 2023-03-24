@@ -38,5 +38,9 @@ import io.spine.examples.shareaware.WithdrawalId;
 @GeneratedMixin
 public interface WithdrawalEvent extends EventMessage {
 
+    /**
+     * Every event that participates in the withdrawal operation
+     * should have {@code WithdrawalId}.
+     */
     WithdrawalId getWithdrawalProcess();
 }
