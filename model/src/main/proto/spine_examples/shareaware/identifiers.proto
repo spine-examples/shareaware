@@ -71,3 +71,16 @@ message WithdrawalId {
 message InvestmentId {
     ShareId share = 1 [(required) = true];
 }
+
+// Identifies a shares purchase process.
+message PurchaseId {
+    string uuid = 1 [(required) = true];
+}
+
+// Identifies the operation that interacts with the wallet by reserving money in it.
+message OperationId {
+    oneof id {
+        WithdrawalId withdrawal = 2;
+        PurchaseId purchase = 3;
+    }
+}
