@@ -54,7 +54,7 @@ message Watchlist {
     string name = 3 [(required) = true];
 
     // The list of shares that are watched by the watchlist.
-    repeated Share share = 4;
+    repeated Share share = 4 [(distinct) = true];
 
     // The list of notification rules that the watchlist operates on.
     repeated NotificationRule notification_rule = 5;

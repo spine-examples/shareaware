@@ -29,6 +29,8 @@ package io.spine.examples.shareaware.server.watchlist;
 import io.spine.examples.shareaware.WatchlistId;
 import io.spine.examples.shareaware.watchlist.Watchlist;
 import io.spine.examples.shareaware.watchlist.command.CreateWatchlist;
+import io.spine.examples.shareaware.watchlist.command.WatchShare;
+import io.spine.examples.shareaware.watchlist.event.ShareWatched;
 import io.spine.examples.shareaware.watchlist.event.WatchlistCreated;
 import io.spine.server.aggregate.Aggregate;
 import io.spine.server.aggregate.Apply;
@@ -57,5 +59,20 @@ public final class WatchlistAggregate extends Aggregate<WatchlistId, Watchlist, 
         builder().setId(e.getWatchlist())
                  .setOwner(e.getOwner())
                  .setName(e.getName());
+    }
+
+    @Assign
+    ShareWatched handle(WatchShare c) {
+        return ShareWatched
+                .newBuilder()
+                .setWatchlist(c.getWatchlist())
+                .setUser(c.getUser())
+                .setShare(c.getShare())
+                .vBuild();
+    }
+
+    @Apply
+    private void event(ShareWatched e) {
+        builder().addShare(e.getShare());
     }
 }
