@@ -57,3 +57,22 @@ message TransferMoneyFromUser {
     // The amount of money to transfer.
     spine.money.Money amount = 5 [(required) = true];
 }
+
+// A command to transfer money to a user from another bank account.
+message TransferMoneyToUser {
+
+    // The ID of the payment gateway.
+    PaymentGatewayId gateway = 1;
+
+    // The ID of the withdrawal process that wants to transfer money.
+    WithdrawalId withdrawal_process = 2 [(required) = true];
+
+    // The IBAN of the sender.
+    spine_examples.shareaware.wallet.Iban sender = 3 [(required) = true];
+
+    // The IBAN of the recipient.
+    spine_examples.shareaware.wallet.Iban recipient = 4 [(required) = true];
+
+    // The amount of money to transfer.
+    spine.money.Money amount = 5 [(required) = true];
+}

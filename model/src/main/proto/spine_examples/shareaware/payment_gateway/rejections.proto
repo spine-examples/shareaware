@@ -45,3 +45,13 @@ message MoneyCannotBeTransferredFromUser {
     // Why the transaction failed.
     string cause = 2;
 }
+
+// Money cannot be transferred to user due to error in external payment system.
+message MoneyCannotBeTransferredToUser {
+
+    // The ID of the withdrawal process that caused failed transaction.
+    WithdrawalId withdrawal_process = 1;
+
+    // Why the transaction failed.
+    string cause = 2;
+}

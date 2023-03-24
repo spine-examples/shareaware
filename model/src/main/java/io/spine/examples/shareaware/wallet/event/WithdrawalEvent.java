@@ -24,40 +24,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.wallet;
+package io.spine.examples.shareaware.wallet.event;
 
-import io.spine.core.Subscribe;
-import io.spine.examples.shareaware.WalletId;
-import io.spine.examples.shareaware.wallet.WalletBalance;
-import io.spine.examples.shareaware.wallet.event.MoneyWithdrawn;
-import io.spine.examples.shareaware.wallet.event.WalletCreated;
-import io.spine.examples.shareaware.wallet.event.WalletReplenished;
-import io.spine.money.Money;
-import io.spine.server.projection.Projection;
-
-import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.*;
+import com.google.errorprone.annotations.Immutable;
+import io.spine.annotation.GeneratedMixin;
+import io.spine.base.EventMessage;
+import io.spine.examples.shareaware.WithdrawalId;
 
 /**
- * Manages instances of {@code WalletBalance} projections.
+ * Common interface for events participating in wallet withdrawal operation.
  */
-final class WalletBalanceProjection
-        extends Projection<WalletId, WalletBalance, WalletBalance.Builder> {
+@Immutable
+@GeneratedMixin
+public interface WithdrawalEvent extends EventMessage {
 
-    @Subscribe
-    void on(WalletCreated e) {
-        builder()
-                .setId(e.getWallet())
-                .setBalance(e.getBalance());
-    }
-
-    @Subscribe
-    void on(WalletReplenished e) {
-        Money replenishedBalance = sum(state().getBalance(), e.getMoneyAmount());
-        builder().setBalance(replenishedBalance);
-    }
-
-    @Subscribe
-    void on(MoneyWithdrawn e) {
-        builder().setBalance(e.getCurrentBalance());
-    }
+    /**
+     * Every event that participates in the withdrawal operation
+     * should have {@code WithdrawalId}.
+     */
+    WithdrawalId getWithdrawalProcess();
 }

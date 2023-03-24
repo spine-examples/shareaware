@@ -2,9 +2,12 @@ package io.spine.examples.shareaware.server.given;
 
 import io.spine.examples.shareaware.ReplenishmentId;
 import io.spine.examples.shareaware.WalletId;
+import io.spine.examples.shareaware.WithdrawalId;
 import io.spine.examples.shareaware.wallet.Iban;
+import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.command.CreateWallet;
 import io.spine.examples.shareaware.wallet.command.ReplenishWallet;
+import io.spine.examples.shareaware.wallet.command.WithdrawMoney;
 import io.spine.money.Currency;
 import io.spine.money.Money;
 import io.spine.testing.core.given.GivenUserId;
@@ -19,6 +22,11 @@ public final class WalletTestEnv {
      */
     private WalletTestEnv() {
     }
+
+    private static final Iban IBAN = Iban
+            .newBuilder()
+            .setValue("FI211234569876543210")
+            .vBuild();
 
     public static WalletId givenId() {
         return WalletId
@@ -38,16 +46,12 @@ public final class WalletTestEnv {
      * Generates {@code ReplenishWallet} command.
      */
     public static ReplenishWallet replenish(WalletId wallet, Money amount) {
-        Iban iban = Iban
-                .newBuilder()
-                .setValue("FI211234569876543210")
-                .vBuild();
         ReplenishmentId replenishment = ReplenishmentId.generate();
         return ReplenishWallet
                 .newBuilder()
                 .setWallet(wallet)
                 .setReplenishment(replenishment)
-                .setIban(iban)
+                .setIban(IBAN)
                 .setMoneyAmount(amount)
                 .vBuild();
     }
@@ -62,12 +66,34 @@ public final class WalletTestEnv {
 
     /**
      * Creates a {@code Wallet} in {@code context} by sending {@code CreateWallet} command to it.
+     *
      * @return the ID of created {@code Wallet}.
      */
-    public static WalletId setupWallet(BlackBoxContext context) {
+    public static WalletId setUpWallet(BlackBoxContext context) {
         WalletId wallet = givenId();
         CreateWallet command = createWallet(wallet);
         context.receivesCommand(command);
         return wallet;
+    }
+
+    public static Wallet setUpReplenishedWallet(BlackBoxContext context) {
+        WalletId wallet = setUpWallet(context);
+        ReplenishWallet command = replenish(wallet);
+        context.receivesCommand(command);
+        return Wallet
+                .newBuilder()
+                .setId(wallet)
+                .setBalance(command.getMoneyAmount())
+                .vBuild();
+    }
+
+    public static WithdrawMoney withdraw(WalletId wallet) {
+        return WithdrawMoney
+                .newBuilder()
+                .setWithdrawalProcess(WithdrawalId.generate())
+                .setWallet(wallet)
+                .setRecipient(IBAN)
+                .setAmount(moneyOf(200, Currency.USD))
+                .vBuild();
     }
 }
