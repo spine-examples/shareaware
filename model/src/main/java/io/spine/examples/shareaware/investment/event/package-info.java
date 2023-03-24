@@ -24,50 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+/**
+ * Defines events related to `Investment`, and their interfaces.
+ */
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.examples.shareaware.investment.event;
 
-package spine_examples.shareaware;
-
-import "spine/options.proto";
-
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware";
-option java_outer_classname = "IdentifiersProto";
-option java_multiple_files = true;
-
-import "spine/core/user_id.proto";
-
-// Identifies a watchlist.
-message WatchlistId {
-    string uuid = 1 [(required) = true];
-}
-
-// Identifies a share.
-message ShareId {
-    string uuid = 1 [(required) = true];
-}
-
-// Identifies a wallet.
-message WalletId {
-    spine.core.UserId owner = 1 [(required) = true];
-}
-
-// Identifies a wallet replenishment process.
-message ReplenishmentId {
-    string uuid = 1 [(required) = true];
-}
-
-// Identifies a payment gateway.
-message PaymentGatewayId {
-    string uuid = 1 [(required) = true];
-}
-
-// Identifies a wallet withdrawal process.
-message WithdrawalId {
-    string uuid = 1 [(required) = true];
-}
-
-// Identifies an investment.
-message InvestmentId {
-    ShareId share = 1 [(required) = true];
-}
+import javax.annotation.CheckReturnValue;
+import javax.annotation.ParametersAreNonnullByDefault;

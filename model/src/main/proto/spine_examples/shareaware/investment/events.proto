@@ -26,48 +26,23 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware;
+package spine_examples.shareaware.investment;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware";
-option java_outer_classname = "IdentifiersProto";
+option java_package = "io.spine.examples.shareaware.investment.event";
+option java_outer_classname = "EventsProto";
 option java_multiple_files = true;
 
-import "spine/core/user_id.proto";
+import "spine_examples/shareaware/identifiers.proto";
 
-// Identifies a watchlist.
-message WatchlistId {
-    string uuid = 1 [(required) = true];
-}
+// Shares have been added to `Investment`.
+message SharesAdded {
 
-// Identifies a share.
-message ShareId {
-    string uuid = 1 [(required) = true];
-}
+    // The ID of the share that has been added.
+    ShareId share = 1;
 
-// Identifies a wallet.
-message WalletId {
-    spine.core.UserId owner = 1 [(required) = true];
-}
-
-// Identifies a wallet replenishment process.
-message ReplenishmentId {
-    string uuid = 1 [(required) = true];
-}
-
-// Identifies a payment gateway.
-message PaymentGatewayId {
-    string uuid = 1 [(required) = true];
-}
-
-// Identifies a wallet withdrawal process.
-message WithdrawalId {
-    string uuid = 1 [(required) = true];
-}
-
-// Identifies an investment.
-message InvestmentId {
-    ShareId share = 1 [(required) = true];
+    // The number of shares that have been added.
+    int32 quantity = 2 [(required) = true];
 }

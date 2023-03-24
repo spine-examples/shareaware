@@ -25,13 +25,30 @@
  */
 
 /**
- * Configures test-running tasks in a project.
+ * Configures test-running tasks and code coverage in a project.
  *
  * Explicitly instructs to discover and execute JUnit tests.
  */
 
+plugins {
+    java
+    jacoco
+}
+
 tasks.withType<Test> {
     useJUnitPlatform {
         includeEngines("junit-jupiter")
+    }
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        xml.outputLocation.set(layout.buildDirectory.file("jacocoCoverage.xml"))
     }
 }
