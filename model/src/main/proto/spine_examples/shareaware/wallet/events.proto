@@ -47,3 +47,55 @@ message WalletCreated {
     // The initial balance of the wallet.
     spine.money.Money balance = 2;
 }
+
+// The wallet balance has been recharged.
+message BalanceRecharged {
+
+    // The ID of the wallet whose balance was recharged.
+    WalletId wallet = 1;
+
+    // The ID of the replenishment process that has invoked balance recharging.
+    ReplenishmentId replenishment_process = 2 [(required) = true];
+
+    // The amount of money by which the wallet balance was recharged.
+    spine.money.Money money_amount = 3 [(required) = true];
+}
+
+// Money has been reserved in the wallet.
+message MoneyReserved {
+    option (is).java_type = "WithdrawalEvent";
+
+    // The ID of the wallet where money has been reserved.
+    WalletId wallet = 1;
+
+    // The ID of the withdrawal process that reserved money.
+    WithdrawalId withdrawal_process = 2 [(required) = true];
+
+    // The amount of money that has been reserved.
+    spine.money.Money amount = 3 [(required) = true];
+}
+
+// The reserved money has been debited.
+message ReservedMoneyDebited {
+    option (is).java_type = "WithdrawalEvent";
+
+    // The ID of the wallet where reserved money has been debited.
+    WalletId wallet = 1;
+
+    // The ID of the withdrawal process that debited the reserved money.
+    WithdrawalId withdrawal_process = 2 [(required) = true];
+
+    // The current wallet balance after the reserved money was debited.
+    spine.money.Money current_balance = 3 [(required) = true];
+}
+
+// The money reservation has been canceled.
+message MoneyReservationCanceled {
+    option (is).java_type = "WithdrawalEvent";
+
+    // The ID of the wallet where money reservation was canceled.
+    WalletId wallet = 1;
+
+    // The ID of the withdrawal process that canceled money reservation.
+    WithdrawalId withdrawal_process = 2 [(required) = true];
+}

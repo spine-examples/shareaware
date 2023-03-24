@@ -62,7 +62,6 @@ public final class WalletTest extends ContextAwareTest {
                 .newBuilder()
                 .setId(wallet)
                 .setBalance(GivenMoney.zero())
-                .setReservedMoney(GivenMoney.zero())
                 .vBuild();
         context().receivesCommand(command);
         EventSubject assertEvents = context()

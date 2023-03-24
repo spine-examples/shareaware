@@ -24,40 +24,33 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.wallet;
+syntax = "proto3";
 
-import io.spine.core.Subscribe;
-import io.spine.examples.shareaware.WalletId;
-import io.spine.examples.shareaware.wallet.WalletBalance;
-import io.spine.examples.shareaware.wallet.event.MoneyWithdrawn;
-import io.spine.examples.shareaware.wallet.event.WalletCreated;
-import io.spine.examples.shareaware.wallet.event.WalletReplenished;
-import io.spine.money.Money;
-import io.spine.server.projection.Projection;
+package spine_examples.shareaware.wallet;
 
-import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.*;
+import "spine/options.proto";
 
-/**
- * Manages instances of {@code WalletBalance} projections.
- */
-final class WalletBalanceProjection
-        extends Projection<WalletId, WalletBalance, WalletBalance.Builder> {
+option (type_url_prefix) = "type.shareaware.spine.io";
+option java_package = "io.spine.examples.shareaware.wallet.command";
+option java_outer_classname = "WithdrawalCommandsProto";
+option java_multiple_files = true;
 
-    @Subscribe
-    void on(WalletCreated e) {
-        builder()
-                .setId(e.getWallet())
-                .setBalance(e.getBalance());
-    }
+import "spine_examples/shareaware/identifiers.proto";
+import "spine_examples/shareaware/wallet/iban.proto";
+import "spine/money/money.proto";
 
-    @Subscribe
-    void on(WalletReplenished e) {
-        Money replenishedBalance = sum(state().getBalance(), e.getMoneyAmount());
-        builder().setBalance(replenishedBalance);
-    }
+// A command to withdraw money from user's wallet.
+message WithdrawMoney {
 
-    @Subscribe
-    void on(MoneyWithdrawn e) {
-        builder().setBalance(e.getCurrentBalance());
-    }
+    // The ID of the withdrawal process.
+    WithdrawalId withdrawal_process = 1;
+
+    // The ID of the user's wallet where to withdraw money.
+    WalletId wallet = 2 [(required) = true];
+
+    // The amount of money to withdraw.
+    spine.money.Money amount = 3 [(required) = true];
+
+    // The IBAN of the recipient.
+    Iban recipient = 4 [(required) = true];
 }

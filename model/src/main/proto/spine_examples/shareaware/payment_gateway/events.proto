@@ -26,48 +26,40 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware;
+package spine_examples.shareaware.payment_gateway;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware";
-option java_outer_classname = "IdentifiersProto";
+option java_package = "io.spine.examples.shareaware.paymentgateway.event";
+option java_outer_classname = "EventsProto";
 option java_multiple_files = true;
 
-import "spine/core/user_id.proto";
+import "spine_examples/shareaware/identifiers.proto";
+import "spine/money/money.proto";
 
-// Identifies a watchlist.
-message WatchlistId {
-    string uuid = 1 [(required) = true];
+// A money has been transferred from user to another bank account.
+message MoneyTransferredFromUser {
+
+    // The ID of the payment gateway in which the transaction ended successfully.
+    PaymentGatewayId gateway = 1;
+
+    // The ID of the replenishment process that has initiated the transaction.
+    ReplenishmentId replenishment_process = 2 [(required) = true];
+
+    // The amount of money that was transferred.
+    spine.money.Money amount = 3 [(required) = true];
 }
 
-// Identifies a share.
-message ShareId {
-    string uuid = 1 [(required) = true];
-}
+// A money has been transferred to a user from another bank account.
+message MoneyTransferredToUser {
 
-// Identifies a wallet.
-message WalletId {
-    spine.core.UserId owner = 1 [(required) = true];
-}
+    // The ID of the payment gateway in which the transaction ended successfully.
+    PaymentGatewayId getaway = 1;
 
-// Identifies a wallet replenishment process.
-message ReplenishmentId {
-    string uuid = 1 [(required) = true];
-}
+    // The ID of the withdrawal process that has initiated the transaction.
+    WithdrawalId withdrawal_process = 2 [(required) = true];
 
-// Identifies a payment gateway.
-message PaymentGatewayId {
-    string uuid = 1 [(required) = true];
-}
-
-// Identifies a wallet withdrawal process.
-message WithdrawalId {
-    string uuid = 1 [(required) = true];
-}
-
-// Identifies an investment.
-message InvestmentId {
-    ShareId share = 1 [(required) = true];
+    // The amount of money that was transferred.
+    spine.money.Money amount = 3 [(required) = true];
 }

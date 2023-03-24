@@ -24,40 +24,21 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.wallet;
+syntax = "proto3";
 
-import io.spine.core.Subscribe;
-import io.spine.examples.shareaware.WalletId;
-import io.spine.examples.shareaware.wallet.WalletBalance;
-import io.spine.examples.shareaware.wallet.event.MoneyWithdrawn;
-import io.spine.examples.shareaware.wallet.event.WalletCreated;
-import io.spine.examples.shareaware.wallet.event.WalletReplenished;
-import io.spine.money.Money;
-import io.spine.server.projection.Projection;
+package spine_examples.shareaware.wallet;
 
-import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.*;
+import "spine/options.proto";
 
-/**
- * Manages instances of {@code WalletBalance} projections.
- */
-final class WalletBalanceProjection
-        extends Projection<WalletId, WalletBalance, WalletBalance.Builder> {
+option (type_url_prefix) = "type.shareaware.spine.io";
+option java_package = "io.spine.examples.shareaware.wallet";
+option java_outer_classname = "IbanProto";
+option java_multiple_files = true;
 
-    @Subscribe
-    void on(WalletCreated e) {
-        builder()
-                .setId(e.getWallet())
-                .setBalance(e.getBalance());
-    }
+// The International Bank Account Number (IBAN).
+message Iban {
 
-    @Subscribe
-    void on(WalletReplenished e) {
-        Money replenishedBalance = sum(state().getBalance(), e.getMoneyAmount());
-        builder().setBalance(replenishedBalance);
-    }
-
-    @Subscribe
-    void on(MoneyWithdrawn e) {
-        builder().setBalance(e.getCurrentBalance());
-    }
+    string value = 1 [(required) = true,
+        (pattern).regex = "^([A-Z]{2}\\d{2})\\s?([A-Z\\d]{4}\\s?){2,7}([A-Z\\d]{1,4}\\s?)?$",
+        (pattern).msg_format = "IBAN is not valid. IBAN format: [country code][check digits][Basic Bank Account Number]."];
 }

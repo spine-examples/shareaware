@@ -38,6 +38,7 @@ option java_multiple_files = true;
 import "spine/core/user_id.proto";
 import "spine/money/money.proto";
 import "spine_examples/shareaware/identifiers.proto";
+import "spine_examples/shareaware/wallet/iban.proto";
 
 // Represents an amount of user's money.
 message Wallet {
@@ -54,11 +55,39 @@ message Wallet {
     //
     spine.money.Money balance = 2;
 
-    // An amount of reserved money.
+    // The reserved amounts of money per operation which performed the reservation.
     //
-    // This amount is considered reserved, because there may be pending operations against this wallet,
-    // that may imply spendings. It is not possible to use the reserved amount directly,
-    // other than in scope of these pending operations.
+    // Many withdrawal operations may interact with this wallet
+    // and make money reservations for their needs.
+    // The amount of money is considered reserved because no one can use this amount
+    // except the operation that reserved it.
     //
-    spine.money.Money reserved_money = 3;
+    // Keys in this map correspond to `WithdrawalId.uuid` values.
+    //
+    map<string, spine.money.Money> reserved_money = 3;
+}
+
+// The process of wallet replenishment.
+message WalletReplenishment {
+    option (entity).kind = PROCESS_MANAGER;
+
+    // The ID of the replenishment process.
+    ReplenishmentId id = 1;
+
+    // The ID of the wallet to replenish.
+    WalletId wallet = 2;
+}
+
+// The process of wallet withdrawal.
+message WalletWithdrawal {
+    option (entity).kind = PROCESS_MANAGER;
+
+    // The ID of the withdrawal process.
+    WithdrawalId id = 1;
+
+    // The ID of the wallet from where to withdraw money.
+    WalletId wallet = 2 [(required) = true];
+
+    // The IBAN of the recipient.
+    Iban recipient = 3 [(required) = true];
 }

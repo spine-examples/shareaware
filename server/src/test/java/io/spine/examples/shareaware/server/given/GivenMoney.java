@@ -19,4 +19,30 @@ public final class GivenMoney {
                 .setNanos(0)
                 .vBuild();
     }
+
+    public static Money moneyOf(long units, Currency currency) {
+        return Money
+                .newBuilder()
+                .setCurrency(currency)
+                .setUnits(units)
+                .setNanos(0)
+                .vBuild();
+    }
+
+    public static Money moneyOf(long units, int nanos, Currency currency) {
+        return Money
+                .newBuilder()
+                .setCurrency(currency)
+                .setUnits(units)
+                .setNanos(nanos)
+                .vBuild();
+    }
+
+    public static Money usd(long units, int nanos) {
+        return moneyOf(units, nanos, Currency.USD);
+    }
+
+    public static Money usd(long units) {
+        return moneyOf(units, Currency.USD);
+    }
 }
