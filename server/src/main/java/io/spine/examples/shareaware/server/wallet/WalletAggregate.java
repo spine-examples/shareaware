@@ -104,14 +104,14 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
             throw InsufficientFunds
                     .newBuilder()
                     .setWallet(c.getWallet())
-                    .setWithdrawalProcess(c.getWithdrawalProcess())
+                    .setOperation(c.getOperation())
                     .setAmount(c.getAmount())
                     .build();
         }
         return MoneyReserved
                 .newBuilder()
                 .setWallet(c.getWallet())
-                .setWithdrawalProcess(c.getWithdrawalProcess())
+                .setOperation(c.getOperation())
                 .setAmount(c.getAmount())
                 .vBuild();
     }
@@ -129,7 +129,7 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
     ReservedMoneyDebited on(DebitReservedMoney c) {
         return ReservedMoneyDebited
                 .newBuilder()
-                .setWithdrawalProcess(c.getWithdrawalProcess())
+                .setOperation(c.getOperation())
                 .setWallet(c.getWallet())
                 .setCurrentBalance(state().getBalance())
                 .vBuild();
@@ -145,7 +145,7 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
     MoneyReservationCanceled on(CancelMoneyReservation e) {
         return MoneyReservationCanceled
                 .newBuilder()
-                .setWithdrawalProcess(e.getWithdrawalProcess())
+                .setOperation(e.getOperation())
                 .setWallet(e.getWallet())
                 .vBuild();
     }
@@ -161,6 +161,8 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
     }
 
     private static String extractWithdrawalIdValue(WithdrawalEvent e) {
-        return e.getWithdrawalProcess().getUuid();
+        return e.getOperation()
+                .getWithdrawal()
+                .getUuid();
     }
 }

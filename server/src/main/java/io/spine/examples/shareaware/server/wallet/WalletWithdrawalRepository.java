@@ -26,6 +26,7 @@
 
 package io.spine.examples.shareaware.server.wallet;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.examples.shareaware.WithdrawalId;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
@@ -34,9 +35,12 @@ import io.spine.examples.shareaware.wallet.WalletWithdrawal;
 import io.spine.examples.shareaware.wallet.event.MoneyReservationCanceled;
 import io.spine.examples.shareaware.wallet.event.MoneyReserved;
 import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
+import io.spine.examples.shareaware.wallet.event.WithdrawalEvent;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
 import io.spine.server.procman.ProcessManagerRepository;
 import io.spine.server.route.EventRouting;
+
+import java.util.Set;
 
 import static io.spine.server.route.EventRoute.*;
 
@@ -51,16 +55,23 @@ public final class WalletWithdrawalRepository
     protected void setupEventRouting(EventRouting<WithdrawalId> routing) {
         super.setupEventRouting(routing);
         routing.route(MoneyTransferredToUser.class,
-                      (event, context) -> withId(event.getWithdrawalProcess()))
-               .route(MoneyReserved.class,
-                      (event, context) -> withId(event.getWithdrawalProcess()))
-               .route(ReservedMoneyDebited.class,
-                      (event, context) -> withId(event.getWithdrawalProcess()))
-               .route(MoneyReservationCanceled.class,
-                      (event, context) -> withId(event.getWithdrawalProcess()))
-               .route(InsufficientFunds.class,
-                      (event, context) -> withId(event.getWithdrawalProcess()))
-               .route(MoneyCannotBeTransferredToUser.class,
                       (event, context) -> withId(event.getWithdrawalProcess()));
+        routing.route(MoneyReserved.class,
+                      (event, context) -> check(event));
+        routing.route(ReservedMoneyDebited.class,
+                      (event, context) -> check(event));
+        routing.route(MoneyReservationCanceled.class,
+                      (event, context) -> check(event));
+        routing.route(InsufficientFunds.class,
+                      (event, context) -> withId(event.getOperation().getWithdrawal()));
+        routing.route(MoneyCannotBeTransferredToUser.class,
+                      (event, context) -> withId(event.getWithdrawalProcess()));
+    }
+
+    private static Set<WithdrawalId> check(WithdrawalEvent e) {
+        if (e.getOperation().hasWithdrawal()) {
+            return ImmutableSet.of(e.getOperation().getWithdrawal());
+        }
+        return ImmutableSet.of();
     }
 }

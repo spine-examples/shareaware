@@ -26,6 +26,7 @@
 
 package io.spine.examples.shareaware.server.wallet;
 
+import io.spine.examples.shareaware.OperationId;
 import io.spine.examples.shareaware.WithdrawalId;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
@@ -61,7 +62,7 @@ public final class WalletWithdrawalProcess
         return ReserveMoney
                 .newBuilder()
                 .setWallet(c.getWallet())
-                .setWithdrawalProcess(c.getWithdrawalProcess())
+                .setOperation(operationId(c.getWithdrawalProcess()))
                 .setAmount(c.getAmount())
                 .vBuild();
     }
@@ -82,7 +83,7 @@ public final class WalletWithdrawalProcess
         return TransferMoneyToUser
                 .newBuilder()
                 .setGateway(PaymentGatewayProcess.ID)
-                .setWithdrawalProcess(e.getWithdrawalProcess())
+                .setWithdrawalProcess(e.getOperation().getWithdrawal())
                 .setSender(WalletReplenishmentProcess.shareAwareIban)
                 .setRecipient(state().getRecipient())
                 .setAmount(e.getAmount())
@@ -98,7 +99,7 @@ public final class WalletWithdrawalProcess
         return DebitReservedMoney
                 .newBuilder()
                 .setWallet(state().getWallet())
-                .setWithdrawalProcess(e.getWithdrawalProcess())
+                .setOperation(operationId(e.getWithdrawalProcess()))
                 .vBuild();
     }
 
@@ -110,7 +111,7 @@ public final class WalletWithdrawalProcess
     CancelMoneyReservation on(MoneyCannotBeTransferredToUser e) {
         return CancelMoneyReservation
                 .newBuilder()
-                .setWithdrawalProcess(e.getWithdrawalProcess())
+                .setOperation(operationId(e.getWithdrawalProcess()))
                 .setWallet(state().getWallet())
                 .vBuild();
     }
@@ -123,7 +124,7 @@ public final class WalletWithdrawalProcess
         setArchived(true);
         return MoneyWithdrawn
                 .newBuilder()
-                .setWithdrawalProcess(e.getWithdrawalProcess())
+                .setWithdrawalProcess(e.getOperation().getWithdrawal())
                 .setWallet(e.getWallet())
                 .setCurrentBalance(e.getCurrentBalance())
                 .vBuild();
@@ -137,7 +138,7 @@ public final class WalletWithdrawalProcess
         setArchived(true);
         return MoneyNotWithdrawn
                 .newBuilder()
-                .setWithdrawalProcess(e.getWithdrawalProcess())
+                .setWithdrawalProcess(e.getOperation().getWithdrawal())
                 .vBuild();
     }
 
@@ -149,7 +150,14 @@ public final class WalletWithdrawalProcess
         setArchived(true);
         return MoneyNotWithdrawn
                 .newBuilder()
-                .setWithdrawalProcess(e.getWithdrawalProcess())
+                .setWithdrawalProcess(e.getOperation().getWithdrawal())
+                .vBuild();
+    }
+
+    private static OperationId operationId(WithdrawalId withdrawal) {
+        return OperationId
+                .newBuilder()
+                .setWithdrawal(withdrawal)
                 .vBuild();
     }
 }

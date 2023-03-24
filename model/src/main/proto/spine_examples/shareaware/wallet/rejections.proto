@@ -44,7 +44,7 @@ message InsufficientFunds {
     WalletId wallet = 1;
 
     // The ID of the withdrawal process that wanted to reserve money.
-    WithdrawalId withdrawal_process = 2 [(required) = true];
+    OperationId operation = 2 [(required) = true];
 
     // The amount of not reserved money.
     spine.money.Money amount = 3 [(required) = true];

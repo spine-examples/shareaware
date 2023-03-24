@@ -29,7 +29,7 @@ package io.spine.examples.shareaware.wallet.event;
 import com.google.errorprone.annotations.Immutable;
 import io.spine.annotation.GeneratedMixin;
 import io.spine.base.EventMessage;
-import io.spine.examples.shareaware.WithdrawalId;
+import io.spine.examples.shareaware.OperationId;
 
 /**
  * Common interface for events participating in wallet withdrawal operation.
@@ -42,5 +42,5 @@ public interface WithdrawalEvent extends EventMessage {
      * Every event that participates in the withdrawal operation
      * should have {@code WithdrawalId}.
      */
-    WithdrawalId getWithdrawalProcess();
+    OperationId getOperation();
 }
