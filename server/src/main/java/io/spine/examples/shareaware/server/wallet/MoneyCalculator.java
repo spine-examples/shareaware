@@ -26,9 +26,9 @@
 
 package io.spine.examples.shareaware.server.wallet;
 
-import com.google.common.base.Preconditions;
+import io.spine.money.Currency;
 import io.spine.money.Money;
-import io.spine.util.Preconditions2;
+import io.spine.money.MoneyAmount;
 
 import static com.google.common.base.Preconditions.*;
 import static io.spine.util.Preconditions2.*;
@@ -53,14 +53,7 @@ final class MoneyCalculator {
      * Calculates the sum of two {@code Money} objects with the same currency.
      */
     static Money sum(Money first, Money second) {
-        checkNotNull(first);
-        checkNotNull(second);
-        checkState(first.getCurrency() == second.getCurrency(),
-                                 "Cannot calculate two `Money` objects with different currencies.");
-        checkState(first.getUnits() >= 0 && second.getUnits() >= 0);
-        checkBounds(first.getNanos(), "first.nanos", 0, MAX_NANOS_AMOUNT);
-        checkBounds(second.getNanos(), "second.nanos", 0, MAX_NANOS_AMOUNT);
-
+        checkArguments(first, second);
         int resultNanos = first.getNanos() + second.getNanos();
         long resultUnits = first.getUnits() + second.getUnits();
         if (resultNanos / NANOS_IN_UNIT >= 1) {
@@ -73,5 +66,59 @@ final class MoneyCalculator {
                 .setUnits(resultUnits)
                 .setCurrency(first.getCurrency())
                 .vBuild();
+    }
+
+    /**
+     * Subtracts the second {@code Money} argument from the first.
+     */
+    static Money subtract(Money first, Money second) {
+        checkArguments(first, second);
+        checkState(isGreater(first, second) || first.equals(second));
+        int resultNanos = first.getNanos() - second.getNanos();
+        long resultUnits = first.getUnits() - second.getUnits();
+        if (resultNanos < 0) {
+            resultUnits--;
+            resultNanos += NANOS_IN_UNIT;
+        }
+        return Money
+                .newBuilder()
+                .setNanos(resultNanos)
+                .setUnits(resultUnits)
+                .setCurrency(first.getCurrency())
+                .vBuild();
+    }
+
+    /**
+     * Returns true if the first {@code Money} object is greater than the second {@code Money} object,
+     * or false otherwise.
+     */
+    static boolean isGreater(Money first, Money second) {
+        checkArguments(first, second);
+        if (first.getUnits() > second.getUnits()) {
+            return true;
+        }
+        if (first.getUnits() < second.getUnits()){
+            return false;
+        }
+        return first.getNanos() > second.getNanos();
+    }
+
+    /**
+     * Checks the two {@code Money} objects for:
+     * <ul>
+     *     <li>being non-nullable</li>
+     *     <li>being the same currency</li>
+     *     <li>their units to be non-negative</li>
+     *     <li>their nanos to be in 0..100 range</li>
+     * </ul>
+     */
+    private static void checkArguments(Money first, Money second) {
+        checkNotNull(first);
+        checkNotNull(second);
+        checkState(first.getCurrency() == second.getCurrency(),
+                   "Cannot calculate two `Money` objects with different currencies.");
+        checkState(first.getUnits() >= 0 && second.getUnits() >= 0);
+        checkBounds(first.getNanos(), "first.nanos", 0, MAX_NANOS_AMOUNT);
+        checkBounds(second.getNanos(), "second.nanos", 0, MAX_NANOS_AMOUNT);
     }
 }

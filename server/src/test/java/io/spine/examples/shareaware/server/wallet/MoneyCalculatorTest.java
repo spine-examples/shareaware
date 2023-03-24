@@ -26,85 +26,69 @@
 
 package io.spine.examples.shareaware.server.wallet;
 
-import io.spine.examples.shareaware.server.given.GivenMoney;
-import io.spine.money.Currency;
 import io.spine.money.Money;
-import io.spine.testing.UtilityClassTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.params.provider.Arguments;
 
-import static com.google.common.truth.Truth.*;
+import java.util.stream.Stream;
+
 import static io.spine.examples.shareaware.server.given.GivenMoney.*;
+import static org.junit.jupiter.params.provider.Arguments.*;
 
 @DisplayName("`MoneyCalculator` should")
-final class MoneyCalculatorTest extends UtilityClassTest<MoneyCalculator> {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+final class MoneyCalculatorTest extends MoneyCalculatorAbstractTest {
 
-    MoneyCalculatorTest() {
-        super(MoneyCalculator.class);
+    @DisplayName("calculate the sum of two `Money` objects")
+    Stream<Arguments> sum() {
+        return Stream.of(
+                arguments(usd(20, 50), usd(20, 50), usd(41, 0)),
+                arguments(usd(50), usd(25, 50), usd(75, 50)),
+                arguments(usd(100, 90), usd(50, 20), usd(151, 10))
+        );
     }
 
-    @ParameterizedTest
-    @DisplayName("calculate sum of two `Money` objects")
-    @CsvSource({
-            "20, 50, 20, 50, 41, 0",
-            "50, 0, 25, 50, 75, 50",
-            "100, 90, 50, 20, 151, 10"
-    })
-    void calculateMoney(
-            int firstUnits, int firstNanos,
-            int secondUnits, int secondNanos,
-            int expectedUnits, int expectedNanos) {
-        Money first = moneyOf(firstUnits, firstNanos, Currency.USD);
-        Money second = moneyOf(secondUnits, secondNanos, Currency.USD);
-        Money expected = moneyOf(expectedUnits, expectedNanos, Currency.USD);
-        Money actual = MoneyCalculator.sum(first, second);
+    @DisplayName("calculate the difference of two `Money` objects")
+    Stream<Arguments> subtract() {
+        return Stream.of(
+                arguments(usd(20, 50), usd(20, 50), usd(0)),
+                arguments(usd(26, 10), usd(25, 50), usd(0, 60)),
+                arguments(usd(100, 50), usd(90, 50), usd(10))
+        );
+    }
 
-        assertThat(actual).isEqualTo(expected);
+    @DisplayName("determine if the `Money` object is greater then the second")
+    Stream<Arguments> isGreater() {
+        return Stream.of(
+                arguments(usd(20, 50), usd(20, 50), false),
+                arguments(usd(26, 10), usd(25, 50), true),
+                arguments(usd(40, 50), usd(40, 60), false)
+        );
     }
 
     @Test
-    @DisplayName("throw an `IllegalStateException` when `Money` objects have different currencies")
-    void differentCurrencies() {
-        Money first = moneyOf(20, Currency.USD);
-        Money second = moneyOf(30, Currency.UAH);
-
-        IllegalStateException exception =
-                Assertions.assertThrows(IllegalStateException.class,
-                                        () -> MoneyCalculator.sum(first, second));
-        assertThat(exception.getMessage()).
-                isEqualTo("Cannot calculate two `Money` objects with different currencies.");
+    @DisplayName("should validate arguments when calculating the sum")
+    void validateSum() {
+        testValidation(MoneyCalculator::sum);
     }
 
-    @ParameterizedTest
-    @DisplayName("throw an `IllegalStateException` when `Money` units are negative")
-    @CsvSource({
-            "20, -50",
-            "-10, 10"
-    })
-    void negativeUnits(int firstUnits, int secondUnits) {
-        Money first = moneyOf(firstUnits, Currency.USD);
-        Money second = moneyOf(secondUnits, Currency.USD);
+    @Test
+    @DisplayName("should validate arguments when calculating the difference")
+    void validateSubtract() {
+        Money smaller = usd(20, 20);
+        Money greater = usd(40, 20);
 
-        IllegalStateException exception =
-                Assertions.assertThrows(IllegalStateException.class,
-                                        () -> MoneyCalculator.sum(first, second));
+        testValidation(MoneyCalculator::subtract);
+        Assertions.assertThrows(IllegalStateException.class,
+                                () -> MoneyCalculator.subtract(smaller, greater));
     }
 
-    @ParameterizedTest
-    @DisplayName("throw an `IllegalArgumentException` when `Money` units are outside of 0..100 range")
-    @CsvSource({
-            "120, 50",
-            "10, -10"
-    })
-    void outOfBounds(int firstNanos, int secondNanos) {
-        Money first = moneyOf(0, firstNanos, Currency.USD);
-        Money second = moneyOf(0, secondNanos, Currency.USD);
-
-        IllegalArgumentException exception =
-                Assertions.assertThrows(IllegalArgumentException.class,
-                                        () -> MoneyCalculator.sum(first, second));
+    @Test
+    @DisplayName("should validate arguments when determining which of the object are greater")
+    void validateIsGreater() {
+        testValidation(MoneyCalculator::isGreater);
     }
 }

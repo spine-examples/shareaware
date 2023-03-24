@@ -68,7 +68,7 @@ message ReserveMoney {
     WithdrawalId withdrawal_process = 2 [(required) = true];
 
     // Wanted amount of money to be reserved.
-    spine.money.Money money_amount = 3 [(required) = true];
+    spine.money.Money amount = 3 [(required) = true];
 }
 
 // A command to debit the reserved money.

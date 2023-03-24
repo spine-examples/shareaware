@@ -63,6 +63,7 @@ message BalanceRecharged {
 
 // Money has been reserved in the wallet.
 message MoneyReserved {
+    option (is).java_type = "WithdrawalEvent";
 
     // The ID of the wallet where money has been reserved.
     WalletId wallet = 1;
@@ -76,6 +77,7 @@ message MoneyReserved {
 
 // The reserved money has been debited.
 message ReservedMoneyDebited {
+    option (is).java_type = "WithdrawalEvent";
 
     // The ID of the wallet where reserved money has been debited.
     WalletId wallet = 1;
@@ -83,12 +85,13 @@ message ReservedMoneyDebited {
     // The ID of the withdrawal process that debited the reserved money.
     WithdrawalId withdrawal_process = 2 [(required) = true];
 
-    // The amount of money that has been debited.
-    spine.money.Money amount = 3 [(required) = true];
+    // The current wallet balance after the reserved money was debited.
+    spine.money.Money current_balance = 3 [(required) = true];
 }
 
 // The money reservation has been canceled.
 message MoneyReservationCanceled {
+    option (is).java_type = "WithdrawalEvent";
 
     // The ID of the wallet where money reservation was canceled.
     WalletId wallet = 1;

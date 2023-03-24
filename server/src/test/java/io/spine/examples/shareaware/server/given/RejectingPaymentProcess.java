@@ -24,7 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.paymentgateway;
+package io.spine.examples.shareaware.server.given;
 
 import io.spine.examples.shareaware.PaymentGatewayId;
 import io.spine.examples.shareaware.paymentgateway.PaymentGateway;
@@ -32,31 +32,34 @@ import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyFromUser
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredFromUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
+import io.spine.examples.shareaware.paymentgateway.rejection.MoneyCannotBeTransferredFromUser;
+import io.spine.examples.shareaware.paymentgateway.rejection.MoneyCannotBeTransferredToUser;
 import io.spine.server.command.Assign;
 import io.spine.server.procman.ProcessManager;
 
 /**
- * The imitation of the external payment system.
+ * The test imitation of {@code PaymentGatewayProcess} with rejection mode.
+ *
+ * <p>When {@code RejectingPaymentProcess} is in rejection mode,
+ * it will reject all commands directed at it and vice versa.
  */
-public final class PaymentGatewayProcess
+public final class RejectingPaymentProcess
         extends ProcessManager<PaymentGatewayId, PaymentGateway, PaymentGateway.Builder> {
 
-    /**
-     * The hardcoded ID for this imitation.
-     *
-     * <p>Only one instance of this process can exist in context,
-     * so all matching signals would be routed to the instance with this ID.
-     */
-    public static final PaymentGatewayId ID = PaymentGatewayId
-            .newBuilder()
-            .setUuid("ImitationOfExternalPaymentSystem")
-            .vBuild();
+    private static boolean rejectionMode = false;
 
     /**
-     * Emits the event when the money has been transferred from the user's bank account.
+     * Emits the {@code TransferMoneyFromUser} event when rejection mode if off
+     * otherwise throws the {@code MoneyCannotBeTransferredFromUser} rejection.
      */
     @Assign
-    MoneyTransferredFromUser on(TransferMoneyFromUser c) {
+    MoneyTransferredFromUser on(TransferMoneyFromUser c) throws MoneyCannotBeTransferredFromUser {
+        if (rejectionMode) {
+            throw MoneyCannotBeTransferredFromUser
+                    .newBuilder()
+                    .setReplenishment(c.getReplenishmentProcess())
+                    .build();
+        }
         return MoneyTransferredFromUser
                 .newBuilder()
                 .setGateway(c.getGateway())
@@ -66,15 +69,31 @@ public final class PaymentGatewayProcess
     }
 
     /**
-     * Transfers money to the user's card emitting the {@code MoneyTransferredToUser} event.
+     * Emits the {@code MoneyTransferredToUser} event when rejection mode if off
+     * otherwise throws the {@code MoneyCannotBeTransferredToUser} rejection.
      */
     @Assign
-    MoneyTransferredToUser on(TransferMoneyToUser c) {
+    MoneyTransferredToUser on(TransferMoneyToUser c) throws MoneyCannotBeTransferredToUser {
+        if (rejectionMode) {
+            throw MoneyCannotBeTransferredToUser
+                    .newBuilder()
+                    .setWithdrawalProcess(c.getWithdrawalProcess())
+                    .setCause("")
+                    .build();
+        }
         return MoneyTransferredToUser
                 .newBuilder()
                 .setGetaway(c.getGateway())
                 .setWithdrawalProcess(c.getWithdrawalProcess())
                 .setAmount(c.getAmount())
                 .vBuild();
+    }
+
+    public static void switchToRejectionMode() {
+        rejectionMode = true;
+    }
+
+    public static void switchToEventsMode() {
+        rejectionMode = false;
     }
 }

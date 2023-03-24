@@ -48,8 +48,8 @@ message MoneyWithdrawn {
     // The ID of the wallet from which money was withdrawn.
     WalletId wallet = 2 [(required) = true];
 
-    // The amount of money that was withdrawn.
-    spine.money.Money amount  = 3 [(required) = true];
+    // The current balance of the wallet after the withdrawal operation.
+    spine.money.Money current_balance  = 3 [(required) = true];
 }
 
 // Money has not been withdrawn from wallet.
