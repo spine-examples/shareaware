@@ -104,14 +104,16 @@ public final class WatchlistTest extends ContextAwareTest {
         @DisplayName("by adding share to watchlist")
         void state() {
             Watchlist watchlist = setUpWatchlist(context());
-            WatchShare command = watchTeslaShare(watchlist.getId(), watchlist.getOwner());
-            context().receivesCommand(command);
+            WatchShare watchTeslaShare = watchTeslaShare(watchlist.getId(), watchlist.getOwner());
+            WatchShare watchAppleShare = watchAppleShare(watchlist.getId(), watchlist.getOwner());
+            context().receivesCommands(watchTeslaShare, watchAppleShare);
             Watchlist expected = watchlist
                     .toBuilder()
-                    .addShare(command.getShare())
+                    .addShare(watchTeslaShare.getShare())
+                    .addShare(watchAppleShare.getShare())
                     .buildPartial();
 
-            context().assertState(command.getWatchlist(), expected);
+            context().assertState(watchlist.getId(), expected);
         }
     }
 }
