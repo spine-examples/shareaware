@@ -65,6 +65,7 @@ public final class WatchlistTest extends ContextAwareTest {
         Watchlist expectedState = Watchlist
                 .newBuilder()
                 .setId(command.getWatchlist())
+                .setOwner(command.getUser())
                 .setName(command.getName())
                 .vBuild();
 

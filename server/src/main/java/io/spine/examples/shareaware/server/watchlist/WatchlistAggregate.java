@@ -55,6 +55,7 @@ public final class WatchlistAggregate extends Aggregate<WatchlistId, Watchlist, 
     @Apply
     private void event(WatchlistCreated e) {
         builder().setId(e.getWatchlist())
+                 .setOwner(e.getOwner())
                  .setName(e.getName());
     }
 }
