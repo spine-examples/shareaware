@@ -24,55 +24,53 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.watchlist;
+package io.spine.examples.shareaware.server.given;
 
+import io.spine.core.UserId;
+import io.spine.examples.shareaware.ShareId;
 import io.spine.examples.shareaware.WatchlistId;
 import io.spine.examples.shareaware.watchlist.Watchlist;
 import io.spine.examples.shareaware.watchlist.command.CreateWatchlist;
 import io.spine.examples.shareaware.watchlist.command.WatchShare;
-import io.spine.examples.shareaware.watchlist.event.ShareWatched;
-import io.spine.examples.shareaware.watchlist.event.WatchlistCreated;
-import io.spine.server.aggregate.Aggregate;
-import io.spine.server.aggregate.Apply;
-import io.spine.server.command.Assign;
+import io.spine.testing.core.given.GivenUserId;
+import io.spine.testing.server.blackbox.BlackBoxContext;
 
-/**
- * A list of shares watched by a particular ShareAware user.
- */
-public final class WatchlistAggregate extends Aggregate<WatchlistId, Watchlist, Watchlist.Builder> {
+import static io.spine.testing.TestValues.randomString;
+
+public final class WatchlistTestEnv {
 
     /**
-     * Handles the command to create a watchlist.
+     * Prevents instantiation of this class.
      */
-    @Assign
-    WatchlistCreated handle(CreateWatchlist c) {
-        return WatchlistCreated
+    private WatchlistTestEnv() {
+    }
+
+    public static CreateWatchlist createWatchlist() {
+        return CreateWatchlist
                 .newBuilder()
-                .setOwner(c.getUser())
-                .setWatchlist(c.getWatchlist())
-                .setName(c.getName())
+                .setUser(GivenUserId.generated())
+                .setWatchlist(WatchlistId.generate())
+                .setName(randomString())
                 .vBuild();
     }
 
-    @Apply
-    private void event(WatchlistCreated e) {
-        builder().setId(e.getWatchlist())
-                 .setOwner(e.getOwner())
-                 .setName(e.getName());
-    }
-
-    @Assign
-    ShareWatched handle(WatchShare c) {
-        return ShareWatched
+    public static Watchlist setUpWatchlist(BlackBoxContext context) {
+        CreateWatchlist command = createWatchlist();
+        context.receivesCommand(command);
+        return Watchlist
                 .newBuilder()
-                .setWatchlist(c.getWatchlist())
-                .setUser(c.getUser())
-                .setShare(c.getShare())
+                .setId(command.getWatchlist())
+                .setOwner(command.getUser())
+                .setName(command.getName())
                 .vBuild();
     }
 
-    @Apply
-    private void event(ShareWatched e) {
-        builder().addShare(e.getShare());
+    public static WatchShare watchShare(WatchlistId watchlist, UserId owner) {
+        return WatchShare
+                .newBuilder()
+                .setWatchlist(watchlist)
+                .setUser(owner)
+                .setShare(ShareId.generate())
+                .vBuild();
     }
 }

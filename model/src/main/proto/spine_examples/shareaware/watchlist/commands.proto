@@ -50,3 +50,16 @@ message CreateWatchlist {
     // The name of the watchlist.
     string name = 3 [(required) = true];
 }
+
+// Tells that some user wants to observe changes in pricing for some share.
+message WatchShare {
+
+    // The ID of the watchlist where user wants share to be watched.
+    WatchlistId watchlist = 1;
+
+    // The ID of the user who wants to watch for the share.
+    spine.core.UserId user = 2 [(required) = true];
+
+    // The ID of the share to watch for.
+    ShareId share = 3 [(required) = true];
+}
