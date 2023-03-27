@@ -70,8 +70,7 @@ public final class WalletWithdrawalRepository
 
     private static Set<WithdrawalId> withWithdrawalId(MoneyReservationSignal e) {
         if (e.getOperation().hasWithdrawal()) {
-            return ImmutableSet.of(e.getOperation()
-                                    .getWithdrawal());
+            return ImmutableSet.of(e.getWithdrawalProcess());
         }
         return ImmutableSet.of();
     }

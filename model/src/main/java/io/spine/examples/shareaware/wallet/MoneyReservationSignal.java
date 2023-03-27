@@ -45,6 +45,9 @@ public interface MoneyReservationSignal extends EventMessage {
      */
     OperationId getOperation();
 
+    /**
+     * Retrieves {@code WithdrawalId} from {@code OperationId} without checking for its existence.
+     */
     default WithdrawalId getWithdrawalProcess() {
         return getOperation().getWithdrawal();
     }
