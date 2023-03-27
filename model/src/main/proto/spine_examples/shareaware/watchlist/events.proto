@@ -50,3 +50,16 @@ message WatchlistCreated {
     // The name of the created watchlist.
     string name = 3 [(required) = true];
 }
+
+// A share is watched from now.
+message ShareWatched {
+
+    // The ID of the watchlist where share is watched.
+    WatchlistId watchlist = 1;
+
+    // The ID of the user who started to watch for the share.
+    spine.core.UserId user = 2 [(required) = true];
+
+    // The ID of the share that is watched from now.
+    ShareId share = 3 [(required) = true];
+}
