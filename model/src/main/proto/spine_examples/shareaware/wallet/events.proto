@@ -68,7 +68,7 @@ message MoneyReserved {
     // The ID of the wallet where money has been reserved.
     WalletId wallet = 1;
 
-    // The ID of the withdrawal process that reserved money.
+    // The ID of the operation that reserved money.
     OperationId operation = 2 [(required) = true];
 
     // The amount of money that has been reserved.
@@ -82,7 +82,7 @@ message ReservedMoneyDebited {
     // The ID of the wallet where reserved money has been debited.
     WalletId wallet = 1;
 
-    // The ID of the withdrawal process that debited the reserved money.
+    // The ID of the operation that debited the reserved money.
     OperationId operation = 2 [(required) = true];
 
     // The current wallet balance after the reserved money was debited.
@@ -96,6 +96,6 @@ message MoneyReservationCanceled {
     // The ID of the wallet where money reservation was canceled.
     WalletId wallet = 1;
 
-    // The ID of the withdrawal process that canceled money reservation.
+    // The ID of the operation that canceled money reservation.
     OperationId operation = 2 [(required) = true];
 }

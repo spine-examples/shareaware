@@ -44,7 +44,7 @@ message InsufficientFunds {
     // The ID of the wallet has no such amount of money to reserve.
     WalletId wallet = 1;
 
-    // The ID of the withdrawal process that wanted to reserve money.
+    // The ID of the operation that wanted to reserve money.
     OperationId operation = 2 [(required) = true];
 
     // The amount of not reserved money.
