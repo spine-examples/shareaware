@@ -39,6 +39,7 @@ import "spine/money/money.proto";
 
 // Money cannot be reserved due to insufficient funds in the wallet.
 message InsufficientFunds {
+    option (is).java_type = "io.spine.examples.shareaware.wallet.MoneyReservationSignal";
 
     // The ID of the wallet has no such amount of money to reserve.
     WalletId wallet = 1;

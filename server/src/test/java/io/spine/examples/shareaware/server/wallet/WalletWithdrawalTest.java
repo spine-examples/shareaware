@@ -44,8 +44,6 @@ import io.spine.examples.shareaware.wallet.command.DebitReservedMoney;
 import io.spine.examples.shareaware.wallet.command.ReserveMoney;
 import io.spine.examples.shareaware.wallet.command.WithdrawMoney;
 import io.spine.examples.shareaware.wallet.event.MoneyNotWithdrawn;
-import io.spine.examples.shareaware.wallet.event.MoneyReservationCanceled;
-import io.spine.examples.shareaware.wallet.event.MoneyReserved;
 import io.spine.examples.shareaware.wallet.event.MoneyWithdrawn;
 import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
@@ -80,6 +78,13 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         return WithdrawalTestContext.newBuilder();
     }
 
+    private static OperationId operationId(WithdrawalId withdrawal) {
+        return OperationId
+                .newBuilder()
+                .setWithdrawal(withdrawal)
+                .vBuild();
+    }
+
     @Nested
     @DisplayName("reduce the wallet balance")
     class WithdrawMoneyFromBalance {
@@ -104,22 +109,22 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
             context().assertState(wallet.getId(), expectedWallet);
         }
 
-//        @Test
-//        @DisplayName("emitting the `ReservedMoneyDebited` event")
-//        void debitMoney() {
-//            Wallet wallet = setUpReplenishedWallet(context());
-//            WithdrawMoney command = withdraw(wallet.getId());
-//            Money reducedBalance = subtract(wallet.getBalance(), command.getAmount());
-//            ReservedMoneyDebited expected = ReservedMoneyDebited
-//                    .newBuilder()
-//                    .setOperation(command.getWithdrawalProcess())
-//                    .setWallet(wallet.getId())
-//                    .setCurrentBalance(reducedBalance)
-//                    .vBuild();
-//            context().receivesCommand(command);
-//
-//            context().assertEvent(expected);
-//        }
+        @Test
+        @DisplayName("emitting the `ReservedMoneyDebited` event")
+        void debitMoney() {
+            Wallet wallet = setUpReplenishedWallet(context());
+            WithdrawMoney command = withdraw(wallet.getId());
+            Money reducedBalance = subtract(wallet.getBalance(), command.getAmount());
+            ReservedMoneyDebited expected = ReservedMoneyDebited
+                    .newBuilder()
+                    .setOperation(operationId(command.getWithdrawalProcess()))
+                    .setWallet(wallet.getId())
+                    .setCurrentBalance(reducedBalance)
+                    .vBuild();
+            context().receivesCommand(command);
+
+            context().assertEvent(expected);
+        }
 //
 //        @Test
 //        @DisplayName("emitting the `MoneyReserved` event")

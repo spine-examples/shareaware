@@ -31,6 +31,9 @@ import io.spine.examples.shareaware.WithdrawalId;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
 import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredToUser;
+import io.spine.examples.shareaware.wallet.event.MoneyReservationCanceled;
+import io.spine.examples.shareaware.wallet.event.MoneyReserved;
+import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
 import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.wallet.WalletWithdrawal;
@@ -39,10 +42,7 @@ import io.spine.examples.shareaware.wallet.command.DebitReservedMoney;
 import io.spine.examples.shareaware.wallet.command.ReserveMoney;
 import io.spine.examples.shareaware.wallet.command.WithdrawMoney;
 import io.spine.examples.shareaware.wallet.event.MoneyNotWithdrawn;
-import io.spine.examples.shareaware.wallet.event.MoneyReservationCanceled;
-import io.spine.examples.shareaware.wallet.event.MoneyReserved;
 import io.spine.examples.shareaware.wallet.event.MoneyWithdrawn;
-import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
 import io.spine.server.command.Command;
 import io.spine.server.event.React;
 import io.spine.server.procman.ProcessManager;
@@ -50,7 +50,7 @@ import io.spine.server.procman.ProcessManager;
 /**
  * Coordinates the money withdrawal from the user's wallet.
  */
-public final class WalletWithdrawalProcess
+final class WalletWithdrawalProcess
         extends ProcessManager<WithdrawalId, WalletWithdrawal, WalletWithdrawal.Builder> {
 
     /**
@@ -83,7 +83,7 @@ public final class WalletWithdrawalProcess
         return TransferMoneyToUser
                 .newBuilder()
                 .setGateway(PaymentGatewayProcess.ID)
-                .setWithdrawalProcess(e.getOperation().getWithdrawal())
+                .setWithdrawalProcess(e.getWithdrawalProcess())
                 .setSender(WalletReplenishmentProcess.shareAwareIban)
                 .setRecipient(state().getRecipient())
                 .setAmount(e.getAmount())
@@ -124,7 +124,7 @@ public final class WalletWithdrawalProcess
         setArchived(true);
         return MoneyWithdrawn
                 .newBuilder()
-                .setWithdrawalProcess(e.getOperation().getWithdrawal())
+                .setWithdrawalProcess(e.getWithdrawalProcess())
                 .setWallet(e.getWallet())
                 .setCurrentBalance(e.getCurrentBalance())
                 .vBuild();
@@ -138,7 +138,7 @@ public final class WalletWithdrawalProcess
         setArchived(true);
         return MoneyNotWithdrawn
                 .newBuilder()
-                .setWithdrawalProcess(e.getOperation().getWithdrawal())
+                .setWithdrawalProcess(e.getWithdrawalProcess())
                 .vBuild();
     }
 
@@ -150,7 +150,7 @@ public final class WalletWithdrawalProcess
         setArchived(true);
         return MoneyNotWithdrawn
                 .newBuilder()
-                .setWithdrawalProcess(e.getOperation().getWithdrawal())
+                .setWithdrawalProcess(e.getWithdrawalProcess())
                 .vBuild();
     }
 

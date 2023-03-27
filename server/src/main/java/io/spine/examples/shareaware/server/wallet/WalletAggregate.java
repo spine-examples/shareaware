@@ -27,6 +27,7 @@
 package io.spine.examples.shareaware.server.wallet;
 
 import io.spine.examples.shareaware.WalletId;
+import io.spine.examples.shareaware.wallet.MoneyReservationSignal;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.command.CancelMoneyReservation;
 import io.spine.examples.shareaware.wallet.command.CreateWallet;
@@ -38,7 +39,6 @@ import io.spine.examples.shareaware.wallet.event.MoneyReservationCanceled;
 import io.spine.examples.shareaware.wallet.event.MoneyReserved;
 import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
 import io.spine.examples.shareaware.wallet.event.WalletCreated;
-import io.spine.examples.shareaware.wallet.event.WithdrawalEvent;
 import io.spine.examples.shareaware.wallet.rejection.InsufficientFunds;
 import io.spine.money.Currency;
 import io.spine.money.Money;
@@ -160,7 +160,7 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
                 .removeReservedMoney(withdrawalId);
     }
 
-    private static String extractWithdrawalIdValue(WithdrawalEvent e) {
+    private static String extractWithdrawalIdValue(MoneyReservationSignal e) {
         return e.getOperation()
                 .getWithdrawal()
                 .getUuid();

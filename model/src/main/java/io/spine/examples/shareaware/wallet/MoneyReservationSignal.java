@@ -24,23 +24,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.wallet.event;
+package io.spine.examples.shareaware.wallet;
 
 import com.google.errorprone.annotations.Immutable;
 import io.spine.annotation.GeneratedMixin;
 import io.spine.base.EventMessage;
 import io.spine.examples.shareaware.OperationId;
+import io.spine.examples.shareaware.WithdrawalId;
 
 /**
- * Common interface for events participating in wallet withdrawal operation.
+ * Common interface for signals participating in the money reservation operation.
  */
 @Immutable
 @GeneratedMixin
-public interface WithdrawalEvent extends EventMessage {
+public interface MoneyReservationSignal extends EventMessage {
 
     /**
-     * Every event that participates in the withdrawal operation
-     * should have {@code WithdrawalId}.
+     * Every signal that participates in the money reservation operation
+     * should have {@code OperationId}.
      */
     OperationId getOperation();
+
+    default WithdrawalId getWithdrawalProcess() {
+        return getOperation().getWithdrawal();
+    }
 }
