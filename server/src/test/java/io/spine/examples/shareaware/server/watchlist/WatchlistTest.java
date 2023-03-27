@@ -26,19 +26,20 @@
 
 package io.spine.examples.shareaware.server.watchlist;
 
-import io.spine.examples.shareaware.WatchlistId;
 import io.spine.examples.shareaware.server.TradingContext;
 import io.spine.examples.shareaware.watchlist.Watchlist;
 import io.spine.examples.shareaware.watchlist.command.CreateWatchlist;
+import io.spine.examples.shareaware.watchlist.command.WatchShare;
+import io.spine.examples.shareaware.watchlist.event.ShareWatched;
 import io.spine.examples.shareaware.watchlist.event.WatchlistCreated;
 import io.spine.server.BoundedContextBuilder;
-import io.spine.testing.core.given.GivenUserId;
 import io.spine.testing.server.EventSubject;
 import io.spine.testing.server.blackbox.ContextAwareTest;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static io.spine.testing.TestValues.randomString;
+import static io.spine.examples.shareaware.server.given.WatchlistTestEnv.*;
 
 @DisplayName("`Watchlist` should")
 public final class WatchlistTest extends ContextAwareTest {
@@ -48,37 +49,71 @@ public final class WatchlistTest extends ContextAwareTest {
         return TradingContext.newBuilder();
     }
 
-    @Test
-    @DisplayName("allow the creation and emit the `WatchlistCreated` event")
-    void event() {
-        CreateWatchlist command = generateCommand();
-        context().receivesCommand(command);
-        WatchlistCreated expected = WatchlistCreated
-                .newBuilder()
-                .setOwner(command.getUser())
-                .setWatchlist(command.getWatchlist())
-                .setName(command.getName())
-                .vBuild();
-        EventSubject assertEvents = context()
-                .assertEvents()
-                .withType(WatchlistCreated.class);
-        Watchlist expectedState = Watchlist
-                .newBuilder()
-                .setId(command.getWatchlist())
-                .setName(command.getName())
-                .vBuild();
+    @Nested
+    @DisplayName("allow the creation ")
+    class Creation {
 
-        assertEvents.hasSize(1);
-        context().assertState(command.getWatchlist(), expectedState);
-        context().assertEvent(expected);
+        @Test
+        @DisplayName("and emit the `WatchlistCreated` event")
+        void event() {
+            CreateWatchlist command = createWatchlist();
+            context().receivesCommand(command);
+            WatchlistCreated expected = WatchlistCreated
+                    .newBuilder()
+                    .setOwner(command.getUser())
+                    .setWatchlist(command.getWatchlist())
+                    .setName(command.getName())
+                    .vBuild();
+            EventSubject assertEvents = context()
+                    .assertEvents()
+                    .withType(WatchlistCreated.class);
+            Watchlist expectedState = Watchlist
+                    .newBuilder()
+                    .setId(command.getWatchlist())
+                    .setOwner(command.getUser())
+                    .setName(command.getName())
+                    .vBuild();
+
+            assertEvents.hasSize(1);
+            context().assertState(command.getWatchlist(), expectedState);
+            context().assertEvent(expected);
+        }
     }
 
-    private static CreateWatchlist generateCommand() {
-        return CreateWatchlist
-                .newBuilder()
-                .setUser(GivenUserId.generated())
-                .setWatchlist(WatchlistId.generate())
-                .setName(randomString())
-                .vBuild();
+    @Nested
+    @DisplayName("allow watching for the share")
+    class Watching {
+
+        @Test
+        @DisplayName("and emit the `ShareWatched` event")
+        void event() {
+            Watchlist watchlist = setUpWatchlist(context());
+            WatchShare command = watchShare(watchlist.getId(), watchlist.getOwner());
+            ShareWatched expected = ShareWatched
+                    .newBuilder()
+                    .setWatchlist(command.getWatchlist())
+                    .setShare(command.getShare())
+                    .setUser(command.getUser())
+                    .vBuild();
+            context().receivesCommand(command);
+
+            context().assertEvent(expected);
+        }
+
+        @Test
+        @DisplayName("by adding share to watchlist")
+        void state() {
+            Watchlist watchlist = setUpWatchlist(context());
+            WatchShare firstCommand = watchShare(watchlist.getId(), watchlist.getOwner());
+            WatchShare secondCommand = watchShare(watchlist.getId(), watchlist.getOwner());
+            context().receivesCommands(firstCommand, secondCommand);
+            Watchlist expected = watchlist
+                    .toBuilder()
+                    .addShare(firstCommand.getShare())
+                    .addShare(secondCommand.getShare())
+                    .buildPartial();
+
+            context().assertState(watchlist.getId(), expected);
+        }
     }
 }
