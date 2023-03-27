@@ -79,7 +79,7 @@ message PurchaseId {
 
 // Identifies the operation that interacts with the wallet by reserving money in it.
 message OperationId {
-    oneof id {
+    oneof type {
         WithdrawalId withdrawal = 2;
         PurchaseId purchase = 3;
     }
