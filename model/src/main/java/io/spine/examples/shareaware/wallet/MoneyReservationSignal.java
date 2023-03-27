@@ -40,8 +40,7 @@ import io.spine.examples.shareaware.WithdrawalId;
 public interface MoneyReservationSignal extends EventMessage {
 
     /**
-     * Every signal that participates in the money reservation operation
-     * should have {@code OperationId}.
+     * Returns the ID of operation, in the scope of which this signal is emitted.
      */
     OperationId getOperation();
 
@@ -50,5 +49,13 @@ public interface MoneyReservationSignal extends EventMessage {
      */
     default WithdrawalId getWithdrawalProcess() {
         return getOperation().getWithdrawal();
+    }
+
+    /**
+     * Retrieves the value of {@code WithdrawalId} from {@code OperationId}
+     * without checking for {@code WithdrawalId} existence.
+     */
+    default String getWithdrawalIdValue() {
+        return getOperation().getWithdrawal().getUuid();
     }
 }
