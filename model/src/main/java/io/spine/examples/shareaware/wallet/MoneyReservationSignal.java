@@ -52,8 +52,8 @@ public interface MoneyReservationSignal extends EventMessage {
     }
 
     /**
-     * Retrieves the value of {@code WithdrawalId} from {@code OperationId}
-     * without checking for {@code WithdrawalId} existence.
+     * Retrieves the value of {@code WithdrawalId}
+     * without checking for {@code WithdrawalId} existence in {@code OperationId}.
      */
     default String getWithdrawalIdValue() {
         return getOperation().getWithdrawal().getUuid();
