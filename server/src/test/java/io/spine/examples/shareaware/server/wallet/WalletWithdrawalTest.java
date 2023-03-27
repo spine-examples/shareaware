@@ -26,14 +26,12 @@
 
 package io.spine.examples.shareaware.server.wallet;
 
-import io.spine.examples.shareaware.OperationId;
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.WithdrawalId;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
 import io.spine.examples.shareaware.server.given.WithdrawalTestContext;
 import io.spine.examples.shareaware.server.given.RejectingPaymentProcess;
-import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.WalletWithdrawal;
@@ -47,7 +45,6 @@ import io.spine.examples.shareaware.wallet.event.MoneyReserved;
 import io.spine.examples.shareaware.wallet.event.MoneyWithdrawn;
 import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
-import io.spine.money.Money;
 import io.spine.server.BoundedContextBuilder;
 import io.spine.testing.server.blackbox.ContextAwareTest;
 import io.spine.testing.server.model.ModelTests;
@@ -58,7 +55,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
-import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.*;
+import static io.spine.examples.shareaware.server.wallet.WalletReplenishmentProcess.*;
 
 @DisplayName("`WalletWithdrawal` should")
 public final class WalletWithdrawalTest extends ContextAwareTest {
@@ -86,17 +83,11 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("for expected amount of money")
         void entity() {
             Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney firstWithdraw = withdraw(wallet.getId());
-            WithdrawMoney secondWithdraw = withdraw(wallet.getId());
-            Money withdrawalAmount =
-                    sum(firstWithdraw.getAmount(), secondWithdraw.getAmount());
-            Money expectedBalance =
-                    subtract(wallet.getBalance(), withdrawalAmount);
-            Wallet expectedWallet = Wallet
-                    .newBuilder()
-                    .setId(wallet.getId())
-                    .setBalance(expectedBalance)
-                    .vBuild();
+            WithdrawMoney firstWithdraw = withdrawMoneyFrom(wallet.getId());
+            WithdrawMoney secondWithdraw = withdrawMoneyFrom(wallet.getId());
+            Wallet expectedWallet = walletWhichWasWithdrawnBy(firstWithdraw,
+                                                              secondWithdraw,
+                                                              wallet);
             context().receivesCommands(firstWithdraw, secondWithdraw);
 
             context().assertState(wallet.getId(), expectedWallet);
@@ -106,14 +97,8 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("emitting the `ReservedMoneyDebited` event")
         void debitMoney() {
             Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdraw(wallet.getId());
-            Money reducedBalance = subtract(wallet.getBalance(), command.getAmount());
-            ReservedMoneyDebited expected = ReservedMoneyDebited
-                    .newBuilder()
-                    .setOperation(operationId(command.getWithdrawalProcess()))
-                    .setWallet(wallet.getId())
-                    .setCurrentBalance(reducedBalance)
-                    .vBuild();
+            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
+            ReservedMoneyDebited expected = reservedMoneyDebitedFrom(wallet, command);
             context().receivesCommand(command);
 
             context().assertEvent(expected);
@@ -123,13 +108,8 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("emitting the `MoneyReserved` event")
         void reserveMoney() {
             Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdraw(wallet.getId());
-            MoneyReserved expected = MoneyReserved
-                    .newBuilder()
-                    .setOperation(operationId(command.getWithdrawalProcess()))
-                    .setWallet(wallet.getId())
-                    .setAmount(command.getAmount())
-                    .vBuild();
+            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
+            MoneyReserved expected = moneyReservedBy(command);
             context().receivesCommand(command);
 
             context().assertEvent(expected);
@@ -139,13 +119,8 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("emitting the `InsufficientFunds` rejection")
         void insufficientFunds() {
             WalletId wallet = setUpWallet(context());
-            WithdrawMoney command = withdraw(wallet);
-            InsufficientFunds expected = InsufficientFunds
-                    .newBuilder()
-                    .setWallet(wallet)
-                    .setOperation(operationId(command.getWithdrawalProcess()))
-                    .setAmount(command.getAmount())
-                    .vBuild();
+            WithdrawMoney command = withdrawMoneyFrom(wallet);
+            InsufficientFunds expected = insufficientFundsIn(wallet, command);
             context().receivesCommand(command);
 
             context().assertEvent(expected);
@@ -155,12 +130,8 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("emitting the `MoneyReservationCanceled` event")
         void cancelMoneyReservation() {
             Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdraw(wallet.getId());
-            MoneyReservationCanceled event = MoneyReservationCanceled
-                    .newBuilder()
-                    .setWallet(wallet.getId())
-                    .setOperation(operationId(command.getWithdrawalProcess()))
-                    .vBuild();
+            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
+            MoneyReservationCanceled event = moneyReservationCanceledBy(command);
             RejectingPaymentProcess.switchToRejectionMode();
             context().receivesCommand(command);
 
@@ -177,17 +148,11 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @Test
         void balance() {
             Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney firstWithdraw = withdraw(wallet.getId());
-            WithdrawMoney secondWithdraw = withdraw(wallet.getId());
-            Money withdrawalAmount =
-                    sum(firstWithdraw.getAmount(), secondWithdraw.getAmount());
-            Money expectedBalance =
-                    subtract(wallet.getBalance(), withdrawalAmount);
-            WalletBalance expected = WalletBalance
-                    .newBuilder()
-                    .setId(wallet.getId())
-                    .setBalance(expectedBalance)
-                    .vBuild();
+            WithdrawMoney firstWithdraw = withdrawMoneyFrom(wallet.getId());
+            WithdrawMoney secondWithdraw = withdrawMoneyFrom(wallet.getId());
+            WalletBalance expected = walletBalanceReducedBy(firstWithdraw,
+                                                            secondWithdraw,
+                                                            wallet);
             context().receivesCommands(firstWithdraw, secondWithdraw);
 
             context().assertState(wallet.getId(), expected);
@@ -202,30 +167,19 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("with state")
         void entity() {
             Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdraw(wallet.getId());
-            WithdrawalId withdrawalId = command.getWithdrawalProcess();
-            WalletWithdrawal expected = WalletWithdrawal
-                    .newBuilder()
-                    .setId(withdrawalId)
-                    .setWallet(wallet.getId())
-                    .setRecipient(command.getRecipient())
-                    .vBuild();
+            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
+            WalletWithdrawal expected = walletWithdrawalBy(command);
             context().receivesCommand(command);
 
-            context().assertState(withdrawalId, expected);
+            context().assertState(command.getWithdrawalProcess(), expected);
         }
 
         @Test
         @DisplayName("which sends the `ReserveMoney` command")
         void reserveMoney() {
             Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdraw(wallet.getId());
-            ReserveMoney expected = ReserveMoney
-                    .newBuilder()
-                    .setOperation(operationId(command.getWithdrawalProcess()))
-                    .setWallet(command.getWallet())
-                    .setAmount(command.getAmount())
-                    .vBuild();
+            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
+            ReserveMoney expected = reserveMoneyWith(command);
             context().receivesCommand(command);
 
             context().assertCommands()
@@ -238,15 +192,9 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("which sends the `TransferMoneyToUser` command")
         void transferMoneyToUser() {
             Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdraw(wallet.getId());
-            TransferMoneyToUser expected = TransferMoneyToUser
-                    .newBuilder()
-                    .setWithdrawalProcess(command.getWithdrawalProcess())
-                    .setGateway(PaymentGatewayProcess.ID)
-                    .setSender(WalletReplenishmentProcess.shareAwareIban)
-                    .setRecipient(command.getRecipient())
-                    .setAmount(command.getAmount())
-                    .vBuild();
+            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
+            TransferMoneyToUser expected =
+                    transferMoneyToUserWith(command, shareAwareIban);
             context().receivesCommand(command);
 
             context().assertCommands()
@@ -259,12 +207,8 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("which sends the `DebitReservedMoney` command")
         void debitReservedMoney() {
             Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdraw(wallet.getId());
-            DebitReservedMoney expected = DebitReservedMoney
-                    .newBuilder()
-                    .setOperation(operationId(command.getWithdrawalProcess()))
-                    .setWallet(wallet.getId())
-                    .vBuild();
+            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
+            DebitReservedMoney expected = debitReservedMoneyWith(command);
             context().receivesCommand(command);
 
             context().assertCommands()
@@ -277,19 +221,13 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("which emits the `WalletWithdrawn` event and archives itself after it")
         void event() {
             Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdraw(wallet.getId());
-            WithdrawalId withdrawal = command.getWithdrawalProcess();
-            Money reducedBalance = subtract(wallet.getBalance(), command.getAmount());
-            MoneyWithdrawn expected = MoneyWithdrawn
-                    .newBuilder()
-                    .setWithdrawalProcess(withdrawal)
-                    .setWallet(command.getWallet())
-                    .setCurrentBalance(reducedBalance)
-                    .vBuild();
+            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
+            MoneyWithdrawn expected = moneyWithdrawnBy(command, wallet);
             context().receivesCommand(command);
 
             context().assertEvent(expected);
-            context().assertEntity(withdrawal, WalletWithdrawalProcess.class)
+            context().assertEntity(command.getWithdrawalProcess(),
+                                   WalletWithdrawalProcess.class)
                      .archivedFlag()
                      .isTrue();
         }
@@ -298,16 +236,13 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("which emits the `WalletNotWithdrawn` event when insufficient funds on the wallet")
         void insufficientFunds() {
             WalletId wallet = setUpWallet(context());
-            WithdrawMoney command = withdraw(wallet);
-            WithdrawalId withdrawal = command.getWithdrawalProcess();
-            MoneyNotWithdrawn expected = MoneyNotWithdrawn
-                    .newBuilder()
-                    .setWithdrawalProcess(withdrawal)
-                    .vBuild();
+            WithdrawMoney command = withdrawMoneyFrom(wallet);
+            WithdrawalId withdrawalProcess = command.getWithdrawalProcess();
+            MoneyNotWithdrawn expected = moneyNotWithdrawnBy(withdrawalProcess);
             context().receivesCommand(command);
 
             context().assertEvent(expected);
-            context().assertEntity(withdrawal, WalletWithdrawalProcess.class)
+            context().assertEntity(withdrawalProcess, WalletWithdrawalProcess.class)
                      .archivedFlag()
                      .isTrue();
         }
@@ -316,12 +251,8 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("which sends `CancelMoneyReservation` command when something went wrong in payment system")
         void moneyCannotBeTransferredToUser() {
             Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdraw(wallet.getId());
-            CancelMoneyReservation expected = CancelMoneyReservation
-                    .newBuilder()
-                    .setWallet(command.getWallet())
-                    .setOperation(operationId(command.getWithdrawalProcess()))
-                    .vBuild();
+            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
+            CancelMoneyReservation expected = cancelMoneyReservationBy(command);
             RejectingPaymentProcess.switchToRejectionMode();
             context().receivesCommand(command);
 
@@ -336,16 +267,14 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("which emits the `WalletNotWithdrawn` event when money reservation was canceled")
         void moneyReservationCanceled() {
             Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdraw(wallet.getId());
-            MoneyNotWithdrawn expected = MoneyNotWithdrawn
-                    .newBuilder()
-                    .setWithdrawalProcess(command.getWithdrawalProcess())
-                    .vBuild();
+            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
+            WithdrawalId withdrawalProcess = command.getWithdrawalProcess();
+            MoneyNotWithdrawn expected = moneyNotWithdrawnBy(withdrawalProcess);
             RejectingPaymentProcess.switchToRejectionMode();
             context().receivesCommand(command);
 
             context().assertEvent(expected);
-            context().assertEntity(command.getWithdrawalProcess(), WalletWithdrawalProcess.class)
+            context().assertEntity(withdrawalProcess, WalletWithdrawalProcess.class)
                      .archivedFlag()
                      .isTrue();
             RejectingPaymentProcess.switchToEventsMode();
@@ -360,13 +289,8 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         @DisplayName("which emits the `MoneyTransferredToUser` event")
         void transferMoney() {
             Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdraw(wallet.getId());
-            MoneyTransferredToUser expected = MoneyTransferredToUser
-                    .newBuilder()
-                    .setGetaway(PaymentGatewayProcess.ID)
-                    .setWithdrawalProcess(command.getWithdrawalProcess())
-                    .setAmount(command.getAmount())
-                    .vBuild();
+            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
+            MoneyTransferredToUser expected = moneyTransferredToUserBy(command);
             context().receivesCommand(command);
 
             context().assertEvent(expected);
