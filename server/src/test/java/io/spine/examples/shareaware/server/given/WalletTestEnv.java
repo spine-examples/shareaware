@@ -4,24 +4,32 @@ import io.spine.examples.shareaware.OperationId;
 import io.spine.examples.shareaware.ReplenishmentId;
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.WithdrawalId;
+import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyFromUser;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
+import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredFromUser;
 import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
+import io.spine.examples.shareaware.server.wallet.MoneyCalculator;
 import io.spine.examples.shareaware.wallet.Iban;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.WalletBalance;
+import io.spine.examples.shareaware.wallet.WalletReplenishment;
 import io.spine.examples.shareaware.wallet.WalletWithdrawal;
 import io.spine.examples.shareaware.wallet.command.CancelMoneyReservation;
 import io.spine.examples.shareaware.wallet.command.CreateWallet;
 import io.spine.examples.shareaware.wallet.command.DebitReservedMoney;
+import io.spine.examples.shareaware.wallet.command.RechargeBalance;
 import io.spine.examples.shareaware.wallet.command.ReplenishWallet;
 import io.spine.examples.shareaware.wallet.command.ReserveMoney;
 import io.spine.examples.shareaware.wallet.command.WithdrawMoney;
+import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
 import io.spine.examples.shareaware.wallet.event.MoneyNotWithdrawn;
 import io.spine.examples.shareaware.wallet.event.MoneyReservationCanceled;
 import io.spine.examples.shareaware.wallet.event.MoneyReserved;
 import io.spine.examples.shareaware.wallet.event.MoneyWithdrawn;
 import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
+import io.spine.examples.shareaware.wallet.event.WalletNotReplenished;
+import io.spine.examples.shareaware.wallet.event.WalletReplenished;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
 import io.spine.money.Currency;
 import io.spine.money.Money;
@@ -91,6 +99,95 @@ public final class WalletTestEnv {
         CreateWallet command = createWallet(wallet);
         context.receivesCommand(command);
         return wallet;
+    }
+
+    public static Wallet walletReplenishedBy(ReplenishWallet firstReplenishment,
+                                             ReplenishWallet secondReplenishment,
+                                             WalletId wallet) {
+        Money expectedBalance =
+                MoneyCalculator.sum(firstReplenishment.getMoneyAmount(),
+                                    secondReplenishment.getMoneyAmount());
+        return Wallet
+                .newBuilder()
+                .setId(wallet)
+                .setBalance(expectedBalance)
+                .vBuild();
+    }
+
+    public static BalanceRecharged balanceRechargedBy(ReplenishWallet command, WalletId wallet) {
+        return BalanceRecharged
+                .newBuilder()
+                .setWallet(wallet)
+                .setMoneyAmount(command.getMoneyAmount())
+                .setReplenishmentProcess(command.getReplenishment())
+                .vBuild();
+    }
+
+    public static WalletBalance walletBalanceAfterReplenishment(ReplenishWallet firstReplenishment,
+                                                                ReplenishWallet secondReplenishment,
+                                                                WalletId wallet) {
+        Wallet replenishedWallet = walletReplenishedBy(firstReplenishment,
+                                                 secondReplenishment,
+                                                 wallet);
+        return WalletBalance
+                .newBuilder()
+                .setId(replenishedWallet.getId())
+                .setBalance(replenishedWallet.getBalance())
+                .vBuild();
+    }
+
+    public static WalletReplenishment walletReplenishmentBy(ReplenishWallet command) {
+        return WalletReplenishment
+                .newBuilder()
+                .setWallet(command.getWallet())
+                .setId(command.getReplenishment())
+                .vBuild();
+    }
+
+    public static TransferMoneyFromUser transferMoneyFromUserBy(ReplenishWallet command,
+                                                                Iban recipient) {
+        return TransferMoneyFromUser
+                .newBuilder()
+                .setGateway(PaymentGatewayProcess.ID)
+                .setReplenishmentProcess(command.getReplenishment())
+                .setAmount(command.getMoneyAmount())
+                .setSender(command.getIban())
+                .setRecipient(recipient)
+                .vBuild();
+    }
+
+    public static RechargeBalance rechargeBalanceWhen(ReplenishWallet command) {
+        return RechargeBalance
+                .newBuilder()
+                .setWallet(command.getWallet())
+                .setReplenishmentProcess(command.getReplenishment())
+                .setMoneyAmount(command.getMoneyAmount())
+                .vBuild();
+    }
+
+    public static WalletReplenished walletReplenishedAfter(ReplenishWallet command) {
+        return WalletReplenished
+                .newBuilder()
+                .setReplenishment(command.getReplenishment())
+                .setWallet(command.getWallet())
+                .setMoneyAmount(command.getMoneyAmount())
+                .vBuild();
+    }
+
+    public static MoneyCannotBeTransferredFromUser
+    moneyCannotBeTransferredFromUserBy(ReplenishmentId replenishmentProcess) {
+        return MoneyCannotBeTransferredFromUser
+                .newBuilder()
+                .setReplenishment(replenishmentProcess)
+                .vBuild();
+    }
+
+    public static WalletNotReplenished
+    walletNotReplenishedBy(ReplenishmentId replenishmentProcess) {
+        return WalletNotReplenished
+                .newBuilder()
+                .setReplenishment(replenishmentProcess)
+                .vBuild();
     }
 
     public static Wallet setUpReplenishedWallet(BlackBoxContext context) {

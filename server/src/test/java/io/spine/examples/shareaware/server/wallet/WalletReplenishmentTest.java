@@ -31,7 +31,6 @@ import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyFromUser;
 import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredFromUser;
 import io.spine.examples.shareaware.server.TradingContext;
-import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.WalletReplenishment;
@@ -40,17 +39,24 @@ import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
 import io.spine.examples.shareaware.wallet.command.ReplenishWallet;
 import io.spine.examples.shareaware.wallet.event.WalletNotReplenished;
 import io.spine.examples.shareaware.wallet.event.WalletReplenished;
-import io.spine.money.Currency;
-import io.spine.money.Money;
 import io.spine.server.BoundedContextBuilder;
 import io.spine.testing.server.blackbox.ContextAwareTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static io.spine.examples.shareaware.server.given.GivenMoney.moneyOf;
+import static io.spine.examples.shareaware.server.given.WalletTestEnv.balanceRechargedBy;
+import static io.spine.examples.shareaware.server.given.WalletTestEnv.moneyCannotBeTransferredFromUserBy;
+import static io.spine.examples.shareaware.server.given.WalletTestEnv.rechargeBalanceWhen;
 import static io.spine.examples.shareaware.server.given.WalletTestEnv.replenish;
 import static io.spine.examples.shareaware.server.given.WalletTestEnv.setUpWallet;
+import static io.spine.examples.shareaware.server.given.WalletTestEnv.transferMoneyFromUserBy;
+import static io.spine.examples.shareaware.server.given.WalletTestEnv.walletBalanceAfterReplenishment;
+import static io.spine.examples.shareaware.server.given.WalletTestEnv.walletNotReplenishedBy;
+import static io.spine.examples.shareaware.server.given.WalletTestEnv.walletReplenishedAfter;
+import static io.spine.examples.shareaware.server.given.WalletTestEnv.walletReplenishedBy;
+import static io.spine.examples.shareaware.server.given.WalletTestEnv.walletReplenishmentBy;
+import static io.spine.examples.shareaware.server.wallet.WalletReplenishmentProcess.*;
 
 @DisplayName("`WalletReplenishment` should")
 public final class WalletReplenishmentTest extends ContextAwareTest {
@@ -67,20 +73,12 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         @Test
         @DisplayName("for 1000 USD")
         void entity() {
-            WalletId wallet =
-                    setUpWallet(context());
-            ReplenishWallet firstReplenishment =
-                    replenish(wallet);
-            ReplenishWallet secondReplenishment =
-                    replenish(wallet);
-            Money expectedBalance =
-                    MoneyCalculator.sum(firstReplenishment.getMoneyAmount(),
-                                        secondReplenishment.getMoneyAmount());
-            Wallet expectedWallet = Wallet
-                    .newBuilder()
-                    .setId(wallet)
-                    .setBalance(expectedBalance)
-                    .vBuild();
+            WalletId wallet = setUpWallet(context());
+            ReplenishWallet firstReplenishment = replenish(wallet);
+            ReplenishWallet secondReplenishment = replenish(wallet);
+            Wallet expectedWallet = walletReplenishedBy(firstReplenishment,
+                                                        secondReplenishment,
+                                                        wallet);
             context().receivesCommands(firstReplenishment, secondReplenishment);
 
             context().assertState(wallet, expectedWallet);
@@ -93,13 +91,8 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
                     setUpWallet(context());
             ReplenishWallet command =
                     replenish(wallet);
+            BalanceRecharged expected = balanceRechargedBy(command, wallet);
             context().receivesCommand(command);
-            BalanceRecharged expected = BalanceRecharged
-                    .newBuilder()
-                    .setWallet(wallet)
-                    .setMoneyAmount(command.getMoneyAmount())
-                    .setReplenishmentProcess(command.getReplenishment())
-                    .vBuild();
 
             context().assertEvent(expected);
         }
@@ -114,20 +107,11 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         void balance() {
             WalletId wallet =
                     setUpWallet(context());
-            Money replenishmentAmount =
-                    moneyOf(500, Currency.USD);
-            ReplenishWallet firstReplenishment =
-                    replenish(wallet, replenishmentAmount);
-            ReplenishWallet secondReplenishment =
-                    replenish(wallet, replenishmentAmount);
-            Money expectedBalance =
-                    MoneyCalculator.sum(replenishmentAmount,
-                                        replenishmentAmount);
-            WalletBalance expected = WalletBalance
-                    .newBuilder()
-                    .setId(wallet)
-                    .setBalance(expectedBalance)
-                    .vBuild();
+            ReplenishWallet firstReplenishment = replenish(wallet);
+            ReplenishWallet secondReplenishment = replenish(wallet);
+            WalletBalance expected = walletBalanceAfterReplenishment(firstReplenishment,
+                                                                     secondReplenishment,
+                                                                     wallet);
             context().receivesCommands(firstReplenishment, secondReplenishment);
 
             context().assertState(wallet, expected);
@@ -141,36 +125,21 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         @Test
         @DisplayName("with state")
         void entity() {
-            WalletId wallet =
-                    setUpWallet(context());
-            ReplenishWallet command =
-                    replenish(wallet);
-            ReplenishmentId replenishment = command.getReplenishment();
-            WalletReplenishment expectedReplenishment = WalletReplenishment
-                    .newBuilder()
-                    .setWallet(wallet)
-                    .setId(replenishment)
-                    .vBuild();
+            WalletId wallet = setUpWallet(context());
+            ReplenishWallet command = replenish(wallet);
+            WalletReplenishment expectedReplenishment = walletReplenishmentBy(command);
             context().receivesCommand(command);
 
-            context().assertState(replenishment, expectedReplenishment);
+            context().assertState(command.getReplenishment(), expectedReplenishment);
         }
 
         @Test
         @DisplayName("which sends the `TransferMoney` command")
         void commandToTransferMoney() {
-            WalletId wallet =
-                    setUpWallet(context());
-            ReplenishWallet command =
-                    replenish(wallet);
-            TransferMoneyFromUser expected = TransferMoneyFromUser
-                    .newBuilder()
-                    .setGateway(PaymentGatewayProcess.ID)
-                    .setReplenishmentProcess(command.getReplenishment())
-                    .setAmount(command.getMoneyAmount())
-                    .setSender(command.getIban())
-                    .setRecipient(WalletReplenishmentProcess.shareAwareIban)
-                    .vBuild();
+            WalletId wallet = setUpWallet(context());
+            ReplenishWallet command = replenish(wallet);
+            TransferMoneyFromUser expected =
+                    transferMoneyFromUserBy(command, shareAwareIban);
             context().receivesCommand(command);
 
             context().assertCommands()
@@ -182,16 +151,9 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         @Test
         @DisplayName("which sends the `RechargeBalance` command")
         void commandToRechargeBalance() {
-            WalletId wallet =
-                    setUpWallet(context());
-            ReplenishWallet command =
-                    replenish(wallet);
-            RechargeBalance expected = RechargeBalance
-                    .newBuilder()
-                    .setWallet(wallet)
-                    .setReplenishmentProcess(command.getReplenishment())
-                    .setMoneyAmount(command.getMoneyAmount())
-                    .vBuild();
+            WalletId wallet = setUpWallet(context());
+            ReplenishWallet command = replenish(wallet);
+            RechargeBalance expected = rechargeBalanceWhen(command);
             context().receivesCommand(command);
 
             context().assertCommands()
@@ -203,21 +165,14 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         @Test
         @DisplayName("which emits the `WalletReplenished` event and archives itself after it")
         void event() {
-            WalletId wallet =
-                    setUpWallet(context());
-            ReplenishWallet command =
-                    replenish(wallet);
-            ReplenishmentId replenishment = command.getReplenishment();
-            WalletReplenished event = WalletReplenished
-                    .newBuilder()
-                    .setReplenishment(replenishment)
-                    .setWallet(wallet)
-                    .setMoneyAmount(command.getMoneyAmount())
-                    .vBuild();
+            WalletId wallet = setUpWallet(context());
+            ReplenishWallet command = replenish(wallet);
+            WalletReplenished event = walletReplenishedAfter(command);
             context().receivesCommand(command);
 
             context().assertEvent(event);
-            context().assertEntity(replenishment, WalletReplenishmentProcess.class)
+            context().assertEntity(command.getReplenishment(),
+                                   WalletReplenishmentProcess.class)
                      .archivedFlag()
                      .isTrue();
         }
@@ -226,17 +181,9 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         @DisplayName("which emits the `WalletNotReplenished` event and archives itself after it")
         void rejection() {
             ReplenishmentId replenishment = ReplenishmentId.generate();
-            String cause = "Cause of the rejection";
-            MoneyCannotBeTransferredFromUser rejection = MoneyCannotBeTransferredFromUser
-                    .newBuilder()
-                    .setReplenishment(replenishment)
-                    .setCause(cause)
-                    .vBuild();
-            WalletNotReplenished expected = WalletNotReplenished
-                    .newBuilder()
-                    .setReplenishment(replenishment)
-                    .setCause(cause)
-                    .vBuild();
+            MoneyCannotBeTransferredFromUser rejection =
+                    moneyCannotBeTransferredFromUserBy(replenishment);
+            WalletNotReplenished expected = walletNotReplenishedBy(replenishment);
             context().receivesEvent(rejection);
 
             context().assertEvent(expected);
