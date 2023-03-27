@@ -78,13 +78,6 @@ public final class WalletWithdrawalTest extends ContextAwareTest {
         return WithdrawalTestContext.newBuilder();
     }
 
-    private static OperationId operationId(WithdrawalId withdrawal) {
-        return OperationId
-                .newBuilder()
-                .setWithdrawal(withdrawal)
-                .vBuild();
-    }
-
     @Nested
     @DisplayName("reduce the wallet balance")
     class WithdrawMoneyFromBalance {
