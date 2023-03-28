@@ -26,7 +26,6 @@
 
 package io.spine.examples.shareaware.server.wallet;
 
-import io.spine.examples.shareaware.OperationId;
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.WithdrawalId;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
