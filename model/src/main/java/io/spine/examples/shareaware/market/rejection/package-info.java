@@ -24,23 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+/**
+ * Defines shares market rejections.
+ */
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.examples.shareaware.market.rejection;
 
-package spine_examples.shareaware.wallet;
-
-import "spine/options.proto";
-
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.marketgateway";
-option java_outer_classname = "MarketGatewayProto";
-option java_multiple_files = true;
-
-import "spine_examples/shareaware/identifiers.proto";
-
-// The imitation of the shares market gateway.
-message MarketGateway {
-    option (entity) = {kind: PROCESS_MANAGER};
-
-    // The ID of the shares market gateway.
-    MarketGatewayId id = 1;
-}
+import javax.annotation.CheckReturnValue;
+import javax.annotation.ParametersAreNonnullByDefault;

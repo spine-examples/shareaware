@@ -25,11 +25,11 @@
  */
 
 /**
- * Defines shares market gateway rejections.
+ * Contains shares market commands, and their interfaces.
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault
-package io.spine.examples.shareaware.marketgateway.rejection;
+package io.spine.examples.shareaware.market.command;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.ParametersAreNonnullByDefault;

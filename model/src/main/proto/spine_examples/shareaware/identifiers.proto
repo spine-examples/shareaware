@@ -85,7 +85,7 @@ message OperationId {
     }
 }
 
-// Identifies the gateway of the shares market.
-message MarketGatewayId {
+// Identifies the shares market.
+message MarketId {
     string uuid = 1 [(required) = true];
 }

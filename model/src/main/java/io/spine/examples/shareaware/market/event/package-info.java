@@ -24,31 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+/**
+ * Incorporates shares market events and related interfaces.
+ */
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.examples.shareaware.market.event;
 
-package spine_examples.shareaware.market_gateway;
-
-import "spine/options.proto";
-
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.marketgateway.command";
-option java_outer_classname = "CommandsProto";
-option java_multiple_files = true;
-
-import "spine_examples/shareaware/identifiers.proto";
-
-// A command to obtain shares from the market.
-message ObtainShares {
-
-    // The ID of the market gateway.
-    MarketGatewayId market_gateway = 1;
-
-    // The ID of the purchase process that wants to obtain shares.
-    PurchaseId purchase = 2 [(required) = true];
-
-    // The ID of the share that the purchase process wants to obtain.
-    ShareId share = 3 [(required) = true];
-
-    // The quantity of the shares that the purchase process wants to obtain.
-    int32 quantity = 4 [(required) = true];
-}
+import javax.annotation.CheckReturnValue;
+import javax.annotation.ParametersAreNonnullByDefault;

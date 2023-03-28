@@ -50,7 +50,7 @@ message SharesPurchased {
     // The ID of the share that was purchased.
     ShareId share = 3 [(required) = true];
 
-    // The quantity of the shares that was purchased.
+    // The quantity of the purchased shares.
     int32 quantity = 4 [(required) = true];
 }
 
@@ -60,7 +60,7 @@ message SharesNotPurchased {
     // The ID of the failed purchase process.
     PurchaseId purchase = 1;
 
-    // The ID of the user who did not make the purchase.
+    // The ID of the user whose purchase was failed.
     spine.core.UserId purchaser = 2 [(required) = true];
 
     // Why the purchase of the shares failed.

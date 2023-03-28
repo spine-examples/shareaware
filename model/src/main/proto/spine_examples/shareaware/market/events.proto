@@ -26,12 +26,12 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware.market_gateway;
+package spine_examples.shareaware.market;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.marketgateway.event";
+option java_package = "io.spine.examples.shareaware.market.event";
 option java_outer_classname = "EventsProto";
 option java_multiple_files = true;
 
@@ -40,8 +40,8 @@ import "spine_examples/shareaware/identifiers.proto";
 // Shares has been obtained from the market.
 message SharesObtained {
 
-    // The ID of the market gateway.
-    MarketGatewayId market_gateway = 1;
+    // The ID of the shares market.
+    MarketId market = 1;
 
     // The ID of the purchase process that obtained the shares.
     PurchaseId purchase_process = 2 [(required) = true];
@@ -49,6 +49,6 @@ message SharesObtained {
     // The ID of the share that was obtained.
     ShareId share = 3 [(required) = true];
 
-    // The quantity of the shares that were obtained.
+    // The quantity of the obtained shares.
     int32 quantity = 4 [(required) = true];
 }

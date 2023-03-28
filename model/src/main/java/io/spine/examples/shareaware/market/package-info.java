@@ -24,24 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+/**
+ * This package defines shares market data types.
+ */
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.examples.shareaware.market;
 
-package spine_examples.shareaware.market_gateway;
-
-import "spine/options.proto";
-
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.marketgateway.rejection";
-option java_multiple_files = false;
-
-import "spine_examples/shareaware/identifiers.proto";
-
-// Shares cannot be obtained due to error in the market.
-message SharesCannotBeObtained {
-
-    // The ID of the purchase process that tried to obtain shares.
-    PurchaseId purchase_process = 1;
-
-    // Why the process failed.
-    string cause = 2;
-}
+import javax.annotation.CheckReturnValue;
+import javax.annotation.ParametersAreNonnullByDefault;
