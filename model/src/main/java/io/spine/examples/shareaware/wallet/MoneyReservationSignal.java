@@ -46,6 +46,11 @@ public interface MoneyReservationSignal extends EventMessage {
 
     /**
      * Retrieves {@code WithdrawalId} from {@code OperationId} without checking for its existence.
+     *
+     * <p>In case when {@code WithdrawalId} is not existed in {@code OperationId}
+     * this method will return the
+     * <a href="https://protobuf.dev/reference/java/java-generated/#:~:text=static%20Foo%20getDefaultInstance,its%20newBuilderForType()%20method.">
+     * default instance</a> of {@code WithdrawalId}.
      */
     default WithdrawalId getWithdrawalProcess() {
         return getOperation().getWithdrawal();
@@ -54,6 +59,8 @@ public interface MoneyReservationSignal extends EventMessage {
     /**
      * Retrieves the value of {@code WithdrawalId}
      * without checking for {@code WithdrawalId} existence in {@code OperationId}.
+     *
+     * <p>In case when {@code WithdrawalId} is not existed in {@code OperationId} it will return an empty string.
      */
     default String getWithdrawalIdValue() {
         return getOperation().getWithdrawal().getUuid();
