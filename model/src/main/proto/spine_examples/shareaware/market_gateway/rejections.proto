@@ -26,66 +26,22 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware;
+package spine_examples.shareaware.market_gateway;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware";
-option java_outer_classname = "IdentifiersProto";
-option java_multiple_files = true;
+option java_package = "io.spine.examples.shareaware.marketgateway.rejection";
+option java_multiple_files = false;
 
-import "spine/core/user_id.proto";
+import "spine_examples/shareaware/identifiers.proto";
 
-// Identifies a watchlist.
-message WatchlistId {
-    string uuid = 1 [(required) = true];
-}
+// Shares cannot be obtained due to error in the market.
+message SharesCannotBeObtained {
 
-// Identifies a share.
-message ShareId {
-    string uuid = 1 [(required) = true];
-}
+    // The ID of the purchase process that tried to obtain shares.
+    PurchaseId purchase_process = 1;
 
-// Identifies a wallet.
-message WalletId {
-    spine.core.UserId owner = 1 [(required) = true];
-}
-
-// Identifies a wallet replenishment process.
-message ReplenishmentId {
-    string uuid = 1 [(required) = true];
-}
-
-// Identifies a payment gateway.
-message PaymentGatewayId {
-    string uuid = 1 [(required) = true];
-}
-
-// Identifies a wallet withdrawal process.
-message WithdrawalId {
-    string uuid = 1 [(required) = true];
-}
-
-// Identifies an investment.
-message InvestmentId {
-    ShareId share = 1 [(required) = true];
-}
-
-// Identifies a shares purchase process.
-message PurchaseId {
-    string uuid = 1 [(required) = true];
-}
-
-// Identifies the operation that interacts with the wallet by reserving money in it.
-message OperationId {
-    oneof type {
-        WithdrawalId withdrawal = 1;
-        PurchaseId purchase = 2;
-    }
-}
-
-// Identifies the gateway of the shares market.
-message MarketGatewayId {
-    string uuid = 1 [(required) = true];
+    // Why the process failed.
+    string cause = 2;
 }
