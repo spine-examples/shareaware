@@ -54,13 +54,13 @@ message SharesPurchased {
     int32 quantity = 4 [(required) = true];
 }
 
-// Shares have not been purchased.
-message SharesNotPurchased {
+// Shares purchase process failed.
+message SharePurchaseFailed {
 
     // The ID of the failed purchase process.
     PurchaseId purchase = 1;
 
-    // The ID of the user whose purchase was failed.
+    // The ID of the user whose purchase failed.
     spine.core.UserId purchaser = 2 [(required) = true];
 
     // Why the purchase of the shares failed.

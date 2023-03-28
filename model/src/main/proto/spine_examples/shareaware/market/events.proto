@@ -37,7 +37,7 @@ option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
 
-// Shares has been obtained from the market.
+// Shares have been obtained from the market.
 message SharesObtained {
 
     // The ID of the shares market.
