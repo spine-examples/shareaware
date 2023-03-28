@@ -52,12 +52,7 @@ public final class WalletBalanceProjectionTest extends ContextAwareTest {
     void balance() {
         WalletId wallet = givenId();
         CreateWallet command  = createWallet(wallet);
-        Money expectedBalance = GivenMoney.zero();
-        WalletBalance expected = WalletBalance
-                .newBuilder()
-                .setId(command.getWallet())
-                .setBalance(expectedBalance)
-                .vBuild();
+        WalletBalance expected = zeroWalletBalance(command.getWallet());
         context().receivesCommand(command);
 
         context().assertState(command.getWallet(), expected);

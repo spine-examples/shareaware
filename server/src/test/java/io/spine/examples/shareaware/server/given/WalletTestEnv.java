@@ -71,7 +71,7 @@ public final class WalletTestEnv {
     /**
      * Generates {@code ReplenishWallet} command.
      */
-    public static ReplenishWallet replenish(WalletId wallet, Money amount) {
+    private static ReplenishWallet replenish(WalletId wallet, Money amount) {
         ReplenishmentId replenishment = ReplenishmentId.generate();
         return ReplenishWallet
                 .newBuilder()
@@ -369,6 +369,14 @@ public final class WalletTestEnv {
                 .newBuilder()
                 .setWallet(id)
                 .setBalance(initialBalance)
+                .vBuild();
+    }
+
+    public static WalletBalance zeroWalletBalance(WalletId id) {
+        return WalletBalance
+                .newBuilder()
+                .setId(id)
+                .setBalance(GivenMoney.zero())
                 .vBuild();
     }
 }
