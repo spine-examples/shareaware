@@ -47,7 +47,7 @@ message SharesPurchased {
     // The ID of the purchaser.
     spine.core.UserId purchaser = 2 [(required) = true];
 
-    // The ID of the share that was purchased.
+    // The ID of the purchased share.
     ShareId share = 3 [(required) = true];
 
     // The quantity of the purchased shares.

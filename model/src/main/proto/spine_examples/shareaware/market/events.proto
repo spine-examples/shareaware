@@ -46,9 +46,9 @@ message SharesObtained {
     // The ID of the purchase process that obtained the shares.
     PurchaseId purchase_process = 2 [(required) = true];
 
-    // The ID of the share that was obtained.
+    // The ID of the share that was obtained by the process.
     ShareId share = 3 [(required) = true];
 
-    // The quantity of the obtained shares.
+    // The quantity of shares that was obtained by the process.
     int32 quantity = 4 [(required) = true];
 }
