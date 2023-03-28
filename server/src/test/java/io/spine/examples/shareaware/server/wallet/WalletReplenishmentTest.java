@@ -45,17 +45,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.balanceRechargedBy;
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.moneyCannotBeTransferredFromUserBy;
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.rechargeBalanceWhen;
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.replenish;
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.setUpWallet;
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.transferMoneyFromUserBy;
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.walletBalanceAfterReplenishment;
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.walletNotReplenishedBy;
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.walletReplenishedAfter;
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.walletReplenishedBy;
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.walletReplenishmentBy;
+import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
 import static io.spine.examples.shareaware.server.wallet.WalletReplenishmentProcess.*;
 
 @DisplayName("`WalletReplenishment` should")
@@ -87,10 +77,8 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         @Test
         @DisplayName("emitting the `BalanceRecharged` event")
         void event() {
-            WalletId wallet =
-                    setUpWallet(context());
-            ReplenishWallet command =
-                    replenish(wallet);
+            WalletId wallet = setUpWallet(context());
+            ReplenishWallet command = replenish(wallet);
             BalanceRecharged expected = balanceRechargedBy(command, wallet);
             context().receivesCommand(command);
 
@@ -105,8 +93,7 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         @Test
         @DisplayName("to 1000 USD")
         void balance() {
-            WalletId wallet =
-                    setUpWallet(context());
+            WalletId wallet = setUpWallet(context());
             ReplenishWallet firstReplenishment = replenish(wallet);
             ReplenishWallet secondReplenishment = replenish(wallet);
             WalletBalance expected = walletBalanceAfterReplenishment(firstReplenishment,

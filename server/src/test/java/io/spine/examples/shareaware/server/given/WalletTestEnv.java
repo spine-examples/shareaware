@@ -28,6 +28,7 @@ import io.spine.examples.shareaware.wallet.event.MoneyReservationCanceled;
 import io.spine.examples.shareaware.wallet.event.MoneyReserved;
 import io.spine.examples.shareaware.wallet.event.MoneyWithdrawn;
 import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
+import io.spine.examples.shareaware.wallet.event.WalletCreated;
 import io.spine.examples.shareaware.wallet.event.WalletNotReplenished;
 import io.spine.examples.shareaware.wallet.event.WalletReplenished;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
@@ -352,6 +353,22 @@ public final class WalletTestEnv {
                 .newBuilder()
                 .setId(wallet.getId())
                 .setBalance(expectedBalance)
+                .vBuild();
+    }
+
+    public static Wallet walletWith(Money balance, WalletId id) {
+        return Wallet
+                .newBuilder()
+                .setBalance(balance)
+                .setId(id)
+                .vBuild();
+    }
+
+    public static WalletCreated walletCreatedWith(Money initialBalance, WalletId id) {
+        return WalletCreated
+                .newBuilder()
+                .setWallet(id)
+                .setBalance(initialBalance)
                 .vBuild();
     }
 }
