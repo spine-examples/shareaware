@@ -88,6 +88,19 @@ public final class MoneyCalculator {
                 .vBuild();
     }
 
+    public static Money multiply(Money money, int multiplier) {
+        int nanos = money.getNanos() * multiplier;
+        int additionalUnits = nanos / NANOS_IN_UNIT;
+        int additionalNanos = nanos % NANOS_IN_UNIT;
+        long units = money.getUnits() * multiplier + additionalUnits;
+        return Money
+                .newBuilder()
+                .setUnits(units)
+                .setNanos(additionalNanos)
+                .setCurrency(money.getCurrency())
+                .vBuild();
+    }
+
     /**
      * Returns true if the first {@code Money} object is greater than the second {@code Money} object,
      * or false otherwise.
