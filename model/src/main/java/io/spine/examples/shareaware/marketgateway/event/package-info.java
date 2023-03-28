@@ -25,7 +25,7 @@
  */
 
 /**
- * Incorporates shares market gateway events, and related interfaces.
+ * Incorporates shares market gateway events and related interfaces.
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault
