@@ -73,11 +73,15 @@ public interface MoneyReservationSignal extends EventMessage {
         return getOperation().hasWithdrawal();
     }
 
-    default PurchaseId getPurchaseProcess() {
+    default PurchaseId purchaseProcess() {
         return getOperation().getPurchase();
     }
 
-    default String getPurchaseIdValue() {
+    default String purchaseIdValue() {
         return getOperation().getPurchase().getUuid();
+    }
+
+    default boolean isPartOfPurchase() {
+        return getOperation().hasPurchase();
     }
 }

@@ -26,7 +26,6 @@
 
 package io.spine.examples.shareaware.server.investment;
 
-import io.spine.core.UserId;
 import io.spine.examples.shareaware.InvestmentId;
 import io.spine.examples.shareaware.MarketId;
 import io.spine.examples.shareaware.OperationId;
@@ -84,7 +83,7 @@ final class SharesPurchaseProcess
         setArchived(true);
         return SharesPurchaseFailed
                 .newBuilder()
-                .setPurchaseProcess(r.getPurchaseProcess())
+                .setPurchaseProcess(r.purchaseProcess())
                 .setPurchaser(state().getPurchaser())
                 .vBuild();
     }
@@ -93,7 +92,7 @@ final class SharesPurchaseProcess
     ObtainShares on(MoneyReserved e) {
         return ObtainShares
                 .newBuilder()
-                .setPurchase(e.getPurchaseProcess())
+                .setPurchase(e.purchaseProcess())
                 .setShare(state().getShare())
                 .setQuantity(state().getQuantity())
                 .setMarket(MarketId.generate()) //Change to static ID
@@ -105,6 +104,7 @@ final class SharesPurchaseProcess
         return AddShares
                 .newBuilder()
                 .setInvestment(investmentId())
+                .setProcess(e.getPurchaseProcess())
                 .setQuantity(e.getQuantity())
                 .vBuild();
     }

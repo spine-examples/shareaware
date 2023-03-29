@@ -46,18 +46,15 @@ public class InvestmentAggregate
         initState(c);
         return SharesAdded
                 .newBuilder()
-                .setShare(c.getShare())
+                .setInvestment(c.getInvestment())
+                .setProcess(c.getProcess())
                 .setQuantity(c.getQuantity())
                 .vBuild();
     }
 
     private void initState(AddShares c) {
         if (!state().hasId()) {
-            InvestmentId id = InvestmentId
-                    .newBuilder()
-                    .setShare(c.getShare())
-                    .vBuild();
-            builder().setId(id);
+            builder().setId(c.getInvestment());
         }
     }
 
