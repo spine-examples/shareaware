@@ -24,23 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.wallet.event;
-
-import com.google.errorprone.annotations.Immutable;
-import io.spine.annotation.GeneratedMixin;
-import io.spine.base.EventMessage;
-import io.spine.examples.shareaware.WithdrawalId;
-
 /**
- * Common interface for events participating in wallet withdrawal operation.
+ * This package defines shares market data types.
  */
-@Immutable
-@GeneratedMixin
-public interface WithdrawalEvent extends EventMessage {
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.examples.shareaware.market;
 
-    /**
-     * Every event that participates in the withdrawal operation
-     * should have {@code WithdrawalId}.
-     */
-    WithdrawalId getWithdrawalProcess();
-}
+import javax.annotation.CheckReturnValue;
+import javax.annotation.ParametersAreNonnullByDefault;

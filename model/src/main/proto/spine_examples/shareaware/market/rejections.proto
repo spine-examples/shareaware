@@ -26,27 +26,22 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware.wallet;
+package spine_examples.shareaware.market;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.wallet.rejection";
+option java_package = "io.spine.examples.shareaware.market.rejection";
 option java_multiple_files = false;
 
 import "spine_examples/shareaware/identifiers.proto";
-import "spine/money/money.proto";
 
-// Money cannot be reserved due to insufficient funds in the wallet.
-message InsufficientFunds {
-    option (is).java_type = "io.spine.examples.shareaware.wallet.MoneyReservationSignal";
+// Shares cannot be obtained due to error in the market.
+message SharesCannotBeObtained {
 
-    // The ID of the wallet has no such amount of money to reserve.
-    WalletId wallet = 1;
+    // The ID of the purchase process that tried to obtain shares.
+    PurchaseId purchase_process = 1;
 
-    // The ID of the operation that wanted to reserve money.
-    OperationId operation = 2 [(required) = true];
-
-    // The amount of not reserved money.
-    spine.money.Money amount = 3 [(required) = true];
+    // Why the process failed.
+    string cause = 2;
 }

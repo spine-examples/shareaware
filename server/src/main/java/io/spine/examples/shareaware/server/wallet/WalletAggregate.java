@@ -38,7 +38,6 @@ import io.spine.examples.shareaware.wallet.event.MoneyReservationCanceled;
 import io.spine.examples.shareaware.wallet.event.MoneyReserved;
 import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
 import io.spine.examples.shareaware.wallet.event.WalletCreated;
-import io.spine.examples.shareaware.wallet.event.WithdrawalEvent;
 import io.spine.examples.shareaware.wallet.rejection.InsufficientFunds;
 import io.spine.money.Currency;
 import io.spine.money.Money;
@@ -104,14 +103,14 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
             throw InsufficientFunds
                     .newBuilder()
                     .setWallet(c.getWallet())
-                    .setWithdrawalProcess(c.getWithdrawalProcess())
+                    .setOperation(c.getOperation())
                     .setAmount(c.getAmount())
                     .build();
         }
         return MoneyReserved
                 .newBuilder()
                 .setWallet(c.getWallet())
-                .setWithdrawalProcess(c.getWithdrawalProcess())
+                .setOperation(c.getOperation())
                 .setAmount(c.getAmount())
                 .vBuild();
     }
@@ -119,7 +118,7 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
     @Apply
     private void event(MoneyReserved e) {
         Money newBalance = subtract(state().getBalance(), e.getAmount());
-        String withdrawalId = extractWithdrawalIdValue(e);
+        String withdrawalId = e.withdrawalIdValue();
         builder()
                 .setBalance(newBalance)
                 .putReservedMoney(withdrawalId, e.getAmount());
@@ -129,7 +128,7 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
     ReservedMoneyDebited on(DebitReservedMoney c) {
         return ReservedMoneyDebited
                 .newBuilder()
-                .setWithdrawalProcess(c.getWithdrawalProcess())
+                .setOperation(c.getOperation())
                 .setWallet(c.getWallet())
                 .setCurrentBalance(state().getBalance())
                 .vBuild();
@@ -137,7 +136,7 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
 
     @Apply
     private void event(ReservedMoneyDebited e) {
-        String withdrawalId = extractWithdrawalIdValue(e);
+        String withdrawalId = e.withdrawalIdValue();
         builder().removeReservedMoney(withdrawalId);
     }
 
@@ -145,22 +144,18 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
     MoneyReservationCanceled on(CancelMoneyReservation e) {
         return MoneyReservationCanceled
                 .newBuilder()
-                .setWithdrawalProcess(e.getWithdrawalProcess())
+                .setOperation(e.getOperation())
                 .setWallet(e.getWallet())
                 .vBuild();
     }
 
     @Apply
     private void event(MoneyReservationCanceled e) {
-        String withdrawalId = extractWithdrawalIdValue(e);
+        String withdrawalId = e.withdrawalIdValue();
         Money reservedAmount = state().getReservedMoneyOrThrow(withdrawalId);
         Money restoredBalance = sum(state().getBalance(), reservedAmount);
         builder()
                 .setBalance(restoredBalance)
                 .removeReservedMoney(withdrawalId);
-    }
-
-    private static String extractWithdrawalIdValue(WithdrawalEvent e) {
-        return e.getWithdrawalProcess().getUuid();
     }
 }

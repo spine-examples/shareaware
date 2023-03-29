@@ -53,16 +53,8 @@ public final class WalletTest extends ContextAwareTest {
     void event() {
         WalletId wallet = givenId();
         CreateWallet command = createWallet(wallet);
-        WalletCreated expectedEvent = WalletCreated
-                .newBuilder()
-                .setWallet(wallet)
-                .setBalance(GivenMoney.zero())
-                .vBuild();
-        Wallet expectedState = Wallet
-                .newBuilder()
-                .setId(wallet)
-                .setBalance(GivenMoney.zero())
-                .vBuild();
+        WalletCreated expectedEvent = walletCreatedWith(GivenMoney.zero(), wallet);
+        Wallet expectedState = walletWith(GivenMoney.zero(), wallet);
         context().receivesCommand(command);
         EventSubject assertEvents = context()
                 .assertEvents()

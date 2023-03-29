@@ -26,27 +26,43 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware.wallet;
+package spine_examples.shareaware.investment;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.wallet.rejection";
-option java_multiple_files = false;
+option java_package = "io.spine.examples.shareaware.investment.event";
+option java_outer_classname = "PurchaseEventsProto";
+option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
-import "spine/money/money.proto";
+import "spine/core/user_id.proto";
 
-// Money cannot be reserved due to insufficient funds in the wallet.
-message InsufficientFunds {
-    option (is).java_type = "io.spine.examples.shareaware.wallet.MoneyReservationSignal";
+// Shares have been purchased.
+message SharesPurchased {
 
-    // The ID of the wallet has no such amount of money to reserve.
-    WalletId wallet = 1;
+    // The ID of the successfully finished purchase process.
+    PurchaseId purchase_process = 1;
 
-    // The ID of the operation that wanted to reserve money.
-    OperationId operation = 2 [(required) = true];
+    // The ID of the purchaser.
+    spine.core.UserId purchaser = 2 [(required) = true];
 
-    // The amount of not reserved money.
-    spine.money.Money amount = 3 [(required) = true];
+    // The ID of the purchased share.
+    ShareId share = 3 [(required) = true];
+
+    // The quantity of the purchased shares.
+    int32 quantity = 4 [(required) = true];
+}
+
+// Shares purchase process failed.
+message SharesPurchaseFailed {
+
+    // The ID of the failed purchase process.
+    PurchaseId purchase_process = 1;
+
+    // The ID of the user whose purchase failed.
+    spine.core.UserId purchaser = 2 [(required) = true];
+
+    // Why the purchase of the shares failed.
+    string cause = 3;
 }

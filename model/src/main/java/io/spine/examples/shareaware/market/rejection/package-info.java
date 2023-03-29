@@ -24,29 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+/**
+ * Defines shares market rejections.
+ */
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.examples.shareaware.market.rejection;
 
-package spine_examples.shareaware.wallet;
-
-import "spine/options.proto";
-
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.wallet.rejection";
-option java_multiple_files = false;
-
-import "spine_examples/shareaware/identifiers.proto";
-import "spine/money/money.proto";
-
-// Money cannot be reserved due to insufficient funds in the wallet.
-message InsufficientFunds {
-    option (is).java_type = "io.spine.examples.shareaware.wallet.MoneyReservationSignal";
-
-    // The ID of the wallet has no such amount of money to reserve.
-    WalletId wallet = 1;
-
-    // The ID of the operation that wanted to reserve money.
-    OperationId operation = 2 [(required) = true];
-
-    // The amount of not reserved money.
-    spine.money.Money amount = 3 [(required) = true];
-}
+import javax.annotation.CheckReturnValue;
+import javax.annotation.ParametersAreNonnullByDefault;
