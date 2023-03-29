@@ -26,8 +26,8 @@
 
 package io.spine.examples.shareaware.server.investment;
 
+import io.spine.core.UserId;
 import io.spine.examples.shareaware.InvestmentId;
-import io.spine.examples.shareaware.MarketId;
 import io.spine.examples.shareaware.OperationId;
 import io.spine.examples.shareaware.PurchaseId;
 import io.spine.examples.shareaware.WalletId;
@@ -40,6 +40,7 @@ import io.spine.examples.shareaware.investment.event.SharesPurchased;
 import io.spine.examples.shareaware.market.command.ObtainShares;
 import io.spine.examples.shareaware.market.event.SharesObtained;
 import io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeObtained;
+import io.spine.examples.shareaware.server.market.MarketProcess;
 import io.spine.examples.shareaware.wallet.command.CancelMoneyReservation;
 import io.spine.examples.shareaware.wallet.command.DebitReservedMoney;
 import io.spine.examples.shareaware.wallet.command.ReserveMoney;
@@ -64,8 +65,8 @@ final class SharesPurchaseProcess
                 multiply(c.getSharePrice(), c.getQuantity());
         return ReserveMoney
                 .newBuilder()
-                .setWallet(walletId())
-                .setOperation(operationId())
+                .setWallet(walletId(c.getPurchaser()))
+                .setOperation(operationId(c.getPurchaseProcess()))
                 .setAmount(purchasePrice)
                 .vBuild();
     }
@@ -95,7 +96,7 @@ final class SharesPurchaseProcess
                 .setPurchase(e.purchaseProcess())
                 .setShare(state().getShare())
                 .setQuantity(state().getQuantity())
-                .setMarket(MarketId.generate()) //Change to static ID
+                .setMarket(MarketProcess.ID)
                 .vBuild();
     }
 
@@ -109,7 +110,7 @@ final class SharesPurchaseProcess
                 .vBuild();
     }
 
-    @React
+    @Command
     CancelMoneyReservation on(SharesCannotBeObtained r) {
         return CancelMoneyReservation
                 .newBuilder()
@@ -163,11 +164,24 @@ final class SharesPurchaseProcess
                 .setOwner(state().getPurchaser())
                 .vBuild();
     }
+    private static WalletId walletId(UserId owner) {
+        return WalletId
+                .newBuilder()
+                .setOwner(owner)
+                .vBuild();
+    }
 
     private OperationId operationId() {
         return OperationId
                 .newBuilder()
                 .setPurchase(state().getId())
+                .vBuild();
+    }
+
+    private static OperationId operationId(PurchaseId id) {
+        return OperationId
+                .newBuilder()
+                .setPurchase(id)
                 .vBuild();
     }
 }

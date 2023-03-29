@@ -26,6 +26,9 @@
 
 package io.spine.examples.shareaware.server;
 
+import io.spine.examples.shareaware.server.investment.InvestmentAggregate;
+import io.spine.examples.shareaware.server.investment.SharesPurchaseRepository;
+import io.spine.examples.shareaware.server.market.MarketProcess;
 import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.server.wallet.WalletAggregate;
 import io.spine.examples.shareaware.server.wallet.WalletBalanceRepository;
@@ -59,10 +62,13 @@ public final class TradingContext {
                 .singleTenant(NAME)
                 .add(DefaultRepository.of(WatchlistAggregate.class))
                 .add(DefaultRepository.of(WalletAggregate.class))
+                .add(DefaultRepository.of(InvestmentAggregate.class))
                 .add(DefaultRepository.of(PaymentGatewayProcess.class))
+                .add(DefaultRepository.of(MarketProcess.class))
                 .add(new WalletWithdrawalRepository())
                 .add(new WalletReplenishmentRepository())
                 .add(new WalletBalanceRepository())
-                .add(new UserWatchlistsRepository());
+                .add(new UserWatchlistsRepository())
+                .add(new SharesPurchaseRepository());
     }
 }

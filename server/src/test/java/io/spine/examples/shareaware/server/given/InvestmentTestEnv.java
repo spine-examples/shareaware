@@ -24,45 +24,39 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.market;
+package io.spine.examples.shareaware.server.given;
 
-import io.spine.examples.shareaware.MarketId;
-import io.spine.examples.shareaware.market.Market;
-import io.spine.examples.shareaware.market.command.ObtainShares;
-import io.spine.examples.shareaware.market.event.SharesObtained;
-import io.spine.server.command.Assign;
-import io.spine.server.procman.ProcessManager;
+import io.spine.core.UserId;
+import io.spine.examples.shareaware.PurchaseId;
+import io.spine.examples.shareaware.ShareId;
+import io.spine.examples.shareaware.investment.command.PurchaseShares;
+import io.spine.examples.shareaware.wallet.Wallet;
+import io.spine.money.Money;
 
-/**
- * The imitation of the shares market.
- */
-public final class MarketProcess
-        extends ProcessManager<MarketId, Market, Market.Builder> {
+import static io.spine.examples.shareaware.server.given.GivenMoney.usd;
+import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.multiply;
+import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.subtract;
 
-    /**
-     * The hardcoded ID for the shares market.
-     *
-     * <p>Any signals that match this ID will be directed
-     * to the only one instance of this market imitation
-     * that can exist in context.
-     */
-    public static final MarketId ID = MarketId
-            .newBuilder()
-            .setUuid("ImitationOfSharesMarket")
-            .vBuild();
+public final class InvestmentTestEnv {
 
-    /**
-     * Obtains the requested shares from the market
-     * emitting the {@code SharesObtained} event.
-     */
-    @Assign
-    SharesObtained on(ObtainShares c) {
-        return SharesObtained
+    public static PurchaseShares purchaseShares(UserId purchaser) {
+        return PurchaseShares
                 .newBuilder()
-                .setMarket(c.getMarket())
-                .setPurchaseProcess(c.getPurchase())
-                .setShare(c.getShare())
-                .setQuantity(c.getQuantity())
+                .setShare(ShareId.generate())
+                .setPurchaseProcess(PurchaseId.generate())
+                .setQuantity(5)
+                .setSharePrice(usd(20))
+                .setPurchaser(purchaser)
                 .vBuild();
     }
+
+    public static Wallet walletAfterPurchase(PurchaseShares command, Wallet wallet) {
+        Money purchasePrice = multiply(command.getSharePrice(), command.getQuantity());
+        Money newBalance = subtract(wallet.getBalance(), purchasePrice);
+        return wallet
+                .toBuilder()
+                .setBalance(newBalance)
+                .vBuild();
+    }
+
 }
