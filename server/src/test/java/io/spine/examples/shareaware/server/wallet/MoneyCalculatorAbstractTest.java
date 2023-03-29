@@ -26,6 +26,7 @@
 
 package io.spine.examples.shareaware.server.wallet;
 
+import com.google.common.testing.NullPointerTester;
 import io.spine.money.Currency;
 import io.spine.money.Money;
 import io.spine.testing.UtilityClassTest;
@@ -50,6 +51,12 @@ abstract class MoneyCalculatorAbstractTest extends UtilityClassTest<MoneyCalcula
 
     MoneyCalculatorAbstractTest() {
         super(MoneyCalculator.class);
+    }
+
+    @Override
+    protected void configure(NullPointerTester tester) {
+        super.configure(tester);
+        tester.setDefault(Money.class, usd(0));
     }
 
     @ParameterizedTest

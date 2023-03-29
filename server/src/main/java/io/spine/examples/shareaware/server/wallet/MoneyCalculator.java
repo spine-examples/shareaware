@@ -38,7 +38,7 @@ import static io.spine.util.Preconditions2.*;
  *
  * <p>Please note, this implementation works properly only with currencies containing 100 coins in one unit.
  */
-final class MoneyCalculator {
+public final class MoneyCalculator {
 
     private static final int MAX_NANOS_AMOUNT = 99;
     private static final int NANOS_IN_UNIT = 100;
@@ -52,7 +52,7 @@ final class MoneyCalculator {
     /**
      * Calculates the sum of two {@code Money} objects with the same currency.
      */
-    static Money sum(Money first, Money second) {
+    public static Money sum(Money first, Money second) {
         checkArguments(first, second);
         int resultNanos = first.getNanos() + second.getNanos();
         long resultUnits = first.getUnits() + second.getUnits();
@@ -71,7 +71,7 @@ final class MoneyCalculator {
     /**
      * Subtracts the second {@code Money} argument from the first.
      */
-    static Money subtract(Money first, Money second) {
+    public static Money subtract(Money first, Money second) {
         checkArguments(first, second);
         checkState(isGreater(first, second) || first.equals(second));
         int resultNanos = first.getNanos() - second.getNanos();

@@ -24,37 +24,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.wallet;
+syntax = "proto3";
 
-import io.spine.examples.shareaware.WalletId;
-import io.spine.examples.shareaware.server.TradingContext;
-import io.spine.examples.shareaware.server.given.GivenMoney;
-import io.spine.examples.shareaware.wallet.WalletBalance;
-import io.spine.examples.shareaware.wallet.command.CreateWallet;
-import io.spine.money.Money;
-import io.spine.server.BoundedContextBuilder;
-import io.spine.testing.server.blackbox.ContextAwareTest;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+package spine_examples.shareaware.market;
 
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
+import "spine/options.proto";
 
-@DisplayName("`WalletBalanceProjection` should")
-public final class WalletBalanceProjectionTest extends ContextAwareTest {
+option (type_url_prefix) = "type.shareaware.spine.io";
+option java_package = "io.spine.examples.shareaware.market.rejection";
+option java_multiple_files = false;
 
-    @Override
-    protected BoundedContextBuilder contextBuilder() {
-        return TradingContext.newBuilder();
-    }
+import "spine_examples/shareaware/identifiers.proto";
 
-    @Test
-    @DisplayName("display a zero balance, as soon as the wallet created")
-    void balance() {
-        WalletId wallet = givenId();
-        CreateWallet command  = createWallet(wallet);
-        WalletBalance expected = zeroWalletBalance(command.getWallet());
-        context().receivesCommand(command);
+// Shares cannot be obtained due to error in the market.
+message SharesCannotBeObtained {
 
-        context().assertState(command.getWallet(), expected);
-    }
+    // The ID of the purchase process that tried to obtain shares.
+    PurchaseId purchase_process = 1;
+
+    // Why the process failed.
+    string cause = 2;
 }
