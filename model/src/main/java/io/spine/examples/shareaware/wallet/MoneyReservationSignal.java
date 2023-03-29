@@ -52,7 +52,7 @@ public interface MoneyReservationSignal extends EventMessage {
      * <a href="https://protobuf.dev/reference/java/java-generated/#:~:text=static%20Foo%20getDefaultInstance,its%20newBuilderForType()%20method.">
      * default instance</a> of {@code WithdrawalId}.
      */
-    default WithdrawalId getWithdrawalProcess() {
+    default WithdrawalId withdrawalProcess() {
         return getOperation().getWithdrawal();
     }
 
@@ -62,7 +62,7 @@ public interface MoneyReservationSignal extends EventMessage {
      *
      * <p>In case when {@code WithdrawalId} is not set in the corresponding {@code OperationId}, returns an empty string.
      */
-    default String getWithdrawalIdValue() {
+    default String withdrawalIdValue() {
         return getOperation().getWithdrawal().getUuid();
     }
 

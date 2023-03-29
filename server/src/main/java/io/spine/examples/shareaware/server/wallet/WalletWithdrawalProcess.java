@@ -83,7 +83,7 @@ final class WalletWithdrawalProcess
         return TransferMoneyToUser
                 .newBuilder()
                 .setGateway(PaymentGatewayProcess.ID)
-                .setWithdrawalProcess(e.getWithdrawalProcess())
+                .setWithdrawalProcess(e.withdrawalProcess())
                 .setSender(WalletReplenishmentProcess.shareAwareIban)
                 .setRecipient(state().getRecipient())
                 .setAmount(e.getAmount())
@@ -124,7 +124,7 @@ final class WalletWithdrawalProcess
         setArchived(true);
         return MoneyWithdrawn
                 .newBuilder()
-                .setWithdrawalProcess(e.getWithdrawalProcess())
+                .setWithdrawalProcess(e.withdrawalProcess())
                 .setWallet(e.getWallet())
                 .setCurrentBalance(e.getCurrentBalance())
                 .vBuild();
@@ -138,7 +138,7 @@ final class WalletWithdrawalProcess
         setArchived(true);
         return MoneyNotWithdrawn
                 .newBuilder()
-                .setWithdrawalProcess(e.getWithdrawalProcess())
+                .setWithdrawalProcess(e.withdrawalProcess())
                 .vBuild();
     }
 
@@ -150,7 +150,7 @@ final class WalletWithdrawalProcess
         setArchived(true);
         return MoneyNotWithdrawn
                 .newBuilder()
-                .setWithdrawalProcess(e.getWithdrawalProcess())
+                .setWithdrawalProcess(e.withdrawalProcess())
                 .vBuild();
     }
 
