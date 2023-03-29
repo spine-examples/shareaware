@@ -34,7 +34,7 @@ import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.investment.SharesPurchase;
 import io.spine.examples.shareaware.investment.command.AddShares;
 import io.spine.examples.shareaware.investment.command.PurchaseShares;
-import io.spine.examples.shareaware.investment.event.SharePurchaseFailed;
+import io.spine.examples.shareaware.investment.event.SharesPurchaseFailed;
 import io.spine.examples.shareaware.investment.event.SharesAdded;
 import io.spine.examples.shareaware.investment.event.SharesPurchased;
 import io.spine.examples.shareaware.market.command.ObtainShares;
@@ -79,11 +79,11 @@ public class SharesPurchaseProcess
     }
 
     @React
-    SharePurchaseFailed on(InsufficientFunds r) {
+    SharesPurchaseFailed on(InsufficientFunds r) {
         setArchived(true);
-        return SharePurchaseFailed
+        return SharesPurchaseFailed
                 .newBuilder()
-                .setPurchase(r.getPurchaseProcess())
+                .setPurchaseProcess(r.getPurchaseProcess())
                 .setPurchaser(state().getPurchaser())
                 .vBuild();
     }
@@ -118,11 +118,11 @@ public class SharesPurchaseProcess
     }
 
     @React
-    SharePurchaseFailed on(MoneyReservationCanceled e) {
+    SharesPurchaseFailed on(MoneyReservationCanceled e) {
         setArchived(true);
-        return SharePurchaseFailed
+        return SharesPurchaseFailed
                 .newBuilder()
-                .setPurchase(state().getId())
+                .setPurchaseProcess(state().getId())
                 .setPurchaser(state().getPurchaser())
                 .vBuild();
     }
