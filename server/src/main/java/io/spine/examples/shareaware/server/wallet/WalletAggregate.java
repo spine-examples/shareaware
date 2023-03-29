@@ -27,7 +27,6 @@
 package io.spine.examples.shareaware.server.wallet;
 
 import io.spine.examples.shareaware.WalletId;
-import io.spine.examples.shareaware.wallet.MoneyReservationSignal;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.command.CancelMoneyReservation;
 import io.spine.examples.shareaware.wallet.command.CreateWallet;
@@ -119,7 +118,7 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
     @Apply
     private void event(MoneyReserved e) {
         Money newBalance = subtract(state().getBalance(), e.getAmount());
-        String withdrawalId = e.getWithdrawalIdValue();
+        String withdrawalId = e.withdrawalIdValue();
         builder()
                 .setBalance(newBalance)
                 .putReservedMoney(withdrawalId, e.getAmount());
@@ -137,7 +136,7 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
 
     @Apply
     private void event(ReservedMoneyDebited e) {
-        String withdrawalId = e.getWithdrawalIdValue();
+        String withdrawalId = e.withdrawalIdValue();
         builder().removeReservedMoney(withdrawalId);
     }
 
@@ -152,7 +151,7 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
 
     @Apply
     private void event(MoneyReservationCanceled e) {
-        String withdrawalId = e.getWithdrawalIdValue();
+        String withdrawalId = e.withdrawalIdValue();
         Money reservedAmount = state().getReservedMoneyOrThrow(withdrawalId);
         Money restoredBalance = sum(state().getBalance(), reservedAmount);
         builder()
