@@ -57,13 +57,16 @@ public interface MoneyReservationSignal extends EventMessage {
     }
 
     /**
-     * Retrieves the value of {@code WithdrawalId}
-     * without checking for {@code WithdrawalId} existence in {@code OperationId}.
+     * Retrieves the value of the set ID (either {@code WithdrawalId} or {@code PurchaseId})
      *
-     * <p>In case when {@code WithdrawalId} is not set in the corresponding {@code OperationId}, returns an empty string.
+     * <p>In case when neither {@code WithdrawalId} nor {@code PurchaseId} is not set in the corresponding {@code OperationId},
+     * returns an empty string.
      */
-    default String withdrawalIdValue() {
-        return getOperation().getWithdrawal().getUuid();
+    default String operationIdValue() {
+        if (isPartOfWithdrawal()) {
+            return getOperation().getWithdrawal().getUuid();
+        }
+        return getOperation().getPurchase().getUuid();
     }
 
     /**
@@ -75,10 +78,6 @@ public interface MoneyReservationSignal extends EventMessage {
 
     default PurchaseId purchaseProcess() {
         return getOperation().getPurchase();
-    }
-
-    default String purchaseIdValue() {
-        return getOperation().getPurchase().getUuid();
     }
 
     default boolean isPartOfPurchase() {
