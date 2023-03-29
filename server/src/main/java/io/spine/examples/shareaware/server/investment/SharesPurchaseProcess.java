@@ -27,6 +27,7 @@
 package io.spine.examples.shareaware.server.investment;
 
 import io.spine.core.UserId;
+import io.spine.examples.shareaware.InvestmentId;
 import io.spine.examples.shareaware.MarketId;
 import io.spine.examples.shareaware.OperationId;
 import io.spine.examples.shareaware.PurchaseId;
@@ -54,7 +55,7 @@ import io.spine.server.procman.ProcessManager;
 
 import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.*;
 
-public class SharesPurchaseProcess
+final class SharesPurchaseProcess
         extends ProcessManager<PurchaseId, SharesPurchase, SharesPurchase.Builder> {
 
     @Command
@@ -64,8 +65,8 @@ public class SharesPurchaseProcess
                 multiply(c.getSharePrice(), c.getQuantity());
         return ReserveMoney
                 .newBuilder()
-                .setWallet(walletId(c.getPurchaser()))
-                .setOperation(operationId(c.getPurchaseProcess()))
+                .setWallet(walletId())
+                .setOperation(operationId())
                 .setAmount(purchasePrice)
                 .vBuild();
     }
@@ -103,7 +104,7 @@ public class SharesPurchaseProcess
     AddShares on(SharesObtained e) {
         return AddShares
                 .newBuilder()
-                .setShare(e.getShare())
+                .setInvestment(investmentId())
                 .setQuantity(e.getQuantity())
                 .vBuild();
     }
@@ -112,8 +113,8 @@ public class SharesPurchaseProcess
     CancelMoneyReservation on(SharesCannotBeObtained r) {
         return CancelMoneyReservation
                 .newBuilder()
-                .setWallet(walletId(state().getPurchaser()))
-                .setOperation(operationId(state().getId()))
+                .setWallet(walletId())
+                .setOperation(operationId())
                 .vBuild();
     }
 
@@ -131,8 +132,8 @@ public class SharesPurchaseProcess
     DebitReservedMoney on(SharesAdded e) {
         return DebitReservedMoney
                 .newBuilder()
-                .setWallet(walletId(state().getPurchaser()))
-                .setOperation(operationId(state().getId()))
+                .setWallet(walletId())
+                .setOperation(operationId())
                 .vBuild();
     }
 
@@ -148,17 +149,25 @@ public class SharesPurchaseProcess
                 .vBuild();
     }
 
-    private static WalletId walletId(UserId owner) {
-        return WalletId
+    private InvestmentId investmentId() {
+        return InvestmentId
                 .newBuilder()
-                .setOwner(owner)
+                .setShare(state().getShare())
+                .setOwner(state().getPurchaser())
                 .vBuild();
     }
 
-    private static OperationId operationId(PurchaseId purchase) {
+    private WalletId walletId() {
+        return WalletId
+                .newBuilder()
+                .setOwner(state().getPurchaser())
+                .vBuild();
+    }
+
+    private OperationId operationId() {
         return OperationId
                 .newBuilder()
-                .setPurchase(purchase)
+                .setPurchase(state().getId())
                 .vBuild();
     }
 }

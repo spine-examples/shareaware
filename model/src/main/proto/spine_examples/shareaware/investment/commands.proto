@@ -36,12 +36,13 @@ option java_outer_classname = "CommandsProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
+import "spine/core/user_id.proto";
 
 // A command to add shares to `Investment`.
 message AddShares {
 
-    // The ID of the share to add.
-    ShareId share = 1;
+    // The ID of the investment where shares wants to be added.
+    InvestmentId investment = 1;
 
     // The number of shares to add.
     int32 quantity = 2 [(required) = true];
