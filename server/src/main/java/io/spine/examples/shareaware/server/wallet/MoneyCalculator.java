@@ -88,15 +88,18 @@ public final class MoneyCalculator {
                 .vBuild();
     }
 
+    /**
+     * Multiplies {@code Money} argument on multiplier.
+     */
     public static Money multiply(Money money, int multiplier) {
-        int nanos = money.getNanos() * multiplier;
-        int additionalUnits = nanos / NANOS_IN_UNIT;
-        int additionalNanos = nanos % NANOS_IN_UNIT;
+        int fullyFledgedNanos = money.getNanos() * multiplier;
+        int additionalUnits = fullyFledgedNanos / NANOS_IN_UNIT;
+        int nanos = fullyFledgedNanos % NANOS_IN_UNIT;
         long units = money.getUnits() * multiplier + additionalUnits;
         return Money
                 .newBuilder()
                 .setUnits(units)
-                .setNanos(additionalNanos)
+                .setNanos(nanos)
                 .setCurrency(money.getCurrency())
                 .vBuild();
     }

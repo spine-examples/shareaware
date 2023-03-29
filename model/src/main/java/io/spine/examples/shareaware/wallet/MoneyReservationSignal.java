@@ -30,6 +30,7 @@ import com.google.errorprone.annotations.Immutable;
 import io.spine.annotation.GeneratedMixin;
 import io.spine.base.EventMessage;
 import io.spine.examples.shareaware.OperationId;
+import io.spine.examples.shareaware.PurchaseId;
 import io.spine.examples.shareaware.WithdrawalId;
 
 /**
@@ -70,5 +71,13 @@ public interface MoneyReservationSignal extends EventMessage {
      */
     default boolean isPartOfWithdrawal() {
         return getOperation().hasWithdrawal();
+    }
+
+    default PurchaseId getPurchaseProcess() {
+        return getOperation().getPurchase();
+    }
+
+    default String getPurchaseIdValue() {
+        return getOperation().getPurchase().getUuid();
     }
 }
