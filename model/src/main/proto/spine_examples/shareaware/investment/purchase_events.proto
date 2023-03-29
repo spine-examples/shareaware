@@ -55,10 +55,10 @@ message SharesPurchased {
 }
 
 // Shares purchase process failed.
-message SharePurchaseFailed {
+message SharesPurchaseFailed {
 
     // The ID of the failed purchase process.
-    PurchaseId purchase = 1;
+    PurchaseId purchase_process = 1;
 
     // The ID of the user whose purchase failed.
     spine.core.UserId purchaser = 2 [(required) = true];
