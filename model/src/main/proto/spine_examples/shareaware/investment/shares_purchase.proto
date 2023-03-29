@@ -26,66 +26,31 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware;
+package spine_examples.shareaware.investment;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware";
-option java_outer_classname = "IdentifiersProto";
+option java_package = "io.spine.examples.shareaware.investment";
+option java_outer_classname = "SharesPurchaseProto";
 option java_multiple_files = true;
 
+import "spine_examples/shareaware/identifiers.proto";
 import "spine/core/user_id.proto";
 
-// Identifies a watchlist.
-message WatchlistId {
-    string uuid = 1 [(required) = true];
-}
+// The process of shares purchase.
+message SharesPurchase {
+    option (entity) = {kind: PROCESS_MANAGER};
 
-// Identifies a share.
-message ShareId {
-    string uuid = 1 [(required) = true];
-}
+    // The ID of the purchase process.
+    PurchaseId id = 1;
 
-// Identifies a wallet.
-message WalletId {
-    spine.core.UserId owner = 1 [(required) = true];
-}
+    // The ID of the purchaser.
+    spine.core.UserId purchaser = 2 [(required) = true];
 
-// Identifies a wallet replenishment process.
-message ReplenishmentId {
-    string uuid = 1 [(required) = true];
-}
+    // The ID of the share to purchase.
+    ShareId share = 3 [(required) = true];
 
-// Identifies a payment gateway.
-message PaymentGatewayId {
-    string uuid = 1 [(required) = true];
-}
-
-// Identifies a wallet withdrawal process.
-message WithdrawalId {
-    string uuid = 1 [(required) = true];
-}
-
-// Identifies an investment.
-message InvestmentId {
-    ShareId share = 1 [(required) = true];
-}
-
-// Identifies a shares purchase process.
-message PurchaseId {
-    string uuid = 1 [(required) = true];
-}
-
-// Identifies the operation that interacts with the wallet by reserving money in it.
-message OperationId {
-    oneof type {
-        WithdrawalId withdrawal = 1;
-        PurchaseId purchase = 2;
-    }
-}
-
-// Identifies the shares market.
-message MarketId {
-    string uuid = 1 [(required) = true];
+    // The quantity of shares to purchase.
+    int32 quantity = 4 [(required) = true];
 }
