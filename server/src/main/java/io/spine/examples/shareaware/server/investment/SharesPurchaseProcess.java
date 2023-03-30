@@ -55,9 +55,15 @@ import io.spine.server.procman.ProcessManager;
 
 import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.*;
 
+/**
+ * Coordinates the shares purchase from the market.
+ */
 final class SharesPurchaseProcess
         extends ProcessManager<PurchaseId, SharesPurchase, SharesPurchase.Builder> {
 
+    /**
+     * Issues a command to reserve money for share purchase.
+     */
     @Command
     ReserveMoney on(PurchaseShares c) {
         initState(c);
@@ -79,6 +85,10 @@ final class SharesPurchaseProcess
                 .setQuantity(c.getQuantity());
     }
 
+    /**
+     * Terminates the process when there are insufficient funds
+     * for shares purchased in the wallet.
+     */
     @React
     SharesPurchaseFailed on(InsufficientFunds r) {
         setArchived(true);
@@ -89,6 +99,10 @@ final class SharesPurchaseProcess
                 .vBuild();
     }
 
+    /**
+     * Issues the command to obtain shares from the market
+     * after money for it was reserved.
+     */
     @Command
     ObtainShares on(MoneyReserved e) {
         return ObtainShares
@@ -100,6 +114,10 @@ final class SharesPurchaseProcess
                 .vBuild();
     }
 
+    /**
+     * Issues the command to add shares to the user's investment
+     * after they were bought from the market.
+     */
     @Command
     AddShares on(SharesObtained e) {
         return AddShares
@@ -110,6 +128,10 @@ final class SharesPurchaseProcess
                 .vBuild();
     }
 
+    /**
+     * Issues the command to cancel money reservation that was made for shares purchase
+     * after the unexpected error in shares market.
+     */
     @Command
     CancelMoneyReservation on(SharesCannotBeObtained r) {
         return CancelMoneyReservation
@@ -119,6 +141,9 @@ final class SharesPurchaseProcess
                 .vBuild();
     }
 
+    /**
+     * Terminates the process when money reservation for shares purchase was cancelled.
+     */
     @React
     SharesPurchaseFailed on(MoneyReservationCanceled e) {
         setArchived(true);
@@ -129,6 +154,10 @@ final class SharesPurchaseProcess
                 .vBuild();
     }
 
+    /**
+     * Issues the command to debit the reserved money for shares purchase
+     * after the shares were bought from the market.
+     */
     @Command
     DebitReservedMoney on(SharesAdded e) {
         return DebitReservedMoney
@@ -138,6 +167,9 @@ final class SharesPurchaseProcess
                 .vBuild();
     }
 
+    /**
+     * Ends the process successfully when reserved money was debited from the wallet.
+     */
     @React
     SharesPurchased on(ReservedMoneyDebited e) {
         setArchived(true);

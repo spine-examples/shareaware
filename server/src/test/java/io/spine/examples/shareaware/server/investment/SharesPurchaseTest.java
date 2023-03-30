@@ -27,6 +27,7 @@
 package io.spine.examples.shareaware.server.investment;
 
 import io.spine.core.UserId;
+import io.spine.examples.shareaware.InvestmentId;
 import io.spine.examples.shareaware.ShareId;
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.investment.Investment;
@@ -160,9 +161,14 @@ public final class SharesPurchaseTest extends ContextAwareTest {
             PurchaseShares firstPurchase = purchaseSharesFor(user, share);
             PurchaseShares secondPurchase = purchaseSharesFor(user, share);
             Investment expected = investmentAfter(firstPurchase, secondPurchase);
+            InvestmentId investmentId = InvestmentId
+                    .newBuilder()
+                    .setShare(share)
+                    .setOwner(user)
+                    .vBuild();
             context().receivesCommands(firstPurchase, secondPurchase);
 
-            context().assertState(expected.getId(), expected);
+            context().assertState(investmentId, expected);
         }
     }
 
