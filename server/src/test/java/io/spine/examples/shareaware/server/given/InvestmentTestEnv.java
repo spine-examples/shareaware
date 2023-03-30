@@ -36,13 +36,16 @@ import io.spine.examples.shareaware.investment.Investment;
 import io.spine.examples.shareaware.investment.SharesPurchase;
 import io.spine.examples.shareaware.investment.command.AddShares;
 import io.spine.examples.shareaware.investment.command.PurchaseShares;
+import io.spine.examples.shareaware.investment.command.PurchaseSharesOrBuilder;
 import io.spine.examples.shareaware.investment.event.SharesPurchaseFailed;
 import io.spine.examples.shareaware.investment.event.SharesPurchased;
 import io.spine.examples.shareaware.market.command.ObtainShares;
 import io.spine.examples.shareaware.server.market.MarketProcess;
 import io.spine.examples.shareaware.wallet.Wallet;
+import io.spine.examples.shareaware.wallet.command.CancelMoneyReservation;
 import io.spine.examples.shareaware.wallet.command.DebitReservedMoney;
 import io.spine.examples.shareaware.wallet.command.ReserveMoney;
+import io.spine.examples.shareaware.wallet.event.MoneyReservationCanceled;
 import io.spine.examples.shareaware.wallet.event.MoneyReserved;
 import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
@@ -198,6 +201,24 @@ public final class InvestmentTestEnv {
                 .newBuilder()
                 .setSharesAvailable(availableShares)
                 .setId(investmentId(purchaser, share))
+                .vBuild();
+    }
+
+    public static MoneyReservationCanceled
+    moneyReservationCanceledAfter(PurchaseShares command) {
+        return MoneyReservationCanceled
+                .newBuilder()
+                .setWallet(walletId(command.getPurchaser()))
+                .setOperation(operationId(command.getPurchaseProcess()))
+                .vBuild();
+    }
+
+    public static CancelMoneyReservation
+    cancelMoneyReservationAfter(PurchaseSharesOrBuilder command) {
+        return CancelMoneyReservation
+                .newBuilder()
+                .setOperation(operationId(command.getPurchaseProcess()))
+                .setWallet(walletId(command.getPurchaser()))
                 .vBuild();
     }
 

@@ -36,15 +36,21 @@ import io.spine.examples.shareaware.investment.command.PurchaseShares;
 import io.spine.examples.shareaware.investment.event.SharesPurchaseFailed;
 import io.spine.examples.shareaware.investment.event.SharesPurchased;
 import io.spine.examples.shareaware.market.command.ObtainShares;
-import io.spine.examples.shareaware.server.TradingContext;
+import io.spine.examples.shareaware.server.given.PurchaseTestContext;
+import io.spine.examples.shareaware.server.given.RejectingMarket;
 import io.spine.examples.shareaware.wallet.Wallet;
+import io.spine.examples.shareaware.wallet.command.CancelMoneyReservation;
 import io.spine.examples.shareaware.wallet.command.DebitReservedMoney;
 import io.spine.examples.shareaware.wallet.command.ReserveMoney;
+import io.spine.examples.shareaware.wallet.event.MoneyReservationCanceled;
 import io.spine.examples.shareaware.wallet.event.MoneyReserved;
 import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
 import io.spine.server.BoundedContextBuilder;
 import io.spine.testing.server.blackbox.ContextAwareTest;
+import io.spine.testing.server.model.ModelTests;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -56,9 +62,19 @@ import static io.spine.examples.shareaware.server.given.WalletTestEnv.setUpWalle
 @DisplayName("`SharesPurchase` should")
 public final class SharesPurchaseTest extends ContextAwareTest {
 
+    @BeforeAll
+    static void beforeAll() {
+        ModelTests.dropAllModels();
+    }
+
+    @AfterAll
+    static void afterAll() {
+        ModelTests.dropAllModels();
+    }
+
     @Override
     protected BoundedContextBuilder contextBuilder() {
-        return TradingContext.newBuilder();
+        return PurchaseTestContext.newBuilder();
     }
 
     @Nested
@@ -113,6 +129,20 @@ public final class SharesPurchaseTest extends ContextAwareTest {
             context().receivesCommand(command);
 
             context().assertEvent(expected);
+        }
+
+        @Test
+        @DisplayName("emitting the `MoneyReservationCanceled` event")
+        void reservationCanceled() {
+            Wallet wallet = setUpReplenishedWallet(context());
+            PurchaseShares command = purchaseSharesFor(wallet.getId()
+                                                             .getOwner());
+            MoneyReservationCanceled expected = moneyReservationCanceledAfter(command);
+            RejectingMarket.switchToRejectionMode();
+            context().receivesCommand(command);
+
+            context().assertEvent(expected);
+            RejectingMarket.switchToEventsMode();
         }
     }
 
@@ -225,7 +255,7 @@ public final class SharesPurchaseTest extends ContextAwareTest {
         }
 
         @Test
-        @DisplayName("which emits the `SharesPurchasedFailed` event")
+        @DisplayName("which emits the `SharesPurchasedFailed` event when insufficient funds in the wallet")
         void processFailedAfterInsufficientFunds() {
             WalletId wallet = setUpWallet(context());
             PurchaseShares command = purchaseSharesFor(wallet.getOwner());
@@ -233,6 +263,37 @@ public final class SharesPurchaseTest extends ContextAwareTest {
             context().receivesCommand(command);
 
             context().assertEvent(expected);
+        }
+
+        @Test
+        @DisplayName("which issues the `CancelMoneyReservation` command")
+        void cancelMoneyReservation() {
+            Wallet wallet = setUpReplenishedWallet(context());
+            PurchaseShares command = purchaseSharesFor(wallet.getId()
+                                                             .getOwner());
+            CancelMoneyReservation expected = cancelMoneyReservationAfter(command);
+            RejectingMarket.switchToRejectionMode();
+            context().receivesCommand(command);
+
+            context().assertCommands()
+                     .withType(CancelMoneyReservation.class)
+                     .message(0)
+                     .isEqualTo(expected);
+            RejectingMarket.switchToEventsMode();
+        }
+
+        @Test
+        @DisplayName("which emits the `SharesPurchasedFailed` event after error in the Shares Market")
+        void sharesPurchaseFailed() {
+            Wallet wallet = setUpReplenishedWallet(context());
+            PurchaseShares command = purchaseSharesFor(wallet.getId()
+                                                             .getOwner());
+            SharesPurchaseFailed expected = sharesPurchaseFailedAsResultOf(command);
+            RejectingMarket.switchToRejectionMode();
+            context().receivesCommand(command);
+
+            context().assertEvent(expected);
+            RejectingMarket.switchToEventsMode();
         }
     }
 }
