@@ -69,6 +69,15 @@ final class MoneyCalculatorTest extends MoneyCalculatorAbstractTest {
         );
     }
 
+    @DisplayName("multiply the `Money` object on multiplier")
+    Stream<Arguments> multiply() {
+        return Stream.of(
+                arguments(usd(20, 50), 3, usd(61, 50)),
+                arguments(usd(26, 10), 10, usd(261)),
+                arguments(usd(100, 12), 0, usd(0))
+        );
+    }
+
     @Test
     @DisplayName("should validate arguments when calculating the sum")
     void validateSum() {
