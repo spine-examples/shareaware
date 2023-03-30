@@ -26,9 +26,23 @@
 
 package io.spine.examples.shareaware.server.investment;
 
+import io.spine.core.UserId;
+import io.spine.examples.shareaware.ShareId;
+import io.spine.examples.shareaware.WalletId;
+import io.spine.examples.shareaware.investment.Investment;
+import io.spine.examples.shareaware.investment.SharesPurchase;
+import io.spine.examples.shareaware.investment.command.AddShares;
 import io.spine.examples.shareaware.investment.command.PurchaseShares;
+import io.spine.examples.shareaware.investment.event.SharesPurchaseFailed;
+import io.spine.examples.shareaware.investment.event.SharesPurchased;
+import io.spine.examples.shareaware.market.command.ObtainShares;
 import io.spine.examples.shareaware.server.TradingContext;
 import io.spine.examples.shareaware.wallet.Wallet;
+import io.spine.examples.shareaware.wallet.command.DebitReservedMoney;
+import io.spine.examples.shareaware.wallet.command.ReserveMoney;
+import io.spine.examples.shareaware.wallet.event.MoneyReserved;
+import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
+import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
 import io.spine.server.BoundedContextBuilder;
 import io.spine.testing.server.blackbox.ContextAwareTest;
 import org.junit.jupiter.api.DisplayName;
@@ -37,6 +51,7 @@ import org.junit.jupiter.api.Test;
 
 import static io.spine.examples.shareaware.server.given.InvestmentTestEnv.*;
 import static io.spine.examples.shareaware.server.given.WalletTestEnv.setUpReplenishedWallet;
+import static io.spine.examples.shareaware.server.given.WalletTestEnv.setUpWallet;
 
 @DisplayName("`SharesPurchase` should")
 public final class SharesPurchaseTest extends ContextAwareTest {
@@ -54,12 +69,170 @@ public final class SharesPurchaseTest extends ContextAwareTest {
         @DisplayName("for the purchase price amount")
         void event() {
             Wallet wallet = setUpReplenishedWallet(context());
-            PurchaseShares command = purchaseShares(wallet.getId()
-                                                          .getOwner());
-            Wallet walletAfterPurchase = walletAfterPurchase(command, wallet);
-            context().receivesCommand(command);
+            UserId user = wallet.getId()
+                                .getOwner();
+            PurchaseShares firstPurchase = purchaseSharesFor(user);
+            PurchaseShares secondPurchase = purchaseSharesFor(user);
+            Wallet walletAfterPurchase =
+                    walletAfter(firstPurchase, secondPurchase, wallet);
+            context().receivesCommands(firstPurchase, secondPurchase);
 
             context().assertState(wallet.getId(), walletAfterPurchase);
+        }
+
+        @Test
+        @DisplayName("emitting the `MoneyReserved` event")
+        void moneyReserved() {
+            Wallet wallet = setUpReplenishedWallet(context());
+            PurchaseShares command = purchaseSharesFor(wallet.getId()
+                                                             .getOwner());
+            MoneyReserved expected = moneyReservedBy(command);
+            context().receivesCommand(command);
+
+            context().assertEvent(expected);
+        }
+
+        @Test
+        @DisplayName("emitting the `ReservedMoneyDebited` event")
+        void debitMoney() {
+            Wallet wallet = setUpReplenishedWallet(context());
+            PurchaseShares command = purchaseSharesFor(wallet.getId()
+                                                             .getOwner());
+            ReservedMoneyDebited expected = reservedMoneyDebitedBy(command, wallet);
+            context().receivesCommand(command);
+
+            context().assertEvent(expected);
+        }
+
+        @Test
+        @DisplayName("emitting the `InsufficientFunds` rejection")
+        void insufficientFunds() {
+            WalletId wallet = setUpWallet(context());
+            PurchaseShares command = purchaseSharesFor(wallet.getOwner());
+            InsufficientFunds expected = insufficientFundsIn(wallet, command);
+            context().receivesCommand(command);
+
+            context().assertEvent(expected);
+        }
+    }
+
+    @Nested
+    @DisplayName("change the `Investment` state")
+    class InvestmentState {
+
+        @Test
+        @DisplayName("by adding shares to it")
+        void addShares() {
+            Wallet wallet = setUpReplenishedWallet(context());
+            UserId user = wallet.getId()
+                                .getOwner();
+            ShareId share = ShareId.generate();
+            PurchaseShares firstPurchase = purchaseSharesFor(user, share);
+            PurchaseShares secondPurchase = purchaseSharesFor(user, share);
+            Investment expected = investmentAfter(firstPurchase, secondPurchase);
+            context().receivesCommands(firstPurchase, secondPurchase);
+
+            context().assertState(expected.getId(), expected);
+        }
+    }
+
+    @Nested
+    @DisplayName("be leb by shares purchase process")
+    class PurchaseProcess {
+
+        @Test
+        @DisplayName("with state")
+        void state() {
+            Wallet wallet = setUpReplenishedWallet(context());
+            PurchaseShares command = purchaseSharesFor(wallet.getId()
+                                                             .getOwner());
+            SharesPurchase expected = sharesPurchaseStateWhen(command);
+            context().receivesCommand(command);
+
+            context().assertState(command.getPurchaseProcess(), expected);
+        }
+
+        @Test
+        @DisplayName("which issues the `ReserveMoney` command")
+        void reserveMoney() {
+            Wallet wallet = setUpReplenishedWallet(context());
+            PurchaseShares command = purchaseSharesFor(wallet.getId()
+                                                             .getOwner());
+            ReserveMoney expected = reserveMoneyInitiatedBy(command);
+            context().receivesCommand(command);
+
+            context().assertCommands()
+                     .withType(ReserveMoney.class)
+                     .message(0)
+                     .isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("which issues the `ObtainShares` command")
+        void obtainShares() {
+            Wallet wallet = setUpReplenishedWallet(context());
+            PurchaseShares command = purchaseSharesFor(wallet.getId()
+                                                             .getOwner());
+            ObtainShares expected = obtainSharesWith(command);
+            context().receivesCommand(command);
+
+            context().assertCommands()
+                     .withType(ObtainShares.class)
+                     .message(0)
+                     .isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("which issues the `AddShares` command")
+        void addShares() {
+            Wallet wallet = setUpReplenishedWallet(context());
+            PurchaseShares command = purchaseSharesFor(wallet.getId()
+                                                             .getOwner());
+            AddShares expected = addSharesWith(command);
+            context().receivesCommand(command);
+
+            context().assertCommands()
+                     .withType(AddShares.class)
+                     .message(0)
+                     .isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("which issues the `DebitReservedMoney` command")
+        void debitReservedMoney() {
+            Wallet wallet = setUpReplenishedWallet(context());
+            PurchaseShares command = purchaseSharesFor(wallet.getId()
+                                                             .getOwner());
+            DebitReservedMoney expected = debitReservedMoneyWith(command);
+            context().receivesCommand(command);
+
+            context().assertCommands()
+                     .withType(DebitReservedMoney.class)
+                     .message(0)
+                     .isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("which emits the `SharesPurchased` event")
+        void sharesPurchased() {
+            Wallet wallet = setUpReplenishedWallet(context());
+            PurchaseShares command = purchaseSharesFor(wallet.getId()
+                                                             .getOwner());
+            SharesPurchased expected = sharesPurchasedAsResultOf(command);
+            context().receivesCommand(command);
+
+            context().assertEvent(expected);
+        }
+
+        @Test
+        @DisplayName("which emits the `SharesPurchasedFailed` event")
+        void processFailedAfterInsufficientFunds() {
+            WalletId wallet = setUpWallet(context());
+            PurchaseShares command = purchaseSharesFor(wallet.getOwner());
+            SharesPurchaseFailed expected = sharesPurchaseFailedAsResultOf(command);
+            context().receivesCommand(command);
+
+            context().assertEvent(expected);
         }
     }
 }
