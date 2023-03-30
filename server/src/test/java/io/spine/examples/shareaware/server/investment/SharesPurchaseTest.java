@@ -37,8 +37,8 @@ import io.spine.examples.shareaware.investment.command.PurchaseShares;
 import io.spine.examples.shareaware.investment.event.SharesPurchaseFailed;
 import io.spine.examples.shareaware.investment.event.SharesPurchased;
 import io.spine.examples.shareaware.market.command.ObtainShares;
-import io.spine.examples.shareaware.server.given.PurchaseTestContext;
-import io.spine.examples.shareaware.server.given.RejectingMarket;
+import io.spine.examples.shareaware.server.investment.given.PurchaseTestContext;
+import io.spine.examples.shareaware.server.investment.given.RejectingMarket;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.command.CancelMoneyReservation;
 import io.spine.examples.shareaware.wallet.command.DebitReservedMoney;
@@ -56,7 +56,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static io.spine.examples.shareaware.server.given.InvestmentTestEnv.*;
+import static io.spine.examples.shareaware.server.investment.given.InvestmentTestEnv.*;
 import static io.spine.examples.shareaware.server.given.WalletTestEnv.setUpReplenishedWallet;
 import static io.spine.examples.shareaware.server.given.WalletTestEnv.setUpWallet;
 

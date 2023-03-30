@@ -24,7 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.given;
+package io.spine.examples.shareaware.server.investment.given;
 
 import io.spine.examples.shareaware.server.investment.InvestmentAggregate;
 import io.spine.examples.shareaware.server.investment.SharesPurchaseRepository;
