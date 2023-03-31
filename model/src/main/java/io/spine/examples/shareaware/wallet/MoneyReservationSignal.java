@@ -76,10 +76,20 @@ public interface MoneyReservationSignal extends EventMessage {
         return getOperation().hasWithdrawal();
     }
 
+    /**
+     * Fetches the {@code PurchaseId} from {@code OperationId} without checking for its existence.
+     *
+     * <p>It will return the
+     * <a href="https://protobuf.dev/reference/java/java-generated/#:~:text=static%20Foo%20getDefaultInstance,its%20newBuilderForType()%20method.">
+     * default instance</a> of {@code PurchaseId} if it was absent in {@code OperationId}.
+     */
     default PurchaseId purchaseProcess() {
         return getOperation().getPurchase();
     }
 
+    /**
+     * Verifies that signal is a part of the purchase process or not.
+     */
     default boolean isPartOfPurchase() {
         return getOperation().hasPurchase();
     }
