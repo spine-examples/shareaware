@@ -82,8 +82,10 @@ public final class InvestmentTestEnv {
     public static Wallet walletAfter(PurchaseShares firstPurchase,
                                      PurchaseShares secondPurchase,
                                      Wallet wallet) {
-        Money firstPurchasePrice = multiply(firstPurchase.getSharePrice(), firstPurchase.getQuantity());
-        Money secondPurchasePrice = multiply(secondPurchase.getSharePrice(), secondPurchase.getQuantity());
+        Money firstPurchasePrice = multiply(firstPurchase.getSharePrice(),
+                                            firstPurchase.getQuantity());
+        Money secondPurchasePrice = multiply(secondPurchase.getSharePrice(),
+                                             secondPurchase.getQuantity());
         Money commonPurchasePrice = sum(firstPurchasePrice, secondPurchasePrice);
         Money newBalance = subtract(wallet.getBalance(), commonPurchasePrice);
         return wallet
