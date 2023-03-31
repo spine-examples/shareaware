@@ -49,3 +49,45 @@ message AddShares {
     // The number of shares to add.
     int32 quantity = 3 [(required) = true];
 }
+
+// A command to reserve shares for their sale.
+message ReserveShares {
+
+    // The ID of the investment where to reserve shares.
+    InvestmentId investment = 1;
+
+    // The ID of the process that about to reserve the shares.
+    SaleId process = 2 [(required) = true];
+
+    // The quantity of shares to reserve.
+    int32 quantity = 3 [(required) = true];
+}
+
+// A command to close the shares reservation.
+//
+// This command means that shares sale operation is about to end successfully
+// so the reservation needed to be closed and shares from investment completely removed.
+//
+message CloseSharesReservation {
+
+    // The ID of the investment where to close the reservation.
+    InvestmentId investment = 1;
+
+    // The ID of the sale process that about to close shares reservation.
+    SaleId process = 2 [(required) = true];
+}
+
+// A command to cancel the shares reservation.
+//
+// This command means that something went wrong in shares sale operation
+// so now the reservation needed to be canceled
+// and previously reserved shares should become available again.
+//
+message CancelSharesReservation {
+
+    // The ID of the investment where to cancel the shares reservation.
+    InvestmentId investment = 1;
+
+    // The ID of the sale process that about to cancel shares reservation.
+    SaleId process = 2 [(required) = true];
+}

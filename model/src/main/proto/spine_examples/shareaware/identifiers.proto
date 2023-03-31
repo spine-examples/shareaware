@@ -90,3 +90,8 @@ message OperationId {
 message MarketId {
     string uuid = 1 [(required) = true];
 }
+
+// Identifies a shares sale process.
+message SaleId {
+    string uuid = 1 [(required) = true];
+}

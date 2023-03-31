@@ -31,34 +31,26 @@ package spine_examples.shareaware.investment;
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.investment";
-option java_outer_classname = "InvestmentProto";
+option java_package = "io.spine.examples.shareaware.investment.command";
+option java_outer_classname = "SaleCommandsProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
-import "spine_examples/shareaware/share.proto";
+import "spine/money/money.proto";
+import "spine/core/user_id.proto";
 
-// Represents user's investment into shares of a single type.
-message Investment {
-    option (entity) = {kind: AGGREGATE};
+// An intent of the user to sell shares.
+message SellShares {
 
-    // The ID of the investment.
-    InvestmentId id = 1;
+    // The ID of the shares sale process.
+    SaleId sale_process = 1;
 
-    // How many shares are available to sell.
-    //
-    // Does not include those which are reserved. See `shares_reserved` field.
-    //
-    int32 shares_available = 2 [(required) = true];
+    // The ID of the user who wants to sell shares.
+    spine.core.UserId seller = 2 [(required) = true];
 
-    // The reserved amount of shares per sales operation.
-    //
-    // Any ongoing shares sale operation would reserve the corresponding number of shares
-    // within this Investment, so that they could not be spent on something else.
-    // It is not possible to use the reserved shares directly for a new sale operation,
-    // but rather they should be used in scope of these pending operations.
-    //
-    // Keys in this map corresponds to `SaleId.uuid` values.
-    //
-    map<string, int32> shares_reserved = 3;
+    // The ID of the share to sell.
+    ShareId share = 3 [(required) = true];
+
+    // The quantity of shares to sell.
+    int32 quantity = 4 [(required) = true];
 }
