@@ -36,7 +36,6 @@ option java_outer_classname = "CommandsProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
-import "spine/core/user_id.proto";
 
 // A command to add shares to `Investment`.
 message AddShares {

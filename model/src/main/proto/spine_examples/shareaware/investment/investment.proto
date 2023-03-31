@@ -37,7 +37,6 @@ option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
 import "spine_examples/shareaware/share.proto";
-import "spine/core/user_id.proto";
 
 // Represents user's investment into shares of a single type.
 message Investment {
