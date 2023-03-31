@@ -125,7 +125,7 @@ public final class MoneyCalculator {
      *     <li>being non-nullable</li>
      *     <li>being the same currency</li>
      *     <li>their units to be non-negative</li>
-     *     <li>their nanos to be in 0..100 range</li>
+     *     <li>their nanos to be in 0..{@code MAX_NANOS_AMOUNT} range</li>
      * </ul>
      */
     private static void checkArguments(Money first, Money second) {
@@ -140,7 +140,7 @@ public final class MoneyCalculator {
      * <ul>
      *     <li>being non-nullable</li>
      *     <li>its units to be non-negative</li>
-     *     <li>its nanos to be in 0..100 range</li>
+     *     <li>its nanos to be in 0..{@code MAX_NANOS_AMOUNT} range</li>
      * </ul>
      */
     private static void checkMoneyArgument(Money money) {

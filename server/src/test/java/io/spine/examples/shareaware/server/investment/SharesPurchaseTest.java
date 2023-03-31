@@ -182,7 +182,7 @@ public final class SharesPurchaseTest extends ContextAwareTest {
     }
 
     @Nested
-    @DisplayName("be leb by shares purchase process")
+    @DisplayName("be led by shares purchase process")
     class PurchaseProcess {
 
         @Test

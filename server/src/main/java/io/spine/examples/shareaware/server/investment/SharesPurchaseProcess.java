@@ -62,7 +62,7 @@ final class SharesPurchaseProcess
         extends ProcessManager<PurchaseId, SharesPurchase, SharesPurchase.Builder> {
 
     /**
-     * Issues a command to reserve money for share purchase.
+     * Issues a command to reserve money for shares purchase.
      */
     @Command
     ReserveMoney on(PurchaseShares c) {
