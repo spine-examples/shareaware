@@ -46,7 +46,7 @@ public class RejectingMarket
     private static boolean rejectionMode = false;
 
     /**
-     * Emits the {@code SharesObtained} event when rejection mode if off
+     * Emits the {@code SharesObtained} event when rejection mode is disabled
      * otherwise throws the {@code SharesCannotBeObtained} rejection.
      */
     @Assign

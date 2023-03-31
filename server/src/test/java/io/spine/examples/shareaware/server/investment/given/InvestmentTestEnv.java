@@ -37,6 +37,7 @@ import io.spine.examples.shareaware.investment.SharesPurchase;
 import io.spine.examples.shareaware.investment.command.AddShares;
 import io.spine.examples.shareaware.investment.command.PurchaseShares;
 import io.spine.examples.shareaware.investment.command.PurchaseSharesOrBuilder;
+import io.spine.examples.shareaware.investment.event.SharesAdded;
 import io.spine.examples.shareaware.investment.event.SharesPurchaseFailed;
 import io.spine.examples.shareaware.investment.event.SharesPurchased;
 import io.spine.examples.shareaware.market.command.ObtainShares;
@@ -221,6 +222,17 @@ public final class InvestmentTestEnv {
                 .newBuilder()
                 .setOperation(operationId(command.getPurchaseProcess()))
                 .setWallet(walletId(command.getPurchaser()))
+                .vBuild();
+    }
+
+    public static SharesAdded sharesAddedBy(PurchaseShares command) {
+        UserId purchaser = command.getPurchaser();
+        ShareId share = command.getShare();
+        return SharesAdded
+                .newBuilder()
+                .setProcess(command.getPurchaseProcess())
+                .setInvestment(investmentId(purchaser, share))
+                .setQuantity(command.getQuantity())
                 .vBuild();
     }
 

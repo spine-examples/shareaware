@@ -34,6 +34,7 @@ import io.spine.examples.shareaware.investment.Investment;
 import io.spine.examples.shareaware.investment.SharesPurchase;
 import io.spine.examples.shareaware.investment.command.AddShares;
 import io.spine.examples.shareaware.investment.command.PurchaseShares;
+import io.spine.examples.shareaware.investment.event.SharesAdded;
 import io.spine.examples.shareaware.investment.event.SharesPurchaseFailed;
 import io.spine.examples.shareaware.investment.event.SharesPurchased;
 import io.spine.examples.shareaware.market.command.ObtainShares;
@@ -84,7 +85,7 @@ public final class SharesPurchaseTest extends ContextAwareTest {
 
         @Test
         @DisplayName("for the purchase price amount")
-        void event() {
+        void walletState() {
             Wallet wallet = setUpReplenishedWallet(context());
             UserId user = wallet.getId()
                                 .getOwner();
@@ -111,7 +112,7 @@ public final class SharesPurchaseTest extends ContextAwareTest {
 
         @Test
         @DisplayName("emitting the `ReservedMoneyDebited` event")
-        void debitMoney() {
+        void reservedMoneyDebited() {
             Wallet wallet = setUpReplenishedWallet(context());
             PurchaseShares command = purchaseSharesFor(wallet.getId()
                                                              .getOwner());
@@ -124,9 +125,9 @@ public final class SharesPurchaseTest extends ContextAwareTest {
         @Test
         @DisplayName("emitting the `InsufficientFunds` rejection")
         void insufficientFunds() {
-            WalletId wallet = setUpWallet(context());
-            PurchaseShares command = purchaseSharesFor(wallet.getOwner());
-            InsufficientFunds expected = insufficientFundsIn(wallet, command);
+            WalletId walletId = setUpWallet(context());
+            PurchaseShares command = purchaseSharesFor(walletId.getOwner());
+            InsufficientFunds expected = insufficientFundsIn(walletId, command);
             context().receivesCommand(command);
 
             context().assertEvent(expected);
@@ -149,11 +150,11 @@ public final class SharesPurchaseTest extends ContextAwareTest {
 
     @Nested
     @DisplayName("change the `Investment` state")
-    class InvestmentState {
+    class InvestmentBehavior {
 
         @Test
         @DisplayName("by adding shares to it")
-        void addShares() {
+        void investmentState() {
             Wallet wallet = setUpReplenishedWallet(context());
             UserId user = wallet.getId()
                                 .getOwner();
@@ -169,6 +170,18 @@ public final class SharesPurchaseTest extends ContextAwareTest {
             context().receivesCommands(firstPurchase, secondPurchase);
 
             context().assertState(investmentId, expected);
+        }
+
+        @Test
+        void sharesAdded() {
+            Wallet wallet = setUpReplenishedWallet(context());
+            UserId user = wallet.getId()
+                                .getOwner();
+            PurchaseShares command = purchaseSharesFor(user);
+            SharesAdded expected = sharesAddedBy(command);
+            context().receivesCommand(command);
+
+            context().assertEvent(expected);
         }
     }
 
@@ -261,10 +274,10 @@ public final class SharesPurchaseTest extends ContextAwareTest {
         }
 
         @Test
-        @DisplayName("which emits the `SharesPurchasedFailed` event when insufficient funds in the wallet")
+        @DisplayName("which emits the `SharesPurchaseFailed` event when insufficient funds in the wallet")
         void processFailedAfterInsufficientFunds() {
-            WalletId wallet = setUpWallet(context());
-            PurchaseShares command = purchaseSharesFor(wallet.getOwner());
+            WalletId walletId = setUpWallet(context());
+            PurchaseShares command = purchaseSharesFor(walletId.getOwner());
             SharesPurchaseFailed expected = sharesPurchaseFailedAsResultOf(command);
             context().receivesCommand(command);
 
