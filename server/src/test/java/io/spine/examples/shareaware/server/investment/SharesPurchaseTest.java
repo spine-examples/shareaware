@@ -162,11 +162,7 @@ public final class SharesPurchaseTest extends ContextAwareTest {
             PurchaseShares firstPurchase = purchaseSharesFor(user, share);
             PurchaseShares secondPurchase = purchaseSharesFor(user, share);
             Investment expected = investmentAfter(firstPurchase, secondPurchase);
-            InvestmentId investmentId = InvestmentId
-                    .newBuilder()
-                    .setShare(share)
-                    .setOwner(user)
-                    .vBuild();
+            InvestmentId investmentId = investmentId(user, share);
             context().receivesCommands(firstPurchase, secondPurchase);
 
             context().assertState(investmentId, expected);

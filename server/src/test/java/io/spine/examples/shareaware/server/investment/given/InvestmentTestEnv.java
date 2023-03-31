@@ -250,7 +250,7 @@ public final class InvestmentTestEnv {
                 .vBuild();
     }
 
-    private static InvestmentId investmentId(UserId owner, ShareId share) {
+    public static InvestmentId investmentId(UserId owner, ShareId share) {
         return InvestmentId
                 .newBuilder()
                 .setOwner(owner)
