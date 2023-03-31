@@ -57,7 +57,7 @@ public interface MoneyReservationSignal extends EventMessage {
     }
 
     /**
-     * Retrieves the value of the set ID (either {@code WithdrawalId} or {@code PurchaseId})
+     * Retrieves the value of the set ID (either {@code WithdrawalId} or {@code PurchaseId}).
      *
      * <p>In case when neither {@code WithdrawalId} nor {@code PurchaseId} is not set in the corresponding {@code OperationId},
      * returns an empty string.
@@ -81,7 +81,7 @@ public interface MoneyReservationSignal extends EventMessage {
      *
      * <p>It will return the
      * <a href="https://protobuf.dev/reference/java/java-generated/#:~:text=static%20Foo%20getDefaultInstance,its%20newBuilderForType()%20method.">
-     * default instance</a> of {@code PurchaseId} if it was absent in {@code OperationId}.
+     * default instance</a> of {@code PurchaseId} if it is absent in {@code OperationId}.
      */
     default PurchaseId purchaseProcess() {
         return getOperation().getPurchase();
