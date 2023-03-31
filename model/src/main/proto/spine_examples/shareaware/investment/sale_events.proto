@@ -26,45 +26,43 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware.market;
+package spine_examples.shareaware.investment;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.market.command";
-option java_outer_classname = "CommandsProto";
+option java_package = "io.spine.examples.shareaware.investment.event";
+option java_outer_classname = "SaleEventsProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
+import "spine/core/user_id.proto";
 
-// A command to obtain shares from the market.
-message ObtainShares {
+// Shares have been sold.
+message SharesSold {
 
-    // The ID of the shares market.
-    MarketId market = 1;
+    // The ID of the process that sold the shares.
+    SaleId sale_process = 1;
 
-    // The ID of the purchase process that wants to obtain shares.
-    PurchaseId purchase = 2 [(required) = true];
+    // The ID of the user that sold shares.
+    spine.core.UserId seller = 2 [(required) = true];
 
-    // The ID of the share that the purchase process wants to obtain.
+    // The ID of the share that was sold.
     ShareId share = 3 [(required) = true];
 
-    // The quantity of the shares that the purchase process wants to obtain.
+    // The quantity of shares that were sold.
     int32 quantity = 4 [(required) = true];
 }
 
-// A command to realize shares on the market.
-message RealizeShares {
+// Share sale process has been failed.
+message SharesSaleFailed {
 
-    // The ID of the shares market.
-     MarketId market = 1;
+    // The ID of the failed sale process.
+    SaleId sale_process = 1;
 
-     // The ID of the sale process that wants to realize shares on the market.
-     SaleId sale_process = 2 [(required) = true];
+    // The ID of the user whose sale failed.
+    spine.core.UserId seller = 2 [(required) = true];
 
-     // The ID of the share to realize on the market.
-     ShareId share = 3 [(required) = true];
-
-     // The quantity of shares to realize on the market.
-     int32 quantity = 4 [(required) = true];
+    // Why the sale of shares has failed.
+    string cause = 3;
 }
