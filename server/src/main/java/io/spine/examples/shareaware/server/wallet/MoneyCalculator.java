@@ -26,9 +26,7 @@
 
 package io.spine.examples.shareaware.server.wallet;
 
-import io.spine.money.Currency;
 import io.spine.money.Money;
-import io.spine.money.MoneyAmount;
 
 import static com.google.common.base.Preconditions.*;
 import static io.spine.util.Preconditions2.*;
@@ -92,6 +90,8 @@ public final class MoneyCalculator {
      * Multiplies {@code Money} argument on multiplier.
      */
     public static Money multiply(Money money, int multiplier) {
+        checkMoneyArgument(money);
+        checkArgument(multiplier >= 0);
         int fullyFledgedNanos = money.getNanos() * multiplier;
         int additionalUnits = fullyFledgedNanos / NANOS_IN_UNIT;
         int nanos = fullyFledgedNanos % NANOS_IN_UNIT;
@@ -129,12 +129,23 @@ public final class MoneyCalculator {
      * </ul>
      */
     private static void checkArguments(Money first, Money second) {
-        checkNotNull(first);
-        checkNotNull(second);
+        checkMoneyArgument(first);
+        checkMoneyArgument(second);
         checkState(first.getCurrency() == second.getCurrency(),
                    "Cannot calculate two `Money` objects with different currencies.");
-        checkState(first.getUnits() >= 0 && second.getUnits() >= 0);
-        checkBounds(first.getNanos(), "first.nanos", 0, MAX_NANOS_AMOUNT);
-        checkBounds(second.getNanos(), "second.nanos", 0, MAX_NANOS_AMOUNT);
+    }
+
+    /**
+     * Checks {@code Money} object for:
+     * <ul>
+     *     <li>being non-nullable</li>
+     *     <li>its units to be non-negative</li>
+     *     <li>its nanos to be in 0..100 range</li>
+     * </ul>
+     */
+    private static void checkMoneyArgument(Money money) {
+        checkNotNull(money);
+        checkState(money.getUnits() >= 0);
+        checkBounds(money.getNanos(), "money.nanos", 0, MAX_NANOS_AMOUNT);
     }
 }

@@ -27,7 +27,6 @@
 package io.spine.examples.shareaware.server.wallet;
 
 import io.spine.money.Money;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -36,6 +35,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import java.util.stream.Stream;
 
 import static io.spine.examples.shareaware.server.given.GivenMoney.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.*;
 
 @DisplayName("`MoneyCalculator` should")
@@ -74,7 +74,8 @@ final class MoneyCalculatorTest extends MoneyCalculatorAbstractTest {
         return Stream.of(
                 arguments(usd(20, 50), 3, usd(61, 50)),
                 arguments(usd(26, 10), 10, usd(261)),
-                arguments(usd(100, 12), 0, usd(0))
+                arguments(usd(100, 12), 0, usd(0)),
+                arguments(usd(5, 50), 1, usd(5, 50))
         );
     }
 
@@ -91,13 +92,27 @@ final class MoneyCalculatorTest extends MoneyCalculatorAbstractTest {
         Money greater = usd(40, 20);
 
         testValidation(MoneyCalculator::subtract);
-        Assertions.assertThrows(IllegalStateException.class,
-                                () -> MoneyCalculator.subtract(smaller, greater));
+        assertThrows(IllegalStateException.class,
+                     () -> MoneyCalculator.subtract(smaller, greater));
     }
 
     @Test
     @DisplayName("should validate arguments when determining which of the object are greater")
     void validateIsGreater() {
         testValidation(MoneyCalculator::isGreater);
+    }
+
+    @Test
+    void validateMultiply() {
+        Money negativeUnits = usd(-20);
+        Money nanosOutOfBound = usd(0, -120);
+        Money money = usd(20);
+
+        assertThrows(IllegalStateException.class,
+                     () -> MoneyCalculator.multiply(negativeUnits, 2));
+        assertThrows(IllegalArgumentException.class,
+                     () -> MoneyCalculator.multiply(nanosOutOfBound, 2));
+        assertThrows(IllegalArgumentException.class,
+                     () -> MoneyCalculator.multiply(money, -2));
     }
 }
