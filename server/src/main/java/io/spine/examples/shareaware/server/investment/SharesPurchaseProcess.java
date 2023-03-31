@@ -142,7 +142,7 @@ final class SharesPurchaseProcess
     }
 
     /**
-     * Terminates the process when money reservation for shares purchase was cancelled.
+     * Terminates the process after the money reservation for shares purchase was cancelled.
      */
     @React
     SharesPurchaseFailed on(MoneyReservationCanceled e) {

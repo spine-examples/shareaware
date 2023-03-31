@@ -63,12 +63,12 @@ public final class SharesPurchaseRepository
                       (event, context) -> withId(event.getProcess()))
                .route(ReservedMoneyDebited.class,
                       (event, context) -> withPurchaseId(event))
-                .route(InsufficientFunds.class,
-                       (event, context) -> withPurchaseId(event))
-                .route(SharesCannotBeObtained.class,
-                       (event, context) -> withId(event.getPurchaseProcess()))
-                .route(MoneyReservationCanceled.class,
-                       (event, context) -> withPurchaseId(event));
+               .route(InsufficientFunds.class,
+                      (event, context) -> withPurchaseId(event))
+               .route(SharesCannotBeObtained.class,
+                      (event, context) -> withId(event.getPurchaseProcess()))
+               .route(MoneyReservationCanceled.class,
+                      (event, context) -> withPurchaseId(event));
     }
 
     private static Set<PurchaseId> withPurchaseId(MoneyReservationSignal e) {
