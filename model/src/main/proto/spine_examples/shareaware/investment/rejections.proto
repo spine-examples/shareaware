@@ -31,27 +31,20 @@ package spine_examples.shareaware.market;
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.market.rejection";
+option java_package = "io.spine.examples.shareaware.investment.rejection";
 option java_multiple_files = false;
 
 import "spine_examples/shareaware/identifiers.proto";
 
-// Shares cannot be obtained due to error in the market.
-message SharesCannotBeObtained {
+// Shares cannot be reserved due to insufficient shares in the investment.
+message InsufficientShares {
 
-    // The ID of the purchase process that tried to obtain shares.
-    PurchaseId purchase_process = 1;
+    // The ID of the investment that has no such amount of shares.
+    InvestmentId investment = 1;
 
-    // Why the process failed.
-    string cause = 2;
-}
+    // The ID of the sale process that wanted to reserve shares.
+    SaleId process = 2 [(required) = true];
 
-// Shares cannot be realized due to error in the market.
-message SharesCannotBeRealized {
-
-    // The ID of the process that tried to realize shares.
-    SaleId sale_process = 1;
-
-    // Why the shares cannot be realized.
-    string cause = 2;
+    // The quantity of not reserved shares.
+    int32 quantity = 4 [(required) = true];
 }
