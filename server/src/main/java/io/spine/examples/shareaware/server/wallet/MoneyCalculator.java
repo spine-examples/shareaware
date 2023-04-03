@@ -107,9 +107,8 @@ public final class MoneyCalculator {
     }
 
     /**
-     * Returns true if the first {@code Money} object is greater than the second {@code Money}
-     * object,
-     * or false otherwise.
+     * Returns true if the first {@code Money} object is greater
+     * than the second {@code Money} object, or false otherwise.
      */
     static boolean isGreater(Money first, Money second) {
         checkArguments(first, second);
