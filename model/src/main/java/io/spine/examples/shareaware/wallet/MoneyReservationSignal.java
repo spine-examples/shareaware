@@ -70,7 +70,7 @@ public interface MoneyReservationSignal extends EventMessage {
     }
 
     /**
-     * Verifies that signal is a part of the withdrawal process or not.
+     * Tells whether this signal is a part of the withdrawal process, or not.
      */
     default boolean isPartOfWithdrawal() {
         return getOperation().hasWithdrawal();
@@ -87,7 +87,7 @@ public interface MoneyReservationSignal extends EventMessage {
     }
 
     /**
-     * Verifies that signal is a part of the purchase process or not.
+     * Tells whether this signal is a part of the purchase process, or not.
      */
     default boolean isPartOfPurchase() {
         return getOperation().hasPurchase();
