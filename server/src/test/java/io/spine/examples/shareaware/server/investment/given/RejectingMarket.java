@@ -76,7 +76,7 @@ public class RejectingMarket
 
     /**
      * Switches {@code RejectingMarket} to event mode,
-     * it will emit events for all handled commands.
+     * will emit events for all commands handled by it.
      */
     public static void switchToEventsMode() {
         rejectionMode = false;
