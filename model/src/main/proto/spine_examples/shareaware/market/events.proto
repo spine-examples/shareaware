@@ -63,10 +63,10 @@ message SharesRealized {
     // The ID of the sale process that realized shares.
     SaleId sale_process = 2 [(required) = true];
 
-    // The ID of the share that was realized.
+    // The ID of the realized share.
     ShareId share = 3 [(required) = true];
 
-    // The quantity of shares that were realized.
+    // The quantity of realized shares.
     int32 quantity = 4 [(required) = true];
 
     // The price for which the shares were realized.
