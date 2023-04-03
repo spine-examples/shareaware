@@ -37,7 +37,7 @@ option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
 
-// A command to add shares to `Investment`.
+// A command to add shares to the investment.
 message AddShares {
 
     // The ID of the investment where shares wants to be added.
@@ -56,7 +56,7 @@ message ReserveShares {
     // The ID of the investment where to reserve shares.
     InvestmentId investment = 1;
 
-    // The ID of the process that about to reserve the shares.
+    // The ID of the process that is about to reserve shares.
     SaleId process = 2 [(required) = true];
 
     // The quantity of shares to reserve.
@@ -73,7 +73,7 @@ message CloseSharesReservation {
     // The ID of the investment where to close the reservation.
     InvestmentId investment = 1;
 
-    // The ID of the sale process that about to close shares reservation.
+    // The ID of the sale process that is about to close shares reservation.
     SaleId process = 2 [(required) = true];
 }
 
@@ -88,6 +88,6 @@ message CancelSharesReservation {
     // The ID of the investment where to cancel the shares reservation.
     InvestmentId investment = 1;
 
-    // The ID of the sale process that about to cancel shares reservation.
+    // The ID of the sale process that is about to cancel shares reservation.
     SaleId process = 2 [(required) = true];
 }
