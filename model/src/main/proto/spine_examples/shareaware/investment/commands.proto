@@ -65,7 +65,7 @@ message ReserveShares {
 
 // A command to close the shares reservation.
 //
-// This command means that shares sale operation is about to end successfully
+// This command means that the shares sale operation is about to end successfully
 // so the reservation needed to be closed and shares from investment completely removed.
 //
 message CloseSharesReservation {

@@ -50,7 +50,7 @@ message SharesAdded {
     int32 quantity = 3 [(required) = true];
 }
 
-// Shares have been reserved in investment.
+// Shares have been reserved in the investment.
 message SharesReserved {
 
     // The ID of the investment where shares were reserved.

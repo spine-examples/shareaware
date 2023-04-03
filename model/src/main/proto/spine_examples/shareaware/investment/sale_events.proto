@@ -44,14 +44,14 @@ message SharesSold {
     // The ID of the process that sold the shares.
     SaleId sale_process = 1;
 
-    // The ID of the user that sold shares.
+    // The ID of the user who sold shares.
     spine.core.UserId seller = 2 [(required) = true];
 
-    // The ID of the share that was sold.
+    // The ID of the sold share.
     ShareId share = 3 [(required) = true];
 
-    // The quantity of shares that were sold.
-    int32 quantity = 4 [(required) = true];
+    // The quantity of available shares after the sale.
+    int32 shares_available = 4 [(required) = true];
 }
 
 // Share sale process has been failed.
