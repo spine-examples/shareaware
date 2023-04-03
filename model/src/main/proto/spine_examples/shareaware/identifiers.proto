@@ -69,7 +69,9 @@ message WithdrawalId {
 
 // Identifies an investment.
 message InvestmentId {
+
     ShareId share = 1 [(required) = true];
+
     spine.core.UserId owner = 2 [(required) = true];
 }
 
