@@ -26,6 +26,7 @@
 
 package io.spine.examples.shareaware.server.wallet;
 
+import com.google.common.base.Preconditions;
 import io.spine.money.Money;
 
 import static com.google.common.base.Preconditions.*;
@@ -34,7 +35,8 @@ import static io.spine.util.Preconditions2.*;
 /**
  * The calculator for {@code spine.Money}.
  *
- * <p>Please note, this implementation works properly only with currencies containing 100 coins in one unit.
+ * <p>Please note, this implementation works properly only with currencies containing 100 coins in
+ * one unit.
  */
 public final class MoneyCalculator {
 
@@ -90,8 +92,8 @@ public final class MoneyCalculator {
      * Multiplies {@code Money} argument on multiplier.
      */
     public static Money multiply(Money money, int multiplier) {
-        checkMoneyArgument(money);
-        checkArgument(multiplier >= 0);
+        checkArgument(money);
+        Preconditions.checkArgument(multiplier >= 0);
         int fullyFledgedNanos = money.getNanos() * multiplier;
         int additionalUnits = fullyFledgedNanos / NANOS_IN_UNIT;
         int nanos = fullyFledgedNanos % NANOS_IN_UNIT;
@@ -105,7 +107,8 @@ public final class MoneyCalculator {
     }
 
     /**
-     * Returns true if the first {@code Money} object is greater than the second {@code Money} object,
+     * Returns true if the first {@code Money} object is greater than the second {@code Money}
+     * object,
      * or false otherwise.
      */
     static boolean isGreater(Money first, Money second) {
@@ -113,7 +116,7 @@ public final class MoneyCalculator {
         if (first.getUnits() > second.getUnits()) {
             return true;
         }
-        if (first.getUnits() < second.getUnits()){
+        if (first.getUnits() < second.getUnits()) {
             return false;
         }
         return first.getNanos() > second.getNanos();
@@ -121,29 +124,31 @@ public final class MoneyCalculator {
 
     /**
      * Checks the two {@code Money} objects for:
+     *
      * <ul>
-     *     <li>being non-nullable</li>
-     *     <li>being the same currency</li>
-     *     <li>their units to be non-negative</li>
-     *     <li>their nanos to be in 0..{@code MAX_NANOS_AMOUNT} range</li>
+     *     <li>being non-nullable,</li>
+     *     <li>being the same currency,</li>
+     *     <li>their units to be non-negative,</li>
+     *     <li>their nanos to be in 0..{@code MAX_NANOS_AMOUNT} range.</li>
      * </ul>
      */
     private static void checkArguments(Money first, Money second) {
-        checkMoneyArgument(first);
-        checkMoneyArgument(second);
+        checkArgument(first);
+        checkArgument(second);
         checkState(first.getCurrency() == second.getCurrency(),
                    "Cannot calculate two `Money` objects with different currencies.");
     }
 
     /**
      * Checks {@code Money} object for:
+     *
      * <ul>
-     *     <li>being non-nullable</li>
-     *     <li>its units to be non-negative</li>
-     *     <li>its nanos to be in 0..{@code MAX_NANOS_AMOUNT} range</li>
+     *     <li>being non-nullable,</li>
+     *     <li>its units to be non-negative,</li>
+     *     <li>its nanos to be in 0..{@code MAX_NANOS_AMOUNT} range.</li>
      * </ul>
      */
-    private static void checkMoneyArgument(Money money) {
+    private static void checkArgument(Money money) {
         checkNotNull(money);
         checkState(money.getUnits() >= 0);
         checkBounds(money.getNanos(), "money.nanos", 0, MAX_NANOS_AMOUNT);
