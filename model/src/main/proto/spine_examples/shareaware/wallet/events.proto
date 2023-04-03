@@ -54,8 +54,8 @@ message BalanceRecharged {
     // The ID of the wallet whose balance was recharged.
     WalletId wallet = 1;
 
-    // The ID of the replenishment process that has invoked balance recharging.
-    ReplenishmentId replenishment_process = 2 [(required) = true];
+    // The ID of the operation that has invoked balance recharging.
+    ReplenishmentOperationId operation = 2 [(required) = true];
 
     // The amount of money by which the wallet balance was recharged.
     spine.money.Money money_amount = 3 [(required) = true];

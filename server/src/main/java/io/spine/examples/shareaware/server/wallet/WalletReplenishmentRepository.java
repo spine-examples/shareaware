@@ -26,14 +26,17 @@
 
 package io.spine.examples.shareaware.server.wallet;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.examples.shareaware.ReplenishmentId;
+import io.spine.examples.shareaware.ReplenishmentOperationId;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredFromUser;
 import io.spine.examples.shareaware.wallet.WalletReplenishment;
 import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
 import io.spine.server.procman.ProcessManagerRepository;
-import io.spine.server.route.EventRoute;
 import io.spine.server.route.EventRouting;
+
+import java.util.Set;
 
 import static io.spine.server.route.EventRoute.*;
 
@@ -49,7 +52,14 @@ public final class WalletReplenishmentRepository
         super.setupEventRouting(routing);
         routing.route(MoneyTransferredFromUser.class,
                       (event, context) -> withId(event.getReplenishmentProcess()));
-        routing.route(BalanceRecharged.class, (
-                event, context) -> withId(event.getReplenishmentProcess()));
+        routing.route(BalanceRecharged.class,
+                      (event, context) -> withReplenishmentId(event.getOperation()));
+    }
+
+    private static Set<ReplenishmentId> withReplenishmentId(ReplenishmentOperationId id) {
+        if (id.hasReplenishment()) {
+            return ImmutableSet.of(id.getReplenishment());
+        }
+        return ImmutableSet.of();
     }
 }

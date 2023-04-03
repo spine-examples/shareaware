@@ -2,6 +2,7 @@ package io.spine.examples.shareaware.server.given;
 
 import io.spine.examples.shareaware.OperationId;
 import io.spine.examples.shareaware.ReplenishmentId;
+import io.spine.examples.shareaware.ReplenishmentOperationId;
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.WithdrawalId;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyFromUser;
@@ -120,7 +121,7 @@ public final class WalletTestEnv {
                 .newBuilder()
                 .setWallet(wallet)
                 .setMoneyAmount(command.getMoneyAmount())
-                .setReplenishmentProcess(command.getReplenishment())
+                .setOperation(operationId(command))
                 .vBuild();
     }
 
@@ -161,7 +162,7 @@ public final class WalletTestEnv {
         return RechargeBalance
                 .newBuilder()
                 .setWallet(command.getWallet())
-                .setReplenishmentProcess(command.getReplenishment())
+                .setOperation(operationId(command))
                 .setMoneyAmount(command.getMoneyAmount())
                 .vBuild();
     }
@@ -377,6 +378,13 @@ public final class WalletTestEnv {
                 .newBuilder()
                 .setId(id)
                 .setBalance(GivenMoney.zero())
+                .vBuild();
+    }
+
+    private static ReplenishmentOperationId operationId(ReplenishWallet c) {
+        return ReplenishmentOperationId
+                .newBuilder()
+                .setReplenishment(c.getReplenishment())
                 .vBuild();
     }
 }
