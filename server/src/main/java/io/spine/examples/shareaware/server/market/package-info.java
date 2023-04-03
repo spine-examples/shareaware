@@ -25,7 +25,7 @@
  */
 
 /**
- * Provides server-side classes for working with shares market imitation.
+ * Provides server-side classes for working with shares market.
  */
 @CheckReturnValue
 @ParametersAreNonnullByDefault

@@ -129,8 +129,8 @@ final class SharesPurchaseProcess
     }
 
     /**
-     * Issues the command to cancel money reservation that was made for shares purchase
-     * after the unexpected error in shares market.
+     * Issues the command to cancel money reservation made for shares purchase
+     * after the unexpected error in the shares market.
      */
     @Command
     CancelMoneyReservation on(SharesCannotBeObtained r) {
@@ -142,7 +142,7 @@ final class SharesPurchaseProcess
     }
 
     /**
-     * Terminates the process after the money reservation for shares purchase was cancelled.
+     * Terminates the process after the money reservation for shares purchase is canceled.
      */
     @React
     SharesPurchaseFailed on(MoneyReservationCanceled e) {
@@ -168,7 +168,7 @@ final class SharesPurchaseProcess
     }
 
     /**
-     * Ends the process successfully when reserved money was debited from the wallet.
+     * Ends the process successfully when reserved money is debited from the wallet.
      */
     @React
     SharesPurchased on(ReservedMoneyDebited e) {
