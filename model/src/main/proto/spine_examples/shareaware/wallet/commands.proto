@@ -65,7 +65,7 @@ message ReserveMoney {
     WalletId wallet = 1;
 
     // The ID of the pending operation that wants to reserve money.
-    OperationId operation = 2 [(required) = true];
+    WithdrawalOperationId operation = 2 [(required) = true];
 
     // Wanted amount of money to be reserved.
     spine.money.Money amount = 3 [(required) = true];
@@ -83,7 +83,7 @@ message DebitReservedMoney {
     WalletId wallet = 1;
 
     // The ID of the operation that wants to debit the reserved money.
-    OperationId operation = 2 [(required) = true];
+    WithdrawalOperationId operation = 2 [(required) = true];
 }
 
 // A command to cancel money reservation.
@@ -97,5 +97,5 @@ message CancelMoneyReservation {
     WalletId wallet = 1;
 
     // The ID of the operation that wants to cancel the money reservation.
-    OperationId operation = 2 [(required) = true];
+    WithdrawalOperationId operation = 2 [(required) = true];
 }

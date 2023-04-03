@@ -1,6 +1,6 @@
 package io.spine.examples.shareaware.server.given;
 
-import io.spine.examples.shareaware.OperationId;
+import io.spine.examples.shareaware.WithdrawalOperationId;
 import io.spine.examples.shareaware.ReplenishmentId;
 import io.spine.examples.shareaware.ReplenishmentOperationId;
 import io.spine.examples.shareaware.WalletId;
@@ -213,8 +213,8 @@ public final class WalletTestEnv {
                 .vBuild();
     }
 
-    private static OperationId operationId(WithdrawalId withdrawal) {
-        return OperationId
+    private static WithdrawalOperationId operationId(WithdrawalId withdrawal) {
+        return WithdrawalOperationId
                 .newBuilder()
                 .setWithdrawal(withdrawal)
                 .vBuild();

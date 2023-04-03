@@ -29,7 +29,7 @@ package io.spine.examples.shareaware.wallet;
 import com.google.errorprone.annotations.Immutable;
 import io.spine.annotation.GeneratedMixin;
 import io.spine.base.EventMessage;
-import io.spine.examples.shareaware.OperationId;
+import io.spine.examples.shareaware.WithdrawalOperationId;
 import io.spine.examples.shareaware.PurchaseId;
 import io.spine.examples.shareaware.WithdrawalId;
 
@@ -43,7 +43,7 @@ public interface MoneyReservationSignal extends EventMessage {
     /**
      * Returns the ID of operation, in the scope of which this signal is emitted.
      */
-    OperationId getOperation();
+    WithdrawalOperationId getOperation();
 
     /**
      * Retrieves {@code WithdrawalId} from {@code OperationId} without checking for its existence.
