@@ -54,13 +54,13 @@ message SharesSold {
     int32 shares_available = 4 [(required) = true];
 }
 
-// Share sale process has been failed.
+// Shares sale process has been failed.
 message SharesSaleFailed {
 
     // The ID of the failed sale process.
     SaleId sale_process = 1;
 
-    // The ID of the user whose sale failed.
+    // The ID of the user who originally requested the shares sale.
     spine.core.UserId seller = 2 [(required) = true];
 
     // Why the sale of shares has failed.

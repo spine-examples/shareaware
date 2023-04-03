@@ -73,7 +73,7 @@ message CloseSharesReservation {
     // The ID of the investment where to close the reservation.
     InvestmentId investment = 1;
 
-    // The ID of the sale process that is about to close shares reservation.
+    // The ID of the sale process that is about to close the shares reservation.
     SaleId process = 2 [(required) = true];
 }
 
@@ -88,6 +88,6 @@ message CancelSharesReservation {
     // The ID of the investment where to cancel the shares reservation.
     InvestmentId investment = 1;
 
-    // The ID of the sale process that is about to cancel shares reservation.
+    // The ID of the sale process that is about to cancel the shares reservation.
     SaleId process = 2 [(required) = true];
 }
