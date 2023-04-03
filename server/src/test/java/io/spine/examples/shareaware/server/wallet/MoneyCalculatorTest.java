@@ -28,6 +28,7 @@ package io.spine.examples.shareaware.server.wallet;
 
 import io.spine.money.Money;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.provider.Arguments;
@@ -79,40 +80,46 @@ final class MoneyCalculatorTest extends MoneyCalculatorAbstractTest {
         );
     }
 
-    @Test
-    @DisplayName("should validate arguments when calculating the sum")
-    void validateSum() {
-        testValidation(MoneyCalculator::sum);
-    }
+    @Nested
+    @DisplayName("should validate arguments when")
+    class Validation {
 
-    @Test
-    @DisplayName("should validate arguments when calculating the difference")
-    void validateSubtract() {
-        Money smaller = usd(20, 20);
-        Money greater = usd(40, 20);
+        @Test
+        @DisplayName("calculating the sum")
+        void validateSum() {
+            testValidation(MoneyCalculator::sum);
+        }
 
-        testValidation(MoneyCalculator::subtract);
-        assertThrows(IllegalStateException.class,
-                     () -> MoneyCalculator.subtract(smaller, greater));
-    }
+        @Test
+        @DisplayName("calculating the difference")
+        void validateSubtract() {
+            Money smaller = usd(20, 20);
+            Money greater = usd(40, 20);
 
-    @Test
-    @DisplayName("should validate arguments when determining which of the object are greater")
-    void validateIsGreater() {
-        testValidation(MoneyCalculator::isGreater);
-    }
+            testValidation(MoneyCalculator::subtract);
+            assertThrows(IllegalStateException.class,
+                         () -> MoneyCalculator.subtract(smaller, greater));
+        }
 
-    @Test
-    void validateMultiply() {
-        Money negativeUnits = usd(-20);
-        Money nanosOutOfBound = usd(0, -120);
-        Money money = usd(20);
+        @Test
+        @DisplayName("determining which of the object are greater")
+        void validateIsGreater() {
+            testValidation(MoneyCalculator::isGreater);
+        }
 
-        assertThrows(IllegalStateException.class,
-                     () -> MoneyCalculator.multiply(negativeUnits, 2));
-        assertThrows(IllegalArgumentException.class,
-                     () -> MoneyCalculator.multiply(nanosOutOfBound, 2));
-        assertThrows(IllegalArgumentException.class,
-                     () -> MoneyCalculator.multiply(money, -2));
+        @Test
+        @DisplayName("performing a multiply operation")
+        void validateMultiply() {
+            Money negativeUnits = usd(-20);
+            Money nanosOutOfBound = usd(0, -120);
+            Money money = usd(20);
+
+            assertThrows(IllegalStateException.class,
+                         () -> MoneyCalculator.multiply(negativeUnits, 2));
+            assertThrows(IllegalArgumentException.class,
+                         () -> MoneyCalculator.multiply(nanosOutOfBound, 2));
+            assertThrows(IllegalArgumentException.class,
+                         () -> MoneyCalculator.multiply(money, -2));
+        }
     }
 }
