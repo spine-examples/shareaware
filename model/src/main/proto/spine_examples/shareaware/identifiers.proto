@@ -97,3 +97,11 @@ message MarketId {
 message SaleId {
     string uuid = 1 [(required) = true];
 }
+
+// Identifies the operation that replenishes the wallet.
+message ReplenishmentOperationId {
+    oneof type {
+        ReplenishmentId replenishment = 1;
+        SaleId sale = 2;
+    }
+}
