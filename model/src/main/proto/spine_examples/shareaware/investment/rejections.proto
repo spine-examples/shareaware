@@ -26,7 +26,7 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware.market;
+package spine_examples.shareaware.investment;
 
 import "spine/options.proto";
 
@@ -45,6 +45,6 @@ message InsufficientShares {
     // The ID of the sale process that wanted to reserve shares.
     SaleId process = 2 [(required) = true];
 
-    // The quantity of not reserved shares.
+    // The quantity of shares that initially wanted to be reserved.
     int32 quantity = 4 [(required) = true];
 }

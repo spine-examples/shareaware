@@ -79,7 +79,7 @@ message CloseSharesReservation {
 
 // A command to cancel the shares reservation.
 //
-// This command means that something went wrong in shares sale operation
+// This command means that something went wrong in the shares sale operation
 // so now the reservation needed to be canceled
 // and previously reserved shares should become available again.
 //

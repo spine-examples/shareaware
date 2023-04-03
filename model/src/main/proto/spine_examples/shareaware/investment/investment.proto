@@ -51,7 +51,7 @@ message Investment {
     //
     int32 shares_available = 2 [(required) = true];
 
-    // The reserved amount of shares per sales operation.
+    // The reserved amount of shares per sale operation.
     //
     // Any ongoing shares sale operation would reserve the corresponding number of shares
     // within this Investment, so that they could not be spent on something else.
