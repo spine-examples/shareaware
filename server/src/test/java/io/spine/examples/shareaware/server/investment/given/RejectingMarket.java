@@ -37,8 +37,8 @@ import io.spine.server.procman.ProcessManager;
 /**
  * The test imitation of {@code MarketProcess} with rejection mode.
  *
- * <p>It has the functionality to enter the rejection mode,
- * which will reject all commands routed to it.
+ * <p>It is possible to put it into the "rejection" mode,
+ * making it reject all commands handled.
  */
 public class RejectingMarket
         extends ProcessManager<MarketId, Market, Market.Builder> {
@@ -66,10 +66,18 @@ public class RejectingMarket
                 .vBuild();
     }
 
+    /**
+     * Switches the {@code RejectingMarket} to rejection mode,
+     * it will reject all commands handled by it.
+     */
     public static void switchToRejectionMode() {
         rejectionMode = true;
     }
 
+    /**
+     * Switches {@code RejectingMarket} to event mode,
+     * it will emit events for all handled commands.
+     */
     public static void switchToEventsMode() {
         rejectionMode = false;
     }
