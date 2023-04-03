@@ -35,8 +35,7 @@ import io.spine.server.aggregate.Apply;
 import io.spine.server.command.Assign;
 
 /**
- * The Investment aggregate is responsible for managing the shares of one type
- * for particular ShareAware user.
+ * Manages the shares of a single type purchased by a particular ShareAware user.
  */
 public final class InvestmentAggregate
         extends Aggregate<InvestmentId, Investment, Investment.Builder> {
@@ -53,10 +52,9 @@ public final class InvestmentAggregate
 
     @Apply
     private void event(SharesAdded e) {
-        if (!state().hasId()) {
-            builder().setId(e.getInvestment());
-        }
         int newAvailableShares = state().getSharesAvailable() + e.getQuantity();
-        builder().setSharesAvailable(newAvailableShares);
+        builder()
+                .setId(e.getInvestment())
+                .setSharesAvailable(newAvailableShares);
     }
 }
