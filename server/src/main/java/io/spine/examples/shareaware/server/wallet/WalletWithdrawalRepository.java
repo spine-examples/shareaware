@@ -31,7 +31,7 @@ import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.examples.shareaware.WithdrawalId;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
 import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredToUser;
-import io.spine.examples.shareaware.wallet.MoneyReservationSignal;
+import io.spine.examples.shareaware.wallet.MoneyWithdrawalSignal;
 import io.spine.examples.shareaware.wallet.WalletWithdrawal;
 import io.spine.examples.shareaware.wallet.event.MoneyReservationCanceled;
 import io.spine.examples.shareaware.wallet.event.MoneyReserved;
@@ -68,7 +68,7 @@ public final class WalletWithdrawalRepository
                       (event, context) -> withId(event.getWithdrawalProcess()));
     }
 
-    private static Set<WithdrawalId> withWithdrawalId(MoneyReservationSignal e) {
+    private static Set<WithdrawalId> withWithdrawalId(MoneyWithdrawalSignal e) {
         if (e.isPartOfWithdrawal()) {
             return ImmutableSet.of(e.withdrawalProcess());
         }

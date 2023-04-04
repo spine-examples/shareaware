@@ -87,7 +87,7 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
                 .newBuilder()
                 .setWallet(c.getWallet())
                 .setMoneyAmount(c.getMoneyAmount())
-                .setReplenishmentProcess(c.getReplenishmentProcess())
+                .setOperation(c.getOperation())
                 .vBuild();
     }
 

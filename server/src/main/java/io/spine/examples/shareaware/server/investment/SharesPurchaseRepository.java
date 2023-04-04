@@ -33,7 +33,7 @@ import io.spine.examples.shareaware.investment.SharesPurchase;
 import io.spine.examples.shareaware.investment.event.SharesAdded;
 import io.spine.examples.shareaware.market.event.SharesObtained;
 import io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeObtained;
-import io.spine.examples.shareaware.wallet.MoneyReservationSignal;
+import io.spine.examples.shareaware.wallet.MoneyWithdrawalSignal;
 import io.spine.examples.shareaware.wallet.event.MoneyReservationCanceled;
 import io.spine.examples.shareaware.wallet.event.MoneyReserved;
 import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
@@ -71,7 +71,7 @@ public final class SharesPurchaseRepository
                       (event, context) -> withPurchaseId(event));
     }
 
-    private static Set<PurchaseId> withPurchaseId(MoneyReservationSignal e) {
+    private static Set<PurchaseId> withPurchaseId(MoneyWithdrawalSignal e) {
         if (e.isPartOfPurchase()) {
             return ImmutableSet.of(e.purchaseProcess());
         }
