@@ -54,21 +54,21 @@ message SharesObtained {
     int32 quantity = 4 [(required) = true];
 }
 
-// Shares have been realized on the market.
-message SharesRealized {
+// Shares have been vended on the market.
+message SharesVendedOnMarket {
 
     // The ID of the shares market.
     MarketId market = 1;
 
-    // The ID of the sale process that realized shares.
+    // The ID of the sale process that vended the shares.
     SaleId sale_process = 2 [(required) = true];
 
-    // The ID of the realized share.
+    // The ID of the vended share.
     ShareId share = 3 [(required) = true];
 
-    // The quantity of realized shares.
+    // The quantity of the vended shares.
     int32 quantity = 4 [(required) = true];
 
-    // The price for which the shares were realized.
+    // The price for which the shares were vended.
     spine.money.Money realize_price = 5 [(required) = true];
 }
