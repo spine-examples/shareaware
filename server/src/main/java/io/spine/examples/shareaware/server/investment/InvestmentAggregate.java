@@ -27,9 +27,18 @@
 package io.spine.examples.shareaware.server.investment;
 
 import io.spine.examples.shareaware.InvestmentId;
+import io.spine.examples.shareaware.ReplenishmentOperationId;
+import io.spine.examples.shareaware.SaleId;
 import io.spine.examples.shareaware.investment.Investment;
 import io.spine.examples.shareaware.investment.command.AddShares;
+import io.spine.examples.shareaware.investment.command.CancelSharesReservation;
+import io.spine.examples.shareaware.investment.command.CompleteSharesReservation;
+import io.spine.examples.shareaware.investment.command.ReserveShares;
 import io.spine.examples.shareaware.investment.event.SharesAdded;
+import io.spine.examples.shareaware.investment.event.SharesReservationCanceled;
+import io.spine.examples.shareaware.investment.event.SharesReservationCompleted;
+import io.spine.examples.shareaware.investment.event.SharesReserved;
+import io.spine.examples.shareaware.investment.rejection.InsufficientShares;
 import io.spine.server.aggregate.Aggregate;
 import io.spine.server.aggregate.Apply;
 import io.spine.server.command.Assign;
@@ -56,5 +65,64 @@ public final class InvestmentAggregate
         builder()
                 .setId(e.getInvestment())
                 .setSharesAvailable(newAvailableShares);
+    }
+
+    @Assign
+    SharesReserved on(ReserveShares c) throws InsufficientShares {
+        if (state().getSharesAvailable() < c.getQuantity()) {
+            throw InsufficientShares
+                    .newBuilder()
+                    .setInvestment(c.getInvestment())
+                    .setProcess(c.getProcess())
+                    .setQuantity(c.getQuantity())
+                    .build();
+        }
+        return SharesReserved
+                .newBuilder()
+                .setInvestment(c.getInvestment())
+                .setProcess(c.getProcess())
+                .setQuantity(c.getQuantity())
+                .vBuild();
+    }
+
+    @Apply
+    private void event(SharesReserved e) {
+        int newAvailableShares = state().getSharesAvailable() - e.getQuantity();
+        builder().setSharesAvailable(newAvailableShares);
+    }
+
+    @Assign
+    SharesReservationCompleted on(CompleteSharesReservation c) {
+        return SharesReservationCompleted
+                .newBuilder()
+                .setInvestment(c.getInvestment())
+                .setProcess(c.getProcess())
+                .vBuild();
+    }
+
+    @Apply
+    private void event(SharesReservationCompleted e) {
+        builder().removeSharesReserved(e.getProcess()
+                                        .getUuid());
+    }
+
+    @Assign
+    SharesReservationCanceled on(CancelSharesReservation c) {
+        return SharesReservationCanceled
+                .newBuilder()
+                .setInvestment(c.getInvestment())
+                .setProcess(c.getProcess())
+                .vBuild();
+    }
+
+    @Apply
+    private void event(SharesReservationCanceled e) {
+        String saleIdValue = e.getProcess()
+                              .getUuid();
+        int reservedAmount = state().getSharesReservedOrThrow(saleIdValue);
+        int restoredAvailableShares = state().getSharesAvailable() + reservedAmount;
+        builder()
+                .setSharesAvailable(restoredAvailableShares)
+                .removeSharesReserved(saleIdValue);
     }
 }
