@@ -82,8 +82,15 @@ message PurchaseId {
 
 // Identifies the operation that reserve and withdraw money from the wallet.
 message WithdrawalOperationId {
+
     oneof type {
+
+        // The ID of the `WalletWithdrawal` process
+        // that withdraws money from the wallet to the user's bank account.
         WithdrawalId withdrawal = 1;
+
+        // The ID of the `SharesPurchase` process
+        // that withdraws money from the user's wallet for shares purchase.
         PurchaseId purchase = 2;
     }
 }
@@ -100,8 +107,15 @@ message SaleId {
 
 // Identifies the operation that replenishes the wallet.
 message ReplenishmentOperationId {
+
     oneof type {
+
+        // The ID of the `WalletReplenishment` process
+        // that replenishes the wallet from the user's bank account.
         ReplenishmentId replenishment = 1;
+
+        // The ID of the `SharesSale` process
+        // that replenishes the wallet by selling the user's shares on the market.
         SaleId sale = 2;
     }
 }
