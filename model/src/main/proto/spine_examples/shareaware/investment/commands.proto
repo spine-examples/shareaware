@@ -63,12 +63,12 @@ message ReserveShares {
     int32 quantity = 3 [(required) = true];
 }
 
-// A command to close the shares reservation.
+// A command to complete the shares reservation.
 //
 // This command means that the shares sale operation is about to end successfully
-// so the reservation needed to be closed and shares from investment completely removed.
+// so the reservation needed to be completed and shares from investment completely removed.
 //
-message CloseSharesReservation {
+message CompleteSharesReservation {
 
     // The ID of the investment where to close the reservation.
     InvestmentId investment = 1;
