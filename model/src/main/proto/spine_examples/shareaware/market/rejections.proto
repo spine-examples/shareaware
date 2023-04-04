@@ -45,3 +45,13 @@ message SharesCannotBeObtained {
     // Why the process failed.
     string cause = 2;
 }
+
+// Shares cannot be sold due to error in the market.
+message SharesCannotBeSoldOnMarket {
+
+    // The ID of the process that tried to sell shares.
+    SaleId sale_process = 1;
+
+    // Why the shares cannot be sold.
+    string cause = 2;
+}

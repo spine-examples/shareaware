@@ -26,27 +26,43 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware.wallet;
+package spine_examples.shareaware.investment;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.wallet.rejection";
-option java_multiple_files = false;
+option java_package = "io.spine.examples.shareaware.investment.event";
+option java_outer_classname = "SaleEventsProto";
+option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
-import "spine/money/money.proto";
+import "spine/core/user_id.proto";
 
-// Money cannot be reserved due to insufficient funds in the wallet.
-message InsufficientFunds {
-    option (is).java_type = "io.spine.examples.shareaware.wallet.MoneyWithdrawalSignal";
+// Shares have been sold.
+message SharesSold {
 
-    // The ID of the wallet has no such amount of money to reserve.
-    WalletId wallet = 1;
+    // The ID of the process that sold the shares.
+    SaleId sale_process = 1;
 
-    // The ID of the operation that wanted to reserve money.
-    WithdrawalOperationId operation = 2 [(required) = true];
+    // The ID of the user who sold shares.
+    spine.core.UserId seller = 2 [(required) = true];
 
-    // The amount of not reserved money.
-    spine.money.Money amount = 3 [(required) = true];
+    // The ID of the sold share.
+    ShareId share = 3 [(required) = true];
+
+    // The quantity of available shares after the sale.
+    int32 shares_available = 4 [(required) = true];
+}
+
+// Shares sale process has been failed.
+message SharesSaleFailed {
+
+    // The ID of the failed sale process.
+    SaleId sale_process = 1;
+
+    // The ID of the user who originally requested the shares sale.
+    spine.core.UserId seller = 2 [(required) = true];
+
+    // Why the sale of shares has failed.
+    string cause = 3;
 }

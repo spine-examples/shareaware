@@ -51,12 +51,14 @@ message Investment {
     //
     int32 shares_available = 2 [(required) = true];
 
-    // How many shares are reserved for pending operations.
+    // The reserved amount of shares per sale operation.
     //
-    // Any ongoing share sale operation would reserve the corresponding number of shares
+    // Any ongoing shares sale operation would reserve the corresponding number of shares
     // within this Investment, so that they could not be spent on something else.
     // It is not possible to use the reserved shares directly for a new sale operation,
     // but rather they should be used in scope of these pending operations.
     //
-    int32 shares_reserved = 3;
+    // Keys in this map corresponds to `SaleId.uuid` values.
+    //
+    map<string, int32> shares_reserved = 3;
 }

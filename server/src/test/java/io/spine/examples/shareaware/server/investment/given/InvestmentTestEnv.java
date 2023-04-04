@@ -28,7 +28,7 @@ package io.spine.examples.shareaware.server.investment.given;
 
 import io.spine.core.UserId;
 import io.spine.examples.shareaware.InvestmentId;
-import io.spine.examples.shareaware.OperationId;
+import io.spine.examples.shareaware.WithdrawalOperationId;
 import io.spine.examples.shareaware.PurchaseId;
 import io.spine.examples.shareaware.ShareId;
 import io.spine.examples.shareaware.WalletId;
@@ -236,8 +236,8 @@ public final class InvestmentTestEnv {
                 .vBuild();
     }
 
-    private static OperationId operationId(PurchaseId id) {
-        return OperationId
+    private static WithdrawalOperationId operationId(PurchaseId id) {
+        return WithdrawalOperationId
                 .newBuilder()
                 .setPurchase(id)
                 .vBuild();
