@@ -37,12 +37,51 @@ option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
 
-// Shares have been added to `Investment`.
+// Shares have been added to the investment.
 message SharesAdded {
 
-    // The ID of the share that has been added.
-    ShareId share = 1;
+    // The ID of the investment where shares were added.
+    InvestmentId investment = 1;
+
+    // The ID of the process that added shares to investment.
+    PurchaseId process = 2 [(required) = true];
 
     // The number of shares that have been added.
-    int32 quantity = 2 [(required) = true];
+    int32 quantity = 3 [(required) = true];
+}
+
+// Shares have been reserved in the investment.
+message SharesReserved {
+
+    // The ID of the investment where shares were reserved.
+    InvestmentId investment = 1;
+
+    // The ID of the sale process that reserved shares.
+    SaleId process = 2 [(required) = true];
+
+    // The quantity of shares that was reserved.
+    int32 quantity = 3 [(required) = true];
+}
+
+// The shares reservation has been completed.
+message SharesReservationCompleted {
+
+    // The ID of the investment where the reservation was completed.
+    InvestmentId investment = 1;
+
+    // The ID of the sale process that completed the reservation.
+    SaleId process = 2 [(required) = true];
+
+    // The amount of available shares in the investment.
+    int32 shares_available = 3 [(required) = true];
+}
+
+// The shares reservation has been canceled.
+message SharesReservationCanceled {
+
+    // The ID of the investment where the reservation was canceled.
+    InvestmentId investment = 1;
+
+    // The ID of the process that canceled the reservation.
+    SaleId process = 2 [(required) = true];
 }

@@ -52,3 +52,19 @@ message ObtainShares {
     // The quantity of the shares that the purchase process wants to obtain.
     int32 quantity = 4 [(required) = true];
 }
+
+// A command to sell shares on the market.
+message SellSharesOnMarket {
+
+    // The ID of the shares market.
+    MarketId market = 1;
+
+    // The ID of the sale process that wants to sell shares on the market.
+    SaleId sale_process = 2 [(required) = true];
+
+    // The ID of the share to sell on the market.
+    ShareId share = 3 [(required) = true];
+
+    // The quantity of shares to sell on the market.
+    int32 quantity = 4 [(required) = true];
+}

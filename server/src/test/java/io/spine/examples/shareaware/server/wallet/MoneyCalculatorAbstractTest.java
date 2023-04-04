@@ -77,6 +77,12 @@ abstract class MoneyCalculatorAbstractTest extends UtilityClassTest<MoneyCalcula
         testBooleanCalculation(first, second, expected, MoneyCalculator::isGreater);
     }
 
+    @ParameterizedTest
+    @MethodSource("multiply")
+    void testMultiply(Money money, int multiplier, Money expected) {
+        testMathCalculation(money, multiplier, expected, MoneyCalculator::multiply);
+    }
+
     <R> void testValidation(BiFunction<Money, Money, R> operation) {
         testDifferentCurrencies(operation);
         testNegativeUnits(operation);
@@ -86,6 +92,13 @@ abstract class MoneyCalculatorAbstractTest extends UtilityClassTest<MoneyCalcula
     private static void testMathCalculation(Money first, Money second, Money expected,
                                             BiFunction<Money, Money, Money> operation) {
         Money actual = operation.apply(first, second);
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    private static void testMathCalculation(Money money, int multiplier, Money expected,
+                                            BiFunction<Money, Integer, Money> operation) {
+        Money actual = operation.apply(money, multiplier);
 
         assertThat(actual).isEqualTo(expected);
     }

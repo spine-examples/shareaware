@@ -69,7 +69,10 @@ message WithdrawalId {
 
 // Identifies an investment.
 message InvestmentId {
+
     ShareId share = 1 [(required) = true];
+
+    spine.core.UserId owner = 2 [(required) = true];
 }
 
 // Identifies a shares purchase process.
@@ -77,10 +80,17 @@ message PurchaseId {
     string uuid = 1 [(required) = true];
 }
 
-// Identifies the operation that interacts with the wallet by reserving money in it.
-message OperationId {
+// Identifies the operation that reserve and withdraw money from the wallet.
+message WithdrawalOperationId {
+
     oneof type {
+
+        // The ID of the `WalletWithdrawal` process
+        // that withdraws money from the wallet to the user's bank account.
         WithdrawalId withdrawal = 1;
+
+        // The ID of the `SharesPurchase` process
+        // that withdraws money from the user's wallet for shares purchase.
         PurchaseId purchase = 2;
     }
 }
@@ -88,4 +98,24 @@ message OperationId {
 // Identifies the shares market.
 message MarketId {
     string uuid = 1 [(required) = true];
+}
+
+// Identifies a shares sale process.
+message SaleId {
+    string uuid = 1 [(required) = true];
+}
+
+// Identifies the operation that replenishes the wallet.
+message ReplenishmentOperationId {
+
+    oneof type {
+
+        // The ID of the `WalletReplenishment` process
+        // that replenishes the wallet from the user's bank account.
+        ReplenishmentId replenishment = 1;
+
+        // The ID of the `SharesSale` process
+        // that replenishes the wallet by selling the user's shares on the market.
+        SaleId sale = 2;
+    }
 }

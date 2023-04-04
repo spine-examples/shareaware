@@ -24,11 +24,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server;
+package io.spine.examples.shareaware.server.investment.given;
 
 import io.spine.examples.shareaware.server.investment.InvestmentAggregate;
 import io.spine.examples.shareaware.server.investment.SharesPurchaseRepository;
-import io.spine.examples.shareaware.server.market.MarketProcess;
 import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.server.wallet.WalletAggregate;
 import io.spine.examples.shareaware.server.wallet.WalletBalanceRepository;
@@ -40,22 +39,21 @@ import io.spine.server.BoundedContext;
 import io.spine.server.BoundedContextBuilder;
 import io.spine.server.DefaultRepository;
 
-/**
- * Configures Trading Bounded Context with repositories.
- */
-public final class TradingContext {
+public class PurchaseTestContext {
 
-    static final String NAME = "Trading";
+    private static final String NAME = "PurchaseTest";
 
     /**
      * Prevents instantiation of this class.
      */
-    private TradingContext() {
+    private PurchaseTestContext() {
     }
 
     /**
-     * Creates {@code BoundedContextBuilder} for the Trading context
-     * and fills it with repositories.
+     * Creates the {@link BoundedContextBuilder} for testing the shares purchase flow.
+     *
+     * <p>Replaces {@code MarketProcess} with {@code RejectingMarketProcess}
+     * for rejection control.
      */
     public static BoundedContextBuilder newBuilder() {
         return BoundedContext
@@ -64,7 +62,7 @@ public final class TradingContext {
                 .add(DefaultRepository.of(WalletAggregate.class))
                 .add(DefaultRepository.of(InvestmentAggregate.class))
                 .add(DefaultRepository.of(PaymentGatewayProcess.class))
-                .add(DefaultRepository.of(MarketProcess.class))
+                .add(DefaultRepository.of(RejectingMarket.class))
                 .add(new WalletWithdrawalRepository())
                 .add(new WalletReplenishmentRepository())
                 .add(new WalletBalanceRepository())

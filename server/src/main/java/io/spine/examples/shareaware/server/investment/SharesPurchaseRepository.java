@@ -24,15 +24,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.wallet;
+package io.spine.examples.shareaware.server.investment;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
-import io.spine.examples.shareaware.WithdrawalId;
-import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
-import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredToUser;
+import io.spine.examples.shareaware.PurchaseId;
+import io.spine.examples.shareaware.investment.SharesPurchase;
+import io.spine.examples.shareaware.investment.event.SharesAdded;
+import io.spine.examples.shareaware.market.event.SharesObtained;
+import io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeObtained;
 import io.spine.examples.shareaware.wallet.MoneyWithdrawalSignal;
-import io.spine.examples.shareaware.wallet.WalletWithdrawal;
 import io.spine.examples.shareaware.wallet.event.MoneyReservationCanceled;
 import io.spine.examples.shareaware.wallet.event.MoneyReserved;
 import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
@@ -45,32 +46,34 @@ import java.util.Set;
 import static io.spine.server.route.EventRoute.*;
 
 /**
- * Manages instances of {@link WalletWithdrawalProcess}.
+ * Manages instances of {@link SharesPurchaseProcess}.
  */
-public final class WalletWithdrawalRepository
-        extends ProcessManagerRepository<WithdrawalId, WalletWithdrawalProcess, WalletWithdrawal> {
+public final class SharesPurchaseRepository
+        extends ProcessManagerRepository<PurchaseId, SharesPurchaseProcess, SharesPurchase> {
 
     @OverridingMethodsMustInvokeSuper
     @Override
-    protected void setupEventRouting(EventRouting<WithdrawalId> routing) {
+    protected void setupEventRouting(EventRouting<PurchaseId> routing) {
         super.setupEventRouting(routing);
-        routing.route(MoneyTransferredToUser.class,
-                      (event, context) -> withId(event.getWithdrawalProcess()))
-               .route(MoneyReserved.class,
-                      (event, context) -> withWithdrawalId(event))
+        routing.route(MoneyReserved.class,
+                      (event, context) -> withPurchaseId(event))
+               .route(SharesObtained.class,
+                      (event, context) -> withId(event.getPurchaseProcess()))
+               .route(SharesAdded.class,
+                      (event, context) -> withId(event.getProcess()))
                .route(ReservedMoneyDebited.class,
-                      (event, context) -> withWithdrawalId(event))
-               .route(MoneyReservationCanceled.class,
-                      (event, context) -> withWithdrawalId(event))
+                      (event, context) -> withPurchaseId(event))
                .route(InsufficientFunds.class,
-                      (event, context) -> withWithdrawalId(event))
-               .route(MoneyCannotBeTransferredToUser.class,
-                      (event, context) -> withId(event.getWithdrawalProcess()));
+                      (event, context) -> withPurchaseId(event))
+               .route(SharesCannotBeObtained.class,
+                      (event, context) -> withId(event.getPurchaseProcess()))
+               .route(MoneyReservationCanceled.class,
+                      (event, context) -> withPurchaseId(event));
     }
 
-    private static Set<WithdrawalId> withWithdrawalId(MoneyWithdrawalSignal e) {
-        if (e.isPartOfWithdrawal()) {
-            return ImmutableSet.of(e.withdrawalProcess());
+    private static Set<PurchaseId> withPurchaseId(MoneyWithdrawalSignal e) {
+        if (e.isPartOfPurchase()) {
+            return ImmutableSet.of(e.purchaseProcess());
         }
         return ImmutableSet.of();
     }

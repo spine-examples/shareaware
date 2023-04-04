@@ -36,6 +36,7 @@ option java_outer_classname = "EventsProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
+import "spine/money/money.proto";
 
 // Shares have been obtained from the market.
 message SharesObtained {
@@ -51,4 +52,23 @@ message SharesObtained {
 
     // The quantity of shares that was obtained by the process.
     int32 quantity = 4 [(required) = true];
+}
+
+// Shares have been sold on the market.
+message SharesSoldOnMarket {
+
+    // The ID of the shares market.
+    MarketId market = 1;
+
+    // The ID of the sale process that sold shares on the market.
+    SaleId sale_process = 2 [(required) = true];
+
+    // The ID of the sold share.
+    ShareId share = 3 [(required) = true];
+
+    // The quantity of the sold shares.
+    int32 quantity = 4 [(required) = true];
+
+    // The price for which the shares were sold.
+    spine.money.Money price = 5 [(required) = true];
 }

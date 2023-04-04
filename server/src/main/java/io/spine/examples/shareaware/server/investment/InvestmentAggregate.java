@@ -24,29 +24,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+package io.spine.examples.shareaware.server.investment;
 
-package spine_examples.shareaware.wallet;
+import io.spine.examples.shareaware.InvestmentId;
+import io.spine.examples.shareaware.investment.Investment;
+import io.spine.examples.shareaware.investment.command.AddShares;
+import io.spine.examples.shareaware.investment.event.SharesAdded;
+import io.spine.server.aggregate.Aggregate;
+import io.spine.server.aggregate.Apply;
+import io.spine.server.command.Assign;
 
-import "spine/options.proto";
+/**
+ * Manages the shares of a single type purchased by a particular ShareAware user.
+ */
+public final class InvestmentAggregate
+        extends Aggregate<InvestmentId, Investment, Investment.Builder> {
 
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.wallet.rejection";
-option java_multiple_files = false;
+    @Assign
+    SharesAdded on(AddShares c) {
+        return SharesAdded
+                .newBuilder()
+                .setInvestment(c.getInvestment())
+                .setProcess(c.getProcess())
+                .setQuantity(c.getQuantity())
+                .vBuild();
+    }
 
-import "spine_examples/shareaware/identifiers.proto";
-import "spine/money/money.proto";
-
-// Money cannot be reserved due to insufficient funds in the wallet.
-message InsufficientFunds {
-    option (is).java_type = "io.spine.examples.shareaware.wallet.MoneyWithdrawalSignal";
-
-    // The ID of the wallet has no such amount of money to reserve.
-    WalletId wallet = 1;
-
-    // The ID of the operation that wanted to reserve money.
-    WithdrawalOperationId operation = 2 [(required) = true];
-
-    // The amount of not reserved money.
-    spine.money.Money amount = 3 [(required) = true];
+    @Apply
+    private void event(SharesAdded e) {
+        int newAvailableShares = state().getSharesAvailable() + e.getQuantity();
+        builder()
+                .setId(e.getInvestment())
+                .setSharesAvailable(newAvailableShares);
+    }
 }

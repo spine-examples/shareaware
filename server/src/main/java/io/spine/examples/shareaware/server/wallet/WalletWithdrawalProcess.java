@@ -26,7 +26,7 @@
 
 package io.spine.examples.shareaware.server.wallet;
 
-import io.spine.examples.shareaware.OperationId;
+import io.spine.examples.shareaware.WithdrawalOperationId;
 import io.spine.examples.shareaware.WithdrawalId;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
@@ -154,8 +154,8 @@ final class WalletWithdrawalProcess
                 .vBuild();
     }
 
-    private static OperationId operationId(WithdrawalId withdrawal) {
-        return OperationId
+    private static WithdrawalOperationId operationId(WithdrawalId withdrawal) {
+        return WithdrawalOperationId
                 .newBuilder()
                 .setWithdrawal(withdrawal)
                 .vBuild();
