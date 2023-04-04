@@ -70,5 +70,5 @@ message SharesSoldOnMarket {
     int32 quantity = 4 [(required) = true];
 
     // The price for which the shares were sold.
-    spine.money.Money sell_price = 5 [(required) = true];
+    spine.money.Money price = 5 [(required) = true];
 }
