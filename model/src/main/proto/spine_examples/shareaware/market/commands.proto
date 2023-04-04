@@ -53,18 +53,18 @@ message ObtainShares {
     int32 quantity = 4 [(required) = true];
 }
 
-// A command to realize shares on the market.
-message RealizeShares {
+// A command to vend shares on the market.
+message VendSharesOnMarket {
 
     // The ID of the shares market.
     MarketId market = 1;
 
-    // The ID of the sale process that wants to realize shares on the market.
+    // The ID of the sale process that wants to vend shares on the market.
     SaleId sale_process = 2 [(required) = true];
 
-    // The ID of the share to realize on the market.
+    // The ID of the share to vend on the market.
     ShareId share = 3 [(required) = true];
 
-    // The quantity of shares to realize on the market.
+    // The quantity of shares to vend on the market.
     int32 quantity = 4 [(required) = true];
 }

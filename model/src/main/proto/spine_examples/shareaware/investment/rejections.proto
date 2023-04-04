@@ -36,7 +36,7 @@ option java_multiple_files = false;
 
 import "spine_examples/shareaware/identifiers.proto";
 
-// Shares cannot be reserved due to insufficient shares in the investment.
+// Shares cannot be reserved due to insufficient number of shares owned by the user.
 message InsufficientShares {
 
     // The ID of the investment that has no such amount of shares.

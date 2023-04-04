@@ -63,13 +63,13 @@ message SharesReserved {
     int32 quantity = 3 [(required) = true];
 }
 
-// The shares reservation has been closed.
-message SharesReservationClosed {
+// The shares reservation has been completed.
+message SharesReservationCompleted {
 
-    // The ID of the investment where the reservation was closed.
+    // The ID of the investment where the reservation was completed.
     InvestmentId investment = 1;
 
-    // The ID of the sale process that closed the reservation.
+    // The ID of the sale process that completed the reservation.
     SaleId process = 2 [(required) = true];
 
     // The amount of available shares in the investment.
