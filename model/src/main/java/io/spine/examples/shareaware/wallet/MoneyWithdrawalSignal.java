@@ -34,7 +34,7 @@ import io.spine.examples.shareaware.PurchaseId;
 import io.spine.examples.shareaware.WithdrawalId;
 
 /**
- * Common interface for signals participating in the money withdrawal operation.
+ * Common interface for signals participating in the money withdrawal operations.
  */
 @Immutable
 @GeneratedMixin
