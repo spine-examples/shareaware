@@ -34,11 +34,11 @@ import io.spine.examples.shareaware.PurchaseId;
 import io.spine.examples.shareaware.WithdrawalId;
 
 /**
- * Common interface for signals participating in the money reservation operation.
+ * Common interface for signals participating in the money withdrawal operation.
  */
 @Immutable
 @GeneratedMixin
-public interface MoneyReservationSignal extends EventMessage {
+public interface MoneyWithdrawalSignal extends EventMessage {
 
     /**
      * Returns the ID of operation, in the scope of which this signal is emitted.

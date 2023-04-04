@@ -80,7 +80,7 @@ message PurchaseId {
     string uuid = 1 [(required) = true];
 }
 
-// Identifies the operation that interacts with the wallet by reserving money in it.
+// Identifies the operation that reserve and withdraw money from the wallet.
 message WithdrawalOperationId {
     oneof type {
         WithdrawalId withdrawal = 1;
