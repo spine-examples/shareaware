@@ -38,7 +38,7 @@ import io.spine.examples.shareaware.investment.event.SharesAdded;
 import io.spine.examples.shareaware.investment.event.SharesPurchaseFailed;
 import io.spine.examples.shareaware.investment.event.SharesPurchased;
 import io.spine.examples.shareaware.market.command.ObtainShares;
-import io.spine.examples.shareaware.server.investment.given.PurchaseTestContext;
+import io.spine.examples.shareaware.server.investment.given.InvestmentTestContext;
 import io.spine.examples.shareaware.server.investment.given.RejectingMarket;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.command.CancelMoneyReservation;
@@ -76,7 +76,7 @@ public final class SharesPurchaseTest extends ContextAwareTest {
 
     @Override
     protected BoundedContextBuilder contextBuilder() {
-        return PurchaseTestContext.newBuilder();
+        return InvestmentTestContext.newBuilder();
     }
 
     @Nested

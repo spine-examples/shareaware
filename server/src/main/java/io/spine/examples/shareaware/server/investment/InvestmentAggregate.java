@@ -95,6 +95,7 @@ public final class InvestmentAggregate
                 .newBuilder()
                 .setInvestment(c.getInvestment())
                 .setProcess(c.getProcess())
+                .setSharesAvailable(state().getSharesAvailable())
                 .vBuild();
     }
 

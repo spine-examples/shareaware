@@ -51,8 +51,10 @@ import io.spine.examples.shareaware.wallet.event.MoneyReserved;
 import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
 import io.spine.money.Money;
+import io.spine.testing.server.blackbox.BlackBoxContext;
 
 import static io.spine.examples.shareaware.server.given.GivenMoney.usd;
+import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
 import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.multiply;
 import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.subtract;
 import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.sum;
@@ -255,6 +257,19 @@ public final class InvestmentTestEnv {
                 .newBuilder()
                 .setOwner(owner)
                 .setShare(share)
+                .vBuild();
+    }
+
+    public static Investment setUpInvestment(BlackBoxContext context) {
+        Wallet wallet = setUpReplenishedWallet(context);
+        UserId user = wallet.getId()
+                            .getOwner();
+        PurchaseShares command = purchaseSharesFor(user);
+        context.receivesCommand(command);
+        return Investment
+                .newBuilder()
+                .setId(investmentId(user, command.getShare()))
+                .setSharesAvailable(command.getQuantity())
                 .vBuild();
     }
 }
