@@ -35,11 +35,19 @@ import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.investment.Investment;
 import io.spine.examples.shareaware.investment.SharesPurchase;
 import io.spine.examples.shareaware.investment.command.AddShares;
+import io.spine.examples.shareaware.investment.command.CancelSharesReservation;
+import io.spine.examples.shareaware.investment.command.CompleteSharesReservation;
 import io.spine.examples.shareaware.investment.command.PurchaseShares;
 import io.spine.examples.shareaware.investment.command.PurchaseSharesOrBuilder;
+import io.spine.examples.shareaware.investment.command.ReserveShares;
+import io.spine.examples.shareaware.investment.command.SellShares;
 import io.spine.examples.shareaware.investment.event.SharesAdded;
 import io.spine.examples.shareaware.investment.event.SharesPurchaseFailed;
 import io.spine.examples.shareaware.investment.event.SharesPurchased;
+import io.spine.examples.shareaware.investment.event.SharesReservationCanceled;
+import io.spine.examples.shareaware.investment.event.SharesReservationCompleted;
+import io.spine.examples.shareaware.investment.event.SharesReserved;
+import io.spine.examples.shareaware.investment.rejection.Rejections.InsufficientShares;
 import io.spine.examples.shareaware.market.command.ObtainShares;
 import io.spine.examples.shareaware.server.market.MarketProcess;
 import io.spine.examples.shareaware.wallet.Wallet;
@@ -238,6 +246,94 @@ public final class InvestmentTestEnv {
                 .vBuild();
     }
 
+    public static Investment setUpInvestment(BlackBoxContext context) {
+        Wallet wallet = setUpReplenishedWallet(context);
+        UserId user = wallet.getId()
+                            .getOwner();
+        PurchaseShares command = purchaseSharesFor(user);
+        context.receivesCommand(command);
+        return Investment
+                .newBuilder()
+                .setId(investmentId(user, command.getShare()))
+                .setSharesAvailable(command.getQuantity())
+                .vBuild();
+    }
+
+    public static SharesReserved sharesReservedBy(SellShares command) {
+        return SharesReserved
+                .newBuilder()
+                .setInvestment(investmentId(command))
+                .setProcess(command.getSaleProcess())
+                .setQuantity(command.getQuantity())
+                .vBuild();
+    }
+
+    public static Investment investmentAfter(SellShares command,
+                                             Investment investment) {
+        int newSharesAvailable = investment.getSharesAvailable() - command.getQuantity();
+        return Investment
+                .newBuilder()
+                .setId(investmentId(command))
+                .setSharesAvailable(newSharesAvailable)
+                .vBuild();
+    }
+
+    public static SharesReservationCompleted
+    sharesReservationCompletedBy(SellShares command, Investment investment) {
+        int newSharesAvailable = investment.getSharesAvailable() - command.getQuantity();
+        return SharesReservationCompleted
+                .newBuilder()
+                .setProcess(command.getSaleProcess())
+                .setInvestment(investment.getId())
+                .setSharesAvailable(newSharesAvailable)
+                .vBuild();
+    }
+
+    public static SharesReservationCanceled
+    sharesReservationCanceledBy(SellShares command) {
+        return SharesReservationCanceled
+                .newBuilder()
+                .setProcess(command.getSaleProcess())
+                .setInvestment(investmentId(command))
+                .vBuild();
+    }
+
+    public static InsufficientShares insufficientSharesCausedBy(SellShares command) {
+        return InsufficientShares
+                .newBuilder()
+                .setInvestment(investmentId(command))
+                .setProcess(command.getSaleProcess())
+                .setQuantity(command.getQuantity())
+                .vBuild();
+    }
+
+    public static ReserveShares reserveSharesWith(SellShares command) {
+        return ReserveShares
+                .newBuilder()
+                .setInvestment(investmentId(command))
+                .setProcess(command.getSaleProcess())
+                .setQuantity(command.getQuantity())
+                .vBuild();
+    }
+
+    public static CompleteSharesReservation
+    completeSharesReservationWith(SellShares command) {
+        return CompleteSharesReservation
+                .newBuilder()
+                .setInvestment(investmentId(command))
+                .setProcess(command.getSaleProcess())
+                .vBuild();
+    }
+
+    public static CancelSharesReservation
+    cancelSharesReservationWith(SellShares command) {
+        return CancelSharesReservation
+                .newBuilder()
+                .setProcess(command.getSaleProcess())
+                .setInvestment(investmentId(command))
+                .vBuild();
+    }
+
     private static WithdrawalOperationId operationId(PurchaseId id) {
         return WithdrawalOperationId
                 .newBuilder()
@@ -260,16 +356,7 @@ public final class InvestmentTestEnv {
                 .vBuild();
     }
 
-    public static Investment setUpInvestment(BlackBoxContext context) {
-        Wallet wallet = setUpReplenishedWallet(context);
-        UserId user = wallet.getId()
-                            .getOwner();
-        PurchaseShares command = purchaseSharesFor(user);
-        context.receivesCommand(command);
-        return Investment
-                .newBuilder()
-                .setId(investmentId(user, command.getShare()))
-                .setSharesAvailable(command.getQuantity())
-                .vBuild();
+    private static InvestmentId investmentId(SellShares command) {
+        return investmentId(command.getSeller(), command.getShare());
     }
 }

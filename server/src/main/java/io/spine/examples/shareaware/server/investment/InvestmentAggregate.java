@@ -86,7 +86,11 @@ public final class InvestmentAggregate
     @Apply
     private void event(SharesReserved e) {
         int newAvailableShares = state().getSharesAvailable() - e.getQuantity();
-        builder().setSharesAvailable(newAvailableShares);
+        String saleId = e.getProcess()
+                         .getUuid();
+        builder()
+                .setSharesAvailable(newAvailableShares)
+                .putSharesReserved(saleId, e.getQuantity());
     }
 
     @Assign

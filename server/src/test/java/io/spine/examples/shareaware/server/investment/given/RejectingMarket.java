@@ -38,7 +38,6 @@ import io.spine.money.Money;
 import io.spine.server.command.Assign;
 import io.spine.server.procman.ProcessManager;
 
-import static io.spine.examples.shareaware.server.given.GivenMoney.*;
 import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.multiply;
 
 /**
@@ -51,8 +50,6 @@ public class RejectingMarket
         extends ProcessManager<MarketId, Market, Market.Builder> {
 
     private static boolean rejectionMode = false;
-
-    public static final Money pricePerShare = usd(20);
 
     /**
      * Emits the {@code SharesObtained} event when rejection mode is disabled
@@ -83,7 +80,7 @@ public class RejectingMarket
                     .setSaleProcess(c.getSaleProcess())
                     .build();
         }
-        Money sellPrice = multiply(pricePerShare, c.getQuantity());
+        Money sellPrice = multiply(c.getPrice(), c.getQuantity());
         return SharesSoldOnMarket
                 .newBuilder()
                 .setMarket(c.getMarket())
