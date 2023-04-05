@@ -34,7 +34,12 @@ import io.spine.examples.shareaware.investment.event.SharesSold;
 import io.spine.examples.shareaware.server.TradingContext;
 import io.spine.examples.shareaware.server.given.GivenMoney;
 import io.spine.examples.shareaware.server.given.WalletTestEnv;
+import io.spine.examples.shareaware.server.investment.given.InvestmentTestContext;
+import io.spine.examples.shareaware.server.investment.given.RejectingMarket;
+import io.spine.examples.shareaware.server.investment.given.SharesSaleTestEnv;
+import io.spine.examples.shareaware.server.wallet.MoneyCalculator;
 import io.spine.examples.shareaware.wallet.Wallet;
+import io.spine.money.Money;
 import io.spine.server.BoundedContextBuilder;
 import io.spine.testing.server.blackbox.ContextAwareTest;
 import org.junit.jupiter.api.DisplayName;
@@ -42,47 +47,34 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static io.spine.examples.shareaware.server.investment.given.InvestmentTestEnv.purchaseSharesFor;
+import static io.spine.examples.shareaware.server.investment.given.SharesSaleTestEnv.*;
+import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.*;
 
 public class SharesSaleTest extends ContextAwareTest {
 
     @Override
     protected BoundedContextBuilder contextBuilder() {
-        return TradingContext.newBuilder();
+        return InvestmentTestContext.newBuilder();
     }
 
     @Nested
     @DisplayName("recharge the wallet balance")
     class RechargeBalance {
 
-    }
+        @Test
+        void state() {
+            Wallet wallet = WalletTestEnv.setUpReplenishedWallet(context());
+            PurchaseShares purchase = purchaseSharesFor(wallet.getId()
+                                                              .getOwner());
+            SellShares command = sellShareAfter(purchase);
+            Money currentBalance = subtract(wallet.getBalance(), purchase.getSharePrice());
+            Wallet expected = wallet
+                    .toBuilder()
+                    .setBalance(sum(currentBalance, RejectingMarket.pricePerShare))
+                    .vBuild();
+            context().receivesCommand(command);
 
-    @Test
-    void state() {
-        Wallet wallet = WalletTestEnv.setUpReplenishedWallet(context());
-        PurchaseShares purchase = purchaseSharesFor(wallet.getId()
-                                                          .getOwner());
-        SellShares command = SellShares
-                .newBuilder()
-                .setSaleProcess(SaleId.generate())
-                .setSeller(wallet.getId()
-                                 .getOwner())
-                .setShare(purchase.getShare())
-                .setQuantity(1)
-                .vBuild();
-        SharesSold expected = SharesSold
-                .newBuilder()
-                .setSaleProcess(command.getSaleProcess())
-                .setShare(command.getShare())
-                .setSeller(command.getSeller())
-                .setSharesAvailable(4)
-                .vBuild();
-        Wallet expectedWallet = wallet
-                .toBuilder()
-                .setBalance(GivenMoney.usd(160))
-                .build();
-        context().receivesCommands(purchase, command);
-
-        context().assertEvent(expected);
-        context().assertState(wallet.getId(), expectedWallet);
+            context().assertState(wallet.getId(), expected);
+        }
     }
 }
