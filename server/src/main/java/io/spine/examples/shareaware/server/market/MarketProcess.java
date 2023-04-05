@@ -84,8 +84,7 @@ public final class MarketProcess
      */
     @Assign
     SharesSoldOnMarket on(SellSharesOnMarket c) {
-        Money pricePerShare = price();
-        Money sellPrice = multiply(pricePerShare, c.getQuantity());
+        Money sellPrice = multiply(c.getPrice(), c.getQuantity());
         return SharesSoldOnMarket
                 .newBuilder()
                 .setMarket(c.getMarket())
@@ -94,22 +93,5 @@ public final class MarketProcess
                 .setQuantity(c.getQuantity())
                 .setPrice(sellPrice)
                 .vBuild();
-    }
-
-    /**
-     * Generates random price for the share in from 1 to 100 dollars range.
-     */
-    private static Money price() {
-        return Money
-                .newBuilder()
-                .setCurrency(Currency.USD)
-                .setUnits(randomValue(MIN_PRICE, MAX_PRICE))
-                .vBuild();
-    }
-
-    private static int randomValue(int min, int max) {
-        Random random = new SecureRandom();
-        int range = max - min + 1;
-        return random.nextInt(range) + min;
     }
 }

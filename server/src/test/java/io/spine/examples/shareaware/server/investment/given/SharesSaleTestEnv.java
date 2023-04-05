@@ -29,6 +29,7 @@ package io.spine.examples.shareaware.server.investment.given;
 import io.spine.examples.shareaware.SaleId;
 import io.spine.examples.shareaware.investment.command.PurchaseShares;
 import io.spine.examples.shareaware.investment.command.SellShares;
+import io.spine.examples.shareaware.server.given.GivenMoney;
 
 public class SharesSaleTestEnv {
 
@@ -38,6 +39,7 @@ public class SharesSaleTestEnv {
                 .setSaleProcess(SaleId.generate())
                 .setSeller(c.getPurchaser())
                 .setShare(c.getShare())
+                .setPrice(GivenMoney.usd(20))
                 .setQuantity(1)
                 .vBuild();
     }

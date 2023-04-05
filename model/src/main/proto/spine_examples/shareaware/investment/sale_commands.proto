@@ -51,6 +51,9 @@ message SellShares {
     // The ID of the share to sell.
     ShareId share = 3 [(required) = true];
 
+    // Wanted price per one share.
+    spine.money.Money price = 4 [(required) = true];
+
     // The quantity of shares to sell.
-    int32 quantity = 4 [(required) = true];
+    int32 quantity = 5 [(required) = true];
 }

@@ -79,7 +79,8 @@ final class SharesSaleProcess
         builder()
                 .setShare(c.getShare())
                 .setId(c.getSaleProcess())
-                .setSeller(c.getSeller());
+                .setSeller(c.getSeller())
+                .setPrice(c.getPrice());
     }
 
     /**
@@ -93,6 +94,7 @@ final class SharesSaleProcess
                 .setMarket(MarketProcess.ID)
                 .setSaleProcess(e.getProcess())
                 .setShare(state().getShare())
+                .setPrice(state().getPrice())
                 .setQuantity(e.getQuantity())
                 .vBuild();
     }
@@ -175,6 +177,7 @@ final class SharesSaleProcess
                 .setSaleProcess(e.getProcess())
                 .setSeller(state().getSeller())
                 .setShare(state().getShare())
+                .setPrice(state().getPrice())
                 .setSharesAvailable(e.getSharesAvailable())
                 .vBuild();
     }
