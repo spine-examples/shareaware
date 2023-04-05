@@ -305,6 +305,7 @@ public class SharesSaleTest extends ContextAwareTest {
             SharesSaleFailed expected = sharesSaleFailedAfter(command);
 
             context().assertEvent(expected);
+            context().assertState(investment.getId(), investment);
             RejectingMarket.switchToEventsMode();
         }
     }
