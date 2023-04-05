@@ -27,8 +27,6 @@
 package io.spine.examples.shareaware.server.investment;
 
 import io.spine.examples.shareaware.InvestmentId;
-import io.spine.examples.shareaware.ReplenishmentOperationId;
-import io.spine.examples.shareaware.SaleId;
 import io.spine.examples.shareaware.investment.Investment;
 import io.spine.examples.shareaware.investment.command.AddShares;
 import io.spine.examples.shareaware.investment.command.CancelSharesReservation;

@@ -29,9 +29,18 @@ package io.spine.examples.shareaware.server.market;
 import io.spine.examples.shareaware.MarketId;
 import io.spine.examples.shareaware.market.Market;
 import io.spine.examples.shareaware.market.command.ObtainShares;
+import io.spine.examples.shareaware.market.command.SellSharesOnMarket;
 import io.spine.examples.shareaware.market.event.SharesObtained;
+import io.spine.examples.shareaware.market.event.SharesSoldOnMarket;
+import io.spine.money.Currency;
+import io.spine.money.Money;
 import io.spine.server.command.Assign;
 import io.spine.server.procman.ProcessManager;
+
+import java.security.SecureRandom;
+import java.util.Random;
+
+import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.*;
 
 /**
  * The imitation of the shares market.
@@ -51,6 +60,9 @@ public final class MarketProcess
             .setUuid("ImitationOfSharesMarket")
             .vBuild();
 
+    private static final int MIN_PRICE = 1;
+    private static final int MAX_PRICE = 200;
+
     /**
      * Obtains the requested shares from the market
      * emitting the {@code SharesObtained} event.
@@ -64,5 +76,40 @@ public final class MarketProcess
                 .setShare(c.getShare())
                 .setQuantity(c.getQuantity())
                 .vBuild();
+    }
+
+    /**
+     * Sells wanted shares on the market
+     * emitting the {@code SharesSold} event.
+     */
+    @Assign
+    SharesSoldOnMarket on(SellSharesOnMarket c) {
+        Money pricePerShare = price();
+        Money sellPrice = multiply(pricePerShare, c.getQuantity());
+        return SharesSoldOnMarket
+                .newBuilder()
+                .setMarket(c.getMarket())
+                .setSaleProcess(c.getSaleProcess())
+                .setShare(c.getShare())
+                .setQuantity(c.getQuantity())
+                .setPrice(sellPrice)
+                .vBuild();
+    }
+
+    /**
+     * Generates random price for the share in from 1 to 100 dollars range.
+     */
+    private static Money price() {
+        return Money
+                .newBuilder()
+                .setCurrency(Currency.USD)
+                .setUnits(randomValue(MIN_PRICE, MAX_PRICE))
+                .vBuild();
+    }
+
+    private static int randomValue(int min, int max) {
+        Random random = new SecureRandom();
+        int range = max - min + 1;
+        return random.nextInt(range) + min;
     }
 }
