@@ -40,7 +40,7 @@ import io.spine.server.BoundedContext;
 import io.spine.server.BoundedContextBuilder;
 import io.spine.server.DefaultRepository;
 
-public class InvestmentTestContext {
+public final class InvestmentTestContext {
 
     private static final String NAME = "InvestmentTest";
 

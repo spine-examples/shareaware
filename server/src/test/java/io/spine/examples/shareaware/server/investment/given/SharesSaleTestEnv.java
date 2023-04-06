@@ -49,7 +49,7 @@ import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.multipl
 import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.subtract;
 import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.sum;
 
-public class SharesSaleTestEnv {
+public final class SharesSaleTestEnv {
 
     /**
      * Prevents instantiation of this class.
