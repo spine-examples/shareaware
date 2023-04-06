@@ -32,13 +32,9 @@ import io.spine.examples.shareaware.market.command.ObtainShares;
 import io.spine.examples.shareaware.market.command.SellSharesOnMarket;
 import io.spine.examples.shareaware.market.event.SharesObtained;
 import io.spine.examples.shareaware.market.event.SharesSoldOnMarket;
-import io.spine.money.Currency;
 import io.spine.money.Money;
 import io.spine.server.command.Assign;
 import io.spine.server.procman.ProcessManager;
-
-import java.security.SecureRandom;
-import java.util.Random;
 
 import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.*;
 
