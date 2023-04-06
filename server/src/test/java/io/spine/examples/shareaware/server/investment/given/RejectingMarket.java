@@ -29,10 +29,16 @@ package io.spine.examples.shareaware.server.investment.given;
 import io.spine.examples.shareaware.MarketId;
 import io.spine.examples.shareaware.market.Market;
 import io.spine.examples.shareaware.market.command.ObtainShares;
+import io.spine.examples.shareaware.market.command.SellSharesOnMarket;
 import io.spine.examples.shareaware.market.event.SharesObtained;
+import io.spine.examples.shareaware.market.event.SharesSoldOnMarket;
 import io.spine.examples.shareaware.market.rejection.SharesCannotBeObtained;
+import io.spine.examples.shareaware.market.rejection.SharesCannotBeSoldOnMarket;
+import io.spine.money.Money;
 import io.spine.server.command.Assign;
 import io.spine.server.procman.ProcessManager;
+
+import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.multiply;
 
 /**
  * The test imitation of {@code MarketProcess} with rejection mode.
@@ -63,6 +69,25 @@ public class RejectingMarket
                 .setPurchaseProcess(c.getPurchase())
                 .setShare(c.getShare())
                 .setQuantity(c.getQuantity())
+                .vBuild();
+    }
+
+    @Assign
+    SharesSoldOnMarket on(SellSharesOnMarket c) throws SharesCannotBeSoldOnMarket {
+        if (rejectionMode) {
+            throw SharesCannotBeSoldOnMarket
+                    .newBuilder()
+                    .setSaleProcess(c.getSaleProcess())
+                    .build();
+        }
+        Money sellPrice = multiply(c.getPrice(), c.getQuantity());
+        return SharesSoldOnMarket
+                .newBuilder()
+                .setMarket(c.getMarket())
+                .setSaleProcess(c.getSaleProcess())
+                .setShare(c.getShare())
+                .setQuantity(c.getQuantity())
+                .setPrice(sellPrice)
                 .vBuild();
     }
 

@@ -28,6 +28,7 @@ package io.spine.examples.shareaware.server.investment.given;
 
 import io.spine.examples.shareaware.server.investment.InvestmentAggregate;
 import io.spine.examples.shareaware.server.investment.SharesPurchaseRepository;
+import io.spine.examples.shareaware.server.investment.SharesSaleRepository;
 import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.server.wallet.WalletAggregate;
 import io.spine.examples.shareaware.server.wallet.WalletBalanceRepository;
@@ -39,14 +40,14 @@ import io.spine.server.BoundedContext;
 import io.spine.server.BoundedContextBuilder;
 import io.spine.server.DefaultRepository;
 
-public class PurchaseTestContext {
+public final class InvestmentTestContext {
 
-    private static final String NAME = "PurchaseTest";
+    private static final String NAME = "InvestmentTest";
 
     /**
      * Prevents instantiation of this class.
      */
-    private PurchaseTestContext() {
+    private InvestmentTestContext() {
     }
 
     /**
@@ -67,6 +68,7 @@ public class PurchaseTestContext {
                 .add(new WalletReplenishmentRepository())
                 .add(new WalletBalanceRepository())
                 .add(new UserWatchlistsRepository())
-                .add(new SharesPurchaseRepository());
+                .add(new SharesPurchaseRepository())
+                .add(new SharesSaleRepository());
     }
 }

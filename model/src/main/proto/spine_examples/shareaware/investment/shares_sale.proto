@@ -37,6 +37,7 @@ option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
 import "spine/core/user_id.proto";
+import "spine/money/money.proto";
 
 // The process of shares sale.
 message SharesSale {
@@ -50,4 +51,7 @@ message SharesSale {
 
     // The ID of the selling share.
     ShareId share = 3 [(required) = true];
+
+    // Wanted price for the selling share.
+    spine.money.Money price = 4 [(required) = true];
 }

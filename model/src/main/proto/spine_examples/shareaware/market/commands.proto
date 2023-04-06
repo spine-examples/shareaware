@@ -36,6 +36,7 @@ option java_outer_classname = "CommandsProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
+import "spine/money/money.proto";
 
 // A command to obtain shares from the market.
 message ObtainShares {
@@ -65,6 +66,9 @@ message SellSharesOnMarket {
     // The ID of the share to sell on the market.
     ShareId share = 3 [(required) = true];
 
+    // Wanted price per share.
+    spine.money.Money price = 4 [(required) = true];
+
     // The quantity of shares to sell on the market.
-    int32 quantity = 4 [(required) = true];
+    int32 quantity = 5 [(required) = true];
 }

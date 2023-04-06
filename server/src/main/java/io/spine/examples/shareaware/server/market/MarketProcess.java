@@ -29,9 +29,14 @@ package io.spine.examples.shareaware.server.market;
 import io.spine.examples.shareaware.MarketId;
 import io.spine.examples.shareaware.market.Market;
 import io.spine.examples.shareaware.market.command.ObtainShares;
+import io.spine.examples.shareaware.market.command.SellSharesOnMarket;
 import io.spine.examples.shareaware.market.event.SharesObtained;
+import io.spine.examples.shareaware.market.event.SharesSoldOnMarket;
+import io.spine.money.Money;
 import io.spine.server.command.Assign;
 import io.spine.server.procman.ProcessManager;
+
+import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.*;
 
 /**
  * The imitation of the shares market.
@@ -63,6 +68,23 @@ public final class MarketProcess
                 .setPurchaseProcess(c.getPurchase())
                 .setShare(c.getShare())
                 .setQuantity(c.getQuantity())
+                .vBuild();
+    }
+
+    /**
+     * Sells wanted shares on the market
+     * emitting the {@code SharesSold} event.
+     */
+    @Assign
+    SharesSoldOnMarket on(SellSharesOnMarket c) {
+        Money sellPrice = multiply(c.getPrice(), c.getQuantity());
+        return SharesSoldOnMarket
+                .newBuilder()
+                .setMarket(c.getMarket())
+                .setSaleProcess(c.getSaleProcess())
+                .setShare(c.getShare())
+                .setQuantity(c.getQuantity())
+                .setPrice(sellPrice)
                 .vBuild();
     }
 }
