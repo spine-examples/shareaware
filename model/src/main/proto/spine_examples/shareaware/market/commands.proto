@@ -73,22 +73,14 @@ message SellSharesOnMarket {
     int32 quantity = 5 [(required) = true];
 }
 
-// A command to open the market.
+// A command to open the shares market.
 message OpenMarket {
 
-    // The ID of the market to open.
+    // The ID of the shares market to open.
     MarketId market = 1;
 }
 
 // A command to close the shares market.
-//
-// The shares market may be closed due to:
-// - end of business hours,
-// - market volatility,
-// - technical issues,
-// - regulator decision,
-// - etc.
-//
 message CloseMarket {
 
     // The ID of the shares market to close.

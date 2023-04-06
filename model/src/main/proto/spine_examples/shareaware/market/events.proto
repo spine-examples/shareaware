@@ -76,13 +76,13 @@ message SharesSoldOnMarket {
 // The shares market has been opened.
 message MarketOpened {
 
-    // The ID of the opened market.
+    // The ID of the opened shares market.
     MarketId market = 1;
 }
 
 // The shares market has been closed.
 message MarketClosed {
 
-    // The ID of the closed market.
+    // The ID of the closed shares market.
     MarketId market = 1;
 }

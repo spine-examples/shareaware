@@ -45,5 +45,13 @@ message Market {
     MarketId id = 1;
 
     // Tells whether the market is closed or not.
+    //
+    // The shares market may be closed due to:
+    // - end of business hours,
+    // - market volatility,
+    // - technical issues,
+    // - regulator decision,
+    // - etc.
+    //
     bool is_closed = 2;
 }
