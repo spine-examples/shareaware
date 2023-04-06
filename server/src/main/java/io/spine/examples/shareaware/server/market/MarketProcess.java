@@ -109,27 +109,27 @@ public final class MarketProcess
 
     @Assign
     MarketOpened on(OpenMarket c) {
+        openMarket();
         return MarketOpened
                 .newBuilder()
                 .setMarket(c.getMarket())
                 .vBuild();
     }
 
-    @Apply
-    private void event(MarketOpened e) {
+    private void openMarket() {
         builder().setIsClosed(false);
     }
 
     @Assign
     MarketClosed on(CloseMarket c) {
+        closeMarket();
         return MarketClosed
                 .newBuilder()
                 .setMarket(c.getMarket())
                 .vBuild();
     }
 
-    @Apply
-    private void event(MarketClosed e) {
+    private void closeMarket() {
         builder().setIsClosed(true);
     }
 }
