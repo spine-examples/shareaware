@@ -52,6 +52,13 @@ message SellShares {
     ShareId share = 3 [(required) = true];
 
     // Wanted price per one share.
+    //
+    // The price at which the user wants to buy the shares
+    // may be different from the current market price.
+    // It is necessary to ensure that both parties to the transaction agree on the price.
+    // In case when the actual price on the market differs from the wanted price,
+    // the market will reject the sale.
+    //
     spine.money.Money price = 4 [(required) = true];
 
     // The quantity of shares to sell.
