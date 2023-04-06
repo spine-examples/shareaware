@@ -182,131 +182,126 @@ public class SharesSaleTest extends ContextAwareTest {
         }
     }
 
-    @Nested
-    @DisplayName("be led by shares sale process")
-    class SaleProcess {
+    @Test
+    @DisplayName("have an expected state")
+    void state() {
+        Investment investment = setUpInvestment(context());
+        SellShares command = sellShareFrom(investment);
+        context().receivesCommand(command);
+        SharesSale expected = sharesSaleInitiatedBy(command);
 
-        @Test
-        @DisplayName("with state")
-        void state() {
-            Investment investment = setUpInvestment(context());
-            SellShares command = sellShareFrom(investment);
-            context().receivesCommand(command);
-            SharesSale expected = sharesSaleInitiatedBy(command);
+        context().assertState(command.getSaleProcess(), expected);
+    }
 
-            context().assertState(command.getSaleProcess(), expected);
-        }
+    @Test
+    @DisplayName("issue the `ReserveShares` command")
+    void reserveShares() {
+        Investment investment = setUpInvestment(context());
+        SellShares command = sellShareFrom(investment);
+        context().receivesCommand(command);
+        ReserveShares expected = reserveSharesWith(command);
 
-        @Test
-        @DisplayName("which issues the `ReserveShares` command")
-        void reserveShares() {
-            Investment investment = setUpInvestment(context());
-            SellShares command = sellShareFrom(investment);
-            context().receivesCommand(command);
-            ReserveShares expected = reserveSharesWith(command);
+        context().assertCommands()
+                 .withType(ReserveShares.class)
+                 .message(0)
+                 .isEqualTo(expected);
+    }
 
-            context().assertCommands()
-                     .withType(ReserveShares.class)
-                     .message(0)
-                     .isEqualTo(expected);
-        }
+    @Test
+    @DisplayName("issue the `SellSharesOnMarket` command")
+    void sellSharesOnMarket() {
+        Investment investment = setUpInvestment(context());
+        SellShares command = sellShareFrom(investment);
+        context().receivesCommand(command);
+        SellSharesOnMarket expected = sellSharesOnMarketWith(command);
 
-        @Test
-        @DisplayName("which issues the `SellSharesOnMarket` command")
-        void sellSharesOnMarket() {
-            Investment investment = setUpInvestment(context());
-            SellShares command = sellShareFrom(investment);
-            context().receivesCommand(command);
-            SellSharesOnMarket expected = sellSharesOnMarketWith(command);
+        context().assertCommands()
+                 .withType(SellSharesOnMarket.class)
+                 .message(0)
+                 .isEqualTo(expected);
+    }
 
-            context().assertCommands()
-                     .withType(SellSharesOnMarket.class)
-                     .message(0)
-                     .isEqualTo(expected);
-        }
+    @Test
+    @DisplayName("issue the `RechargeBalance` command")
+    void rechargeBalance() {
+        Investment investment = setUpInvestment(context());
+        SellShares command = sellShareFrom(investment);
+        context().receivesCommand(command);
+        RechargeBalance expected = rechargeBalanceWith(command);
 
-        @Test
-        @DisplayName("which issues the `RechargeBalance` command")
-        void rechargeBalance() {
-            Investment investment = setUpInvestment(context());
-            SellShares command = sellShareFrom(investment);
-            context().receivesCommand(command);
-            RechargeBalance expected = rechargeBalanceWith(command);
+        context().assertCommands()
+                 .withType(RechargeBalance.class)
+                 .message(1)
+                 .isEqualTo(expected);
+    }
 
-            context().assertCommands()
-                     .withType(RechargeBalance.class)
-                     .message(1)
-                     .isEqualTo(expected);
-        }
+    @Test
+    @DisplayName("issue the `CompleteSharesReservation` command")
+    void completeSharesReservation() {
+        Investment investment = setUpInvestment(context());
+        SellShares command = sellShareFrom(investment);
+        context().receivesCommand(command);
+        CompleteSharesReservation expected =
+                completeSharesReservationWith(command);
 
-        @Test
-        @DisplayName("which issues the `CompleteSharesReservation` command")
-        void completeSharesReservation() {
-            Investment investment = setUpInvestment(context());
-            SellShares command = sellShareFrom(investment);
-            context().receivesCommand(command);
-            CompleteSharesReservation expected =
-                    completeSharesReservationWith(command);
+        context().assertCommands()
+                 .withType(CompleteSharesReservation.class)
+                 .message(0)
+                 .isEqualTo(expected);
+    }
 
-            context().assertCommands()
-                     .withType(CompleteSharesReservation.class)
-                     .message(0)
-                     .isEqualTo(expected);
-        }
+    @Test
+    @DisplayName("emit the `SharesSold` event")
+    void sharesSold() {
+        Investment investment = setUpInvestment(context());
+        SellShares command = sellShareFrom(investment);
+        context().receivesCommand(command);
+        SharesSold expected = sharesSoldBy(command, investment);
 
-        @Test
-        @DisplayName("which emits the `SharesSold` event")
-        void sharesSold() {
-            Investment investment = setUpInvestment(context());
-            SellShares command = sellShareFrom(investment);
-            context().receivesCommand(command);
-            SharesSold expected = sharesSoldBy(command, investment);
+        context().assertEvent(expected);
+    }
 
-            context().assertEvent(expected);
-        }
+    @Test
+    @DisplayName("emit the `SharesSaleFailed` " +
+            "due to insufficient quantity of shares owned")
+    void sharesSaleFailedAfterInsufficientShares() {
+        Investment investment = setUpInvestment(context());
+        SellShares command = sellMoreSharesThanIn(investment);
+        context().receivesCommand(command);
+        SharesSaleFailed expected = sharesSaleFailedAfter(command);
 
-        @Test
-        @DisplayName("which emits the `SharesSaleFailed` " +
-                "due to insufficient shares in the investment")
-        void sharesSaleFailedAfterInsufficientShares() {
-            Investment investment = setUpInvestment(context());
-            SellShares command = sellMoreSharesThanIn(investment);
-            context().receivesCommand(command);
-            SharesSaleFailed expected = sharesSaleFailedAfter(command);
+        context().assertEvent(expected);
+    }
 
-            context().assertEvent(expected);
-        }
+    @Test
+    @DisplayName("issue the `CancelSharesReservation` command " +
+            "after error in the shares market")
+    void cancelSharesReservation() {
+        Investment investment = setUpInvestment(context());
+        SellShares command = sellShareFrom(investment);
+        RejectingMarket.switchToRejectionMode();
+        context().receivesCommand(command);
+        CancelSharesReservation expected = cancelSharesReservationBy(command);
 
-        @Test
-        @DisplayName("which issues the `CancelSharesReservation` command " +
-                "after error in the shares market")
-        void cancelSharesReservation() {
-            Investment investment = setUpInvestment(context());
-            SellShares command = sellShareFrom(investment);
-            RejectingMarket.switchToRejectionMode();
-            context().receivesCommand(command);
-            CancelSharesReservation expected = cancelSharesReservationBy(command);
+        context().assertCommands()
+                 .withType(CancelSharesReservation.class)
+                 .message(0)
+                 .isEqualTo(expected);
+        RejectingMarket.switchToEventsMode();
+    }
 
-            context().assertCommands()
-                     .withType(CancelSharesReservation.class)
-                     .message(0)
-                     .isEqualTo(expected);
-            RejectingMarket.switchToEventsMode();
-        }
+    @Test
+    @DisplayName("emit the `SharesSaleFailed` event " +
+            "after error in the shares market")
+    void sharesSaleFailedAfterError() {
+        Investment investment = setUpInvestment(context());
+        SellShares command = sellShareFrom(investment);
+        RejectingMarket.switchToRejectionMode();
+        context().receivesCommand(command);
+        SharesSaleFailed expected = sharesSaleFailedAfter(command);
 
-        @Test
-        @DisplayName("which emits the `SharesSaleFailed` event " +
-                "after error in the shares market")
-        void sharesSaleFailedAfterError() {
-            Investment investment = setUpInvestment(context());
-            SellShares command = sellShareFrom(investment);
-            RejectingMarket.switchToRejectionMode();
-            context().receivesCommand(command);
-            SharesSaleFailed expected = sharesSaleFailedAfter(command);
-
-            context().assertEvent(expected);
-            context().assertState(investment.getId(), investment);
-            RejectingMarket.switchToEventsMode();
-        }
+        context().assertEvent(expected);
+        context().assertState(investment.getId(), investment);
+        RejectingMarket.switchToEventsMode();
     }
 }
