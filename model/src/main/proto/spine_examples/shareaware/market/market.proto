@@ -43,4 +43,7 @@ message Market {
 
     // The ID of the shares market.
     MarketId id = 1;
+
+    // Tells whether the market is closed or not.
+    bool is_closed = 2;
 }

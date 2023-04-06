@@ -72,3 +72,17 @@ message SharesSoldOnMarket {
     // The price for which the shares were sold.
     spine.money.Money price = 5 [(required) = true];
 }
+
+// The shares market has been opened.
+message MarketOpened {
+
+    // The ID of the opened market.
+    MarketId market = 1;
+}
+
+// The shares market has been closed.
+message MarketClosed {
+
+    // The ID of the closed market.
+    MarketId market = 1;
+}
