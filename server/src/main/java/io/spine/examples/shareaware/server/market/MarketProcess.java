@@ -60,9 +60,6 @@ public final class MarketProcess
             .setUuid("ImitationOfSharesMarket")
             .vBuild();
 
-    private static final int MIN_PRICE = 1;
-    private static final int MAX_PRICE = 200;
-
     /**
      * Obtains the requested shares from the market
      * emitting the {@code SharesObtained} event.

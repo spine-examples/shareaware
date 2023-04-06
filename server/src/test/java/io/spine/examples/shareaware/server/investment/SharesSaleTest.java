@@ -164,7 +164,7 @@ public class SharesSaleTest extends ContextAwareTest {
             RejectingMarket.switchToRejectionMode();
             context().receivesCommand(command);
             SharesReservationCanceled expected =
-                    sharesReservationCanceledBy(command);
+                    sharesReservationCanceledAfter(command);
 
             context().assertEvent(expected);
             RejectingMarket.switchToEventsMode();
@@ -285,7 +285,7 @@ public class SharesSaleTest extends ContextAwareTest {
             SellShares command = sellShareFrom(investment);
             RejectingMarket.switchToRejectionMode();
             context().receivesCommand(command);
-            CancelSharesReservation expected = cancelSharesReservationWith(command);
+            CancelSharesReservation expected = cancelSharesReservationBy(command);
 
             context().assertCommands()
                      .withType(CancelSharesReservation.class)

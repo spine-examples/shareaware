@@ -290,7 +290,7 @@ public final class InvestmentTestEnv {
     }
 
     public static SharesReservationCanceled
-    sharesReservationCanceledBy(SellShares command) {
+    sharesReservationCanceledAfter(SellShares command) {
         return SharesReservationCanceled
                 .newBuilder()
                 .setProcess(command.getSaleProcess())
@@ -326,7 +326,7 @@ public final class InvestmentTestEnv {
     }
 
     public static CancelSharesReservation
-    cancelSharesReservationWith(SellShares command) {
+    cancelSharesReservationBy(SellShares command) {
         return CancelSharesReservation
                 .newBuilder()
                 .setProcess(command.getSaleProcess())
