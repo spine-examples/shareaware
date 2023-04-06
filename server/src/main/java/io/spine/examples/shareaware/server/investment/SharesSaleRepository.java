@@ -48,7 +48,7 @@ import static io.spine.server.route.EventRoute.*;
 /**
  * Manages instances of {@link SharesSaleProcess}.
  */
-public class SharesSaleRepository
+public final class SharesSaleRepository
         extends ProcessManagerRepository<SaleId, SharesSaleProcess, SharesSale> {
 
     @OverridingMethodsMustInvokeSuper

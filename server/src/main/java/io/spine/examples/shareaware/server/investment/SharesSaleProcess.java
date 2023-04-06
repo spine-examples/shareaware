@@ -77,8 +77,8 @@ final class SharesSaleProcess
 
     private void initState(SellShares c) {
         builder()
-                .setShare(c.getShare())
                 .setId(c.getSaleProcess())
+                .setShare(c.getShare())
                 .setSeller(c.getSeller())
                 .setPrice(c.getPrice());
     }
@@ -128,7 +128,7 @@ final class SharesSaleProcess
     }
 
     /**
-     * Issues a command to cancel shares reservation made for shares sale
+     * Issues a command to cancel shares reservation made for their sale
      * after the unexpected error in the shares market.
      */
     @Command
@@ -155,14 +155,16 @@ final class SharesSaleProcess
 
     /**
      * Issues a command to complete the shares reservation
-     * after the wallet balance was recharged.
+     * after the wallet balance is recharged.
      */
     @Command
     CompleteSharesReservation on(BalanceRecharged e) {
+        SaleId process = e.getOperation()
+                          .getSale();
         return CompleteSharesReservation
                 .newBuilder()
                 .setInvestment(investmentId())
-                .setProcess(e.getOperation().getSale())
+                .setProcess(process)
                 .vBuild();
     }
 

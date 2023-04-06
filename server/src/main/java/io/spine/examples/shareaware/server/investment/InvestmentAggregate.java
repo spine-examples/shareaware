@@ -120,12 +120,12 @@ public final class InvestmentAggregate
 
     @Apply
     private void event(SharesReservationCanceled e) {
-        String saleIdValue = e.getProcess()
-                              .getUuid();
-        int reservedAmount = state().getSharesReservedOrThrow(saleIdValue);
-        int restoredAvailableShares = state().getSharesAvailable() + reservedAmount;
+        String saleId = e.getProcess()
+                         .getUuid();
+        int reservedSharesAmount = state().getSharesReservedOrThrow(saleId);
+        int restoredAvailableShares = state().getSharesAvailable() + reservedSharesAmount;
         builder()
                 .setSharesAvailable(restoredAvailableShares)
-                .removeSharesReserved(saleIdValue);
+                .removeSharesReserved(saleId);
     }
 }
