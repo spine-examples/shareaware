@@ -37,27 +37,13 @@ option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
 
-// Represents user's investment into shares of a single type.
-message Investment {
-    option (entity) = {kind: AGGREGATE};
+// Displays held shares per investment.
+message HeldShares {
+    option (entity).kind = PROJECTION;
 
-    // The ID of the investment.
-    InvestmentId id = 1;
+    // The ID of the investment that held shares.
+    InvestmentId investment = 1;
 
-    // How many shares are available to sell.
-    //
-    // Does not include those which are reserved. See `shares_reserved` field.
-    //
-    int32 shares_available = 2 [(required) = true];
-
-    // The reserved amount of shares per sale operation.
-    //
-    // Any ongoing shares sale operation would reserve the corresponding number of shares
-    // within this Investment, so that they could not be spent on something else.
-    // It is not possible to use the reserved shares directly for a new sale operation,
-    // but rather they should be used in scope of these pending operations.
-    //
-    // Keys in this map corresponds to `SaleId.uuid` values.
-    //
-    map<string, int32> shares_reserved = 3;
+    // The number of available shares in the investment.
+    int32 shares_available = 2;
 }
