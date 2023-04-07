@@ -30,6 +30,7 @@ import io.spine.core.UserId;
 import io.spine.examples.shareaware.InvestmentId;
 import io.spine.examples.shareaware.ShareId;
 import io.spine.examples.shareaware.WalletId;
+import io.spine.examples.shareaware.investment.HeldShares;
 import io.spine.examples.shareaware.investment.Investment;
 import io.spine.examples.shareaware.investment.SharesPurchase;
 import io.spine.examples.shareaware.investment.command.AddShares;
@@ -310,5 +311,20 @@ public final class SharesPurchaseTest extends ContextAwareTest {
             context().assertEvent(expected);
             RejectingMarket.switchToEventsMode();
         }
+    }
+
+    @Test
+    @DisplayName("increase the number of available shares in `HeldShares` projection")
+    void state() {
+        Wallet wallet = setUpReplenishedWallet(context());
+        UserId user = wallet.getId()
+                            .getOwner();
+        ShareId share = ShareId.generate();
+        PurchaseShares firstPurchase = purchaseSharesFor(user, share);
+        PurchaseShares secondPurchase = purchaseSharesFor(user, share);
+        context().receivesCommands(firstPurchase, secondPurchase);
+        HeldShares expected = heldSharesAfter(firstPurchase, secondPurchase);
+
+        context().assertState(expected.getId(), expected);
     }
 }

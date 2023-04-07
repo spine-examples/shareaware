@@ -31,6 +31,7 @@ import io.spine.examples.shareaware.ReplenishmentOperationId;
 import io.spine.examples.shareaware.SaleId;
 import io.spine.examples.shareaware.ShareId;
 import io.spine.examples.shareaware.WalletId;
+import io.spine.examples.shareaware.investment.HeldShares;
 import io.spine.examples.shareaware.investment.Investment;
 import io.spine.examples.shareaware.investment.SharesSale;
 import io.spine.examples.shareaware.investment.command.PurchaseShares;
@@ -159,6 +160,18 @@ public final class SharesSaleTestEnv {
                 .newBuilder()
                 .setSaleProcess(command.getSaleProcess())
                 .setSeller(command.getSeller())
+                .vBuild();
+    }
+
+    public static HeldShares heldSHaresAfter(SellShares firstSale,
+                                             SellShares secondSale,
+                                             Investment investment) {
+        int saleAmount = firstSale.getQuantity() + secondSale.getQuantity();
+        int sharesAvailable = investment.getSharesAvailable() - saleAmount;
+        return HeldShares
+                .newBuilder()
+                .setId(investment.getId())
+                .setSharesAvailable(sharesAvailable)
                 .vBuild();
     }
 

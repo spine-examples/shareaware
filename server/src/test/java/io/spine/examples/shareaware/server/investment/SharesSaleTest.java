@@ -27,6 +27,7 @@
 package io.spine.examples.shareaware.server.investment;
 
 import io.spine.core.UserId;
+import io.spine.examples.shareaware.investment.HeldShares;
 import io.spine.examples.shareaware.investment.Investment;
 import io.spine.examples.shareaware.investment.SharesSale;
 import io.spine.examples.shareaware.investment.command.CancelSharesReservation;
@@ -180,6 +181,18 @@ public class SharesSaleTest extends ContextAwareTest {
 
             context().assertEvent(expected);
         }
+    }
+
+    @Test
+    @DisplayName("reduce the number of available shares in `HeldShares` projection")
+    void projection() {
+        Investment investment = setUpInvestment(context());
+        SellShares firstSale = sellShareFrom(investment);
+        SellShares secondSale = sellShareFrom(investment);
+        context().receivesCommands(firstSale, secondSale);
+        HeldShares expected = heldSHaresAfter(firstSale, secondSale, investment);
+
+        context().assertState(investment.getId(), expected);
     }
 
     @Test
