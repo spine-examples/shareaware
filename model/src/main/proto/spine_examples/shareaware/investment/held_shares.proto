@@ -32,7 +32,7 @@ import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
 option java_package = "io.spine.examples.shareaware.investment";
-option java_outer_classname = "InvestmentProto";
+option java_outer_classname = "HeldSharesProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
@@ -42,7 +42,7 @@ message HeldShares {
     option (entity).kind = PROJECTION;
 
     // The ID of the investment that held shares.
-    InvestmentId investment = 1;
+    InvestmentId id = 1;
 
     // The number of available shares in the investment.
     int32 shares_available = 2;
