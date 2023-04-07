@@ -42,6 +42,7 @@ import io.spine.examples.shareaware.market.command.SellSharesOnMarket;
 import io.spine.examples.shareaware.server.given.GivenMoney;
 import io.spine.examples.shareaware.server.market.MarketProcess;
 import io.spine.examples.shareaware.wallet.Wallet;
+import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.command.RechargeBalance;
 import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
 import io.spine.money.Money;
@@ -188,6 +189,21 @@ public final class SharesSaleTestEnv {
                 .newBuilder()
                 .setId(investment.getId())
                 .setSharesAvailable(sharesAvailable)
+                .vBuild();
+    }
+
+    public static WalletBalance walletBalanceAfter(PurchaseShares purchaseCommand,
+                                                   SellShares sellCommand,
+                                                   Wallet wallet) {
+        Money purchasePrice = multiply(purchaseCommand.getSharePrice(),
+                                       purchaseCommand.getQuantity());
+        Money balanceAfterPurchase = subtract(wallet.getBalance(), purchasePrice);
+        Money sellPrice = multiply(sellCommand.getPrice(), sellCommand.getQuantity());
+        Money currentBalance = sum(balanceAfterPurchase, sellPrice);
+        return WalletBalance
+                .newBuilder()
+                .setId(wallet.getId())
+                .setBalance(currentBalance)
                 .vBuild();
     }
 

@@ -46,6 +46,7 @@ import io.spine.examples.shareaware.server.FreshContextTest;
 import io.spine.examples.shareaware.server.investment.given.InvestmentTestContext;
 import io.spine.examples.shareaware.server.investment.given.RejectingMarket;
 import io.spine.examples.shareaware.wallet.Wallet;
+import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.command.RechargeBalance;
 import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
 import io.spine.server.BoundedContextBuilder;
@@ -181,6 +182,21 @@ public class SharesSaleTest extends FreshContextTest {
         InvestmentView expected = investmentViewAfter(firstSale, secondSale, investment);
 
         context().assertState(investment.getId(), expected);
+    }
+
+    @Test
+    void increaseWalletBalance() {
+        Wallet wallet = setUpReplenishedWallet(context());
+        UserId user = wallet.getId()
+                            .getOwner();
+        PurchaseShares purchaseCommand = purchaseSharesFor(user);
+        context().receivesCommand(purchaseCommand);
+
+        SellShares sellCommand = sellShareAfter(purchaseCommand);
+        context().receivesCommand(sellCommand);
+        WalletBalance expected = walletBalanceAfter(purchaseCommand, sellCommand, wallet);
+
+        context().assertState(wallet.getId(), expected);
     }
 
     @Test
