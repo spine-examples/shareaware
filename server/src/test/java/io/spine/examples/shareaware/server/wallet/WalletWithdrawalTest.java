@@ -30,6 +30,7 @@ import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.WithdrawalId;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
+import io.spine.examples.shareaware.server.FreshContextTest;
 import io.spine.examples.shareaware.server.given.WithdrawalTestContext;
 import io.spine.examples.shareaware.server.given.RejectingPaymentProcess;
 import io.spine.examples.shareaware.wallet.Wallet;
@@ -46,10 +47,6 @@ import io.spine.examples.shareaware.wallet.event.MoneyWithdrawn;
 import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
 import io.spine.server.BoundedContextBuilder;
-import io.spine.testing.server.blackbox.ContextAwareTest;
-import io.spine.testing.server.model.ModelTests;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -58,17 +55,7 @@ import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
 import static io.spine.examples.shareaware.server.wallet.WalletReplenishmentProcess.*;
 
 @DisplayName("`WalletWithdrawal` should")
-public final class WalletWithdrawalTest extends ContextAwareTest {
-
-    @BeforeAll
-    static void beforeAll() {
-        ModelTests.dropAllModels();
-    }
-
-    @AfterAll
-    static void afterAll() {
-        ModelTests.dropAllModels();
-    }
+public final class WalletWithdrawalTest extends FreshContextTest {
 
     @Override
     protected BoundedContextBuilder contextBuilder() {

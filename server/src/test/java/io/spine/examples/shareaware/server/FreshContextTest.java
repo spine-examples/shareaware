@@ -24,34 +24,32 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+package io.spine.examples.shareaware.server;
 
-package spine_examples.shareaware.market;
+import io.spine.testing.server.blackbox.ContextAwareTest;
+import io.spine.testing.server.model.ModelTests;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 
-import "spine/options.proto";
+/**
+ * An abstract base for {@link io.spine.testing.server.blackbox.BlackBoxContext
+ * BlackBoxContext}-based tests, which may assemble the bounded-context-under-tests
+ * with different entities, and therefore require to clear the cached knowledge
+ * about {@linkplain io.spine.server.model.Model Bounded Context models}.
+ *
+ * <p>This implementation clears all models before and after all tests.
+ *
+ * @see ModelTests#dropAllModels()
+ */
+public abstract class FreshContextTest extends ContextAwareTest {
 
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.market";
-option java_outer_classname = "MarketProto";
-option java_multiple_files = true;
+    @BeforeAll
+    static void beforeAll() {
+        ModelTests.dropAllModels();
+    }
 
-import "spine_examples/shareaware/identifiers.proto";
-
-// The imitation of the shares market.
-message Market {
-    option (entity) = {kind: PROCESS_MANAGER};
-
-    // The ID of the shares market.
-    MarketId id = 1;
-
-    // Tells whether the market is closed or not.
-    //
-    // The shares market may be closed due to:
-    // - end of business hours,
-    // - market volatility,
-    // - technical issues,
-    // - regulator decision,
-    // - etc.
-    //
-    bool closed = 2;
+    @AfterAll
+    static void afterAll() {
+        ModelTests.dropAllModels();
+    }
 }

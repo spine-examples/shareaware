@@ -39,7 +39,6 @@ import io.spine.examples.shareaware.market.event.SharesSoldOnMarket;
 import io.spine.examples.shareaware.market.rejection.SharesCannotBeObtained;
 import io.spine.examples.shareaware.market.rejection.SharesCannotBeSoldOnMarket;
 import io.spine.money.Money;
-import io.spine.server.aggregate.Apply;
 import io.spine.server.command.Assign;
 import io.spine.server.procman.ProcessManager;
 
@@ -69,7 +68,7 @@ public final class MarketProcess
      */
     @Assign
     SharesObtained on(ObtainShares c) throws SharesCannotBeObtained {
-        if (state().getIsClosed()) {
+        if (state().getClosed()) {
             throw SharesCannotBeObtained
                     .newBuilder()
                     .setPurchaseProcess(c.getPurchase())
@@ -90,7 +89,7 @@ public final class MarketProcess
      */
     @Assign
     SharesSoldOnMarket on(SellSharesOnMarket c) throws SharesCannotBeSoldOnMarket {
-        if (state().getIsClosed()) {
+        if (state().getClosed()) {
             throw SharesCannotBeSoldOnMarket
                     .newBuilder()
                     .setSaleProcess(c.getSaleProcess())
@@ -117,7 +116,7 @@ public final class MarketProcess
     }
 
     private void openMarket() {
-        builder().setIsClosed(false);
+        builder().setClosed(false);
     }
 
     @Assign
@@ -130,6 +129,6 @@ public final class MarketProcess
     }
 
     private void closeMarket() {
-        builder().setIsClosed(true);
+        builder().setClosed(true);
     }
 }

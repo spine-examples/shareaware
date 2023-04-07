@@ -35,29 +35,16 @@ import io.spine.examples.shareaware.market.event.MarketClosed;
 import io.spine.examples.shareaware.market.event.MarketOpened;
 import io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeSoldOnMarket;
 import io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeObtained;
+import io.spine.examples.shareaware.server.FreshContextTest;
 import io.spine.examples.shareaware.server.market.given.MarketTestContext;
 import io.spine.server.BoundedContextBuilder;
-import io.spine.testing.server.blackbox.ContextAwareTest;
-import io.spine.testing.server.model.ModelTests;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static io.spine.examples.shareaware.server.market.given.MarketTestEnv.*;
 
 @DisplayName("`Market` should")
-public final class MarketProcessTest extends ContextAwareTest {
-
-    @BeforeAll
-    static void beforeAll() {
-        ModelTests.dropAllModels();
-    }
-
-    @AfterAll
-    static void afterAll() {
-        ModelTests.dropAllModels();
-    }
+public final class MarketProcessTest extends FreshContextTest {
 
     @Override
     protected BoundedContextBuilder contextBuilder() {

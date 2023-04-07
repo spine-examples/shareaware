@@ -72,11 +72,11 @@ public final class MarketTestEnv {
         return market(command.getMarket(), true);
     }
 
-    private static Market market(MarketId id, boolean isClosed) {
+    private static Market market(MarketId id, boolean closed) {
         return Market
                 .newBuilder()
                 .setId(id)
-                .setIsClosed(isClosed)
+                .setClosed(closed)
                 .vBuild();
     }
 
