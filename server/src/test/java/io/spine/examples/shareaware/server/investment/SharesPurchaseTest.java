@@ -38,6 +38,7 @@ import io.spine.examples.shareaware.investment.event.SharesAdded;
 import io.spine.examples.shareaware.investment.event.SharesPurchaseFailed;
 import io.spine.examples.shareaware.investment.event.SharesPurchased;
 import io.spine.examples.shareaware.market.command.ObtainShares;
+import io.spine.examples.shareaware.server.given.TestWithMockContext;
 import io.spine.examples.shareaware.server.investment.given.InvestmentTestContext;
 import io.spine.examples.shareaware.server.investment.given.RejectingMarket;
 import io.spine.examples.shareaware.wallet.Wallet;
@@ -49,10 +50,6 @@ import io.spine.examples.shareaware.wallet.event.MoneyReserved;
 import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
 import io.spine.server.BoundedContextBuilder;
-import io.spine.testing.server.blackbox.ContextAwareTest;
-import io.spine.testing.server.model.ModelTests;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -62,17 +59,7 @@ import static io.spine.examples.shareaware.server.given.WalletTestEnv.setUpReple
 import static io.spine.examples.shareaware.server.given.WalletTestEnv.setUpWallet;
 
 @DisplayName("`SharesPurchase` should")
-public final class SharesPurchaseTest extends ContextAwareTest {
-
-    @BeforeAll
-    static void beforeAll() {
-        ModelTests.dropAllModels();
-    }
-
-    @AfterAll
-    static void afterAll() {
-        ModelTests.dropAllModels();
-    }
+public final class SharesPurchaseTest extends TestWithMockContext {
 
     @Override
     protected BoundedContextBuilder contextBuilder() {
