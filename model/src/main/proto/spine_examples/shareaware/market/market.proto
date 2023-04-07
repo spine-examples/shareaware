@@ -53,5 +53,5 @@ message Market {
     // - regulator decision,
     // - etc.
     //
-    bool is_closed = 2;
+    bool closed = 2;
 }
