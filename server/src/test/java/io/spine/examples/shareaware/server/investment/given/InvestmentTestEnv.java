@@ -192,7 +192,7 @@ public final class InvestmentTestEnv {
                 .setPurchaseProcess(command.getPurchaseProcess())
                 .setPurchaser(command.getPurchaser())
                 .setShare(command.getShare())
-                .setQuantity(command.getQuantity())
+                .setSharesAvailable(command.getQuantity())
                 .vBuild();
     }
 
@@ -242,7 +242,7 @@ public final class InvestmentTestEnv {
                 .newBuilder()
                 .setProcess(command.getPurchaseProcess())
                 .setInvestment(investmentId(purchaser, share))
-                .setQuantity(command.getQuantity())
+                .setSharesAvailable(command.getQuantity())
                 .vBuild();
     }
 

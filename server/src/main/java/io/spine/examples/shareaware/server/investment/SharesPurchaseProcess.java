@@ -160,6 +160,7 @@ final class SharesPurchaseProcess
      */
     @Command
     DebitReservedMoney on(SharesAdded e) {
+        builder().setSharesAvailable(e.getSharesAvailable());
         return DebitReservedMoney
                 .newBuilder()
                 .setWallet(walletId())
@@ -178,7 +179,7 @@ final class SharesPurchaseProcess
                 .setPurchaseProcess(state().getId())
                 .setPurchaser(state().getPurchaser())
                 .setShare(state().getShare())
-                .setQuantity(state().getQuantity())
+                .setSharesAvailable(state().getSharesAvailable())
                 .vBuild();
     }
 
@@ -196,6 +197,7 @@ final class SharesPurchaseProcess
                 .setOwner(state().getPurchaser())
                 .vBuild();
     }
+
     private static WalletId walletId(UserId owner) {
         return WalletId
                 .newBuilder()

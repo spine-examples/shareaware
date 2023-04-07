@@ -46,8 +46,8 @@ message SharesAdded {
     // The ID of the process that added shares to investment.
     PurchaseId process = 2 [(required) = true];
 
-    // The number of shares that have been added.
-    int32 quantity = 3 [(required) = true];
+    // The number of available shares in the investment.
+    int32 shares_available = 3 [(required) = true];
 }
 
 // Shares have been reserved in the investment.

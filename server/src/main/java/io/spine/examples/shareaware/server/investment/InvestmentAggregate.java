@@ -49,20 +49,20 @@ public final class InvestmentAggregate
 
     @Assign
     SharesAdded on(AddShares c) {
+        int newAvailableShares = state().getSharesAvailable() + c.getQuantity();
         return SharesAdded
                 .newBuilder()
                 .setInvestment(c.getInvestment())
                 .setProcess(c.getProcess())
-                .setQuantity(c.getQuantity())
+                .setSharesAvailable(newAvailableShares)
                 .vBuild();
     }
 
     @Apply
     private void event(SharesAdded e) {
-        int newAvailableShares = state().getSharesAvailable() + e.getQuantity();
         builder()
                 .setId(e.getInvestment())
-                .setSharesAvailable(newAvailableShares);
+                .setSharesAvailable(e.getSharesAvailable());
     }
 
     @Assign

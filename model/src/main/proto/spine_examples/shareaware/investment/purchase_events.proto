@@ -50,8 +50,8 @@ message SharesPurchased {
     // The ID of the purchased share.
     ShareId share = 3 [(required) = true];
 
-    // The quantity of the purchased shares.
-    int32 quantity = 4 [(required) = true];
+    // The number of available shares after purchase.
+    int32 shares_available = 4 [(required) = true];
 }
 
 // Shares purchase process failed.
