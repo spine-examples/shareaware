@@ -38,7 +38,7 @@ import io.spine.examples.shareaware.investment.event.SharesAdded;
 import io.spine.examples.shareaware.investment.event.SharesPurchaseFailed;
 import io.spine.examples.shareaware.investment.event.SharesPurchased;
 import io.spine.examples.shareaware.market.command.ObtainShares;
-import io.spine.examples.shareaware.server.given.TestWithMockContext;
+import io.spine.examples.shareaware.server.FreshContextTest;
 import io.spine.examples.shareaware.server.investment.given.InvestmentTestContext;
 import io.spine.examples.shareaware.server.investment.given.RejectingMarket;
 import io.spine.examples.shareaware.wallet.Wallet;
@@ -59,7 +59,7 @@ import static io.spine.examples.shareaware.server.given.WalletTestEnv.setUpReple
 import static io.spine.examples.shareaware.server.given.WalletTestEnv.setUpWallet;
 
 @DisplayName("`SharesPurchase` should")
-public final class SharesPurchaseTest extends TestWithMockContext {
+public final class SharesPurchaseTest extends FreshContextTest {
 
     @Override
     protected BoundedContextBuilder contextBuilder() {

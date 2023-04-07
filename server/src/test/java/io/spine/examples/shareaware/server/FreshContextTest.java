@@ -24,7 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.given;
+package io.spine.examples.shareaware.server;
 
 import io.spine.testing.server.blackbox.ContextAwareTest;
 import io.spine.testing.server.model.ModelTests;
@@ -32,12 +32,16 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 
 /**
- * Abstract implementation of {@link ContextAwareTest} that suits for tests with mocked context.
+ * An abstract base for {@link io.spine.testing.server.blackbox.BlackBoxContext
+ * BlackBoxContext}-based tests, which may assemble the bounded-context-under-tests
+ * with different entities, and therefore require to clear the cached knowledge
+ * about {@linkplain io.spine.server.model.Model Bounded Context models}.
  *
  * <p>This implementation clears all models before and after all tests.
- * {@see ModelTests#dropAllModels()}
+ *
+ * @see ModelTests#dropAllModels()
  */
-public abstract class TestWithMockContext extends ContextAwareTest {
+public abstract class FreshContextTest extends ContextAwareTest {
 
     @BeforeAll
     static void beforeAll() {
