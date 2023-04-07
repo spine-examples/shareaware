@@ -163,7 +163,7 @@ public final class SharesSaleTestEnv {
                 .vBuild();
     }
 
-    public static HeldShares heldSHaresAfter(SellShares firstSale,
+    public static HeldShares heldSharesAfter(SellShares firstSale,
                                              SellShares secondSale,
                                              Investment investment) {
         int saleAmount = firstSale.getQuantity() + secondSale.getQuantity();

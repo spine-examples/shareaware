@@ -44,6 +44,7 @@ import io.spine.examples.shareaware.investment.rejection.Rejections.Insufficient
 import io.spine.examples.shareaware.market.command.SellSharesOnMarket;
 import io.spine.examples.shareaware.server.investment.given.InvestmentTestContext;
 import io.spine.examples.shareaware.server.investment.given.RejectingMarket;
+import io.spine.examples.shareaware.server.investment.given.SharesSaleTestEnv;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.command.RechargeBalance;
 import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
@@ -190,7 +191,7 @@ public class SharesSaleTest extends ContextAwareTest {
         SellShares firstSale = sellShareFrom(investment);
         SellShares secondSale = sellShareFrom(investment);
         context().receivesCommands(firstSale, secondSale);
-        HeldShares expected = heldSHaresAfter(firstSale, secondSale, investment);
+        HeldShares expected = SharesSaleTestEnv.heldSharesAfter(firstSale, secondSale, investment);
 
         context().assertState(investment.getId(), expected);
     }
