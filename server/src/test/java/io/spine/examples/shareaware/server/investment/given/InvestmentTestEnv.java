@@ -52,6 +52,7 @@ import io.spine.examples.shareaware.investment.rejection.Rejections.Insufficient
 import io.spine.examples.shareaware.market.command.ObtainShares;
 import io.spine.examples.shareaware.server.market.MarketProcess;
 import io.spine.examples.shareaware.wallet.Wallet;
+import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.command.CancelMoneyReservation;
 import io.spine.examples.shareaware.wallet.command.DebitReservedMoney;
 import io.spine.examples.shareaware.wallet.command.ReserveMoney;
@@ -344,6 +345,22 @@ public final class InvestmentTestEnv {
                 .newBuilder()
                 .setId(investmentId(user, share))
                 .setSharesAvailable(sharesAvailable)
+                .vBuild();
+    }
+
+    public static WalletBalance walletBalanceAfter(PurchaseShares firstPurchase,
+                                                   PurchaseShares secondPurchase,
+                                                   Wallet wallet) {
+        Money firstPurchasePrice = multiply(firstPurchase.getSharePrice(),
+                                            firstPurchase.getQuantity());
+        Money secondPurchasePrice = multiply(secondPurchase.getSharePrice(),
+                                             secondPurchase.getQuantity());
+        Money commonPurchasePrice = sum(firstPurchasePrice, secondPurchasePrice);
+        Money currentBalance = subtract(wallet.getBalance(), commonPurchasePrice);
+        return WalletBalance
+                .newBuilder()
+                .setId(wallet.getId())
+                .setBalance(currentBalance)
                 .vBuild();
     }
 
