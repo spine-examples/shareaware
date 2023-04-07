@@ -26,7 +26,7 @@
 
 package io.spine.examples.shareaware.server;
 
-import io.spine.examples.shareaware.server.investment.HeldSharesRepository;
+import io.spine.examples.shareaware.server.investment.InvestmentViewRepository;
 import io.spine.examples.shareaware.server.investment.InvestmentAggregate;
 import io.spine.examples.shareaware.server.investment.SharesPurchaseRepository;
 import io.spine.examples.shareaware.server.investment.SharesSaleRepository;
@@ -73,6 +73,6 @@ public final class TradingContext {
                 .add(new UserWatchlistsRepository())
                 .add(new SharesPurchaseRepository())
                 .add(new SharesSaleRepository())
-                .add(new HeldSharesRepository());
+                .add(new InvestmentViewRepository());
     }
 }

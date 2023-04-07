@@ -30,7 +30,7 @@ import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.core.UserId;
 import io.spine.examples.shareaware.InvestmentId;
 import io.spine.examples.shareaware.ShareId;
-import io.spine.examples.shareaware.investment.HeldShares;
+import io.spine.examples.shareaware.investment.InvestmentView;
 import io.spine.examples.shareaware.investment.event.SharesPurchased;
 import io.spine.examples.shareaware.investment.event.SharesSold;
 import io.spine.server.projection.ProjectionRepository;
@@ -39,10 +39,10 @@ import io.spine.server.route.EventRouting;
 import static io.spine.server.route.EventRoute.*;
 
 /**
- * Manages instances of {@code HeldShares} projection.
+ * Manages instances of {@code InvestmentView} projection.
  */
-public class HeldSharesRepository
-        extends ProjectionRepository<InvestmentId, HeldSharesProjection, HeldShares> {
+public class InvestmentViewRepository
+        extends ProjectionRepository<InvestmentId, InvestmentViewProjection, InvestmentView> {
 
     @OverridingMethodsMustInvokeSuper
     @Override

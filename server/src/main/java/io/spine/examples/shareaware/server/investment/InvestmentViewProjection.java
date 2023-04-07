@@ -30,16 +30,16 @@ import io.spine.core.Subscribe;
 import io.spine.core.UserId;
 import io.spine.examples.shareaware.InvestmentId;
 import io.spine.examples.shareaware.ShareId;
-import io.spine.examples.shareaware.investment.HeldShares;
+import io.spine.examples.shareaware.investment.InvestmentView;
 import io.spine.examples.shareaware.investment.event.SharesPurchased;
 import io.spine.examples.shareaware.investment.event.SharesSold;
 import io.spine.server.projection.Projection;
 
 /**
- * View of held shares by the user per {@code Investment}.
+ * The view of the {@code Investment} displays the number of available shares.
  */
-public final class HeldSharesProjection
-        extends Projection<InvestmentId, HeldShares, HeldShares.Builder> {
+final class InvestmentViewProjection
+        extends Projection<InvestmentId, InvestmentView, InvestmentView.Builder> {
 
     @Subscribe
     void on(SharesPurchased e) {

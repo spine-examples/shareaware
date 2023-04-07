@@ -27,7 +27,7 @@
 package io.spine.examples.shareaware.server.investment;
 
 import io.spine.core.UserId;
-import io.spine.examples.shareaware.investment.HeldShares;
+import io.spine.examples.shareaware.investment.InvestmentView;
 import io.spine.examples.shareaware.investment.Investment;
 import io.spine.examples.shareaware.investment.SharesSale;
 import io.spine.examples.shareaware.investment.command.CancelSharesReservation;
@@ -45,7 +45,6 @@ import io.spine.examples.shareaware.market.command.SellSharesOnMarket;
 import io.spine.examples.shareaware.server.FreshContextTest;
 import io.spine.examples.shareaware.server.investment.given.InvestmentTestContext;
 import io.spine.examples.shareaware.server.investment.given.RejectingMarket;
-import io.spine.examples.shareaware.server.investment.given.SharesSaleTestEnv;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.command.RechargeBalance;
 import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
@@ -172,13 +171,13 @@ public class SharesSaleTest extends FreshContextTest {
     }
 
     @Test
-    @DisplayName("reduce the number of available shares in `HeldShares` projection")
+    @DisplayName("reduce the number of available shares in the `InvestmentView` projection")
     void projection() {
         Investment investment = setUpInvestment(context());
         SellShares firstSale = sellShareFrom(investment);
         SellShares secondSale = sellShareFrom(investment);
         context().receivesCommands(firstSale, secondSale);
-        HeldShares expected = SharesSaleTestEnv.heldSharesAfter(firstSale, secondSale, investment);
+        InvestmentView expected = investmentViewAfter(firstSale, secondSale, investment);
 
         context().assertState(investment.getId(), expected);
     }

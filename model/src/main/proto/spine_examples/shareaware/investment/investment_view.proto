@@ -32,13 +32,13 @@ import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
 option java_package = "io.spine.examples.shareaware.investment";
-option java_outer_classname = "HeldSharesProto";
+option java_outer_classname = "InvestmentViewProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
 
-// Displays held shares per investment.
-message HeldShares {
+// Displays the number of available shares per investment.
+message InvestmentView {
     option (entity).kind = PROJECTION;
 
     // The ID of the investment that held shares.
