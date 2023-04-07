@@ -41,16 +41,13 @@ import io.spine.examples.shareaware.investment.event.SharesSaleFailed;
 import io.spine.examples.shareaware.investment.event.SharesSold;
 import io.spine.examples.shareaware.investment.rejection.Rejections.InsufficientShares;
 import io.spine.examples.shareaware.market.command.SellSharesOnMarket;
+import io.spine.examples.shareaware.server.FreshContextTest;
 import io.spine.examples.shareaware.server.investment.given.InvestmentTestContext;
 import io.spine.examples.shareaware.server.investment.given.RejectingMarket;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.command.RechargeBalance;
 import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
 import io.spine.server.BoundedContextBuilder;
-import io.spine.testing.server.blackbox.ContextAwareTest;
-import io.spine.testing.server.model.ModelTests;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -60,17 +57,7 @@ import static io.spine.examples.shareaware.server.investment.given.InvestmentTes
 import static io.spine.examples.shareaware.server.investment.given.SharesSaleTestEnv.*;
 
 @DisplayName("`SharesSale` should")
-public class SharesSaleTest extends ContextAwareTest {
-
-    @BeforeAll
-    static void beforeAll() {
-        ModelTests.dropAllModels();
-    }
-
-    @AfterAll
-    static void afterAll() {
-        ModelTests.dropAllModels();
-    }
+public class SharesSaleTest extends FreshContextTest {
 
     @Override
     protected BoundedContextBuilder contextBuilder() {

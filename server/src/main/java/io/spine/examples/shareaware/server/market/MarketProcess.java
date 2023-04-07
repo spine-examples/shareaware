@@ -28,10 +28,16 @@ package io.spine.examples.shareaware.server.market;
 
 import io.spine.examples.shareaware.MarketId;
 import io.spine.examples.shareaware.market.Market;
+import io.spine.examples.shareaware.market.command.CloseMarket;
 import io.spine.examples.shareaware.market.command.ObtainShares;
+import io.spine.examples.shareaware.market.command.OpenMarket;
 import io.spine.examples.shareaware.market.command.SellSharesOnMarket;
+import io.spine.examples.shareaware.market.event.MarketClosed;
+import io.spine.examples.shareaware.market.event.MarketOpened;
 import io.spine.examples.shareaware.market.event.SharesObtained;
 import io.spine.examples.shareaware.market.event.SharesSoldOnMarket;
+import io.spine.examples.shareaware.market.rejection.SharesCannotBeObtained;
+import io.spine.examples.shareaware.market.rejection.SharesCannotBeSoldOnMarket;
 import io.spine.money.Money;
 import io.spine.server.command.Assign;
 import io.spine.server.procman.ProcessManager;
@@ -61,7 +67,13 @@ public final class MarketProcess
      * emitting the {@code SharesObtained} event.
      */
     @Assign
-    SharesObtained on(ObtainShares c) {
+    SharesObtained on(ObtainShares c) throws SharesCannotBeObtained {
+        if (state().getClosed()) {
+            throw SharesCannotBeObtained
+                    .newBuilder()
+                    .setPurchaseProcess(c.getPurchase())
+                    .build();
+        }
         return SharesObtained
                 .newBuilder()
                 .setMarket(c.getMarket())
@@ -76,7 +88,13 @@ public final class MarketProcess
      * emitting the {@code SharesSold} event.
      */
     @Assign
-    SharesSoldOnMarket on(SellSharesOnMarket c) {
+    SharesSoldOnMarket on(SellSharesOnMarket c) throws SharesCannotBeSoldOnMarket {
+        if (state().getClosed()) {
+            throw SharesCannotBeSoldOnMarket
+                    .newBuilder()
+                    .setSaleProcess(c.getSaleProcess())
+                    .build();
+        }
         Money sellPrice = multiply(c.getPrice(), c.getQuantity());
         return SharesSoldOnMarket
                 .newBuilder()
@@ -86,5 +104,31 @@ public final class MarketProcess
                 .setQuantity(c.getQuantity())
                 .setPrice(sellPrice)
                 .vBuild();
+    }
+
+    @Assign
+    MarketOpened on(OpenMarket c) {
+        openMarket();
+        return MarketOpened
+                .newBuilder()
+                .setMarket(c.getMarket())
+                .vBuild();
+    }
+
+    private void openMarket() {
+        builder().setClosed(false);
+    }
+
+    @Assign
+    MarketClosed on(CloseMarket c) {
+        closeMarket();
+        return MarketClosed
+                .newBuilder()
+                .setMarket(c.getMarket())
+                .vBuild();
+    }
+
+    private void closeMarket() {
+        builder().setClosed(true);
     }
 }

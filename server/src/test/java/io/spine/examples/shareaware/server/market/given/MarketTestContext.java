@@ -24,34 +24,31 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+package io.spine.examples.shareaware.server.market.given;
 
-package spine_examples.shareaware.market;
+import io.spine.examples.shareaware.server.market.MarketProcess;
+import io.spine.server.BoundedContext;
+import io.spine.server.BoundedContextBuilder;
+import io.spine.server.DefaultRepository;
 
-import "spine/options.proto";
+public final class MarketTestContext {
 
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.market";
-option java_outer_classname = "MarketProto";
-option java_multiple_files = true;
+    private static final String NAME = "MarketTest";
 
-import "spine_examples/shareaware/identifiers.proto";
+    /**
+     * Prevents instantiation of this class.
+     */
+    private MarketTestContext() {
+    }
 
-// The imitation of the shares market.
-message Market {
-    option (entity) = {kind: PROCESS_MANAGER};
-
-    // The ID of the shares market.
-    MarketId id = 1;
-
-    // Tells whether the market is closed or not.
-    //
-    // The shares market may be closed due to:
-    // - end of business hours,
-    // - market volatility,
-    // - technical issues,
-    // - regulator decision,
-    // - etc.
-    //
-    bool closed = 2;
+    /**
+     * Creates the {@link BoundedContextBuilder} for testing the market imitation.
+     *
+     * <p>Inserts to context only the {@code MarketProcess} for the test simplicity.
+     */
+    public static BoundedContextBuilder newBuilder() {
+        return BoundedContext
+                .singleTenant(NAME)
+                .add(DefaultRepository.of(MarketProcess.class));
+    }
 }
