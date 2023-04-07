@@ -50,7 +50,7 @@ message SharesPurchased {
     // The ID of the purchased share.
     ShareId share = 3 [(required) = true];
 
-    // The number of available shares after purchase.
+    // How many shares are available after the purchase.
     int32 shares_available = 4 [(required) = true];
 }
 

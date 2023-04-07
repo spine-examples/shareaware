@@ -41,9 +41,9 @@ import "spine_examples/shareaware/identifiers.proto";
 message InvestmentView {
     option (entity).kind = PROJECTION;
 
-    // The ID of the investment that held shares.
+    // The ID of the investment.
     InvestmentId id = 1;
 
-    // The number of available shares in the investment.
+    // How many shares are available in the investment.
     int32 shares_available = 2;
 }

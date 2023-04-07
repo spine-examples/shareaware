@@ -54,6 +54,6 @@ message SharesPurchase {
     // The quantity of shares to purchase.
     int32 quantity = 4;
 
-    // The number of available shares after the purchased amount was added to the investment.
+    // How many shares are available after the purchased quantity was added to the investment.
     int32 shares_available = 5;
 }

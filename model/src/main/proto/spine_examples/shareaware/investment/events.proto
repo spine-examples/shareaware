@@ -46,7 +46,7 @@ message SharesAdded {
     // The ID of the process that added shares to investment.
     PurchaseId process = 2 [(required) = true];
 
-    // The number of available shares in the investment.
+    // How many shares are available in the investment.
     int32 shares_available = 3 [(required) = true];
 }
 
@@ -72,7 +72,7 @@ message SharesReservationCompleted {
     // The ID of the sale process that completed the reservation.
     SaleId process = 2 [(required) = true];
 
-    // The amount of available shares in the investment.
+    // How many shares are available in the investment.
     int32 shares_available = 3 [(required) = true];
 }
 
