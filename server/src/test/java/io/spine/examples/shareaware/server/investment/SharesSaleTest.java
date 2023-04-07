@@ -96,7 +96,8 @@ public class SharesSaleTest extends FreshContextTest {
 
             SellShares sellCommand = sellShareAfter(purchaseCommand);
             context().receivesCommand(sellCommand);
-            BalanceRecharged expected = balanceRechargedBy(sellCommand);
+            BalanceRecharged expected =
+                    balanceRechargedAfter(sellCommand, purchaseCommand, wallet);
 
             context().assertEvents()
                      .withType(BalanceRecharged.class)

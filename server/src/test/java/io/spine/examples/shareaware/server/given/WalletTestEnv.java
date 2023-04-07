@@ -120,7 +120,7 @@ public final class WalletTestEnv {
         return BalanceRecharged
                 .newBuilder()
                 .setWallet(wallet)
-                .setMoneyAmount(command.getMoneyAmount())
+                .setCurrentBalance(command.getMoneyAmount())
                 .setOperation(operationId(command))
                 .vBuild();
     }

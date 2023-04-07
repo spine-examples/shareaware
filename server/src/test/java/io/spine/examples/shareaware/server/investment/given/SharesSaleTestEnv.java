@@ -102,13 +102,29 @@ public final class SharesSaleTestEnv {
                 .vBuild();
     }
 
-    public static BalanceRecharged balanceRechargedBy(SellShares command) {
+    public static BalanceRecharged balanceRechargedBy(SellShares command, Wallet wallet) {
         Money sellPrice = multiply(command.getPrice(), command.getQuantity());
+        Money currentBalance = sum(wallet.getBalance(), sellPrice);
+        return balanceRecharged(command, currentBalance);
+    }
+
+    public static BalanceRecharged balanceRechargedAfter(SellShares command,
+                                                         PurchaseShares purchaseCommand,
+                                                         Wallet wallet) {
+        Money purchasePrice = multiply(purchaseCommand.getSharePrice(),
+                                       purchaseCommand.getQuantity());
+        Money balanceAfterPurchase = subtract(wallet.getBalance(), purchasePrice);
+        Money sellPrice = multiply(command.getPrice(), command.getQuantity());
+        Money currentBalance = sum(balanceAfterPurchase, sellPrice);
+        return balanceRecharged(command, currentBalance);
+    }
+
+    private static BalanceRecharged balanceRecharged(SellShares command, Money balance) {
         return BalanceRecharged
                 .newBuilder()
                 .setWallet(walletId(command.getSeller()))
                 .setOperation(operationId(command.getSaleProcess()))
-                .setMoneyAmount(sellPrice)
+                .setCurrentBalance(balance)
                 .vBuild();
     }
 
