@@ -185,6 +185,7 @@ public class SharesSaleTest extends FreshContextTest {
     }
 
     @Test
+    @DisplayName("increase the amount of money in the `WalletBalance` projection")
     void increaseWalletBalance() {
         Wallet wallet = setUpReplenishedWallet(context());
         UserId user = wallet.getId()
