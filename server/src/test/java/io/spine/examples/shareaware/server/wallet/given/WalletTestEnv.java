@@ -1,4 +1,30 @@
-package io.spine.examples.shareaware.server.given;
+/*
+ * Copyright 2023, TeamDev. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Redistribution and use in source and/or binary forms, with or without
+ * modification, must retain the above copyright notice and the following
+ * disclaimer.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+package io.spine.examples.shareaware.server.wallet.given;
 
 import io.spine.examples.shareaware.WithdrawalOperationId;
 import io.spine.examples.shareaware.ReplenishmentId;
@@ -9,6 +35,7 @@ import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyFromUser
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
 import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredFromUser;
+import io.spine.examples.shareaware.server.given.GivenMoney;
 import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.server.wallet.MoneyCalculator;
 import io.spine.examples.shareaware.wallet.Iban;
@@ -36,9 +63,9 @@ import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFund
 import io.spine.money.Currency;
 import io.spine.money.Money;
 import io.spine.testing.core.given.GivenUserId;
-import io.spine.testing.server.blackbox.BlackBoxContext;
 
 import static io.spine.examples.shareaware.server.given.GivenMoney.moneyOf;
+import static io.spine.examples.shareaware.server.given.GivenWallet.*;
 import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.subtract;
 import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.sum;
 
@@ -49,11 +76,6 @@ public final class WalletTestEnv {
      */
     private WalletTestEnv() {
     }
-
-    private static final Iban IBAN = Iban
-            .newBuilder()
-            .setValue("FI211234569876543210")
-            .vBuild();
 
     public static WalletId givenId() {
         return WalletId
@@ -70,37 +92,11 @@ public final class WalletTestEnv {
     }
 
     /**
-     * Generates {@code ReplenishWallet} command.
-     */
-    private static ReplenishWallet replenish(WalletId wallet, Money amount) {
-        ReplenishmentId replenishment = ReplenishmentId.generate();
-        return ReplenishWallet
-                .newBuilder()
-                .setWallet(wallet)
-                .setReplenishment(replenishment)
-                .setIban(IBAN)
-                .setMoneyAmount(amount)
-                .vBuild();
-    }
-
-    /**
      * Generates {@code ReplenishWallet} command on 500 USD for the wallet.
      */
     public static ReplenishWallet replenish(WalletId wallet) {
         Money replenishmentAmount = moneyOf(500, Currency.USD);
-        return replenish(wallet, replenishmentAmount);
-    }
-
-    /**
-     * Creates a {@code Wallet} in {@code context} by sending {@code CreateWallet} command to it.
-     *
-     * @return the ID of created {@code Wallet}.
-     */
-    public static WalletId setUpWallet(BlackBoxContext context) {
-        WalletId wallet = givenId();
-        CreateWallet command = createWallet(wallet);
-        context.receivesCommand(command);
-        return wallet;
+        return replenishWith(replenishmentAmount, wallet);
     }
 
     public static Wallet walletReplenishedBy(ReplenishWallet firstReplenishment,
@@ -192,23 +188,12 @@ public final class WalletTestEnv {
                 .vBuild();
     }
 
-    public static Wallet setUpReplenishedWallet(BlackBoxContext context) {
-        WalletId wallet = setUpWallet(context);
-        ReplenishWallet command = replenish(wallet);
-        context.receivesCommand(command);
-        return Wallet
-                .newBuilder()
-                .setId(wallet)
-                .setBalance(command.getMoneyAmount())
-                .vBuild();
-    }
-
     public static WithdrawMoney withdrawMoneyFrom(WalletId wallet) {
         return WithdrawMoney
                 .newBuilder()
                 .setWithdrawalProcess(WithdrawalId.generate())
                 .setWallet(wallet)
-                .setRecipient(IBAN)
+                .setRecipient(USERS_IBAN)
                 .setAmount(moneyOf(200, Currency.USD))
                 .vBuild();
     }

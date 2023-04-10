@@ -54,7 +54,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
+import static io.spine.examples.shareaware.server.given.GivenWallet.setUpReplenishedWallet;
 import static io.spine.examples.shareaware.server.investment.given.InvestmentTestEnv.*;
 import static io.spine.examples.shareaware.server.investment.given.SharesSaleTestEnv.*;
 

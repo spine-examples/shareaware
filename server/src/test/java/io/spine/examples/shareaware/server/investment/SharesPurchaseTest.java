@@ -57,8 +57,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static io.spine.examples.shareaware.server.investment.given.InvestmentTestEnv.*;
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.setUpReplenishedWallet;
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.setUpWallet;
+import static io.spine.examples.shareaware.server.given.GivenWallet.*;
 
 @DisplayName("`SharesPurchase` should")
 public final class SharesPurchaseTest extends FreshContextTest {

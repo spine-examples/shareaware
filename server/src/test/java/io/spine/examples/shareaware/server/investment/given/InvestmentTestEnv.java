@@ -64,7 +64,7 @@ import io.spine.money.Money;
 import io.spine.testing.server.blackbox.BlackBoxContext;
 
 import static io.spine.examples.shareaware.server.given.GivenMoney.usd;
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
+import static io.spine.examples.shareaware.server.given.GivenWallet.setUpReplenishedWallet;
 import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.multiply;
 import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.subtract;
 import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.sum;

@@ -28,16 +28,14 @@ package io.spine.examples.shareaware.server.wallet;
 
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.server.TradingContext;
-import io.spine.examples.shareaware.server.given.GivenMoney;
 import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.command.CreateWallet;
-import io.spine.money.Money;
 import io.spine.server.BoundedContextBuilder;
 import io.spine.testing.server.blackbox.ContextAwareTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
+import static io.spine.examples.shareaware.server.wallet.given.WalletTestEnv.*;
 
 @DisplayName("`WalletBalanceProjection` should")
 public final class WalletBalanceProjectionTest extends ContextAwareTest {
