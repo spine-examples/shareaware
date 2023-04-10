@@ -41,7 +41,7 @@ import static io.spine.server.route.EventRoute.*;
 /**
  * Manages instances of {@code InvestmentView} projection.
  */
-public class InvestmentViewRepository
+public final class InvestmentViewRepository
         extends ProjectionRepository<InvestmentId, InvestmentViewProjection, InvestmentView> {
 
     @OverridingMethodsMustInvokeSuper
