@@ -46,6 +46,12 @@ public class GivenWallet {
             .vBuild();
 
     /**
+     * Prevents instantiation of this class.
+     */
+    private GivenWallet() {
+    }
+
+    /**
      * Generates {@code ReplenishWallet} command.
      */
     public static ReplenishWallet replenishWith(Money amount, WalletId wallet) {
