@@ -39,7 +39,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static io.spine.examples.shareaware.server.given.WatchlistTestEnv.*;
+import static io.spine.examples.shareaware.server.watchlist.given.WatchlistTestEnv.*;
 
 @DisplayName("`Watchlist` should")
 public final class WatchlistTest extends ContextAwareTest {
