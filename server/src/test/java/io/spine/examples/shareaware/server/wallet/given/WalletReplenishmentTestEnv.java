@@ -35,13 +35,18 @@ import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.server.wallet.MoneyCalculator;
 import io.spine.examples.shareaware.wallet.Iban;
 import io.spine.examples.shareaware.wallet.Wallet;
+import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.WalletReplenishment;
 import io.spine.examples.shareaware.wallet.command.RechargeBalance;
 import io.spine.examples.shareaware.wallet.command.ReplenishWallet;
 import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
 import io.spine.examples.shareaware.wallet.event.WalletNotReplenished;
 import io.spine.examples.shareaware.wallet.event.WalletReplenished;
+import io.spine.money.Currency;
 import io.spine.money.Money;
+
+import static io.spine.examples.shareaware.server.given.GivenMoney.moneyOf;
+import static io.spine.examples.shareaware.server.given.GivenWallet.replenishWith;
 
 public class WalletReplenishmentTestEnv {
 
@@ -131,6 +136,27 @@ public class WalletReplenishmentTestEnv {
         return ReplenishmentOperationId
                 .newBuilder()
                 .setReplenishment(c.getReplenishment())
+                .vBuild();
+    }
+
+    /**
+     * Generates {@code ReplenishWallet} command on 500 USD for the wallet.
+     */
+    public static ReplenishWallet replenish(WalletId wallet) {
+        Money replenishmentAmount = moneyOf(500, Currency.USD);
+        return replenishWith(replenishmentAmount, wallet);
+    }
+
+    public static WalletBalance walletBalanceAfterReplenishment(ReplenishWallet firstReplenishment,
+                                                                ReplenishWallet secondReplenishment,
+                                                                WalletId wallet) {
+        Wallet replenishedWallet = walletReplenishedBy(firstReplenishment,
+                                                       secondReplenishment,
+                                                       wallet);
+        return WalletBalance
+                .newBuilder()
+                .setId(replenishedWallet.getId())
+                .setBalance(replenishedWallet.getBalance())
                 .vBuild();
     }
 }
