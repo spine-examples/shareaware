@@ -43,4 +43,5 @@ spine {
 
 dependencies {
     implementation(project(":model"))
+    testImplementation(project(":model", "test"))
 }

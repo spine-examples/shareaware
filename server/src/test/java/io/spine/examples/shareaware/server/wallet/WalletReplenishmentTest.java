@@ -26,11 +26,11 @@
 
 package io.spine.examples.shareaware.server.wallet;
 
-import io.spine.examples.shareaware.ReplenishmentId;
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyFromUser;
-import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredFromUser;
-import io.spine.examples.shareaware.server.TradingContext;
+import io.spine.examples.shareaware.server.FreshContextTest;
+import io.spine.examples.shareaware.server.given.RejectingPaymentProcess;
+import io.spine.examples.shareaware.server.given.WalletTestContext;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.WalletReplenishment;
@@ -40,7 +40,6 @@ import io.spine.examples.shareaware.wallet.command.ReplenishWallet;
 import io.spine.examples.shareaware.wallet.event.WalletNotReplenished;
 import io.spine.examples.shareaware.wallet.event.WalletReplenished;
 import io.spine.server.BoundedContextBuilder;
-import io.spine.testing.server.blackbox.ContextAwareTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -49,11 +48,11 @@ import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
 import static io.spine.examples.shareaware.server.wallet.WalletReplenishmentProcess.*;
 
 @DisplayName("`WalletReplenishment` should")
-public final class WalletReplenishmentTest extends ContextAwareTest {
+public final class WalletReplenishmentTest extends FreshContextTest {
 
     @Override
     protected BoundedContextBuilder contextBuilder() {
-        return TradingContext.newBuilder();
+        return WalletTestContext.newBuilder();
     }
 
     @DisplayName("replenish the wallet balance")
@@ -167,16 +166,17 @@ public final class WalletReplenishmentTest extends ContextAwareTest {
         @Test
         @DisplayName("which emits the `WalletNotReplenished` event and archives itself after it")
         void rejection() {
-            ReplenishmentId replenishment = ReplenishmentId.generate();
-            MoneyCannotBeTransferredFromUser rejection =
-                    moneyCannotBeTransferredFromUserBy(replenishment);
-            WalletNotReplenished expected = walletNotReplenishedBy(replenishment);
-            context().receivesEvent(rejection);
+            WalletId wallet = setUpWallet(context());
+            ReplenishWallet command = replenish(wallet);
+            WalletNotReplenished expected = walletNotReplenishedAfter(command);
+            RejectingPaymentProcess.switchToRejectionMode();
+            context().receivesCommand(command);
 
             context().assertEvent(expected);
-            context().assertEntity(replenishment, WalletReplenishmentProcess.class)
+            context().assertEntity(command.getReplenishment(), WalletReplenishmentProcess.class)
                      .archivedFlag()
                      .isTrue();
+            RejectingPaymentProcess.switchToEventsMode();
         }
     }
 }

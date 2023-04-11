@@ -24,31 +24,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.investment;
-
-import com.google.errorprone.annotations.Immutable;
-import io.spine.annotation.GeneratedMixin;
-import io.spine.base.SerializableMessage;
-import io.spine.money.Money;
-
-import static io.spine.examples.shareaware.MoneyCalculator.*;
-
 /**
- * Defined custom methods for signals that participate
- * in the monetary operations related to shares.
+ * Test environment classes for testing
+ * {@code io.spine.examples.shareaware} package.
  */
-@Immutable
-@GeneratedMixin
-public interface OperationPriceMixin extends SerializableMessage {
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.examples.shareaware.given;
 
-    int getQuantity();
-
-    Money getSharePrice();
-
-    /**
-     * Returns the total price of the transaction that operates with shares.
-     */
-    default Money operationPrice() {
-        return multiply(getSharePrice(), getQuantity());
-    }
-}
+import javax.annotation.CheckReturnValue;
+import javax.annotation.ParametersAreNonnullByDefault;

@@ -68,7 +68,7 @@ final class SharesPurchaseProcess
                 .newBuilder()
                 .setWallet(walletId(c.getPurchaser()))
                 .setOperation(operationId(c.getPurchaseProcess()))
-                .setAmount(c.operationPrice())
+                .setAmount(c.totalCost())
                 .vBuild();
     }
 

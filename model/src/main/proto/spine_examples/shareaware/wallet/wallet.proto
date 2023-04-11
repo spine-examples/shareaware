@@ -75,10 +75,10 @@ message WalletReplenishment {
     ReplenishmentId id = 1;
 
     // The ID of the wallet to replenish.
-    WalletId wallet = 2;
+    WalletId wallet = 2 [(required) = true];
 
     // The amount of money by which the wallet is replenished.
-    spine.money.Money amount = 3;
+    spine.money.Money amount = 3 [(required) = true];
 }
 
 // The process of wallet withdrawal.

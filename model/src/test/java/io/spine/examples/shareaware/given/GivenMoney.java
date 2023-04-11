@@ -24,35 +24,51 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.wallet;
+package io.spine.examples.shareaware.given;
 
-import io.spine.examples.shareaware.WalletId;
-import io.spine.examples.shareaware.server.TradingContext;
-import io.spine.examples.shareaware.wallet.WalletBalance;
-import io.spine.examples.shareaware.wallet.command.CreateWallet;
-import io.spine.server.BoundedContextBuilder;
-import io.spine.testing.server.blackbox.ContextAwareTest;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import io.spine.money.Currency;
+import io.spine.money.Money;
 
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
+public final class GivenMoney {
 
-@DisplayName("`WalletBalanceProjection` should")
-public final class WalletBalanceProjectionTest extends ContextAwareTest {
-
-    @Override
-    protected BoundedContextBuilder contextBuilder() {
-        return TradingContext.newBuilder();
+    /**
+     * Prevents instantiation of this utility class.
+     */
+    private GivenMoney() {
     }
 
-    @Test
-    @DisplayName("display a zero balance, as soon as the wallet created")
-    void balance() {
-        WalletId wallet = givenId();
-        CreateWallet command  = createWallet(wallet);
-        WalletBalance expected = zeroWalletBalance(command.getWallet());
-        context().receivesCommand(command);
+    public static Money zero() {
+        return Money
+                .newBuilder()
+                .setCurrency(Currency.USD)
+                .setUnits(0)
+                .setNanos(0)
+                .vBuild();
+    }
 
-        context().assertState(command.getWallet(), expected);
+    public static Money moneyOf(long units, Currency currency) {
+        return Money
+                .newBuilder()
+                .setCurrency(currency)
+                .setUnits(units)
+                .setNanos(0)
+                .vBuild();
+    }
+
+    public static Money moneyOf(long units, int nanos, Currency currency) {
+        return Money
+                .newBuilder()
+                .setCurrency(currency)
+                .setUnits(units)
+                .setNanos(nanos)
+                .vBuild();
+    }
+
+    public static Money usd(long units, int nanos) {
+        return moneyOf(units, nanos, Currency.USD);
+    }
+
+    public static Money usd(long units) {
+        return moneyOf(units, Currency.USD);
     }
 }

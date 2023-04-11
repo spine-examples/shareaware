@@ -63,7 +63,7 @@ import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFund
 import io.spine.money.Money;
 import io.spine.testing.server.blackbox.BlackBoxContext;
 
-import static io.spine.examples.shareaware.server.given.GivenMoney.usd;
+import static io.spine.examples.shareaware.given.GivenMoney.usd;
 import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
 import static io.spine.examples.shareaware.MoneyCalculator.subtract;
 import static io.spine.examples.shareaware.MoneyCalculator.sum;
@@ -86,7 +86,7 @@ public final class InvestmentTestEnv {
                 .setShare(share)
                 .setPurchaseProcess(PurchaseId.generate())
                 .setQuantity(5)
-                .setSharePrice(usd(20))
+                .setPrice(usd(20))
                 .setPurchaser(purchaser)
                 .vBuild();
     }
@@ -94,9 +94,9 @@ public final class InvestmentTestEnv {
     public static Wallet walletAfter(PurchaseShares firstPurchase,
                                      PurchaseShares secondPurchase,
                                      Wallet wallet) {
-        Money commonPurchasePrice = sum(firstPurchase.operationPrice(),
-                                        secondPurchase.operationPrice());
-        Money newBalance = subtract(wallet.getBalance(), commonPurchasePrice);
+        Money totalPrice = sum(firstPurchase.totalCost(),
+                                        secondPurchase.totalCost());
+        Money newBalance = subtract(wallet.getBalance(), totalPrice);
         return wallet
                 .toBuilder()
                 .setBalance(newBalance)
@@ -108,13 +108,13 @@ public final class InvestmentTestEnv {
                 .newBuilder()
                 .setOperation(operationId(command.getPurchaseProcess()))
                 .setWallet(walletId(command.getPurchaser()))
-                .setAmount(command.operationPrice())
+                .setAmount(command.totalCost())
                 .vBuild();
     }
 
     public static ReservedMoneyDebited
     reservedMoneyDebitedBy(PurchaseShares command, Wallet wallet) {
-        Money newBalance = subtract(wallet.getBalance(), command.operationPrice());
+        Money newBalance = subtract(wallet.getBalance(), command.totalCost());
         return ReservedMoneyDebited
                 .newBuilder()
                 .setWallet(wallet.getId())
@@ -138,7 +138,7 @@ public final class InvestmentTestEnv {
                 .newBuilder()
                 .setWallet(wallet)
                 .setOperation(operationId(command.getPurchaseProcess()))
-                .setAmount(command.operationPrice())
+                .setAmount(command.totalCost())
                 .vBuild();
     }
 
@@ -147,7 +147,7 @@ public final class InvestmentTestEnv {
                 .newBuilder()
                 .setWallet(walletId(command.getPurchaser()))
                 .setOperation(operationId(command.getPurchaseProcess()))
-                .setAmount(command.operationPrice())
+                .setAmount(command.totalCost())
                 .vBuild();
     }
 
@@ -343,9 +343,9 @@ public final class InvestmentTestEnv {
     public static WalletBalance walletBalanceAfter(PurchaseShares firstPurchase,
                                                    PurchaseShares secondPurchase,
                                                    Wallet wallet) {
-        Money commonPurchasePrice = sum(firstPurchase.operationPrice(),
-                                        secondPurchase.operationPrice());
-        Money currentBalance = subtract(wallet.getBalance(), commonPurchasePrice);
+        Money totalPrice = sum(firstPurchase.totalCost(),
+                                        secondPurchase.totalCost());
+        Money currentBalance = subtract(wallet.getBalance(), totalPrice);
         return WalletBalance
                 .newBuilder()
                 .setId(wallet.getId())
