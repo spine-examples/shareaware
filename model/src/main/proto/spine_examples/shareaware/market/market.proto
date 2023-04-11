@@ -36,6 +36,7 @@ option java_outer_classname = "MarketProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
+import "spine_examples/shareaware/share.proto";
 
 // The imitation of the shares market.
 message Market {
@@ -54,4 +55,12 @@ message Market {
     // - etc.
     //
     bool closed = 2;
+}
+
+message MarketView {
+    option (entity) = {kind: PROJECTION};
+
+    MarketId id = 1;
+
+    repeated Share share = 2;
 }

@@ -26,17 +26,23 @@
 
 package io.spine.examples.shareaware.server.market;
 
+import io.spine.examples.shareaware.Share;
+import io.spine.examples.shareaware.ShareId;
 import io.spine.examples.shareaware.market.Market;
+import io.spine.examples.shareaware.market.MarketView;
 import io.spine.examples.shareaware.market.command.CloseMarket;
 import io.spine.examples.shareaware.market.command.ObtainShares;
 import io.spine.examples.shareaware.market.command.OpenMarket;
 import io.spine.examples.shareaware.market.command.SellSharesOnMarket;
 import io.spine.examples.shareaware.market.event.MarketClosed;
 import io.spine.examples.shareaware.market.event.MarketOpened;
+import io.spine.examples.shareaware.market.event.SharePriceChanged;
 import io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeSoldOnMarket;
 import io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeObtained;
 import io.spine.examples.shareaware.server.FreshContextTest;
 import io.spine.examples.shareaware.server.market.given.MarketTestContext;
+import io.spine.money.Currency;
+import io.spine.money.Money;
 import io.spine.server.BoundedContextBuilder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -122,5 +128,38 @@ public final class MarketProcessTest extends FreshContextTest {
                 sharesCannotBeSoldOnMarketCausedBy(commandToSellShares);
 
         context().assertEvent(expected);
+    }
+
+    @Test
+    void projection() throws InterruptedException {
+        MarketDataService service = MarketDataService.instance();
+        service.start();
+        ShareId id = ShareId
+                .newBuilder()
+                .setUuid("Share")
+                .vBuild();
+        Money price = Money
+                .newBuilder()
+                .setCurrency(Currency.USD)
+                .setUnits(20)
+                .vBuild();
+        Share share = Share
+                .newBuilder()
+                .setId(id)
+                .setPrice(price)
+                .vBuild();
+        MarketView state = MarketView
+                .newBuilder()
+                .setId(MarketProcess.ID)
+                .addShare(share)
+                .vBuild();
+        Thread.sleep(1000);
+
+        context().assertEvents()
+                 .withType(SharePriceChanged.class)
+                 .hasSize(1);
+        context().assertState(MarketProcess.ID, state);
+
+        service.stop();
     }
 }

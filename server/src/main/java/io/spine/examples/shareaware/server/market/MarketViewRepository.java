@@ -24,29 +24,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+package io.spine.examples.shareaware.server.market;
 
-package spine_examples.shareaware;
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import io.spine.examples.shareaware.MarketId;
+import io.spine.examples.shareaware.market.MarketView;
+import io.spine.examples.shareaware.market.event.SharePriceChanged;
+import io.spine.server.projection.ProjectionRepository;
+import io.spine.server.route.EventRouting;
 
-import "spine/options.proto";
+import static io.spine.server.route.EventRoute.*;
 
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware";
-option java_outer_classname = "ShareProto";
-option java_multiple_files = true;
+public class MarketViewRepository
+        extends ProjectionRepository<MarketId, MarketViewProjection, MarketView> {
 
-import "spine_examples/shareaware/identifiers.proto";
-import "spine/money/money.proto";
-
-// A share sold on the market.
-message Share {
-
-    // The ID of the share.
-    ShareId id = 1;
-
-    // The current share price.
-    spine.money.Money price = 2 [(required) = true];
-
-    // The logo of the company that issued this share.
-    bytes company_logo = 3;
+    @OverridingMethodsMustInvokeSuper
+    @Override
+    protected void setupEventRouting(EventRouting<MarketId> routing) {
+        super.setupEventRouting(routing);
+        routing.route(SharePriceChanged.class, (event, context) -> withId(event.getMarket()));
+    }
 }

@@ -37,6 +37,7 @@ option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
 import "spine/money/money.proto";
+import "spine_examples/shareaware/share.proto";
 
 // Shares have been obtained from the market.
 message SharesObtained {
@@ -85,4 +86,11 @@ message MarketClosed {
 
     // The ID of the closed shares market.
     MarketId market = 1;
+}
+
+message SharePriceChanged {
+
+    MarketId market = 1;
+
+    Share share = 2;
 }

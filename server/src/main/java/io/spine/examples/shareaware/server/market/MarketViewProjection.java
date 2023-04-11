@@ -24,29 +24,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+package io.spine.examples.shareaware.server.market;
 
-package spine_examples.shareaware;
+import io.spine.core.External;
+import io.spine.core.Subscribe;
+import io.spine.examples.shareaware.MarketId;
+import io.spine.examples.shareaware.market.MarketView;
+import io.spine.examples.shareaware.market.event.SharePriceChanged;
+import io.spine.server.projection.Projection;
 
-import "spine/options.proto";
+class MarketViewProjection
+        extends Projection<MarketId, MarketView, MarketView.Builder> {
 
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware";
-option java_outer_classname = "ShareProto";
-option java_multiple_files = true;
-
-import "spine_examples/shareaware/identifiers.proto";
-import "spine/money/money.proto";
-
-// A share sold on the market.
-message Share {
-
-    // The ID of the share.
-    ShareId id = 1;
-
-    // The current share price.
-    spine.money.Money price = 2 [(required) = true];
-
-    // The logo of the company that issued this share.
-    bytes company_logo = 3;
+    @Subscribe
+    void on(@External SharePriceChanged e) {
+        builder().addShare(e.getShare());
+    }
 }
