@@ -33,6 +33,10 @@ import io.spine.money.Money;
 
 import static io.spine.examples.shareaware.MoneyCalculator.*;
 
+/**
+ * Defined custom methods for signals that participate
+ * in the monetary operations related to shares.
+ */
 @Immutable
 @GeneratedMixin
 public interface OperationPriceMixin extends SerializableMessage {
@@ -41,6 +45,9 @@ public interface OperationPriceMixin extends SerializableMessage {
 
     Money getSharePrice();
 
+    /**
+     * Returns the total price of the transaction that operates with shares.
+     */
     default Money operationPrice() {
         return multiply(getSharePrice(), getQuantity());
     }
