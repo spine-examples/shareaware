@@ -86,7 +86,7 @@ public final class InvestmentTestEnv {
                 .setShare(share)
                 .setPurchaseProcess(PurchaseId.generate())
                 .setQuantity(5)
-                .setSharePrice(usd(20))
+                .setPrice(usd(20))
                 .setPurchaser(purchaser)
                 .vBuild();
     }

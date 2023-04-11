@@ -60,7 +60,7 @@ message SellShares {
     // In case when the actual price on the market differs from the wanted price,
     // the market will reject the sale.
     //
-    spine.money.Money share_price = 4 [(required) = true];
+    spine.money.Money price = 4 [(required) = true];
 
     // The quantity of shares to sell.
     int32 quantity = 5 [(required) = true];

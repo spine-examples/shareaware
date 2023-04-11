@@ -42,12 +42,12 @@ public interface WithSellingShares extends SerializableMessage {
 
     int getQuantity();
 
-    Money getSharePrice();
+    Money getPrice();
 
     /**
      * Returns the total price of the transaction that operates with shares.
      */
     default Money totalCost() {
-        return multiply(getSharePrice(), getQuantity());
+        return multiply(getPrice(), getQuantity());
     }
 }

@@ -56,5 +56,5 @@ message PurchaseShares {
     int32 quantity = 4 [(required) = true];
 
     // The price per share at the time of purchase.
-    spine.money.Money share_price = 5 [(required) = true];
+    spine.money.Money price = 5 [(required) = true];
 }

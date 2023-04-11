@@ -87,7 +87,7 @@ public final class SharesSaleTestEnv {
                 .setSeller(user)
                 .setShare(share)
                 .setQuantity(quantity)
-                .setSharePrice(GivenMoney.usd(20))
+                .setPrice(GivenMoney.usd(20))
                 .vBuild();
     }
 
@@ -130,7 +130,7 @@ public final class SharesSaleTestEnv {
                 .setId(command.getSaleProcess())
                 .setSeller(command.getSeller())
                 .setShare(command.getShare())
-                .setPrice(command.getSharePrice())
+                .setPrice(command.getPrice())
                 .vBuild();
     }
 
@@ -140,7 +140,7 @@ public final class SharesSaleTestEnv {
                 .setMarket(MarketProcess.ID)
                 .setSaleProcess(command.getSaleProcess())
                 .setShare(command.getShare())
-                .setPrice(command.getSharePrice())
+                .setPrice(command.getPrice())
                 .setQuantity(command.getQuantity())
                 .vBuild();
     }
@@ -161,7 +161,7 @@ public final class SharesSaleTestEnv {
                 .setSaleProcess(command.getSaleProcess())
                 .setShare(command.getShare())
                 .setSeller(command.getSeller())
-                .setPrice(command.getSharePrice())
+                .setPrice(command.getPrice())
                 .setSharesAvailable(sharesAvailable)
                 .vBuild();
     }
