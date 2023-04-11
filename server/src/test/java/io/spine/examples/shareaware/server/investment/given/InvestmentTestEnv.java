@@ -94,8 +94,8 @@ public final class InvestmentTestEnv {
     public static Wallet walletAfter(PurchaseShares firstPurchase,
                                      PurchaseShares secondPurchase,
                                      Wallet wallet) {
-        Money commonPurchasePrice = sum(firstPurchase.operationPrice(),
-                                        secondPurchase.operationPrice());
+        Money commonPurchasePrice = sum(firstPurchase.totalCost(),
+                                        secondPurchase.totalCost());
         Money newBalance = subtract(wallet.getBalance(), commonPurchasePrice);
         return wallet
                 .toBuilder()
@@ -108,13 +108,13 @@ public final class InvestmentTestEnv {
                 .newBuilder()
                 .setOperation(operationId(command.getPurchaseProcess()))
                 .setWallet(walletId(command.getPurchaser()))
-                .setAmount(command.operationPrice())
+                .setAmount(command.totalCost())
                 .vBuild();
     }
 
     public static ReservedMoneyDebited
     reservedMoneyDebitedBy(PurchaseShares command, Wallet wallet) {
-        Money newBalance = subtract(wallet.getBalance(), command.operationPrice());
+        Money newBalance = subtract(wallet.getBalance(), command.totalCost());
         return ReservedMoneyDebited
                 .newBuilder()
                 .setWallet(wallet.getId())
@@ -138,7 +138,7 @@ public final class InvestmentTestEnv {
                 .newBuilder()
                 .setWallet(wallet)
                 .setOperation(operationId(command.getPurchaseProcess()))
-                .setAmount(command.operationPrice())
+                .setAmount(command.totalCost())
                 .vBuild();
     }
 
@@ -147,7 +147,7 @@ public final class InvestmentTestEnv {
                 .newBuilder()
                 .setWallet(walletId(command.getPurchaser()))
                 .setOperation(operationId(command.getPurchaseProcess()))
-                .setAmount(command.operationPrice())
+                .setAmount(command.totalCost())
                 .vBuild();
     }
 
@@ -343,8 +343,8 @@ public final class InvestmentTestEnv {
     public static WalletBalance walletBalanceAfter(PurchaseShares firstPurchase,
                                                    PurchaseShares secondPurchase,
                                                    Wallet wallet) {
-        Money commonPurchasePrice = sum(firstPurchase.operationPrice(),
-                                        secondPurchase.operationPrice());
+        Money commonPurchasePrice = sum(firstPurchase.totalCost(),
+                                        secondPurchase.totalCost());
         Money currentBalance = subtract(wallet.getBalance(), commonPurchasePrice);
         return WalletBalance
                 .newBuilder()

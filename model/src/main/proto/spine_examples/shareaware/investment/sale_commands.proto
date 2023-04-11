@@ -41,7 +41,7 @@ import "spine/core/user_id.proto";
 
 // An intent of the user to sell shares.
 message SellShares {
-    option (is).java_type = "io.spine.examples.shareaware.investment.OperationPriceMixin";
+    option (is).java_type = "io.spine.examples.shareaware.investment.WithSellingShares";
 
     // The ID of the shares sale process.
     SaleId sale_process = 1;

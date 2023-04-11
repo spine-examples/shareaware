@@ -94,15 +94,15 @@ public final class SharesSaleTestEnv {
     public static Wallet walletAfter(PurchaseShares purchaseCommand,
                                      SellShares saleCommand,
                                      Wallet wallet) {
-        Money currentBalance = subtract(wallet.getBalance(), purchaseCommand.operationPrice());
+        Money currentBalance = subtract(wallet.getBalance(), purchaseCommand.totalCost());
         return wallet
                 .toBuilder()
-                .setBalance(sum(currentBalance, saleCommand.operationPrice()))
+                .setBalance(sum(currentBalance, saleCommand.totalCost()))
                 .vBuild();
     }
 
     public static BalanceRecharged balanceRechargedBy(SellShares command, Wallet wallet) {
-        Money currentBalance = sum(wallet.getBalance(), command.operationPrice());
+        Money currentBalance = sum(wallet.getBalance(), command.totalCost());
         return balanceRecharged(command, currentBalance);
     }
 
@@ -110,8 +110,8 @@ public final class SharesSaleTestEnv {
                                                          PurchaseShares purchaseCommand,
                                                          Wallet wallet) {
         Money balanceAfterPurchase = subtract(wallet.getBalance(),
-                                              purchaseCommand.operationPrice());
-        Money currentBalance = sum(balanceAfterPurchase, saleCommand.operationPrice());
+                                              purchaseCommand.totalCost());
+        Money currentBalance = sum(balanceAfterPurchase, saleCommand.totalCost());
         return balanceRecharged(saleCommand, currentBalance);
     }
 
@@ -150,7 +150,7 @@ public final class SharesSaleTestEnv {
                 .newBuilder()
                 .setOperation(operationId(command.getSaleProcess()))
                 .setWallet(walletId(command.getSeller()))
-                .setMoneyAmount(command.operationPrice())
+                .setMoneyAmount(command.totalCost())
                 .vBuild();
     }
 
@@ -190,8 +190,8 @@ public final class SharesSaleTestEnv {
                                                    SellShares sellCommand,
                                                    Wallet wallet) {
         Money balanceAfterPurchase =
-                subtract(wallet.getBalance(), purchaseCommand.operationPrice());
-        Money currentBalance = sum(balanceAfterPurchase, sellCommand.operationPrice());
+                subtract(wallet.getBalance(), purchaseCommand.totalCost());
+        Money currentBalance = sum(balanceAfterPurchase, sellCommand.totalCost());
         return WalletBalance
                 .newBuilder()
                 .setId(wallet.getId())
