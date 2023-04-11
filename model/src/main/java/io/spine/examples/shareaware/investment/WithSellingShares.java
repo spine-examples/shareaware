@@ -40,12 +40,18 @@ import static io.spine.examples.shareaware.MoneyCalculator.*;
 @GeneratedMixin
 public interface WithSellingShares extends SerializableMessage {
 
+    /**
+     * Returns the quantity of shares described by this signal.
+     */
     int getQuantity();
 
+    /**
+     * Returns the price per share.
+     */
     Money getPrice();
 
     /**
-     * Returns the total price of the transaction that operates with shares.
+     * Returns the price of shares described by this signal.
      */
     default Money totalCost() {
         return multiply(getPrice(), getQuantity());
