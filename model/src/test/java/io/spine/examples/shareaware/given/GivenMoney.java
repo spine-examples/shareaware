@@ -24,24 +24,51 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
- * Add the Gradle plugin for bootstrapping projects built with Spine.
- * See: https://github.com/SpineEventEngine/bootstrap
- */
-plugins {
-    id("io.spine.tools.gradle.bootstrap")
-}
+package io.spine.examples.shareaware.given;
 
-spine {
-    /*
-     * Add and configure required dependencies for developing a Spine-based Java server.
-     * See: https://github.com/SpineEventEngine/bootstrap#java-projects
+import io.spine.money.Currency;
+import io.spine.money.Money;
+
+public final class GivenMoney {
+
+    /**
+     * Prevents instantiation of this utility class.
      */
-    enableJava().server()
-    forceDependencies = true
-}
+    private GivenMoney() {
+    }
 
-dependencies {
-    implementation(project(":model"))
-    testImplementation(project(":model", "test"))
+    public static Money zero() {
+        return Money
+                .newBuilder()
+                .setCurrency(Currency.USD)
+                .setUnits(0)
+                .setNanos(0)
+                .vBuild();
+    }
+
+    public static Money moneyOf(long units, Currency currency) {
+        return Money
+                .newBuilder()
+                .setCurrency(currency)
+                .setUnits(units)
+                .setNanos(0)
+                .vBuild();
+    }
+
+    public static Money moneyOf(long units, int nanos, Currency currency) {
+        return Money
+                .newBuilder()
+                .setCurrency(currency)
+                .setUnits(units)
+                .setNanos(nanos)
+                .vBuild();
+    }
+
+    public static Money usd(long units, int nanos) {
+        return moneyOf(units, nanos, Currency.USD);
+    }
+
+    public static Money usd(long units) {
+        return moneyOf(units, Currency.USD);
+    }
 }

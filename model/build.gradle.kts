@@ -39,6 +39,19 @@ spine {
     enableJava()
 }
 
+configurations {
+    create("test")
+}
+
+tasks.register<Jar>("testArchive") {
+    archiveBaseName.set("module-test")
+    from(project.the<SourceSetContainer>()["test"].output)
+}
+
+artifacts {
+    add("test", tasks["testArchive"])
+}
+
 dependencies {
     implementation(Spine.Server.lib)
 }

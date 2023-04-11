@@ -39,7 +39,7 @@ import io.spine.examples.shareaware.investment.command.SellShares;
 import io.spine.examples.shareaware.investment.event.SharesSaleFailed;
 import io.spine.examples.shareaware.investment.event.SharesSold;
 import io.spine.examples.shareaware.market.command.SellSharesOnMarket;
-import io.spine.examples.shareaware.server.given.GivenMoney;
+import io.spine.examples.shareaware.given.GivenMoney;
 import io.spine.examples.shareaware.server.market.MarketProcess;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.WalletBalance;

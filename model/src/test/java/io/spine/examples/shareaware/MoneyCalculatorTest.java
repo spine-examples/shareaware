@@ -35,7 +35,7 @@ import org.junit.jupiter.params.provider.Arguments;
 
 import java.util.stream.Stream;
 
-import static io.spine.examples.shareaware.server.given.GivenMoney.*;
+import static io.spine.examples.shareaware.given.GivenMoney.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.*;
 

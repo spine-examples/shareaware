@@ -63,7 +63,7 @@ import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFund
 import io.spine.money.Money;
 import io.spine.testing.server.blackbox.BlackBoxContext;
 
-import static io.spine.examples.shareaware.server.given.GivenMoney.usd;
+import static io.spine.examples.shareaware.given.GivenMoney.usd;
 import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
 import static io.spine.examples.shareaware.MoneyCalculator.subtract;
 import static io.spine.examples.shareaware.MoneyCalculator.sum;
@@ -94,9 +94,9 @@ public final class InvestmentTestEnv {
     public static Wallet walletAfter(PurchaseShares firstPurchase,
                                      PurchaseShares secondPurchase,
                                      Wallet wallet) {
-        Money commonPurchasePrice = sum(firstPurchase.totalCost(),
+        Money totalPrice = sum(firstPurchase.totalCost(),
                                         secondPurchase.totalCost());
-        Money newBalance = subtract(wallet.getBalance(), commonPurchasePrice);
+        Money newBalance = subtract(wallet.getBalance(), totalPrice);
         return wallet
                 .toBuilder()
                 .setBalance(newBalance)
@@ -343,9 +343,9 @@ public final class InvestmentTestEnv {
     public static WalletBalance walletBalanceAfter(PurchaseShares firstPurchase,
                                                    PurchaseShares secondPurchase,
                                                    Wallet wallet) {
-        Money commonPurchasePrice = sum(firstPurchase.totalCost(),
+        Money totalPrice = sum(firstPurchase.totalCost(),
                                         secondPurchase.totalCost());
-        Money currentBalance = subtract(wallet.getBalance(), commonPurchasePrice);
+        Money currentBalance = subtract(wallet.getBalance(), totalPrice);
         return WalletBalance
                 .newBuilder()
                 .setId(wallet.getId())
