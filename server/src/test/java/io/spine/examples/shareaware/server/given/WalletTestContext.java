@@ -36,18 +36,19 @@ import io.spine.server.BoundedContext;
 import io.spine.server.BoundedContextBuilder;
 import io.spine.server.DefaultRepository;
 
-public final class WithdrawalTestContext {
+public final class WalletTestContext {
 
-    private static final String NAME = "WithdrawalTest";
+    private static final String NAME = "WalletTest";
 
     /**
      * Prevents instantiation of this class.
      */
-    private WithdrawalTestContext() {
+    private WalletTestContext() {
     }
 
     /**
-     * Creates the {@link BoundedContextBuilder} for testing the wallet withdrawal flow.
+     * Creates the {@link BoundedContextBuilder} for testing
+     * the wallet withdrawal/replenishment flow.
      *
      * <p>Replaces {@code PaymentGatewayProcess} on {@code RejectingPaymentProcess}
      * for rejection control.

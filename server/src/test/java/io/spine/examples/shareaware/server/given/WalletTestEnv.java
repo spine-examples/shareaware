@@ -143,6 +143,7 @@ public final class WalletTestEnv {
                 .newBuilder()
                 .setWallet(command.getWallet())
                 .setId(command.getReplenishment())
+                .setAmount(command.getMoneyAmount())
                 .vBuild();
     }
 
@@ -185,10 +186,10 @@ public final class WalletTestEnv {
     }
 
     public static WalletNotReplenished
-    walletNotReplenishedBy(ReplenishmentId replenishmentProcess) {
+    walletNotReplenishedAfter(ReplenishWallet command) {
         return WalletNotReplenished
                 .newBuilder()
-                .setReplenishment(replenishmentProcess)
+                .setReplenishment(command.getReplenishment())
                 .vBuild();
     }
 
