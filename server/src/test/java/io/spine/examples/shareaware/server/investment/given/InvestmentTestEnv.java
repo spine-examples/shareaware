@@ -65,7 +65,6 @@ import io.spine.testing.server.blackbox.BlackBoxContext;
 
 import static io.spine.examples.shareaware.server.given.GivenMoney.usd;
 import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
-import static io.spine.examples.shareaware.MoneyCalculator.multiply;
 import static io.spine.examples.shareaware.MoneyCalculator.subtract;
 import static io.spine.examples.shareaware.MoneyCalculator.sum;
 
@@ -95,11 +94,8 @@ public final class InvestmentTestEnv {
     public static Wallet walletAfter(PurchaseShares firstPurchase,
                                      PurchaseShares secondPurchase,
                                      Wallet wallet) {
-        Money firstPurchasePrice = multiply(firstPurchase.getSharePrice(),
-                                            firstPurchase.getQuantity());
-        Money secondPurchasePrice = multiply(secondPurchase.getSharePrice(),
-                                             secondPurchase.getQuantity());
-        Money commonPurchasePrice = sum(firstPurchasePrice, secondPurchasePrice);
+        Money commonPurchasePrice = sum(firstPurchase.operationPrice(),
+                                        secondPurchase.operationPrice());
         Money newBalance = subtract(wallet.getBalance(), commonPurchasePrice);
         return wallet
                 .toBuilder()
@@ -108,19 +104,17 @@ public final class InvestmentTestEnv {
     }
 
     public static MoneyReserved moneyReservedBy(PurchaseShares command) {
-        Money purchasePrice = multiply(command.getSharePrice(), command.getQuantity());
         return MoneyReserved
                 .newBuilder()
                 .setOperation(operationId(command.getPurchaseProcess()))
                 .setWallet(walletId(command.getPurchaser()))
-                .setAmount(purchasePrice)
+                .setAmount(command.operationPrice())
                 .vBuild();
     }
 
     public static ReservedMoneyDebited
     reservedMoneyDebitedBy(PurchaseShares command, Wallet wallet) {
-        Money purchasePrice = multiply(command.getSharePrice(), command.getQuantity());
-        Money newBalance = subtract(wallet.getBalance(), purchasePrice);
+        Money newBalance = subtract(wallet.getBalance(), command.operationPrice());
         return ReservedMoneyDebited
                 .newBuilder()
                 .setWallet(wallet.getId())
@@ -140,22 +134,20 @@ public final class InvestmentTestEnv {
     }
 
     public static InsufficientFunds insufficientFundsIn(WalletId wallet, PurchaseShares command) {
-        Money purchasePrice = multiply(command.getSharePrice(), command.getQuantity());
         return InsufficientFunds
                 .newBuilder()
                 .setWallet(wallet)
                 .setOperation(operationId(command.getPurchaseProcess()))
-                .setAmount(purchasePrice)
+                .setAmount(command.operationPrice())
                 .vBuild();
     }
 
     public static ReserveMoney reserveMoneyInitiatedBy(PurchaseShares command) {
-        Money purchasePrice = multiply(command.getSharePrice(), command.getQuantity());
         return ReserveMoney
                 .newBuilder()
                 .setWallet(walletId(command.getPurchaser()))
                 .setOperation(operationId(command.getPurchaseProcess()))
-                .setAmount(purchasePrice)
+                .setAmount(command.operationPrice())
                 .vBuild();
     }
 
@@ -351,11 +343,8 @@ public final class InvestmentTestEnv {
     public static WalletBalance walletBalanceAfter(PurchaseShares firstPurchase,
                                                    PurchaseShares secondPurchase,
                                                    Wallet wallet) {
-        Money firstPurchasePrice = multiply(firstPurchase.getSharePrice(),
-                                            firstPurchase.getQuantity());
-        Money secondPurchasePrice = multiply(secondPurchase.getSharePrice(),
-                                             secondPurchase.getQuantity());
-        Money commonPurchasePrice = sum(firstPurchasePrice, secondPurchasePrice);
+        Money commonPurchasePrice = sum(firstPurchase.operationPrice(),
+                                        secondPurchase.operationPrice());
         Money currentBalance = subtract(wallet.getBalance(), commonPurchasePrice);
         return WalletBalance
                 .newBuilder()
