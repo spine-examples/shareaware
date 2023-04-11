@@ -24,37 +24,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+package io.spine.examples.shareaware.investment;
 
-package spine_examples.shareaware.investment;
+import com.google.errorprone.annotations.Immutable;
+import io.spine.annotation.GeneratedMixin;
+import io.spine.base.SerializableMessage;
+import io.spine.money.Money;
 
-import "spine/options.proto";
+import static io.spine.examples.shareaware.MoneyCalculator.*;
 
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.investment.command";
-option java_outer_classname = "PurchaseCommandsProto";
-option java_multiple_files = true;
+@Immutable
+@GeneratedMixin
+public interface OperationPriceMixin extends SerializableMessage {
 
-import "spine_examples/shareaware/identifiers.proto";
-import "spine/money/money.proto";
-import "spine/core/user_id.proto";
+    int getQuantity();
 
-// An intent of the user to purchase shares.
-message PurchaseShares {
-    option (is).java_type = "io.spine.examples.shareaware.investment.OperationPriceMixin";
+    Money getSharePrice();
 
-    // The ID of the purchase process.
-    PurchaseId purchase_process = 1;
-
-    // The ID of the user who wants to purchase shares.
-    spine.core.UserId purchaser = 2 [(required) = true];
-
-    // The ID of the share to purchase.
-    ShareId share = 3 [(required) = true];
-
-    // The quantity of shares to purchase.
-    int32 quantity = 4 [(required) = true];
-
-    // The price per share at the time of purchase.
-    spine.money.Money share_price = 5 [(required) = true];
+    default Money operationPrice() {
+        return multiply(getSharePrice(), getQuantity());
+    }
 }

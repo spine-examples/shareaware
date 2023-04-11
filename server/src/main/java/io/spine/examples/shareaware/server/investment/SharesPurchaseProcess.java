@@ -48,12 +48,9 @@ import io.spine.examples.shareaware.wallet.event.MoneyReservationCanceled;
 import io.spine.examples.shareaware.wallet.event.MoneyReserved;
 import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
-import io.spine.money.Money;
 import io.spine.server.command.Command;
 import io.spine.server.event.React;
 import io.spine.server.procman.ProcessManager;
-
-import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.*;
 
 /**
  * Coordinates the shares purchase from the market.
@@ -67,13 +64,11 @@ final class SharesPurchaseProcess
     @Command
     ReserveMoney on(PurchaseShares c) {
         initState(c);
-        Money purchasePrice =
-                multiply(c.getSharePrice(), c.getQuantity());
         return ReserveMoney
                 .newBuilder()
                 .setWallet(walletId(c.getPurchaser()))
                 .setOperation(operationId(c.getPurchaseProcess()))
-                .setAmount(purchasePrice)
+                .setAmount(c.operationPrice())
                 .vBuild();
     }
 

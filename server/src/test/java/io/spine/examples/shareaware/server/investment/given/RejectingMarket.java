@@ -38,7 +38,7 @@ import io.spine.money.Money;
 import io.spine.server.command.Assign;
 import io.spine.server.procman.ProcessManager;
 
-import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.multiply;
+import static io.spine.examples.shareaware.MoneyCalculator.multiply;
 
 /**
  * The test imitation of {@code MarketProcess} with rejection mode.

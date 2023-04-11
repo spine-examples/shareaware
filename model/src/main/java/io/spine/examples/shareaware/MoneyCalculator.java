@@ -24,7 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.wallet;
+package io.spine.examples.shareaware;
 
 import com.google.common.base.Preconditions;
 import io.spine.money.Money;
@@ -110,7 +110,7 @@ public final class MoneyCalculator {
      * Returns true if the first {@code Money} object is greater
      * than the second {@code Money} object, or false otherwise.
      */
-    static boolean isGreater(Money first, Money second) {
+    public static boolean isGreater(Money first, Money second) {
         checkArguments(first, second);
         if (first.getUnits() > second.getUnits()) {
             return true;

@@ -24,7 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.wallet;
+package io.spine.examples.shareaware;
 
 import com.google.common.testing.NullPointerTester;
 import io.spine.money.Currency;

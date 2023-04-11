@@ -10,7 +10,7 @@ import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
 import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredFromUser;
 import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
-import io.spine.examples.shareaware.server.wallet.MoneyCalculator;
+import io.spine.examples.shareaware.MoneyCalculator;
 import io.spine.examples.shareaware.wallet.Iban;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.WalletBalance;
@@ -39,8 +39,8 @@ import io.spine.testing.core.given.GivenUserId;
 import io.spine.testing.server.blackbox.BlackBoxContext;
 
 import static io.spine.examples.shareaware.server.given.GivenMoney.moneyOf;
-import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.subtract;
-import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.sum;
+import static io.spine.examples.shareaware.MoneyCalculator.subtract;
+import static io.spine.examples.shareaware.MoneyCalculator.sum;
 
 public final class WalletTestEnv {
 

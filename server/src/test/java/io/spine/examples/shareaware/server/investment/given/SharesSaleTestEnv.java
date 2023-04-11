@@ -47,9 +47,9 @@ import io.spine.examples.shareaware.wallet.command.RechargeBalance;
 import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
 import io.spine.money.Money;
 
-import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.multiply;
-import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.subtract;
-import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.sum;
+import static io.spine.examples.shareaware.MoneyCalculator.multiply;
+import static io.spine.examples.shareaware.MoneyCalculator.subtract;
+import static io.spine.examples.shareaware.MoneyCalculator.sum;
 
 public final class SharesSaleTestEnv {
 
@@ -88,7 +88,7 @@ public final class SharesSaleTestEnv {
                 .setSeller(user)
                 .setShare(share)
                 .setQuantity(quantity)
-                .setPrice(GivenMoney.usd(20))
+                .setSharePrice(GivenMoney.usd(20))
                 .vBuild();
     }
 
@@ -99,12 +99,12 @@ public final class SharesSaleTestEnv {
         Money currentBalance = subtract(wallet.getBalance(), purchasePrice);
         return wallet
                 .toBuilder()
-                .setBalance(sum(currentBalance, sale.getPrice()))
+                .setBalance(sum(currentBalance, sale.getSharePrice()))
                 .vBuild();
     }
 
     public static BalanceRecharged balanceRechargedBy(SellShares command, Wallet wallet) {
-        Money sellPrice = multiply(command.getPrice(), command.getQuantity());
+        Money sellPrice = multiply(command.getSharePrice(), command.getQuantity());
         Money currentBalance = sum(wallet.getBalance(), sellPrice);
         return balanceRecharged(command, currentBalance);
     }
@@ -115,7 +115,7 @@ public final class SharesSaleTestEnv {
         Money purchasePrice = multiply(purchaseCommand.getSharePrice(),
                                        purchaseCommand.getQuantity());
         Money balanceAfterPurchase = subtract(wallet.getBalance(), purchasePrice);
-        Money sellPrice = multiply(command.getPrice(), command.getQuantity());
+        Money sellPrice = multiply(command.getSharePrice(), command.getQuantity());
         Money currentBalance = sum(balanceAfterPurchase, sellPrice);
         return balanceRecharged(command, currentBalance);
     }
@@ -135,7 +135,7 @@ public final class SharesSaleTestEnv {
                 .setId(command.getSaleProcess())
                 .setSeller(command.getSeller())
                 .setShare(command.getShare())
-                .setPrice(command.getPrice())
+                .setPrice(command.getSharePrice())
                 .vBuild();
     }
 
@@ -145,13 +145,13 @@ public final class SharesSaleTestEnv {
                 .setMarket(MarketProcess.ID)
                 .setSaleProcess(command.getSaleProcess())
                 .setShare(command.getShare())
-                .setPrice(command.getPrice())
+                .setPrice(command.getSharePrice())
                 .setQuantity(command.getQuantity())
                 .vBuild();
     }
 
     public static RechargeBalance rechargeBalanceWith(SellShares command) {
-        Money sellPrice = multiply(command.getPrice(), command.getQuantity());
+        Money sellPrice = multiply(command.getSharePrice(), command.getQuantity());
         return RechargeBalance
                 .newBuilder()
                 .setOperation(operationId(command.getSaleProcess()))
@@ -167,7 +167,7 @@ public final class SharesSaleTestEnv {
                 .setSaleProcess(command.getSaleProcess())
                 .setShare(command.getShare())
                 .setSeller(command.getSeller())
-                .setPrice(command.getPrice())
+                .setPrice(command.getSharePrice())
                 .setSharesAvailable(sharesAvailable)
                 .vBuild();
     }
@@ -198,7 +198,7 @@ public final class SharesSaleTestEnv {
         Money purchasePrice = multiply(purchaseCommand.getSharePrice(),
                                        purchaseCommand.getQuantity());
         Money balanceAfterPurchase = subtract(wallet.getBalance(), purchasePrice);
-        Money sellPrice = multiply(sellCommand.getPrice(), sellCommand.getQuantity());
+        Money sellPrice = multiply(sellCommand.getSharePrice(), sellCommand.getQuantity());
         Money currentBalance = sum(balanceAfterPurchase, sellPrice);
         return WalletBalance
                 .newBuilder()

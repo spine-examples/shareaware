@@ -80,7 +80,7 @@ final class SharesSaleProcess
                 .setId(c.getSaleProcess())
                 .setShare(c.getShare())
                 .setSeller(c.getSeller())
-                .setPrice(c.getPrice());
+                .setPrice(c.getSharePrice());
     }
 
     /**

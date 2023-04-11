@@ -45,7 +45,7 @@ import io.spine.server.aggregate.Aggregate;
 import io.spine.server.aggregate.Apply;
 import io.spine.server.command.Assign;
 
-import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.*;
+import static io.spine.examples.shareaware.MoneyCalculator.*;
 
 /**
  * The Wallet aggregate is responsible for managing the money

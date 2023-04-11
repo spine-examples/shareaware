@@ -41,6 +41,7 @@ import "spine/core/user_id.proto";
 
 // An intent of the user to sell shares.
 message SellShares {
+    option (is).java_type = "io.spine.examples.shareaware.investment.OperationPriceMixin";
 
     // The ID of the shares sale process.
     SaleId sale_process = 1;
@@ -59,7 +60,7 @@ message SellShares {
     // In case when the actual price on the market differs from the wanted price,
     // the market will reject the sale.
     //
-    spine.money.Money price = 4 [(required) = true];
+    spine.money.Money share_price = 4 [(required) = true];
 
     // The quantity of shares to sell.
     int32 quantity = 5 [(required) = true];
