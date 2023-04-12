@@ -27,50 +27,57 @@
 package io.spine.examples.shareaware.server.market;
 
 import io.spine.examples.shareaware.Share;
+import io.spine.examples.shareaware.ShareId;
 import io.spine.money.Currency;
 import io.spine.money.Money;
 
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
+final class SharesStore {
 
-import static io.spine.examples.shareaware.server.market.SharesStore.*;
-import static java.util.Collections.*;
+    private static final ShareId appleID = ShareId.generate();
 
-class MarketData {
+    private static final ShareId teslaID = ShareId.generate();
 
-    private static final Collection<Share> shares = new ArrayList<>();
+    private static final ShareId metaID = ShareId.generate();
 
-    static {
-        shares.add(apple());
-        shares.add(tesla());
-        shares.add(meta());
-    }
+    private static final String teslaLogo =
+            "https://upload.wikimedia.org/wikipedia/commons/b/bd/Tesla_Motors.svg";
+
+    private static final String appleLogo =
+            "https://upload.wikimedia.org/wikipedia/commons/8/8a/Apple_Logo.svg";
+
+    private static final String metaLogo =
+            "https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg";
 
     /**
      * Prevents instantiation of this class.
      */
-    private MarketData() {
+    private SharesStore() {
     }
 
-    static List<Share> actualShares() {
-        List<Share> updatedShares = shares.stream()
-                .map(MarketData::updatePrice)
-                .collect(Collectors.toList());
-        return unmodifiableList(updatedShares);
+    static Share apple() {
+        return Share
+                .newBuilder()
+                .setId(appleID)
+                .setPrice(usd(200))
+                .setCompanyLogo(appleLogo)
+                .vBuild();
     }
 
-    private static Share updatePrice(Share share) {
-        Random random = new SecureRandom();
-        int randomNumber = random.nextInt(21) - 10;
-        Money previousPrice = share.getPrice();
-        long updatedPrice = previousPrice.getUnits() + randomNumber;
-        return share
-                .toBuilder()
-                .setPrice(usd(updatedPrice))
+    static Share tesla() {
+        return Share
+                .newBuilder()
+                .setId(teslaID)
+                .setPrice(usd(300))
+                .setCompanyLogo(teslaLogo)
+                .vBuild();
+    }
+
+    static Share meta() {
+        return Share
+                .newBuilder()
+                .setId(metaID)
+                .setPrice(usd(150))
+                .setCompanyLogo(metaLogo)
                 .vBuild();
     }
 
