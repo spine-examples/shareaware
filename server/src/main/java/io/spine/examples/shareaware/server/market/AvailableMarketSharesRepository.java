@@ -24,35 +24,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+package io.spine.examples.shareaware.server.market;
 
-package spine_examples.shareaware.market;
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import io.spine.examples.shareaware.MarketId;
+import io.spine.examples.shareaware.market.AvailableMarketShares;
+import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
+import io.spine.server.projection.ProjectionRepository;
+import io.spine.server.route.EventRouting;
 
-import "spine/options.proto";
+import static io.spine.server.route.EventRoute.*;
 
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware.market";
-option java_outer_classname = "MarketProto";
-option java_multiple_files = true;
+/**
+ * Manages instances of the {@link AvailableMarketSharesProjection}.
+ */
+public class AvailableMarketSharesRepository
+        extends ProjectionRepository<MarketId, AvailableMarketSharesProjection, AvailableMarketShares> {
 
-import "spine_examples/shareaware/identifiers.proto";
-import "spine_examples/shareaware/share.proto";
-
-// The imitation of the shares market.
-message Market {
-    option (entity) = {kind: PROCESS_MANAGER};
-
-    // The ID of the shares market.
-    MarketId id = 1;
-
-    // Tells whether the market is closed or not.
-    //
-    // The shares market may be closed due to:
-    // - end of business hours,
-    // - market volatility,
-    // - technical issues,
-    // - regulator decision,
-    // - etc.
-    //
-    bool closed = 2;
+    @OverridingMethodsMustInvokeSuper
+    @Override
+    protected void setupEventRouting(EventRouting<MarketId> routing) {
+        super.setupEventRouting(routing);
+        routing.route(MarketSharesUpdated.class, (event, context) -> withId(event.getMarket()));
+    }
 }

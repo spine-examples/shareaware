@@ -26,22 +26,22 @@
 
 package io.spine.examples.shareaware.server.market;
 
-import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import io.spine.core.External;
+import io.spine.core.Subscribe;
 import io.spine.examples.shareaware.MarketId;
-import io.spine.examples.shareaware.market.MarketView;
+import io.spine.examples.shareaware.market.AvailableMarketShares;
 import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
-import io.spine.server.projection.ProjectionRepository;
-import io.spine.server.route.EventRouting;
+import io.spine.server.projection.Projection;
 
-import static io.spine.server.route.EventRoute.*;
+/**
+ * The view of the shares that are currently available on the market.
+ */
+class AvailableMarketSharesProjection
+        extends Projection<MarketId, AvailableMarketShares, AvailableMarketShares.Builder> {
 
-public class MarketViewRepository
-        extends ProjectionRepository<MarketId, MarketViewProjection, MarketView> {
-
-    @OverridingMethodsMustInvokeSuper
-    @Override
-    protected void setupEventRouting(EventRouting<MarketId> routing) {
-        super.setupEventRouting(routing);
-        routing.route(MarketSharesUpdated.class, (event, context) -> withId(event.getMarket()));
+    @Subscribe
+    void on(@External MarketSharesUpdated e) {
+        builder().clear()
+                 .addAllShare(e.getShareList());
     }
 }
