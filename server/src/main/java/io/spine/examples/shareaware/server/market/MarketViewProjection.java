@@ -30,14 +30,15 @@ import io.spine.core.External;
 import io.spine.core.Subscribe;
 import io.spine.examples.shareaware.MarketId;
 import io.spine.examples.shareaware.market.MarketView;
-import io.spine.examples.shareaware.market.event.SharePriceChanged;
+import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
 import io.spine.server.projection.Projection;
 
 class MarketViewProjection
         extends Projection<MarketId, MarketView, MarketView.Builder> {
 
     @Subscribe
-    void on(@External SharePriceChanged e) {
-        builder().addShare(e.getShare());
+    void on(@External MarketSharesUpdated e) {
+        builder().clear()
+                 .addAllShare(e.getShareList());
     }
 }

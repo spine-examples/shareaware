@@ -88,9 +88,12 @@ message MarketClosed {
     MarketId market = 1;
 }
 
-message SharePriceChanged {
+// Shares on market have been updated.
+message MarketSharesUpdated {
 
+    // The ID of the shares market.
     MarketId market = 1;
 
-    Share share = 2;
+    // Updated shares.
+    repeated Share share = 2;
 }

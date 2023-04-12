@@ -28,12 +28,10 @@ package io.spine.examples.shareaware.server.market;
 
 import io.spine.core.UserId;
 import io.spine.examples.shareaware.Share;
-import io.spine.examples.shareaware.ShareId;
-import io.spine.examples.shareaware.market.event.SharePriceChanged;
-import io.spine.money.Currency;
-import io.spine.money.Money;
+import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
 import io.spine.server.integration.ThirdPartyContext;
 
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -43,14 +41,16 @@ public class MarketDataService {
 
     private static MarketDataService instance = null;
 
+    private static final String tenantName = "Market";
+
     private final ThirdPartyContext marketContext =
-            ThirdPartyContext.singleTenant("MarketData");
+            ThirdPartyContext.singleTenant(tenantName);
 
     private final ScheduledExecutorService marketThread = newSingleThreadScheduledExecutor();
 
     private final UserId actor = UserId
             .newBuilder()
-            .setValue("MarketData")
+            .setValue(tenantName)
             .vBuild();
 
     /**
@@ -67,7 +67,7 @@ public class MarketDataService {
     }
 
     synchronized void start() {
-        marketThread.scheduleAtFixedRate(this::emitEvent, 0, 4, TimeUnit.SECONDS);
+        marketThread.scheduleAtFixedRate(this::emitEvent, 0, 1, TimeUnit.MINUTES);
     }
 
     synchronized void stop() {
@@ -75,24 +75,11 @@ public class MarketDataService {
     }
 
     private void emitEvent() {
-        Money price = Money
-                .newBuilder()
-                .setCurrency(Currency.USD)
-                .setUnits(20)
-                .vBuild();
-        ShareId id = ShareId
-                .newBuilder()
-                .setUuid("Share")
-                .vBuild();
-        Share share = Share
-                .newBuilder()
-                .setId(id)
-                .setPrice(price)
-                .vBuild();
-        SharePriceChanged event = SharePriceChanged
+        List<Share> actualShares = MarketData.actualShares();
+        MarketSharesUpdated event = MarketSharesUpdated
                 .newBuilder()
                 .setMarket(MarketProcess.ID)
-                .setShare(share)
+                .addAllShare(actualShares)
                 .vBuild();
         marketContext.emittedEvent(event, actor);
     }

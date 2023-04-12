@@ -29,7 +29,7 @@ package io.spine.examples.shareaware.server.market;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.examples.shareaware.MarketId;
 import io.spine.examples.shareaware.market.MarketView;
-import io.spine.examples.shareaware.market.event.SharePriceChanged;
+import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
 import io.spine.server.projection.ProjectionRepository;
 import io.spine.server.route.EventRouting;
 
@@ -42,6 +42,6 @@ public class MarketViewRepository
     @Override
     protected void setupEventRouting(EventRouting<MarketId> routing) {
         super.setupEventRouting(routing);
-        routing.route(SharePriceChanged.class, (event, context) -> withId(event.getMarket()));
+        routing.route(MarketSharesUpdated.class, (event, context) -> withId(event.getMarket()));
     }
 }
