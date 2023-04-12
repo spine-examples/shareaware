@@ -32,12 +32,9 @@ import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
 import io.spine.server.integration.ThirdPartyContext;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import static io.spine.util.Exceptions.*;
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
 
 public class MarketDataService {
@@ -70,13 +67,7 @@ public class MarketDataService {
     }
 
     synchronized void start() {
-        ScheduledFuture<?> future = marketThread
-                .scheduleAtFixedRate(this::emitEvent, 0, 1, TimeUnit.MINUTES);
-        try {
-            future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            illegalArgumentWithCauseOf(e);
-        }
+        marketThread.scheduleAtFixedRate(this::emitEvent, 0, 1, TimeUnit.MINUTES);
     }
 
     synchronized void stop() {

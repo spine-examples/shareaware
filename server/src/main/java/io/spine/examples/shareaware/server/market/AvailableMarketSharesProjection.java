@@ -41,7 +41,7 @@ class AvailableMarketSharesProjection
 
     @Subscribe
     void on(@External MarketSharesUpdated e) {
-        builder().clear()
+        builder().clearShare()
                  .addAllShare(e.getShareList());
     }
 }

@@ -47,6 +47,9 @@ message Share {
     // The current share price.
     spine.money.Money price = 2 [(required) = true];
 
+    // The company name that issued this share.
+    string company_name = 3 [(required) = true];
+
     // The URL of the company logo that issued this share.
-    string company_logo = 3;
+    string company_logo = 4 [(required) = true];
 }

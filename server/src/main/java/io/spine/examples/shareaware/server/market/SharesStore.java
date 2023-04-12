@@ -59,6 +59,7 @@ final class SharesStore {
                 .newBuilder()
                 .setId(appleID)
                 .setPrice(usd(200))
+                .setCompanyName("Apple")
                 .setCompanyLogo(appleLogo)
                 .vBuild();
     }
@@ -68,6 +69,7 @@ final class SharesStore {
                 .newBuilder()
                 .setId(teslaID)
                 .setPrice(usd(300))
+                .setCompanyName("Tesla Inc.")
                 .setCompanyLogo(teslaLogo)
                 .vBuild();
     }
@@ -77,6 +79,7 @@ final class SharesStore {
                 .newBuilder()
                 .setId(metaID)
                 .setPrice(usd(150))
+                .setCompanyName("Meta Platforms Inc")
                 .setCompanyLogo(metaLogo)
                 .vBuild();
     }
