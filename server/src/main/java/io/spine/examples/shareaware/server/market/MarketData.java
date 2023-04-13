@@ -26,29 +26,20 @@
 
 package io.spine.examples.shareaware.server.market;
 
+import com.google.common.collect.ImmutableList;
 import io.spine.examples.shareaware.Share;
-import io.spine.money.Currency;
 import io.spine.money.Money;
 
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 import static io.spine.examples.shareaware.server.market.SharesStore.*;
-import static java.util.Collections.*;
 
+/**
+ * Provides the currently available shares on the market.
+ */
 class MarketData {
-
-    private static final Collection<Share> shares = new ArrayList<>();
-
-    static {
-        shares.add(apple());
-        shares.add(tesla());
-        shares.add(meta());
-    }
 
     /**
      * Prevents instantiation of this class.
@@ -56,29 +47,31 @@ class MarketData {
     private MarketData() {
     }
 
+    /**
+     * Returns the list of up-to-date shares that available on the market.
+     */
     static List<Share> actualShares() {
-        List<Share> updatedShares = shares.stream()
-                .map(MarketData::updatePrice)
-                .collect(Collectors.toList());
-        return unmodifiableList(updatedShares);
+        return ImmutableList.of(actualize(apple()),
+                                actualize(tesla()),
+                                actualize(meta()));
     }
 
-    private static Share updatePrice(Share share) {
+    /**
+     * Actualize the share price.
+     *
+     * <p>Simulates the share price update on the market.
+     */
+    private static Share actualize(Share share) {
         Random random = new SecureRandom();
-        int randomNumber = random.nextInt(21) - 10;
+        int valueToSummarize = random.nextInt(21) - 10;
         Money previousPrice = share.getPrice();
-        long updatedPrice = previousPrice.getUnits() + randomNumber;
+        Money updatedPrice = previousPrice
+                .toBuilder()
+                .setUnits(previousPrice.getUnits() + valueToSummarize)
+                .vBuild();
         return share
                 .toBuilder()
-                .setPrice(usd(updatedPrice))
-                .vBuild();
-    }
-
-    private static Money usd(long units) {
-        return Money
-                .newBuilder()
-                .setCurrency(Currency.USD)
-                .setUnits(units)
+                .setPrice(updatedPrice)
                 .vBuild();
     }
 }

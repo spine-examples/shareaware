@@ -39,13 +39,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
+/**
+ * Provides data about currently available shares on the market to the main ShareAware context.
+ */
 public class MarketDataService {
 
     private final AtomicBoolean isActive = new AtomicBoolean();
 
     private static MarketDataService instance = null;
 
-    private static final String tenantName = "Market";
+    private static final String tenantName = "MarketData";
 
     private final ThirdPartyContext marketContext =
             ThirdPartyContext.singleTenant(tenantName);
@@ -70,6 +73,9 @@ public class MarketDataService {
         return instance;
     }
 
+    /**
+     * Emits the {@code MarketSharesUpdated} event every 4 seconds on behalf of {@code ThirdPartyContext}.
+     */
     synchronized void start() {
         isActive.set(true);
         marketThread.execute(() -> {
@@ -80,17 +86,20 @@ public class MarketDataService {
         });
     }
 
+    /**
+     * Stops the event emission.
+     */
     synchronized void stop() {
         isActive.set(false);
         marketThread.shutdown();
     }
 
     private void emitEvent() {
-        List<Share> actualShares = MarketData.actualShares();
+        List<Share> updatedShares = MarketData.actualShares();
         MarketSharesUpdated event = MarketSharesUpdated
                 .newBuilder()
                 .setMarket(MarketProcess.ID)
-                .addAllShare(actualShares)
+                .addAllShare(updatedShares)
                 .vBuild();
         marketContext.emittedEvent(event, actor);
     }
