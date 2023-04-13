@@ -26,23 +26,17 @@
 
 package io.spine.examples.shareaware.server.market;
 
-import io.spine.examples.shareaware.market.AvailableMarketShares;
 import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
 import io.spine.examples.shareaware.server.FreshContextTest;
 import io.spine.examples.shareaware.server.market.given.MarketTestContext;
 import io.spine.server.BoundedContextBuilder;
-import io.spine.server.integration.ThirdPartyContext;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static io.spine.examples.shareaware.server.market.given.MarketTestEnv.actor;
-import static io.spine.examples.shareaware.server.market.given.MarketTestEnv.availableMarketSharesAfter;
-import static io.spine.examples.shareaware.server.market.given.MarketTestEnv.marketSharesUpdated;
-import static org.junit.jupiter.api.Assertions.fail;
+@DisplayName("`MarketDataService` should")
+public class MarketDataServiceTest extends FreshContextTest {
 
-@Disabled
-public class BlackBoxAvailableMarketSharesTest extends FreshContextTest {
+    private final MarketDataService service = MarketDataService.instance();
 
     @Override
     protected BoundedContextBuilder contextBuilder() {
@@ -50,20 +44,15 @@ public class BlackBoxAvailableMarketSharesTest extends FreshContextTest {
     }
 
     @Test
-    @DisplayName("subscribe to the external event `MarketSharesUpdated` and update its state")
-    void state() {
-        MarketSharesUpdated event = marketSharesUpdated();
-        postEventFromThirdPartyContext(event);
-        AvailableMarketShares expected = availableMarketSharesAfter(event);
+    @DisplayName("emit two `MarketSharesUpdated` events in nine seconds")
+    void emitEvent() throws InterruptedException {
+        service.start();
+        Thread.sleep(9000);
 
-        context().assertState(MarketProcess.ID, expected);
-    }
+        context().assertEvents()
+                 .withType(MarketSharesUpdated.class)
+                 .hasSize(2);
 
-    private static void postEventFromThirdPartyContext(MarketSharesUpdated event) {
-        try (ThirdPartyContext context = ThirdPartyContext.singleTenant("MarketData")) {
-            context.emittedEvent(event, actor());
-        } catch (Exception e) {
-            fail();
-        }
+        service.stop();
     }
 }

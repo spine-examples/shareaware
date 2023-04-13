@@ -41,7 +41,7 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 public class MarketDataService {
 
-    private final AtomicBoolean isActive = new AtomicBoolean(true);
+    private final AtomicBoolean isActive = new AtomicBoolean();
 
     private static MarketDataService instance = null;
 
@@ -71,6 +71,7 @@ public class MarketDataService {
     }
 
     synchronized void start() {
+        isActive.set(true);
         marketThread.execute(() -> {
             while (isActive.get()) {
                 sleepUninterruptibly(Duration.ofSeconds(4));

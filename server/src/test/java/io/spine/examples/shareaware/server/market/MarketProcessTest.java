@@ -33,7 +33,6 @@ import io.spine.examples.shareaware.market.command.OpenMarket;
 import io.spine.examples.shareaware.market.command.SellSharesOnMarket;
 import io.spine.examples.shareaware.market.event.MarketClosed;
 import io.spine.examples.shareaware.market.event.MarketOpened;
-import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
 import io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeSoldOnMarket;
 import io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeObtained;
 import io.spine.examples.shareaware.server.FreshContextTest;
@@ -123,18 +122,5 @@ public final class MarketProcessTest extends FreshContextTest {
                 sharesCannotBeSoldOnMarketCausedBy(commandToSellShares);
 
         context().assertEvent(expected);
-    }
-
-    @Test
-    void projection() throws InterruptedException {
-        MarketDataService service = MarketDataService.instance();
-        service.start();
-        Thread.sleep(4500);
-
-        context().assertEvents()
-                 .withType(MarketSharesUpdated.class)
-                 .hasSize(1);
-
-        service.stop();
     }
 }
