@@ -26,52 +26,44 @@
 
 package io.spine.examples.shareaware.server.market;
 
-import com.google.common.collect.ImmutableList;
 import io.spine.examples.shareaware.Share;
-import io.spine.money.Money;
+import io.spine.testing.UtilityClassTest;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
-import java.security.SecureRandom;
 import java.util.List;
-import java.util.Random;
 
-import static io.spine.examples.shareaware.server.market.SharesStore.*;
+import static com.google.common.truth.Truth.*;
 
-/**
- * Provides the currently available shares on the market.
- */
-final class MarketData {
+@DisplayName("'MarketData' should")
+class MarketDataTest extends UtilityClassTest<MarketData> {
 
-    /**
-     * Prevents instantiation of this class.
-     */
-    private MarketData() {
+    MarketDataTest() {
+        super(MarketData.class);
     }
 
-    /**
-     * Returns the list of up-to-date shares that available on the market.
-     */
-    static List<Share> actualShares() {
-        return ImmutableList.of(actualize(apple()),
-                                actualize(tesla()),
-                                actualize(meta()));
+    @Test
+    @DisplayName("provide an identical list of shares, but the prices can be different")
+    void actualizeShare() {
+        List<Share> firstResult = MarketData.actualShares();
+        List<Share> secondResult = MarketData.actualShares();
+        assertThat(firstResult).hasSize(secondResult.size());
+
+        for (int i = 0; i < firstResult.size(); i++) {
+            Share shareFromFirst = firstResult.get(i);
+            Share shareFromSecond = secondResult.get(i);
+            Share shareFromFirstWithoutPrice = shareWithoutPrice(shareFromFirst);
+            Share shareFromSecondWithoutPrice = shareWithoutPrice(shareFromSecond);
+            assertThat(shareFromFirstWithoutPrice).isEqualTo(shareFromSecondWithoutPrice);
+        }
     }
 
-    /**
-     * Actualize the share price.
-     *
-     * <p>Simulates the share price update on the market.
-     */
-    private static Share actualize(Share share) {
-        Random random = new SecureRandom();
-        int valueToSummarize = random.nextInt(21) - 10;
-        Money previousPrice = share.getPrice();
-        Money updatedPrice = previousPrice
-                .toBuilder()
-                .setUnits(previousPrice.getUnits() + valueToSummarize)
-                .vBuild();
-        return share
-                .toBuilder()
-                .setPrice(updatedPrice)
-                .vBuild();
+    private static Share shareWithoutPrice(Share share) {
+        return Share
+                .newBuilder()
+                .setId(share.getId())
+                .setCompanyName(share.getCompanyName())
+                .setCompanyLogo(share.getCompanyLogo())
+                .build();
     }
 }

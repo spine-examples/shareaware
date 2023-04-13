@@ -42,7 +42,7 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 /**
  * Provides data about currently available shares on the market to the main ShareAware context.
  */
-public class MarketDataService {
+public final class MarketDataService {
 
     private final AtomicBoolean isActive = new AtomicBoolean();
 

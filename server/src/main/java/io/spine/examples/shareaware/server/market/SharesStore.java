@@ -31,6 +31,9 @@ import io.spine.examples.shareaware.ShareId;
 import io.spine.money.Currency;
 import io.spine.money.Money;
 
+/**
+ * Stores the data about shares.
+ */
 final class SharesStore {
 
     private static final ShareId appleID = ShareId.generate();
@@ -54,6 +57,9 @@ final class SharesStore {
     private SharesStore() {
     }
 
+    /**
+     * Returns the share of the "Apple" company.
+     */
     static Share apple() {
         return Share
                 .newBuilder()
@@ -64,6 +70,9 @@ final class SharesStore {
                 .vBuild();
     }
 
+    /**
+     * Returns the share of the "Tesla" company.
+     */
     static Share tesla() {
         return Share
                 .newBuilder()
@@ -74,6 +83,9 @@ final class SharesStore {
                 .vBuild();
     }
 
+    /**
+     * Return the share of the "Meta Platforms" company.
+     */
     static Share meta() {
         return Share
                 .newBuilder()
