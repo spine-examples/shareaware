@@ -43,13 +43,13 @@ configurations {
     create("test")
 }
 
-tasks.register<Jar>("testArchive") {
+var testOutputTask = tasks.register<Jar>("testOutput") {
     archiveBaseName.set("module-test")
     from(project.the<SourceSetContainer>()["test"].output)
 }
 
 artifacts {
-    add("test", tasks["testArchive"])
+    add("test", testOutputTask)
 }
 
 dependencies {
