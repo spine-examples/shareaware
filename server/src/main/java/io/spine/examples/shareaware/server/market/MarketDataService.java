@@ -31,13 +31,17 @@ import io.spine.examples.shareaware.Share;
 import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
 import io.spine.server.integration.ThirdPartyContext;
 
+import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 public class MarketDataService {
+
+    private final AtomicBoolean isActive = new AtomicBoolean(true);
 
     private static MarketDataService instance = null;
 
@@ -46,7 +50,7 @@ public class MarketDataService {
     private final ThirdPartyContext marketContext =
             ThirdPartyContext.singleTenant(tenantName);
 
-    private final ScheduledExecutorService marketThread = newSingleThreadScheduledExecutor();
+    private final ExecutorService marketThread = newSingleThreadExecutor();
 
     private final UserId actor = UserId
             .newBuilder()
@@ -67,10 +71,16 @@ public class MarketDataService {
     }
 
     synchronized void start() {
-        marketThread.scheduleAtFixedRate(this::emitEvent, 0, 1, TimeUnit.MINUTES);
+        marketThread.execute(() -> {
+            while (isActive.get()) {
+                sleepUninterruptibly(Duration.ofSeconds(4));
+                emitEvent();
+            }
+        });
     }
 
     synchronized void stop() {
+        isActive.set(false);
         marketThread.shutdown();
     }
 

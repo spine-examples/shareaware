@@ -129,7 +129,7 @@ public final class MarketProcessTest extends FreshContextTest {
     void projection() throws InterruptedException {
         MarketDataService service = MarketDataService.instance();
         service.start();
-        Thread.sleep(1000);
+        Thread.sleep(4500);
 
         context().assertEvents()
                  .withType(MarketSharesUpdated.class)
