@@ -26,64 +26,48 @@
 
 package io.spine.examples.shareaware.server.market;
 
-import com.google.common.truth.Truth;
-import io.spine.server.BoundedContext;
 import io.spine.examples.shareaware.market.AvailableMarketShares;
 import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
+import io.spine.examples.shareaware.server.FreshContextTest;
+import io.spine.examples.shareaware.server.market.given.MarketTestContext;
 import io.spine.server.BoundedContextBuilder;
-import io.spine.server.ServerEnvironment;
 import io.spine.server.integration.ThirdPartyContext;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static io.spine.examples.shareaware.server.market.given.MarketTestEnv.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static io.spine.examples.shareaware.server.market.given.MarketTestEnv.actor;
+import static io.spine.examples.shareaware.server.market.given.MarketTestEnv.availableMarketSharesAfter;
+import static io.spine.examples.shareaware.server.market.given.MarketTestEnv.marketSharesUpdated;
 
 @DisplayName("`AvailableMarketShares` should")
-class AvailableMarketSharesTest {
+public class AvailableMarketSharesTest extends FreshContextTest {
 
-    private BoundedContext context;
+    private ThirdPartyContext marketData;
 
-    private AvailableMarketSharesRepository repository;
+    @Override
+    protected BoundedContextBuilder contextBuilder() {
+        return MarketTestContext.newBuilder();
+    }
 
     @BeforeEach
     void prepareContext() {
-        repository = new AvailableMarketSharesRepository();
-        context = BoundedContextBuilder
-                .assumingTests()
-                .add(repository)
-                .build();
+        marketData = ThirdPartyContext.singleTenant("MarketData");
     }
 
     @AfterEach
-    void closeContext() throws Exception {
-        context.close();
-        ServerEnvironment
-                .instance()
-                .reset();
+    void terminateContext() throws Exception {
+        marketData.close();
     }
 
     @Test
     @DisplayName("subscribe to the external event `MarketSharesUpdated` and update its state")
     void state() {
         MarketSharesUpdated event = marketSharesUpdated();
-        postEventFromThirdPartyContext(event);
+        marketData.emittedEvent(event, actor());
         AvailableMarketShares expected = availableMarketSharesAfter(event);
 
-        AvailableMarketSharesProjection projection = repository
-                .find(MarketProcess.ID)
-                .orElseGet(Assertions::fail);
-        Truth.assertThat(projection.state()).isEqualTo(expected);
-    }
-
-    private static void postEventFromThirdPartyContext(MarketSharesUpdated event) {
-        try (ThirdPartyContext context = ThirdPartyContext.singleTenant("MarketData")) {
-            context.emittedEvent(event, actor());
-        } catch (Exception e) {
-            fail();
-        }
+        context().assertState(MarketProcess.ID, expected);
     }
 }
