@@ -31,6 +31,9 @@ import io.spine.examples.shareaware.ShareId;
 
 import static io.spine.examples.shareaware.given.GivenMoney.*;
 
+/**
+ * Provides methods to create test instances of the shares.
+ */
 public class GivenShare {
 
     private static final ShareId teslaId = ShareId.generate();

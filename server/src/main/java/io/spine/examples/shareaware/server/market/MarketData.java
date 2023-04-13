@@ -59,7 +59,7 @@ final class MarketData {
     /**
      * Actualize the share price.
      *
-     * <p>Simulates the share price update on the market.
+     * <p>Simulates the share price updates on the market.
      */
     private static Share actualize(Share share) {
         Random random = new SecureRandom();
