@@ -30,7 +30,7 @@ import io.spine.money.Currency;
 import io.spine.money.Money;
 
 /**
- * Factory methods for creating {@code Money} instances for usage in tests.
+ * Factory methods for creating {@code Money} instances for test purposes.
  */
 public final class GivenMoney {
 
