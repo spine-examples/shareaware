@@ -36,7 +36,6 @@ option java_outer_classname = "MarketProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
-import "spine_examples/shareaware/share.proto";
 
 // The imitation of the shares market.
 message Market {
