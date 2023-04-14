@@ -29,6 +29,9 @@ package io.spine.examples.shareaware.given;
 import io.spine.money.Currency;
 import io.spine.money.Money;
 
+/**
+ * Factory methods for creating {@code Money} instances for test purposes.
+ */
 public final class GivenMoney {
 
     /**
@@ -37,6 +40,9 @@ public final class GivenMoney {
     private GivenMoney() {
     }
 
+    /**
+     * Returns the {@code Money} instance with zero value in USD currency.
+     */
     public static Money zero() {
         return Money
                 .newBuilder()
@@ -46,6 +52,10 @@ public final class GivenMoney {
                 .vBuild();
     }
 
+    /**
+     * Creates the instance of {@code Money} with provided values of
+     * {@link Money#units_} and {@link Money#currency_}.
+     */
     public static Money moneyOf(long units, Currency currency) {
         return Money
                 .newBuilder()
@@ -55,6 +65,10 @@ public final class GivenMoney {
                 .vBuild();
     }
 
+    /**
+     * Creates the instance of {@code Money} with provided values of {@link Money#units_},
+     * {@link Money#nanos_}, and {@link Money#currency_}.
+     */
     public static Money moneyOf(long units, int nanos, Currency currency) {
         return Money
                 .newBuilder()
@@ -64,10 +78,18 @@ public final class GivenMoney {
                 .vBuild();
     }
 
+    /**
+     * Creates the {@code Money} instance in USD currency with provided values of
+     * {@link Money#units_} and {@link Money#nanos_}.
+     */
     public static Money usd(long units, int nanos) {
         return moneyOf(units, nanos, Currency.USD);
     }
 
+    /**
+     * Creates the {@code Money} instance in USD currency
+     * with a provided value of {@link Money#units_}.
+     */
     public static Money usd(long units) {
         return moneyOf(units, Currency.USD);
     }

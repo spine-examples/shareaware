@@ -95,7 +95,7 @@ public final class InvestmentTestEnv {
                                      PurchaseShares secondPurchase,
                                      Wallet wallet) {
         Money totalPrice = sum(firstPurchase.totalCost(),
-                                        secondPurchase.totalCost());
+                               secondPurchase.totalCost());
         Money newBalance = subtract(wallet.getBalance(), totalPrice);
         return wallet
                 .toBuilder()
@@ -344,7 +344,7 @@ public final class InvestmentTestEnv {
                                                    PurchaseShares secondPurchase,
                                                    Wallet wallet) {
         Money totalPrice = sum(firstPurchase.totalCost(),
-                                        secondPurchase.totalCost());
+                               secondPurchase.totalCost());
         Money currentBalance = subtract(wallet.getBalance(), totalPrice);
         return WalletBalance
                 .newBuilder()
