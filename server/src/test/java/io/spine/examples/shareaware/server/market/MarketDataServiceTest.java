@@ -34,7 +34,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("`MarketDataService` should")
-public class MarketDataServiceTest extends FreshContextTest {
+final class MarketDataServiceTest extends FreshContextTest {
 
     private final MarketDataService service = MarketDataService.instance();
 

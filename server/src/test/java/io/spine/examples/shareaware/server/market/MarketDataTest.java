@@ -36,7 +36,7 @@ import java.util.List;
 import static com.google.common.truth.Truth.*;
 
 @DisplayName("'MarketData' should")
-class MarketDataTest extends UtilityClassTest<MarketData> {
+final class MarketDataTest extends UtilityClassTest<MarketData> {
 
     MarketDataTest() {
         super(MarketData.class);
@@ -64,6 +64,6 @@ class MarketDataTest extends UtilityClassTest<MarketData> {
                 .setId(share.getId())
                 .setCompanyName(share.getCompanyName())
                 .setCompanyLogo(share.getCompanyLogo())
-                .build();
+                .buildPartial();
     }
 }

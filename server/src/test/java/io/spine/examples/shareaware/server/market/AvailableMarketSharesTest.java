@@ -42,7 +42,7 @@ import static io.spine.examples.shareaware.server.market.given.MarketTestEnv.ava
 import static io.spine.examples.shareaware.server.market.given.MarketTestEnv.marketSharesUpdated;
 
 @DisplayName("`AvailableMarketShares` should")
-public class AvailableMarketSharesTest extends FreshContextTest {
+final class AvailableMarketSharesTest extends FreshContextTest {
 
     private ThirdPartyContext marketData;
 
