@@ -46,5 +46,5 @@ message AvailableMarketShares {
     MarketId id = 1;
 
     // Available shares on the market.
-    repeated Share share = 2;
+    repeated Share share = 2 [(required) = true];
 }
