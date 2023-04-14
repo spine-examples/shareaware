@@ -41,7 +41,7 @@ public final class GivenMoney {
     }
 
     /**
-     * Returns the {@code Money} instance with zero value in USD currency.
+     * Returns the {@code Money} instance with zero value in the USD currency.
      */
     public static Money zero() {
         return Money
@@ -55,6 +55,8 @@ public final class GivenMoney {
     /**
      * Creates the instance of {@code Money} with provided values of
      * {@link Money#units_} and {@link Money#currency_}.
+     *
+     * <p>The {@link Money#nanos_} value is set to zero by default.
      */
     public static Money moneyOf(long units, Currency currency) {
         return Money
@@ -89,6 +91,8 @@ public final class GivenMoney {
     /**
      * Creates the {@code Money} instance in USD currency
      * with a provided value of {@link Money#units_}.
+     *
+     * <p>The {@link Money#nanos_} value is set to zero by default.
      */
     public static Money usd(long units) {
         return moneyOf(units, Currency.USD);
