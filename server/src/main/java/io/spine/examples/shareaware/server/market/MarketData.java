@@ -39,7 +39,8 @@ import static io.spine.examples.shareaware.server.market.SharesStore.*;
 /**
  * Provides the currently available shares on the market.
  *
- * <p>The simulation of how the real share market works in the aspect of share price changing.
+ * <p>This is a simulation of how the real share market operates,
+ * focusing on changes in share prices.
  */
 final class MarketData {
 
