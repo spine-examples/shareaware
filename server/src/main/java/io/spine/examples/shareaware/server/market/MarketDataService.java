@@ -45,16 +45,11 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 public final class MarketDataService {
 
     private final AtomicBoolean isActive = new AtomicBoolean();
-
     private static MarketDataService instance = null;
-
     private static final String tenantName = "MarketData";
-
     private final ThirdPartyContext marketContext =
             ThirdPartyContext.singleTenant(tenantName);
-
     private final ExecutorService marketThread = newSingleThreadExecutor();
-
     private final UserId actor = UserId
             .newBuilder()
             .setValue(tenantName)
