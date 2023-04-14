@@ -24,35 +24,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.wallet;
+package io.spine.examples.shareaware.investment;
 
-import io.spine.examples.shareaware.WalletId;
-import io.spine.examples.shareaware.server.TradingContext;
-import io.spine.examples.shareaware.wallet.WalletBalance;
-import io.spine.examples.shareaware.wallet.command.CreateWallet;
-import io.spine.server.BoundedContextBuilder;
-import io.spine.testing.server.blackbox.ContextAwareTest;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import com.google.errorprone.annotations.Immutable;
+import io.spine.annotation.GeneratedMixin;
+import io.spine.base.SerializableMessage;
+import io.spine.money.Money;
 
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
+import static io.spine.examples.shareaware.MoneyCalculator.*;
 
-@DisplayName("`WalletBalanceProjection` should")
-public final class WalletBalanceProjectionTest extends ContextAwareTest {
+/**
+ * Provides a convenience API for signals describing the operations on shares sale.
+ */
+@Immutable
+@GeneratedMixin
+public interface WithSellingShares extends SerializableMessage {
 
-    @Override
-    protected BoundedContextBuilder contextBuilder() {
-        return TradingContext.newBuilder();
-    }
+    /**
+     * Returns the quantity of shares described by this signal.
+     */
+    int getQuantity();
 
-    @Test
-    @DisplayName("display a zero balance, as soon as the wallet created")
-    void balance() {
-        WalletId wallet = givenId();
-        CreateWallet command  = createWallet(wallet);
-        WalletBalance expected = zeroWalletBalance(command.getWallet());
-        context().receivesCommand(command);
+    /**
+     * Returns the price per share.
+     */
+    Money getPrice();
 
-        context().assertState(command.getWallet(), expected);
+    /**
+     * Returns the price of shares described by this signal.
+     */
+    default Money totalCost() {
+        return multiply(getPrice(), getQuantity());
     }
 }

@@ -28,7 +28,7 @@ package io.spine.examples.shareaware.server.wallet;
 
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.server.TradingContext;
-import io.spine.examples.shareaware.server.given.GivenMoney;
+import io.spine.examples.shareaware.given.GivenMoney;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.command.CreateWallet;
 import io.spine.examples.shareaware.wallet.event.WalletCreated;

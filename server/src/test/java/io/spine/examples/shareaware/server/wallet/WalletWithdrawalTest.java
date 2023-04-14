@@ -31,7 +31,7 @@ import io.spine.examples.shareaware.WithdrawalId;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
 import io.spine.examples.shareaware.server.FreshContextTest;
-import io.spine.examples.shareaware.server.given.WithdrawalTestContext;
+import io.spine.examples.shareaware.server.given.WalletTestContext;
 import io.spine.examples.shareaware.server.given.RejectingPaymentProcess;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.WalletBalance;
@@ -59,7 +59,7 @@ public final class WalletWithdrawalTest extends FreshContextTest {
 
     @Override
     protected BoundedContextBuilder contextBuilder() {
-        return WithdrawalTestContext.newBuilder();
+        return WalletTestContext.newBuilder();
     }
 
     @Nested

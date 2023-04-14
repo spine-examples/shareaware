@@ -41,6 +41,7 @@ import "spine/core/user_id.proto";
 
 // An intent of the user to purchase shares.
 message PurchaseShares {
+    option (is).java_type = "io.spine.examples.shareaware.investment.WithSellingShares";
 
     // The ID of the purchase process.
     PurchaseId purchase_process = 1;
@@ -55,5 +56,5 @@ message PurchaseShares {
     int32 quantity = 4 [(required) = true];
 
     // The price per share at the time of purchase.
-    spine.money.Money share_price = 5 [(required) = true];
+    spine.money.Money price = 5 [(required) = true];
 }
