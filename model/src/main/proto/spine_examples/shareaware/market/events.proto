@@ -95,5 +95,5 @@ message MarketSharesUpdated {
     MarketId market = 1;
 
     // Updated shares.
-    repeated Share share = 2;
+    repeated Share share = 2 [(required) = true];
 }
