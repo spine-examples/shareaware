@@ -38,6 +38,8 @@ import static io.spine.examples.shareaware.server.market.SharesStore.*;
 
 /**
  * Provides the currently available shares on the market.
+ *
+ * <p>The simulation of how the real share market works in the aspect of share price changing.
  */
 final class MarketData {
 
@@ -48,7 +50,7 @@ final class MarketData {
     }
 
     /**
-     * Returns the list of up-to-date shares that available on the market.
+     * Returns the list of up-to-date shares that are available on the market.
      */
     static List<Share> actualShares() {
         return ImmutableList.of(actualize(apple()),
