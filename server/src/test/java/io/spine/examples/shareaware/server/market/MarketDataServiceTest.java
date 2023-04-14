@@ -33,6 +33,8 @@ import io.spine.server.BoundedContextBuilder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+
 @DisplayName("`MarketDataService` should")
 final class MarketDataServiceTest extends FreshContextTest {
 
@@ -46,8 +48,8 @@ final class MarketDataServiceTest extends FreshContextTest {
     @Test
     @DisplayName("emit two `MarketSharesUpdated` events in nine seconds")
     void emitEvent() throws InterruptedException {
-        service.start();
-        Thread.sleep(9000);
+        service.runWith(Duration.ofSeconds(1));
+        Thread.sleep(2500);
 
         context().assertEvents()
                  .withType(MarketSharesUpdated.class)

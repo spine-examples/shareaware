@@ -69,13 +69,14 @@ public final class MarketDataService {
     }
 
     /**
-     * Emits the {@code MarketSharesUpdated} event every 4 seconds on behalf of {@code ThirdPartyContext}.
+     * Emits the {@code MarketSharesUpdated} event with a specified periodicity
+     * on behalf of {@code ThirdPartyContext}.
      */
-    synchronized void start() {
+    synchronized void runWith(Duration period) {
         isActive.set(true);
         marketThread.execute(() -> {
             while (isActive.get()) {
-                sleepUninterruptibly(Duration.ofSeconds(4));
+                sleepUninterruptibly(period);
                 emitEvent();
             }
         });
