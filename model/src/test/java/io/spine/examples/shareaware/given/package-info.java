@@ -24,35 +24,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.wallet;
+/**
+ * Test environment classes for testing
+ * {@code io.spine.examples.shareaware} package.
+ */
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.examples.shareaware.given;
 
-import io.spine.examples.shareaware.WalletId;
-import io.spine.examples.shareaware.server.TradingContext;
-import io.spine.examples.shareaware.wallet.WalletBalance;
-import io.spine.examples.shareaware.wallet.command.CreateWallet;
-import io.spine.server.BoundedContextBuilder;
-import io.spine.testing.server.blackbox.ContextAwareTest;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
-
-@DisplayName("`WalletBalanceProjection` should")
-public final class WalletBalanceProjectionTest extends ContextAwareTest {
-
-    @Override
-    protected BoundedContextBuilder contextBuilder() {
-        return TradingContext.newBuilder();
-    }
-
-    @Test
-    @DisplayName("display a zero balance, as soon as the wallet created")
-    void balance() {
-        WalletId wallet = givenId();
-        CreateWallet command  = createWallet(wallet);
-        WalletBalance expected = zeroWalletBalance(command.getWallet());
-        context().receivesCommand(command);
-
-        context().assertState(command.getWallet(), expected);
-    }
-}
+import javax.annotation.CheckReturnValue;
+import javax.annotation.ParametersAreNonnullByDefault;

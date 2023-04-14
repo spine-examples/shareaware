@@ -24,7 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.wallet;
+package io.spine.examples.shareaware;
 
 import com.google.common.testing.NullPointerTester;
 import io.spine.money.Currency;
@@ -36,8 +36,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.function.BiFunction;
 
 import static com.google.common.truth.Truth.assertThat;
-import static io.spine.examples.shareaware.server.given.GivenMoney.moneyOf;
-import static io.spine.examples.shareaware.server.given.GivenMoney.usd;
+import static io.spine.examples.shareaware.given.GivenMoney.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

@@ -36,7 +36,6 @@ option java_outer_classname = "InvestmentProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
-import "spine_examples/shareaware/share.proto";
 
 // Represents user's investment into shares of a single type.
 message Investment {

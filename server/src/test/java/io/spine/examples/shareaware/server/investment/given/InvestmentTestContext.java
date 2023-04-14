@@ -26,6 +26,7 @@
 
 package io.spine.examples.shareaware.server.investment.given;
 
+import io.spine.examples.shareaware.server.investment.InvestmentViewRepository;
 import io.spine.examples.shareaware.server.investment.InvestmentAggregate;
 import io.spine.examples.shareaware.server.investment.SharesPurchaseRepository;
 import io.spine.examples.shareaware.server.investment.SharesSaleRepository;
@@ -69,6 +70,7 @@ public final class InvestmentTestContext {
                 .add(new WalletBalanceRepository())
                 .add(new UserWatchlistsRepository())
                 .add(new SharesPurchaseRepository())
-                .add(new SharesSaleRepository());
+                .add(new SharesSaleRepository())
+                .add(new InvestmentViewRepository());
     }
 }

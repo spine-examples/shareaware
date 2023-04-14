@@ -54,7 +54,7 @@ message SharesSold {
     // The price each share was sold for.
     spine.money.Money price = 4 [(required) = true];
 
-    // The quantity of available shares after the sale.
+    // How many shares are available after the sell.
     int32 shares_available = 5 [(required) = true];
 }
 

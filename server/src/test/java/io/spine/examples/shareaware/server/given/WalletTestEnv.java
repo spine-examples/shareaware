@@ -5,12 +5,13 @@ import io.spine.examples.shareaware.ReplenishmentId;
 import io.spine.examples.shareaware.ReplenishmentOperationId;
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.WithdrawalId;
+import io.spine.examples.shareaware.given.GivenMoney;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyFromUser;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
 import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredFromUser;
 import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
-import io.spine.examples.shareaware.server.wallet.MoneyCalculator;
+import io.spine.examples.shareaware.MoneyCalculator;
 import io.spine.examples.shareaware.wallet.Iban;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.WalletBalance;
@@ -38,9 +39,9 @@ import io.spine.money.Money;
 import io.spine.testing.core.given.GivenUserId;
 import io.spine.testing.server.blackbox.BlackBoxContext;
 
-import static io.spine.examples.shareaware.server.given.GivenMoney.moneyOf;
-import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.subtract;
-import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.sum;
+import static io.spine.examples.shareaware.given.GivenMoney.moneyOf;
+import static io.spine.examples.shareaware.MoneyCalculator.subtract;
+import static io.spine.examples.shareaware.MoneyCalculator.sum;
 
 public final class WalletTestEnv {
 
@@ -120,7 +121,7 @@ public final class WalletTestEnv {
         return BalanceRecharged
                 .newBuilder()
                 .setWallet(wallet)
-                .setMoneyAmount(command.getMoneyAmount())
+                .setCurrentBalance(command.getMoneyAmount())
                 .setOperation(operationId(command))
                 .vBuild();
     }
@@ -143,6 +144,7 @@ public final class WalletTestEnv {
                 .newBuilder()
                 .setWallet(command.getWallet())
                 .setId(command.getReplenishment())
+                .setAmount(command.getMoneyAmount())
                 .vBuild();
     }
 
@@ -185,10 +187,10 @@ public final class WalletTestEnv {
     }
 
     public static WalletNotReplenished
-    walletNotReplenishedBy(ReplenishmentId replenishmentProcess) {
+    walletNotReplenishedAfter(ReplenishWallet command) {
         return WalletNotReplenished
                 .newBuilder()
-                .setReplenishment(replenishmentProcess)
+                .setReplenishment(command.getReplenishment())
                 .vBuild();
     }
 

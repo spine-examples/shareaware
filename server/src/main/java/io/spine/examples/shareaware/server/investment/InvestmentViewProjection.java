@@ -24,37 +24,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.wallet;
+package io.spine.examples.shareaware.server.investment;
 
 import io.spine.core.Subscribe;
-import io.spine.examples.shareaware.WalletId;
-import io.spine.examples.shareaware.wallet.WalletBalance;
-import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
-import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
-import io.spine.examples.shareaware.wallet.event.WalletCreated;
+import io.spine.core.UserId;
+import io.spine.examples.shareaware.InvestmentId;
+import io.spine.examples.shareaware.ShareId;
+import io.spine.examples.shareaware.investment.InvestmentView;
+import io.spine.examples.shareaware.investment.event.SharesPurchased;
+import io.spine.examples.shareaware.investment.event.SharesSold;
 import io.spine.server.projection.Projection;
 
-
 /**
- * Manages instances of {@code WalletBalance} projections.
+ * The view of the {@code Investment} displays the number of available shares.
  */
-final class WalletBalanceProjection
-        extends Projection<WalletId, WalletBalance, WalletBalance.Builder> {
+final class InvestmentViewProjection
+        extends Projection<InvestmentId, InvestmentView, InvestmentView.Builder> {
 
     @Subscribe
-    void on(WalletCreated e) {
+    void on(SharesPurchased e) {
+        UserId owner = e.getPurchaser();
+        ShareId share = e.getShare();
         builder()
-                .setId(e.getWallet())
-                .setBalance(e.getBalance());
+                .setId(investmentId(owner, share))
+                .setSharesAvailable(e.getSharesAvailable());
     }
 
     @Subscribe
-    void on(BalanceRecharged e) {
-        builder().setBalance(e.getCurrentBalance());
+    void on(SharesSold e) {
+        UserId owner = e.getSeller();
+        ShareId share = e.getShare();
+        builder()
+                .setId(investmentId(owner, share))
+                .setSharesAvailable(e.getSharesAvailable());
     }
 
-    @Subscribe
-    void on(ReservedMoneyDebited e) {
-        builder().setBalance(e.getCurrentBalance());
+    private static InvestmentId investmentId(UserId owner, ShareId share) {
+        return InvestmentId
+                .newBuilder()
+                .setOwner(owner)
+                .setShare(share)
+                .vBuild();
     }
 }

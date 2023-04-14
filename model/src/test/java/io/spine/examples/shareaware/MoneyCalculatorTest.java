@@ -24,7 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.wallet;
+package io.spine.examples.shareaware;
 
 import io.spine.money.Money;
 import org.junit.jupiter.api.DisplayName;
@@ -35,7 +35,7 @@ import org.junit.jupiter.params.provider.Arguments;
 
 import java.util.stream.Stream;
 
-import static io.spine.examples.shareaware.server.given.GivenMoney.*;
+import static io.spine.examples.shareaware.given.GivenMoney.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.*;
 

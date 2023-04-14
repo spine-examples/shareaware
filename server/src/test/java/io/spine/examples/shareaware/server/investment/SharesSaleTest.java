@@ -27,6 +27,7 @@
 package io.spine.examples.shareaware.server.investment;
 
 import io.spine.core.UserId;
+import io.spine.examples.shareaware.investment.InvestmentView;
 import io.spine.examples.shareaware.investment.Investment;
 import io.spine.examples.shareaware.investment.SharesSale;
 import io.spine.examples.shareaware.investment.command.CancelSharesReservation;
@@ -45,6 +46,7 @@ import io.spine.examples.shareaware.server.FreshContextTest;
 import io.spine.examples.shareaware.server.investment.given.InvestmentTestContext;
 import io.spine.examples.shareaware.server.investment.given.RejectingMarket;
 import io.spine.examples.shareaware.wallet.Wallet;
+import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.command.RechargeBalance;
 import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
 import io.spine.server.BoundedContextBuilder;
@@ -95,7 +97,8 @@ public class SharesSaleTest extends FreshContextTest {
 
             SellShares sellCommand = sellShareAfter(purchaseCommand);
             context().receivesCommand(sellCommand);
-            BalanceRecharged expected = balanceRechargedBy(sellCommand);
+            BalanceRecharged expected =
+                    balanceRechargedAfter(sellCommand, purchaseCommand, wallet);
 
             context().assertEvents()
                      .withType(BalanceRecharged.class)
@@ -167,6 +170,34 @@ public class SharesSaleTest extends FreshContextTest {
 
             context().assertEvent(expected);
         }
+    }
+
+    @Test
+    @DisplayName("reduce the number of available shares in the `InvestmentView` projection")
+    void projection() {
+        Investment investment = setUpInvestment(context());
+        SellShares firstSale = sellShareFrom(investment);
+        SellShares secondSale = sellShareFrom(investment);
+        context().receivesCommands(firstSale, secondSale);
+        InvestmentView expected = investmentViewAfter(firstSale, secondSale, investment);
+
+        context().assertState(investment.getId(), expected);
+    }
+
+    @Test
+    @DisplayName("increase the amount of money in the `WalletBalance` projection")
+    void increaseWalletBalance() {
+        Wallet wallet = setUpReplenishedWallet(context());
+        UserId user = wallet.getId()
+                            .getOwner();
+        PurchaseShares purchaseCommand = purchaseSharesFor(user);
+        context().receivesCommand(purchaseCommand);
+
+        SellShares sellCommand = sellShareAfter(purchaseCommand);
+        context().receivesCommand(sellCommand);
+        WalletBalance expected = walletBalanceAfter(purchaseCommand, sellCommand, wallet);
+
+        context().assertState(wallet.getId(), expected);
     }
 
     @Test

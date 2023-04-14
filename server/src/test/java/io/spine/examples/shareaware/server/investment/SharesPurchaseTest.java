@@ -30,6 +30,7 @@ import io.spine.core.UserId;
 import io.spine.examples.shareaware.InvestmentId;
 import io.spine.examples.shareaware.ShareId;
 import io.spine.examples.shareaware.WalletId;
+import io.spine.examples.shareaware.investment.InvestmentView;
 import io.spine.examples.shareaware.investment.Investment;
 import io.spine.examples.shareaware.investment.SharesPurchase;
 import io.spine.examples.shareaware.investment.command.AddShares;
@@ -42,6 +43,7 @@ import io.spine.examples.shareaware.server.FreshContextTest;
 import io.spine.examples.shareaware.server.investment.given.InvestmentTestContext;
 import io.spine.examples.shareaware.server.investment.given.RejectingMarket;
 import io.spine.examples.shareaware.wallet.Wallet;
+import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.command.CancelMoneyReservation;
 import io.spine.examples.shareaware.wallet.command.DebitReservedMoney;
 import io.spine.examples.shareaware.wallet.command.ReserveMoney;
@@ -297,5 +299,35 @@ public final class SharesPurchaseTest extends FreshContextTest {
             context().assertEvent(expected);
             RejectingMarket.switchToEventsMode();
         }
+    }
+
+    @Test
+    @DisplayName("increase the number of available shares in the `InvestmentView` projection")
+    void state() {
+        Wallet wallet = setUpReplenishedWallet(context());
+        UserId user = wallet.getId()
+                            .getOwner();
+        ShareId share = ShareId.generate();
+        PurchaseShares firstPurchase = purchaseSharesFor(user, share);
+        PurchaseShares secondPurchase = purchaseSharesFor(user, share);
+        context().receivesCommands(firstPurchase, secondPurchase);
+        InvestmentView expected = investmentViewAfter(firstPurchase, secondPurchase);
+
+        context().assertState(expected.getId(), expected);
+    }
+
+    @Test
+    @DisplayName("reduce the balance value in the `WalletBalance` projection")
+    void reduceWalletBalance() {
+        Wallet wallet = setUpReplenishedWallet(context());
+        UserId user = wallet.getId()
+                            .getOwner();
+        ShareId share = ShareId.generate();
+        PurchaseShares firstPurchase = purchaseSharesFor(user, share);
+        PurchaseShares secondPurchase = purchaseSharesFor(user, share);
+        context().receivesCommands(firstPurchase, secondPurchase);
+        WalletBalance expected = walletBalanceAfter(firstPurchase, secondPurchase, wallet);
+
+        context().assertState(wallet.getId(), expected);
     }
 }

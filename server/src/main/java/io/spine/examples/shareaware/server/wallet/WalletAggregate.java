@@ -45,7 +45,7 @@ import io.spine.server.aggregate.Aggregate;
 import io.spine.server.aggregate.Apply;
 import io.spine.server.command.Assign;
 
-import static io.spine.examples.shareaware.server.wallet.MoneyCalculator.*;
+import static io.spine.examples.shareaware.MoneyCalculator.*;
 
 /**
  * The Wallet aggregate is responsible for managing the money
@@ -83,18 +83,18 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
 
     @Assign
     BalanceRecharged handle(RechargeBalance c) {
+        Money newBalance = sum(state().getBalance(), c.getMoneyAmount());
         return BalanceRecharged
                 .newBuilder()
                 .setWallet(c.getWallet())
-                .setMoneyAmount(c.getMoneyAmount())
+                .setCurrentBalance(newBalance)
                 .setOperation(c.getOperation())
                 .vBuild();
     }
 
     @Apply
     private void event(BalanceRecharged e) {
-        Money newBalance = sum(state().getBalance(), e.getMoneyAmount());
-        builder().setBalance(newBalance);
+        builder().setBalance(e.getCurrentBalance());
     }
 
     @Assign

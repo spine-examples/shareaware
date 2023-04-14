@@ -52,5 +52,8 @@ message SharesPurchase {
     ShareId share = 3 [(required) = true];
 
     // The quantity of shares to purchase.
-    int32 quantity = 4 [(required) = true];
+    int32 quantity = 4;
+
+    // How many shares are available after the purchased quantity was added to the investment.
+    int32 shares_available = 5;
 }

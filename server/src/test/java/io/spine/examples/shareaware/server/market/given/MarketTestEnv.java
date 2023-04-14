@@ -39,7 +39,7 @@ import io.spine.examples.shareaware.market.event.MarketClosed;
 import io.spine.examples.shareaware.market.event.MarketOpened;
 import io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeSoldOnMarket;
 import io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeObtained;
-import io.spine.examples.shareaware.server.given.GivenMoney;
+import io.spine.examples.shareaware.given.GivenMoney;
 import io.spine.examples.shareaware.server.market.MarketProcess;
 
 public final class MarketTestEnv {
