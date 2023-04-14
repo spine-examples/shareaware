@@ -38,7 +38,7 @@ import static io.spine.server.route.EventRoute.*;
 /**
  * Manages instances of the {@link AvailableMarketSharesProjection}.
  */
-public class AvailableMarketSharesRepository
+public final class AvailableMarketSharesRepository
         extends ProjectionRepository<MarketId, AvailableMarketSharesProjection, AvailableMarketShares> {
 
     @OverridingMethodsMustInvokeSuper

@@ -36,7 +36,7 @@ import io.spine.server.projection.Projection;
 /**
  * The view of the shares that are currently available on the market.
  */
-class AvailableMarketSharesProjection
+final class AvailableMarketSharesProjection
         extends Projection<MarketId, AvailableMarketShares, AvailableMarketShares.Builder> {
 
     @Subscribe
