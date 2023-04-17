@@ -35,8 +35,10 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+
 @DisplayName("`MarketDataService` should")
-final class MarketDataServiceTest extends FreshContextTest {
+final class MarketDataProviderTest extends FreshContextTest {
 
     private final MarketDataProvider service = MarketDataProvider.instance();
 
@@ -46,10 +48,10 @@ final class MarketDataServiceTest extends FreshContextTest {
     }
 
     @Test
-    @DisplayName("emit two `MarketSharesUpdated` events in nine seconds")
+    @DisplayName("emit two `MarketSharesUpdated` events in two point five seconds")
     void emitEvent() throws InterruptedException {
         service.runWith(Duration.ofSeconds(1));
-        Thread.sleep(2500);
+        sleepUninterruptibly(Duration.ofMillis(2500));
 
         context().assertEvents()
                  .withType(MarketSharesUpdated.class)
