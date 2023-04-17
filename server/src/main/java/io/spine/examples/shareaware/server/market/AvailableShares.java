@@ -32,9 +32,9 @@ import io.spine.money.Currency;
 import io.spine.money.Money;
 
 /**
- * Stores the data about shares.
+ * Provides the instances of the existing shares.
  */
-final class SharesStore {
+final class AvailableShares {
 
     private static final ShareId appleID = ShareId.generate();
     private static final ShareId teslaID = ShareId.generate();
@@ -49,7 +49,7 @@ final class SharesStore {
     /**
      * Prevents instantiation of this class.
      */
-    private SharesStore() {
+    private AvailableShares() {
     }
 
     /**

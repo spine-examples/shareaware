@@ -34,7 +34,7 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.Random;
 
-import static io.spine.examples.shareaware.server.market.SharesStore.*;
+import static io.spine.examples.shareaware.server.market.AvailableShares.*;
 
 /**
  * Provides the currently available shares on the market.
