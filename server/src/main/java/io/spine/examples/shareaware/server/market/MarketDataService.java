@@ -40,20 +40,46 @@ import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterrup
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 /**
- * Provides data about currently available shares on the market to the main ShareAware context.
+ * Provides data about currently available shares on the market to the ShareAware context.
  */
 public final class MarketDataService {
 
-    private final AtomicBoolean isActive = new AtomicBoolean();
     private static MarketDataService instance = null;
+
+    /**
+     * The name of the Bounded Context on behalf of which the data
+     * about available shares on the market will be provided.
+     */
     private static final String tenantName = "MarketData";
+
+    /**
+     * A single-tenant instance of the {@code ThirdPartyContext}
+     * that represents {@value tenantName} as a Bounded Context to the ShareAware application.
+     */
     private final ThirdPartyContext marketContext =
             ThirdPartyContext.singleTenant(tenantName);
-    private final ExecutorService marketThread = newSingleThreadExecutor();
+
+    /**
+     * The ID of the {@value tenantName} Bounded Context.
+     *
+     * <p>Provides the information about who emitted the {@code MarketSharesUpdated} event.
+     */
     private final UserId actor = UserId
             .newBuilder()
             .setValue(tenantName)
             .vBuild();
+
+    /**
+     * The thread executor that allows {@code MarketDataProvider} to work
+     * in a separate thread from the ShareAware application.
+     */
+    private final ExecutorService marketThread = newSingleThreadExecutor();
+
+    /**
+     * Controls the thread in which {@code MarketDataProvider}
+     * is executed to be active or not.
+     */
+    private final AtomicBoolean active = new AtomicBoolean();
 
     /**
      * Prevents instantiation of this class.
@@ -61,6 +87,10 @@ public final class MarketDataService {
     private MarketDataService() {
     }
 
+    /**
+     * Creates the instance of the {@code MarketDataProvider} if there is no such,
+     * otherwise returns the existing.
+     */
     public static synchronized MarketDataService instance() {
         if (instance == null) {
             instance = new MarketDataService();
@@ -70,12 +100,12 @@ public final class MarketDataService {
 
     /**
      * Emits the {@code MarketSharesUpdated} event with a specified periodicity
-     * on behalf of {@code ThirdPartyContext}.
+     * on behalf of the {@value tenantName} Bounded Context.
      */
     synchronized void runWith(Duration period) {
-        isActive.set(true);
+        active.set(true);
         marketThread.execute(() -> {
-            while (isActive.get()) {
+            while (active.get()) {
                 sleepUninterruptibly(period);
                 emitEvent();
             }
@@ -86,7 +116,7 @@ public final class MarketDataService {
      * Stops the event emission.
      */
     synchronized void stop() {
-        isActive.set(false);
+        active.set(false);
         marketThread.shutdown();
     }
 
