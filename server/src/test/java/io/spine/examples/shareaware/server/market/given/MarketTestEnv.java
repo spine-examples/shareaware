@@ -30,6 +30,7 @@ import io.spine.core.UserId;
 import io.spine.examples.shareaware.MarketId;
 import io.spine.examples.shareaware.PurchaseId;
 import io.spine.examples.shareaware.SaleId;
+import io.spine.examples.shareaware.Share;
 import io.spine.examples.shareaware.ShareId;
 import io.spine.examples.shareaware.market.AvailableMarketShares;
 import io.spine.examples.shareaware.market.Market;
@@ -155,10 +156,12 @@ public final class MarketTestEnv {
                 .vBuild();
     }
 
-    public static UserId actor() {
-        return UserId
+    public static Share shareWithoutPrice(Share share) {
+        return Share
                 .newBuilder()
-                .setValue(newUuid())
-                .vBuild();
+                .setId(share.getId())
+                .setCompanyName(share.getCompanyName())
+                .setCompanyLogo(share.getCompanyLogo())
+                .buildPartial();
     }
 }

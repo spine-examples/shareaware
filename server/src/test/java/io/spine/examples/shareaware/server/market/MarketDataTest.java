@@ -33,9 +33,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static com.google.common.truth.Truth.*;
+import static com.google.common.truth.Truth.assertThat;
+import static io.spine.examples.shareaware.server.market.given.MarketTestEnv.shareWithoutPrice;
 
-@DisplayName("'MarketData' should")
+@DisplayName("`MarketData` should")
 final class MarketDataTest extends UtilityClassTest<MarketData> {
 
     MarketDataTest() {
@@ -43,7 +44,7 @@ final class MarketDataTest extends UtilityClassTest<MarketData> {
     }
 
     @Test
-    @DisplayName("provide an identical list of shares, but the prices can be different")
+    @DisplayName("expose a constant set of available shared, with their pricing slightly changing upon each update")
     void actualizeShare() {
         List<Share> firstResult = MarketData.actualShares();
         List<Share> secondResult = MarketData.actualShares();
@@ -56,14 +57,5 @@ final class MarketDataTest extends UtilityClassTest<MarketData> {
             Share shareFromSecondWithoutPrice = shareWithoutPrice(shareFromSecond);
             assertThat(shareFromFirstWithoutPrice).isEqualTo(shareFromSecondWithoutPrice);
         }
-    }
-
-    private static Share shareWithoutPrice(Share share) {
-        return Share
-                .newBuilder()
-                .setId(share.getId())
-                .setCompanyName(share.getCompanyName())
-                .setCompanyLogo(share.getCompanyLogo())
-                .buildPartial();
     }
 }

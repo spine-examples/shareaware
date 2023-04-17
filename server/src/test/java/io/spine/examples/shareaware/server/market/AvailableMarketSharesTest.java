@@ -37,9 +37,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static io.spine.examples.shareaware.server.market.given.MarketTestEnv.actor;
 import static io.spine.examples.shareaware.server.market.given.MarketTestEnv.availableMarketSharesAfter;
 import static io.spine.examples.shareaware.server.market.given.MarketTestEnv.marketSharesUpdated;
+import static io.spine.testing.core.given.GivenUserId.newUuid;
 
 @DisplayName("`AvailableMarketShares` should")
 final class AvailableMarketSharesTest extends FreshContextTest {
@@ -65,7 +65,7 @@ final class AvailableMarketSharesTest extends FreshContextTest {
     @DisplayName("subscribe to the external event `MarketSharesUpdated` and update its state")
     void state() {
         MarketSharesUpdated event = marketSharesUpdated();
-        marketData.emittedEvent(event, actor());
+        marketData.emittedEvent(event, newUuid());
         AvailableMarketShares expected = availableMarketSharesAfter(event);
 
         context().assertState(MarketProcess.ID, expected);
