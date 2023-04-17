@@ -42,9 +42,9 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 /**
  * Provides data about currently available shares on the market to the ShareAware context.
  */
-public final class MarketDataService {
+public final class MarketDataProvider {
 
-    private static MarketDataService instance = null;
+    private static MarketDataProvider instance = null;
 
     /**
      * The name of the Bounded Context on behalf of which the data
@@ -84,16 +84,16 @@ public final class MarketDataService {
     /**
      * Prevents instantiation of this class.
      */
-    private MarketDataService() {
+    private MarketDataProvider() {
     }
 
     /**
      * Creates the instance of the {@code MarketDataProvider} if there is no such,
      * otherwise returns the existing.
      */
-    public static synchronized MarketDataService instance() {
+    public static synchronized MarketDataProvider instance() {
         if (instance == null) {
-            instance = new MarketDataService();
+            instance = new MarketDataProvider();
         }
         return instance;
     }

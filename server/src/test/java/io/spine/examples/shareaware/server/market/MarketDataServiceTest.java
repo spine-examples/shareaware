@@ -38,7 +38,7 @@ import java.time.Duration;
 @DisplayName("`MarketDataService` should")
 final class MarketDataServiceTest extends FreshContextTest {
 
-    private final MarketDataService service = MarketDataService.instance();
+    private final MarketDataProvider service = MarketDataProvider.instance();
 
     @Override
     protected BoundedContextBuilder contextBuilder() {
