@@ -24,8 +24,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Jackson
-
 /*
  * Add the Gradle plugin for bootstrapping projects built with Spine.
  * See: https://github.com/SpineEventEngine/bootstrap
@@ -45,7 +43,5 @@ spine {
 
 dependencies {
     implementation(project(":model"))
-    implementation(Jackson.Databind.lib)
-    implementation(Jackson.DataformatYaml.lib)
     testImplementation(project(":model", "test"))
 }

@@ -24,37 +24,44 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Jackson
-import io.spine.examples.shareaware.dependency.Spine
+package io.spine.examples.shareaware.sharesreader;
 
-/*
- * Add the Gradle plugin for bootstrapping projects built with Spine.
- * See: https://github.com/SpineEventEngine/bootstrap
- */
-plugins {
-    id("io.spine.tools.gradle.bootstrap")
-}
+class ShareInfo {
 
-spine {
-    assembleModel()
-    enableJava()
-}
+    private String id;
+    private String priceUnits;
+    private String companyName;
+    private String companyLogo;
 
-configurations {
-    create("test")
-}
+    public String getId() {
+        return id;
+    }
 
-var testOutputTask = tasks.register<Jar>("testOutput") {
-    archiveBaseName.set("module-test")
-    from(project.the<SourceSetContainer>()["test"].output)
-}
+    int getPriceUnits() {
+        return Integer.parseInt(priceUnits);
+    }
 
-artifacts {
-    add("test", testOutputTask)
-}
+    String getCompanyName() {
+        return companyName;
+    }
 
-dependencies {
-    implementation(Spine.Server.lib)
-    implementation(Jackson.Databind.lib)
-    implementation(Jackson.DataformatYaml.lib)
+    String getCompanyLogo() {
+        return companyLogo;
+    }
+
+    void setId(String id) {
+        this.id = id;
+    }
+
+    void setPriceUnits(String priceUnits) {
+        this.priceUnits = priceUnits;
+    }
+
+    void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    void setCompanyLogo(String companyLogo) {
+        this.companyLogo = companyLogo;
+    }
 }
