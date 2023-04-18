@@ -31,6 +31,10 @@ import io.spine.examples.shareaware.ShareId;
 import io.spine.money.Currency;
 import io.spine.money.Money;
 
+import static io.spine.examples.shareaware.server.market.AvailableShares.SharesData.APPLE;
+import static io.spine.examples.shareaware.server.market.AvailableShares.SharesData.META;
+import static io.spine.examples.shareaware.server.market.AvailableShares.SharesData.TESLA;
+
 /**
  * Provides the instances of the existing shares.
  *
@@ -51,10 +55,10 @@ final class AvailableShares {
     static Share apple() {
         return Share
                 .newBuilder()
-                .setId(SharesData.APPLE.id)
+                .setId(APPLE.id)
                 .setPrice(usd(200))
                 .setCompanyName("Apple")
-                .setCompanyLogo(SharesData.APPLE.logoUrl)
+                .setCompanyLogo(APPLE.logoUrl)
                 .vBuild();
     }
 
@@ -64,10 +68,10 @@ final class AvailableShares {
     static Share tesla() {
         return Share
                 .newBuilder()
-                .setId(SharesData.TESLA.id)
+                .setId(TESLA.id)
                 .setPrice(usd(300))
                 .setCompanyName("Tesla Inc.")
-                .setCompanyLogo(SharesData.TESLA.logoUrl)
+                .setCompanyLogo(TESLA.logoUrl)
                 .vBuild();
     }
 
@@ -77,10 +81,10 @@ final class AvailableShares {
     static Share meta() {
         return Share
                 .newBuilder()
-                .setId(SharesData.META.id)
+                .setId(META.id)
                 .setPrice(usd(150))
                 .setCompanyName("Meta Platforms Inc")
-                .setCompanyLogo(SharesData.META.logoUrl)
+                .setCompanyLogo(META.logoUrl)
                 .vBuild();
     }
 
@@ -95,7 +99,7 @@ final class AvailableShares {
     /**
      * Represents the ID and URL to the company logo for available shares.
      */
-    private enum SharesData {
+    enum SharesData {
         APPLE(ShareId.generate(),
               "https://upload.wikimedia.org/wikipedia/commons/8/8a/Apple_Logo.svg"),
         TESLA(ShareId.generate(),
