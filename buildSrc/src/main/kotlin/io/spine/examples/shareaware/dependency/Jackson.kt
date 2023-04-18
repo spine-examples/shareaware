@@ -24,28 +24,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Jackson
+package io.spine.examples.shareaware.dependency
 
-/*
- * Add the Gradle plugin for bootstrapping projects built with Spine.
- * See: https://github.com/SpineEventEngine/bootstrap
- */
-plugins {
-    id("io.spine.tools.gradle.bootstrap")
-}
+object Jackson {
 
-spine {
-    /*
-     * Add and configure required dependencies for developing a Spine-based Java server.
-     * See: https://github.com/SpineEventEngine/bootstrap#java-projects
-     */
-    enableJava().server()
-    forceDependencies = true
-}
+    object DataformatYaml {
+        const val version = "2.14.2"
+        const val lib = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${version}"
+    }
 
-dependencies {
-    implementation(project(":model"))
-    implementation(Jackson.Databind.lib)
-    implementation(Jackson.DataformatYaml.lib)
-    testImplementation(project(":model", "test"))
+    object Databind {
+        const val version = "2.14.2"
+        const val lib = "com.fasterxml.jackson.core:jackson-databind:${version}"
+    }
 }
