@@ -75,10 +75,10 @@ final class MarketData {
 
     private static Money updatePrice(Money previousPrice) {
         Random random = new SecureRandom();
-        int valueToSummarizeUnits = random.nextInt(21) - 10;
-        long updatedUnits = previousPrice.getUnits() + valueToSummarizeUnits;
-        int valueToSummarizeNanos = random.nextInt(100) - 50;
-        int updatedNanos = previousPrice.getNanos() + valueToSummarizeNanos;
+        int valueToSumWithUnits = random.nextInt(21) - 10;
+        long updatedUnits = previousPrice.getUnits() + valueToSumWithUnits;
+        int valueToSumWithNanos = random.nextInt(100) - 50;
+        int updatedNanos = previousPrice.getNanos() + valueToSumWithNanos;
         if (updatedNanos / 100 >= 1) {
             updatedUnits++;
             updatedNanos -= 100;
