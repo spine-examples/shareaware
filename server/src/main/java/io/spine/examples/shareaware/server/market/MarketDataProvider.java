@@ -43,7 +43,7 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 /**
  * Provides data about currently available shares on the market to the ShareAware context.
  *
- * @implNote It is not allowed to stop and then start the provider again.
+ * @implNote Once the provider has been stopped, it cannot be restarted.
  */
 public final class MarketDataProvider {
 
@@ -54,21 +54,21 @@ public final class MarketDataProvider {
      * The name of the Bounded Context on behalf of which the data
      * about available shares on the market will be provided.
      */
-    private static final String tenantName = "MarketData";
+    private static final String contextName = "MarketData";
 
     /**
      * A single-tenant instance of the {@code ThirdPartyContext}
-     * that represents {@value tenantName} as a Bounded Context to the ShareAware application.
+     * that represents {@value contextName} as a Bounded Context to the ShareAware application.
      */
     private final ThirdPartyContext marketContext =
-            ThirdPartyContext.singleTenant(tenantName);
+            ThirdPartyContext.singleTenant(contextName);
 
     /**
      * The actor on whose behalf the {@code MarketSharesUpdated} event is emitted.
      */
     private final UserId actor = UserId
             .newBuilder()
-            .setValue(tenantName)
+            .setValue("MarketDataBot")
             .vBuild();
 
     /**
@@ -102,7 +102,7 @@ public final class MarketDataProvider {
 
     /**
      * Emits the {@code MarketSharesUpdated} event with a specified periodicity
-     * on behalf of the {@value tenantName} Bounded Context.
+     * on behalf of the {@value contextName} Bounded Context.
      */
     synchronized void runWith(Duration period) {
         active.set(true);
