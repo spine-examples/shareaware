@@ -36,16 +36,6 @@ import io.spine.money.Money;
  */
 final class AvailableShares {
 
-    private static final ShareId appleID = ShareId.generate();
-    private static final ShareId teslaID = ShareId.generate();
-    private static final ShareId metaID = ShareId.generate();
-    private static final String teslaLogo =
-            "https://upload.wikimedia.org/wikipedia/commons/b/bd/Tesla_Motors.svg";
-    private static final String appleLogo =
-            "https://upload.wikimedia.org/wikipedia/commons/8/8a/Apple_Logo.svg";
-    private static final String metaLogo =
-            "https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg";
-
     /**
      * Prevents instantiation of this class.
      */
@@ -58,10 +48,10 @@ final class AvailableShares {
     static Share apple() {
         return Share
                 .newBuilder()
-                .setId(appleID)
+                .setId(SharesData.APPLE.id)
                 .setPrice(usd(200))
                 .setCompanyName("Apple")
-                .setCompanyLogo(appleLogo)
+                .setCompanyLogo(SharesData.APPLE.logoUrl)
                 .vBuild();
     }
 
@@ -71,10 +61,10 @@ final class AvailableShares {
     static Share tesla() {
         return Share
                 .newBuilder()
-                .setId(teslaID)
+                .setId(SharesData.TESLA.id)
                 .setPrice(usd(300))
                 .setCompanyName("Tesla Inc.")
-                .setCompanyLogo(teslaLogo)
+                .setCompanyLogo(SharesData.TESLA.logoUrl)
                 .vBuild();
     }
 
@@ -84,10 +74,10 @@ final class AvailableShares {
     static Share meta() {
         return Share
                 .newBuilder()
-                .setId(metaID)
+                .setId(SharesData.META.id)
                 .setPrice(usd(150))
                 .setCompanyName("Meta Platforms Inc")
-                .setCompanyLogo(metaLogo)
+                .setCompanyLogo(SharesData.META.logoUrl)
                 .vBuild();
     }
 
@@ -97,5 +87,25 @@ final class AvailableShares {
                 .setCurrency(Currency.USD)
                 .setUnits(units)
                 .vBuild();
+    }
+
+    /**
+     * Represents the ID and URL to the company logo for available shares.
+     */
+    private enum SharesData {
+        APPLE(ShareId.generate(),
+              "https://upload.wikimedia.org/wikipedia/commons/8/8a/Apple_Logo.svg"),
+        TESLA(ShareId.generate(),
+              "https://upload.wikimedia.org/wikipedia/commons/b/bd/Tesla_Motors.svg"),
+        META(ShareId.generate(),
+             "https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg");
+
+        private final ShareId id;
+        private final String logoUrl;
+
+        SharesData(ShareId id, String logoUrl) {
+            this.id = id;
+            this.logoUrl = logoUrl;
+        }
     }
 }
