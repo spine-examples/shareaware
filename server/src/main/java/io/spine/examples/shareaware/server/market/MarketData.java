@@ -65,16 +65,31 @@ final class MarketData {
      * <p>Simulates the share price updates on the market.
      */
     private static Share actualize(Share share) {
-        Random random = new SecureRandom();
-        int valueToSummarize = random.nextInt(21) - 10;
-        Money previousPrice = share.getPrice();
-        Money updatedPrice = previousPrice
-                .toBuilder()
-                .setUnits(previousPrice.getUnits() + valueToSummarize)
-                .vBuild();
+        Money updatedPrice = updatePrice(share.getPrice());
         return share
                 .toBuilder()
                 .setPrice(updatedPrice)
+                .vBuild();
+    }
+
+    private static Money updatePrice(Money previousPrice) {
+        Random random = new SecureRandom();
+        int valueToSummarizeUnits = random.nextInt(21) - 10;
+        long updatedUnits = previousPrice.getUnits() + valueToSummarizeUnits;
+        int valueToSummarizeNanos = random.nextInt(100) - 50;
+        int updatedNanos = previousPrice.getNanos() + valueToSummarizeNanos;
+        if (updatedNanos / 100 >= 1) {
+            updatedUnits++;
+            updatedNanos -= 100;
+        }
+        if (updatedNanos < 0) {
+            updatedUnits--;
+            updatedNanos += 100;
+        }
+        return previousPrice
+                .toBuilder()
+                .setUnits(updatedUnits)
+                .setNanos(updatedNanos)
                 .vBuild();
     }
 }
