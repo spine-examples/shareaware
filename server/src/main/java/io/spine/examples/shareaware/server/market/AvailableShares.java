@@ -33,6 +33,9 @@ import io.spine.money.Money;
 
 /**
  * Provides the instances of the existing shares.
+ *
+ * @implNote This is a temporary solution for storing shares in the ShareAware application.
+ * In the next implementation, all shares data will be stored in the project resources.
  */
 final class AvailableShares {
 
