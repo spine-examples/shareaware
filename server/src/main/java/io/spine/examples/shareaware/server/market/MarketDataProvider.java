@@ -30,6 +30,7 @@ import io.spine.core.UserId;
 import io.spine.examples.shareaware.Share;
 import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
 import io.spine.server.integration.ThirdPartyContext;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 import java.time.Duration;
 import java.util.List;
@@ -41,10 +42,13 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 /**
  * Provides data about currently available shares on the market to the ShareAware context.
+ *
+ * @implNote It is not allowed to stop and then start the provider again.
  */
 public final class MarketDataProvider {
 
-    private static MarketDataProvider instance = null;
+    @MonotonicNonNull
+    private static MarketDataProvider instance;
 
     /**
      * The name of the Bounded Context on behalf of which the data
@@ -60,9 +64,7 @@ public final class MarketDataProvider {
             ThirdPartyContext.singleTenant(tenantName);
 
     /**
-     * The ID of the {@value tenantName} Bounded Context.
-     *
-     * <p>Provides the information about who emitted the {@code MarketSharesUpdated} event.
+     * The actor on whose behalf the {@code MarketSharesUpdated} event is emitted.
      */
     private final UserId actor = UserId
             .newBuilder()
@@ -117,7 +119,7 @@ public final class MarketDataProvider {
      */
     synchronized void stop() {
         active.set(false);
-        marketThread.shutdown();
+        marketThread.shutdownNow();
     }
 
     private void emitEvent() {
