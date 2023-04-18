@@ -31,10 +31,11 @@ import io.spine.examples.shareaware.Share;
 import io.spine.money.Money;
 
 import java.security.SecureRandom;
-import java.util.List;
 import java.util.Random;
 
-import static io.spine.examples.shareaware.server.market.AvailableShares.*;
+import static io.spine.examples.shareaware.server.market.AvailableShares.apple;
+import static io.spine.examples.shareaware.server.market.AvailableShares.meta;
+import static io.spine.examples.shareaware.server.market.AvailableShares.tesla;
 
 /**
  * Provides the currently available shares on the market.
@@ -53,7 +54,7 @@ final class MarketData {
     /**
      * Returns the list of up-to-date shares that are available on the market.
      */
-    static List<Share> actualShares() {
+    static ImmutableList<Share> actualShares() {
         return ImmutableList.of(actualize(apple()),
                                 actualize(tesla()),
                                 actualize(meta()));

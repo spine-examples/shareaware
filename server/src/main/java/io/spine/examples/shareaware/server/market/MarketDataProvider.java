@@ -26,6 +26,7 @@
 
 package io.spine.examples.shareaware.server.market;
 
+import com.google.common.collect.ImmutableList;
 import io.spine.core.UserId;
 import io.spine.examples.shareaware.Share;
 import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
@@ -33,7 +34,6 @@ import io.spine.server.integration.ThirdPartyContext;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 import java.time.Duration;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -123,7 +123,7 @@ public final class MarketDataProvider {
     }
 
     private void emitEvent() {
-        List<Share> updatedShares = MarketData.actualShares();
+        ImmutableList<Share> updatedShares = MarketData.actualShares();
         MarketSharesUpdated event = MarketSharesUpdated
                 .newBuilder()
                 .setMarket(MarketProcess.ID)
