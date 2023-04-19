@@ -40,11 +40,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.util.Exceptions.illegalArgumentWithCauseOf;
 import static java.lang.Integer.parseInt;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Provides an API to read {@code Share} instances from the YAML file.
@@ -82,7 +82,7 @@ public final class SharesReader {
             List<Map<String, String>> sharesData = mapper.readValue(file, listType);
             return sharesData.stream()
                     .map(SharesReader::toShare)
-                    .collect(Collectors.toSet());
+                    .collect(toSet());
         } catch (IOException e) {
             throw illegalArgumentWithCauseOf(e);
         }
