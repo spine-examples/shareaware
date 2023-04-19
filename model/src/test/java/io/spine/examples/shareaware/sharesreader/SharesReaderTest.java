@@ -42,7 +42,7 @@ import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("`SharesReader` should")
-class SharesReaderTest extends UtilityClassTest<SharesReader> {
+final class SharesReaderTest extends UtilityClassTest<SharesReader> {
 
     SharesReaderTest() {
         super(SharesReader.class);

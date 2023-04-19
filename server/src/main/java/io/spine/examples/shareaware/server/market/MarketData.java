@@ -50,7 +50,7 @@ import static java.util.Objects.requireNonNull;
  */
 final class MarketData {
 
-    private static Set<Share> shares;
+    private static final Set<Share> shares;
 
     /**
      * Prevents instantiation of this class.

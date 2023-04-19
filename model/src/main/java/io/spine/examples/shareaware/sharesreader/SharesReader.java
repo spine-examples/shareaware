@@ -30,7 +30,6 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.google.common.base.Preconditions;
 import io.spine.examples.shareaware.Share;
 import io.spine.examples.shareaware.ShareId;
 import io.spine.money.Currency;
