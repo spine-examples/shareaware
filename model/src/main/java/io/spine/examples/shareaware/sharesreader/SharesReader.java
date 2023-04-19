@@ -28,8 +28,8 @@ package io.spine.examples.shareaware.sharesreader;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.google.common.collect.ImmutableSet;
 import io.spine.examples.shareaware.Share;
 import io.spine.examples.shareaware.ShareId;
 import io.spine.money.Currency;
@@ -37,15 +37,16 @@ import io.spine.money.Money;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static io.spine.util.Exceptions.illegalStateWithCauseOf;
-import static java.lang.Thread.currentThread;
-import static java.util.Objects.requireNonNull;
 
+/**
+ * Provides an API to read {@code Share} instances from the YAML file.
+ */
 public class SharesReader {
 
     /**
@@ -54,39 +55,57 @@ public class SharesReader {
     private SharesReader() {
     }
 
-    public static Set<Share> read() {
-        ClassLoader classLoader = currentThread().getContextClassLoader();
-        URL urlToFile = requireNonNull(classLoader.getResource("shares.yml"));
-        File file = new File(urlToFile.getFile());
+    /**
+     * Returns the set (to prevent duplication) of shares read from the provided YAML file.
+     *
+     * @implNote Shares must be written to the file in this way:
+     * <ul>
+     *     <li>-</li>
+     *     <li>id: value</li>
+     *     <li>priceUnits: value</li>
+     *     <li>priceNanos: value</li>
+     *     <li>companyName: value</li>
+     *     <li>companyLogo: value</li>
+     *     <li>-</li>
+     *     <li>(next share)</li>
+     * </ul>
+     */
+    public static Set<Share> read(File file) {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        JavaType setType = mapper.getTypeFactory()
-                                 .constructCollectionType(Set.class, ShareInfo.class);
+        MapLikeType mapType = mapper.getTypeFactory()
+                                    .constructMapLikeType(Map.class, String.class, String.class);
+        JavaType listType = mapper.getTypeFactory()
+                                  .constructCollectionType(List.class, mapType);
         try {
-            Set<ShareInfo> infos = mapper.readValue(file, setType);
-            Set<Share> shares = infos.stream()
-                    .map(SharesReader::toShare)
+            List<Map<String, String>> maps = mapper.readValue(file, listType);
+            return maps.stream()
+                    .map((SharesReader::toShare))
                     .collect(Collectors.toSet());
-            return Collections.unmodifiableSet(shares);
         } catch (IOException e) {
             throw illegalStateWithCauseOf(e);
         }
     }
 
-    private static Share toShare(ShareInfo data) {
+    private static Share toShare(Map<String, String> map) {
+        ShareId id = ShareId.of(map.get("id"));
+        Money price = priceFrom(map.get("priceUnits"), map.get("priceNanos"));
         return Share
                 .newBuilder()
-                .setId(ShareId.of(data.getId()))
-                .setCompanyLogo(data.getCompanyLogo())
-                .setCompanyName(data.getCompanyName())
-                .setPrice(usd(data.getPriceUnits()))
+                .setId(id)
+                .setPrice(price)
+                .setCompanyName(map.get("companyName"))
+                .setCompanyLogo(map.get("companyLogo"))
                 .vBuild();
     }
 
-    private static Money usd(int value) {
+    private static Money priceFrom(String priceUnits, String priceNanos) {
+        int units = Integer.parseInt(priceUnits);
+        int nanos = Integer.parseInt(priceNanos);
         return Money
                 .newBuilder()
                 .setCurrency(Currency.USD)
-                .setUnits(value)
+                .setUnits(units)
+                .setNanos(nanos)
                 .vBuild();
     }
 }
