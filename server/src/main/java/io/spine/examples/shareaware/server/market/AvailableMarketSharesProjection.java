@@ -24,32 +24,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+package io.spine.examples.shareaware.server.market;
 
-package spine_examples.shareaware;
+import io.spine.core.External;
+import io.spine.core.Subscribe;
+import io.spine.examples.shareaware.MarketId;
+import io.spine.examples.shareaware.market.AvailableMarketShares;
+import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
+import io.spine.server.projection.Projection;
 
-import "spine/options.proto";
+/**
+ * The view of the shares that are currently available on the market.
+ */
+final class AvailableMarketSharesProjection
+        extends Projection<MarketId, AvailableMarketShares, AvailableMarketShares.Builder> {
 
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware";
-option java_outer_classname = "ShareProto";
-option java_multiple_files = true;
-
-import "spine_examples/shareaware/identifiers.proto";
-import "spine/money/money.proto";
-
-// A share sold on the market.
-message Share {
-
-    // The ID of the share.
-    ShareId id = 1;
-
-    // The current share price.
-    spine.money.Money price = 2 [(required) = true];
-
-    // The company name that issued this share.
-    string company_name = 3 [(required) = true];
-
-    // The URL of the company logo that issued this share.
-    string company_logo = 4 [(required) = true];
+    @Subscribe
+    void on(@External MarketSharesUpdated e) {
+        builder().clearShare()
+                 .addAllShare(e.getShareList());
+    }
 }

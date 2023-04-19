@@ -27,6 +27,7 @@
 package io.spine.examples.shareaware.server.market.given;
 
 import io.spine.examples.shareaware.server.market.MarketProcess;
+import io.spine.examples.shareaware.server.market.AvailableMarketSharesRepository;
 import io.spine.server.BoundedContext;
 import io.spine.server.BoundedContextBuilder;
 import io.spine.server.DefaultRepository;
@@ -49,6 +50,7 @@ public final class MarketTestContext {
     public static BoundedContextBuilder newBuilder() {
         return BoundedContext
                 .singleTenant(NAME)
-                .add(DefaultRepository.of(MarketProcess.class));
+                .add(DefaultRepository.of(MarketProcess.class))
+                .add(new AvailableMarketSharesRepository());
     }
 }

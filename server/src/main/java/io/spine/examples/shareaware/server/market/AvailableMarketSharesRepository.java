@@ -24,32 +24,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+package io.spine.examples.shareaware.server.market;
 
-package spine_examples.shareaware;
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import io.spine.examples.shareaware.MarketId;
+import io.spine.examples.shareaware.market.AvailableMarketShares;
+import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
+import io.spine.server.projection.ProjectionRepository;
+import io.spine.server.route.EventRouting;
 
-import "spine/options.proto";
+import static io.spine.server.route.EventRoute.*;
 
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware";
-option java_outer_classname = "ShareProto";
-option java_multiple_files = true;
+/**
+ * Manages instances of the {@link AvailableMarketSharesProjection}.
+ */
+public final class AvailableMarketSharesRepository
+        extends ProjectionRepository<MarketId, AvailableMarketSharesProjection, AvailableMarketShares> {
 
-import "spine_examples/shareaware/identifiers.proto";
-import "spine/money/money.proto";
-
-// A share sold on the market.
-message Share {
-
-    // The ID of the share.
-    ShareId id = 1;
-
-    // The current share price.
-    spine.money.Money price = 2 [(required) = true];
-
-    // The company name that issued this share.
-    string company_name = 3 [(required) = true];
-
-    // The URL of the company logo that issued this share.
-    string company_logo = 4 [(required) = true];
+    @OverridingMethodsMustInvokeSuper
+    @Override
+    protected void setupEventRouting(EventRouting<MarketId> routing) {
+        super.setupEventRouting(routing);
+        routing.route(MarketSharesUpdated.class, (event, context) -> withId(event.getMarket()));
+    }
 }

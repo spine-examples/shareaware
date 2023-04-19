@@ -24,32 +24,44 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+package io.spine.examples.shareaware.server.given;
 
-package spine_examples.shareaware;
+import io.spine.examples.shareaware.Share;
+import io.spine.examples.shareaware.ShareId;
 
-import "spine/options.proto";
+import static io.spine.examples.shareaware.given.GivenMoney.*;
 
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware";
-option java_outer_classname = "ShareProto";
-option java_multiple_files = true;
+/**
+ * Provides an API to create test instances of the shares.
+ */
+public final class GivenShare {
 
-import "spine_examples/shareaware/identifiers.proto";
-import "spine/money/money.proto";
+    private static final ShareId teslaId = ShareId.generate();
+    private static final ShareId appleId = ShareId.generate();
 
-// A share sold on the market.
-message Share {
+    /**
+     * Prevents instantiation of this class.
+     */
+    private GivenShare() {
+    }
 
-    // The ID of the share.
-    ShareId id = 1;
+    public static Share tesla() {
+        return Share
+                .newBuilder()
+                .setId(teslaId)
+                .setPrice(usd(20))
+                .setCompanyName("Tesla")
+                .setCompanyLogo("testURL")
+                .vBuild();
+    }
 
-    // The current share price.
-    spine.money.Money price = 2 [(required) = true];
-
-    // The company name that issued this share.
-    string company_name = 3 [(required) = true];
-
-    // The URL of the company logo that issued this share.
-    string company_logo = 4 [(required) = true];
+    public static Share apple() {
+        return Share
+                .newBuilder()
+                .setId(appleId)
+                .setPrice(usd(20))
+                .setCompanyName("Apple")
+                .setCompanyLogo("testURL")
+                .vBuild();
+    }
 }

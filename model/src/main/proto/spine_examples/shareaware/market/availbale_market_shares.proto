@@ -26,30 +26,25 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware;
+package spine_examples.shareaware.market;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware";
-option java_outer_classname = "ShareProto";
+option java_package = "io.spine.examples.shareaware.market";
+option java_outer_classname = "AvailableMarketSharesProto";
 option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
-import "spine/money/money.proto";
+import "spine_examples/shareaware/share.proto";
 
-// A share sold on the market.
-message Share {
+// Displays the available shares on the market.
+message AvailableMarketShares {
+    option (entity) = {kind: PROJECTION};
 
-    // The ID of the share.
-    ShareId id = 1;
+    // The ID of the market.
+    MarketId id = 1;
 
-    // The current share price.
-    spine.money.Money price = 2 [(required) = true];
-
-    // The company name that issued this share.
-    string company_name = 3 [(required) = true];
-
-    // The URL of the company logo that issued this share.
-    string company_logo = 4 [(required) = true];
+    // Available shares on the market.
+    repeated Share share = 2 [(required) = true];
 }

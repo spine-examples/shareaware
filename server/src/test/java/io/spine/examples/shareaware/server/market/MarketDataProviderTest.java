@@ -24,32 +24,39 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-syntax = "proto3";
+package io.spine.examples.shareaware.server.market;
 
-package spine_examples.shareaware;
+import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
+import io.spine.examples.shareaware.server.FreshContextTest;
+import io.spine.examples.shareaware.server.market.given.MarketTestContext;
+import io.spine.server.BoundedContextBuilder;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
-import "spine/options.proto";
+import java.time.Duration;
 
-option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware";
-option java_outer_classname = "ShareProto";
-option java_multiple_files = true;
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 
-import "spine_examples/shareaware/identifiers.proto";
-import "spine/money/money.proto";
+@DisplayName("`MarketDataService` should")
+final class MarketDataProviderTest extends FreshContextTest {
 
-// A share sold on the market.
-message Share {
+    private final MarketDataProvider service = MarketDataProvider.instance();
 
-    // The ID of the share.
-    ShareId id = 1;
+    @Override
+    protected BoundedContextBuilder contextBuilder() {
+        return MarketTestContext.newBuilder();
+    }
 
-    // The current share price.
-    spine.money.Money price = 2 [(required) = true];
+    @Test
+    @DisplayName("emit two `MarketSharesUpdated` events in two point five seconds")
+    void emitEvent() throws InterruptedException {
+        service.runWith(Duration.ofSeconds(1));
+        sleepUninterruptibly(Duration.ofMillis(2500));
 
-    // The company name that issued this share.
-    string company_name = 3 [(required) = true];
+        context().assertEvents()
+                 .withType(MarketSharesUpdated.class)
+                 .hasSize(2);
 
-    // The URL of the company logo that issued this share.
-    string company_logo = 4 [(required) = true];
+        service.stop();
+    }
 }
