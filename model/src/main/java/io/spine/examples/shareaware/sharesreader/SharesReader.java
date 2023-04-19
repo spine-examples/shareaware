@@ -101,12 +101,12 @@ public final class SharesReader {
                 .vBuild();
     }
 
-    private static Money priceFrom(String priceUnits, String priceNanos) {
+    private static Money priceFrom(String units, String nanos) {
         return Money
                 .newBuilder()
                 .setCurrency(Currency.USD)
-                .setUnits(parseInt(priceUnits))
-                .setNanos(parseInt(priceNanos))
+                .setUnits(parseInt(units))
+                .setNanos(parseInt(nanos))
                 .vBuild();
     }
 }

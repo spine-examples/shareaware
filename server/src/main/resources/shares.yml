@@ -25,3 +25,24 @@
     priceNanos: 50
     companyName: Microsoft Corp.
     companyLogo: https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg
+
+  -
+    id: 5d7356b3-eccb-23db-19e7-af7465f12f98
+    priceUnits: 160
+    priceNanos: 10
+    companyName: Johnson & Johnson
+    companyLogo: https://upload.wikimedia.org/wikipedia/commons/c/cd/Johnson_and_Johnson_Logo.svg
+
+  -
+    id: 1d5726d7-eccb-56fb-67e2-df5673e56f39
+    priceUnits: 135
+    priceNanos: 14
+    companyName: Toyota Motor Corp
+    companyLogo: https://upload.wikimedia.org/wikipedia/commons/e/e7/Toyota.svg
+
+  -
+    id: 4f6286e2-eccb-25cd-49b4-cd4627d28e24
+    priceUnits: 210
+    priceNanos: 25
+    companyName: Lithia Motors
+    companyLogo: https://upload.wikimedia.org/wikipedia/en/5/53/Lithia_Motors_logo.svg
