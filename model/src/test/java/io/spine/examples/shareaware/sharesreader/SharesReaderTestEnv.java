@@ -59,5 +59,4 @@ final class SharesReaderTestEnv {
                 .vBuild();
         return ImmutableSet.of(goodShare, awesomeShare);
     }
-
 }
