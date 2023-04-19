@@ -79,7 +79,7 @@ public class SharesReader {
         try {
             List<Map<String, String>> maps = mapper.readValue(file, listType);
             return maps.stream()
-                    .map((SharesReader::toShare))
+                    .map(SharesReader::toShare)
                     .collect(Collectors.toSet());
         } catch (IOException e) {
             throw illegalStateWithCauseOf(e);
