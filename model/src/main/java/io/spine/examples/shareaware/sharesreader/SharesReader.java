@@ -42,8 +42,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.util.Exceptions.illegalStateWithCauseOf;
+import static java.lang.Integer.parseInt;
 
 /**
  * Provides an API to read {@code Share} instances from the YAML file.
@@ -79,8 +80,8 @@ public final class SharesReader {
         JavaType listType = mapper.getTypeFactory()
                                   .constructCollectionType(List.class, mapType);
         try {
-            List<Map<String, String>> maps = mapper.readValue(file, listType);
-            return maps.stream()
+            List<Map<String, String>> sharesData = mapper.readValue(file, listType);
+            return sharesData.stream()
                     .map(SharesReader::toShare)
                     .collect(Collectors.toSet());
         } catch (IOException e) {
@@ -88,26 +89,24 @@ public final class SharesReader {
         }
     }
 
-    private static Share toShare(Map<String, String> map) {
-        ShareId id = ShareId.of(map.get("id"));
-        Money price = priceFrom(map.get("priceUnits"), map.get("priceNanos"));
+    private static Share toShare(Map<String, String> shareData) {
+        ShareId id = ShareId.of(shareData.get("id"));
+        Money price = priceFrom(shareData.get("priceUnits"), shareData.get("priceNanos"));
         return Share
                 .newBuilder()
                 .setId(id)
                 .setPrice(price)
-                .setCompanyName(map.get("companyName"))
-                .setCompanyLogo(map.get("companyLogo"))
+                .setCompanyName(shareData.get("companyName"))
+                .setCompanyLogo(shareData.get("companyLogo"))
                 .vBuild();
     }
 
     private static Money priceFrom(String priceUnits, String priceNanos) {
-        int units = Integer.parseInt(priceUnits);
-        int nanos = Integer.parseInt(priceNanos);
         return Money
                 .newBuilder()
                 .setCurrency(Currency.USD)
-                .setUnits(units)
-                .setNanos(nanos)
+                .setUnits(parseInt(priceUnits))
+                .setNanos(parseInt(priceNanos))
                 .vBuild();
     }
 }
