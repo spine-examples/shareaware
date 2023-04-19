@@ -58,7 +58,7 @@ public final class MarketDataProvider {
 
     /**
      * A single-tenant instance of the {@code ThirdPartyContext}
-     * that represents {@value contextName} as a Bounded Context to the ShareAware application.
+     * that pushes the updates of market data as domain events.
      */
     private final ThirdPartyContext marketContext =
             ThirdPartyContext.singleTenant(contextName);
