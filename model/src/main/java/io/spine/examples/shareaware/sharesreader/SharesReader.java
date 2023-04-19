@@ -43,7 +43,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.util.Exceptions.illegalStateWithCauseOf;
+import static io.spine.util.Exceptions.illegalArgumentWithCauseOf;
 import static java.lang.Integer.parseInt;
 
 /**
@@ -68,7 +68,6 @@ public final class SharesReader {
      *     <li>priceNanos: value</li>
      *     <li>companyName: value</li>
      *     <li>companyLogo: value</li>
-     *     <li>-</li>
      *     <li>(next share)</li>
      * </ul>
      */
@@ -85,7 +84,7 @@ public final class SharesReader {
                     .map(SharesReader::toShare)
                     .collect(Collectors.toSet());
         } catch (IOException e) {
-            throw illegalStateWithCauseOf(e);
+            throw illegalArgumentWithCauseOf(e);
         }
     }
 
