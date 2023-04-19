@@ -24,17 +24,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.dependency
+package io.spine.examples.shareaware.sharesreader;
 
-object Jackson {
+import com.google.common.collect.ImmutableSet;
+import io.spine.examples.shareaware.Share;
+import io.spine.examples.shareaware.ShareId;
 
-    object DataformatYaml {
-        const val version = "2.14.2"
-        const val lib = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${version}"
+import java.util.Set;
+
+import static io.spine.examples.shareaware.given.GivenMoney.*;
+
+class SharesReaderTestEnv {
+
+    /**
+     * Prevents instantiation of this class.
+     */
+    private SharesReaderTestEnv() {
     }
 
-    object Databind {
-        const val version = "2.14.2"
-        const val lib = "com.fasterxml.jackson.core:jackson-databind:${version}"
+    static Set<Share> expectedSharesFromFile() {
+        Share goodShare = Share
+                .newBuilder()
+                .setId(ShareId.of("9c6456b3-eccb-48db-90d3-af2595f77f59"))
+                .setPrice(usd(100, 50))
+                .setCompanyName("AwesomeCompany")
+                .setCompanyLogo("https://awesome.site.ord/images/logo.svg")
+                .vBuild();
+        Share awesomeShare = Share
+                .newBuilder()
+                .setId(ShareId.of("4b8326b3-eccb-48db-45d3-af2595d55f59"))
+                .setPrice(usd(100, 50))
+                .setCompanyName("GoodCompany")
+                .setCompanyLogo("https://good.site.ord/images/logo.svg")
+                .vBuild();
+        return ImmutableSet.of(goodShare, awesomeShare);
     }
+
 }

@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.google.common.base.Preconditions;
 import io.spine.examples.shareaware.Share;
 import io.spine.examples.shareaware.ShareId;
 import io.spine.money.Currency;
@@ -42,12 +43,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.google.common.base.Preconditions.*;
 import static io.spine.util.Exceptions.illegalStateWithCauseOf;
 
 /**
  * Provides an API to read {@code Share} instances from the YAML file.
  */
-public class SharesReader {
+public final class SharesReader {
 
     /**
      * Prevents instantiation of this class.
@@ -71,6 +73,7 @@ public class SharesReader {
      * </ul>
      */
     public static Set<Share> read(File file) {
+        checkNotNull(file);
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         MapLikeType mapType = mapper.getTypeFactory()
                                     .constructMapLikeType(Map.class, String.class, String.class);
