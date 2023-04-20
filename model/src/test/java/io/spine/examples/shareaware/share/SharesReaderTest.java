@@ -24,10 +24,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.sharesreader;
+package io.spine.examples.shareaware.share;
 
 import com.google.common.truth.Truth;
-import io.spine.examples.shareaware.share.Share;
 import io.spine.testing.UtilityClassTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,7 +35,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.Set;
 
-import static io.spine.examples.shareaware.sharesreader.SharesReaderTestEnv.expectedSharesFromFile;
+import static io.spine.examples.shareaware.share.SharesReaderTestEnv.expectedSharesFromFile;
 import static java.lang.Thread.currentThread;
 import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;

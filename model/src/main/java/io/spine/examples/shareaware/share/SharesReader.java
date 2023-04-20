@@ -24,13 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.sharesreader;
+package io.spine.examples.shareaware.share;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import io.spine.examples.shareaware.share.Share;
 import io.spine.examples.shareaware.ShareId;
 import io.spine.money.Currency;
 import io.spine.money.Money;
