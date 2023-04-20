@@ -61,15 +61,16 @@ public final class SharesReader {
      * Returns the set (to prevent duplication) of shares read from the provided YAML file.
      *
      * @implNote Shares must be written to the file in this way:
-     * <ul>
-     *     <li>-</li>
-     *     <li>id: value</li>
-     *     <li>priceUnits: value</li>
-     *     <li>priceNanos: value</li>
-     *     <li>companyName: value</li>
-     *     <li>companyLogo: value</li>
-     *     <li>(next share)</li>
-     * </ul>
+     * <pre> {@code
+     *     -
+     *     id: value
+     *     priceUnits: value
+     *     priceNanos: value
+     *     companyName: value
+     *     companyLogo: value
+     *     (next share)
+     * }
+     * </pre>
      */
     public static Set<Share> read(File file) {
         checkNotNull(file);
