@@ -26,12 +26,12 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware;
+package spine_examples.shareaware.share;
 
 import "spine/options.proto";
 
 option (type_url_prefix) = "type.shareaware.spine.io";
-option java_package = "io.spine.examples.shareaware";
+option java_package = "io.spine.examples.shareaware.share";
 option java_outer_classname = "ShareProto";
 option java_multiple_files = true;
 

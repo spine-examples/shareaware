@@ -27,7 +27,7 @@
 package io.spine.examples.shareaware.sharesreader;
 
 import com.google.common.truth.Truth;
-import io.spine.examples.shareaware.Share;
+import io.spine.examples.shareaware.share.Share;
 import io.spine.testing.UtilityClassTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -37,7 +37,7 @@ option java_multiple_files = true;
 
 import "spine_examples/shareaware/identifiers.proto";
 import "spine/money/money.proto";
-import "spine_examples/shareaware/share.proto";
+import "spine_examples/shareaware/share/share.proto";
 
 // Shares have been obtained from the market.
 message SharesObtained {
@@ -95,5 +95,5 @@ message MarketSharesUpdated {
     MarketId market = 1;
 
     // Updated shares.
-    repeated Share share = 2 [(required) = true];
+    repeated share.Share share = 2 [(required) = true];
 }
