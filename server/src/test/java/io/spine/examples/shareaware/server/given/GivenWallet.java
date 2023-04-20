@@ -24,37 +24,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.wallet;
+package io.spine.examples.shareaware.server.given;
 
 import io.spine.examples.shareaware.WalletId;
-import io.spine.examples.shareaware.server.TradingContext;
-import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.command.CreateWallet;
-import io.spine.server.BoundedContextBuilder;
-import io.spine.testing.server.blackbox.ContextAwareTest;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import io.spine.testing.core.given.GivenUserId;
+import io.spine.testing.server.blackbox.BlackBoxContext;
 
-import static io.spine.examples.shareaware.server.given.GivenWallet.createWallet;
-import static io.spine.examples.shareaware.server.given.GivenWallet.givenId;
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.zeroWalletBalance;
+public class GivenWallet {
 
-@DisplayName("`WalletBalanceProjection` should")
-public final class WalletBalanceProjectionTest extends ContextAwareTest {
-
-    @Override
-    protected BoundedContextBuilder contextBuilder() {
-        return TradingContext.newBuilder();
+    /**
+     * Prevents instantiation of this class.
+     */
+    private GivenWallet() {
     }
 
-    @Test
-    @DisplayName("display a zero balance, as soon as the wallet created")
-    void balance() {
+    public static WalletId givenId() {
+        return WalletId
+                .newBuilder()
+                .setOwner(GivenUserId.generated())
+                .vBuild();
+    }
+
+    public static CreateWallet createWallet(WalletId id) {
+        return CreateWallet
+                .newBuilder()
+                .setWallet(id)
+                .vBuild();
+    }
+
+    /**
+     * Creates a {@code Wallet} in {@code context} by sending {@code CreateWallet} command to it.
+     *
+     * @return the ID of created {@code Wallet}.
+     */
+    public static WalletId setUpWallet(BlackBoxContext context) {
         WalletId wallet = givenId();
-        CreateWallet command  = createWallet(wallet);
-        WalletBalance expected = zeroWalletBalance(command.getWallet());
-        context().receivesCommand(command);
-
-        context().assertState(command.getWallet(), expected);
+        CreateWallet command = createWallet(wallet);
+        context.receivesCommand(command);
+        return wallet;
     }
+
+
 }

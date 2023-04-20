@@ -18,7 +18,6 @@ import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.WalletReplenishment;
 import io.spine.examples.shareaware.wallet.WalletWithdrawal;
 import io.spine.examples.shareaware.wallet.command.CancelMoneyReservation;
-import io.spine.examples.shareaware.wallet.command.CreateWallet;
 import io.spine.examples.shareaware.wallet.command.DebitReservedMoney;
 import io.spine.examples.shareaware.wallet.command.RechargeBalance;
 import io.spine.examples.shareaware.wallet.command.ReplenishWallet;
@@ -36,12 +35,12 @@ import io.spine.examples.shareaware.wallet.event.WalletReplenished;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
 import io.spine.money.Currency;
 import io.spine.money.Money;
-import io.spine.testing.core.given.GivenUserId;
 import io.spine.testing.server.blackbox.BlackBoxContext;
 
 import static io.spine.examples.shareaware.given.GivenMoney.moneyOf;
 import static io.spine.examples.shareaware.MoneyCalculator.subtract;
 import static io.spine.examples.shareaware.MoneyCalculator.sum;
+import static io.spine.examples.shareaware.server.given.GivenWallet.setUpWallet;
 
 public final class WalletTestEnv {
 
@@ -55,20 +54,6 @@ public final class WalletTestEnv {
             .newBuilder()
             .setValue("FI211234569876543210")
             .vBuild();
-
-    public static WalletId givenId() {
-        return WalletId
-                .newBuilder()
-                .setOwner(GivenUserId.generated())
-                .vBuild();
-    }
-
-    public static CreateWallet createWallet(WalletId id) {
-        return CreateWallet
-                .newBuilder()
-                .setWallet(id)
-                .vBuild();
-    }
 
     /**
      * Generates {@code ReplenishWallet} command.
@@ -90,18 +75,6 @@ public final class WalletTestEnv {
     public static ReplenishWallet replenish(WalletId wallet) {
         Money replenishmentAmount = moneyOf(500, Currency.USD);
         return replenish(wallet, replenishmentAmount);
-    }
-
-    /**
-     * Creates a {@code Wallet} in {@code context} by sending {@code CreateWallet} command to it.
-     *
-     * @return the ID of created {@code Wallet}.
-     */
-    public static WalletId setUpWallet(BlackBoxContext context) {
-        WalletId wallet = givenId();
-        CreateWallet command = createWallet(wallet);
-        context.receivesCommand(command);
-        return wallet;
     }
 
     public static Wallet walletReplenishedBy(ReplenishWallet firstReplenishment,

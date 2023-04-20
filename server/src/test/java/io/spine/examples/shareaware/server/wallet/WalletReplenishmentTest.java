@@ -35,8 +35,8 @@ import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.WalletReplenishment;
 import io.spine.examples.shareaware.wallet.command.RechargeBalance;
-import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
 import io.spine.examples.shareaware.wallet.command.ReplenishWallet;
+import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
 import io.spine.examples.shareaware.wallet.event.WalletNotReplenished;
 import io.spine.examples.shareaware.wallet.event.WalletReplenished;
 import io.spine.server.BoundedContextBuilder;
@@ -44,8 +44,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import static io.spine.examples.shareaware.server.given.GivenWallet.setUpWallet;
 import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
-import static io.spine.examples.shareaware.server.wallet.WalletReplenishmentProcess.*;
+import static io.spine.examples.shareaware.server.wallet.WalletReplenishmentProcess.shareAwareIban;
 
 @DisplayName("`WalletReplenishment` should")
 public final class WalletReplenishmentTest extends FreshContextTest {
