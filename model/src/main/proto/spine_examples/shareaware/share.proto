@@ -26,7 +26,7 @@
 
 syntax = "proto3";
 
-package spine_examples.shareaware.share;
+package spine_examples.shareaware;
 
 import "spine/options.proto";
 
