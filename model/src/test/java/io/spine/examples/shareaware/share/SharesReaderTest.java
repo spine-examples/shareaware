@@ -51,7 +51,7 @@ final class SharesReaderTest extends UtilityClassTest<SharesReader> {
     @DisplayName("read shares from file")
     void readShares() {
         ClassLoader classLoader = currentThread().getContextClassLoader();
-        URL urlToFile = requireNonNull(classLoader.getResource("testingShares.yml"));
+        URL urlToFile = requireNonNull(classLoader.getResource("testing-shares.yml"));
         File file = new File(urlToFile.getFile());
         Set<Share> shares = SharesReader.read(file);
         Set<Share> expected = expectedSharesFromFile();
