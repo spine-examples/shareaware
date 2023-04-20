@@ -104,7 +104,7 @@ public final class MarketDataProvider {
      * Emits the {@code MarketSharesUpdated} event with a specified periodicity
      * on behalf of the {@value contextName} Bounded Context.
      */
-    synchronized void runWith(Duration period) {
+    public synchronized void runWith(Duration period) {
         active.set(true);
         marketThread.execute(() -> {
             while (active.get()) {
@@ -117,7 +117,7 @@ public final class MarketDataProvider {
     /**
      * Stops the event emission.
      */
-    synchronized void stop() {
+    public synchronized void stop() {
         active.set(false);
         marketThread.shutdownNow();
     }

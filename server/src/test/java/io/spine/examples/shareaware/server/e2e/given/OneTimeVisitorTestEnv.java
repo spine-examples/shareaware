@@ -24,52 +24,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.given;
+package io.spine.examples.shareaware.server.e2e.given;
 
-import io.spine.core.UserId;
 import io.spine.examples.shareaware.WalletId;
-import io.spine.examples.shareaware.wallet.command.CreateWallet;
-import io.spine.testing.core.given.GivenUserId;
-import io.spine.testing.server.blackbox.BlackBoxContext;
+import io.spine.examples.shareaware.wallet.event.WalletCreated;
 
-public class GivenWallet {
+import static io.spine.examples.shareaware.given.GivenMoney.zero;
 
-    /**
-     * Prevents instantiation of this class.
-     */
-    private GivenWallet() {
-    }
+public class OneTimeVisitorTestEnv {
 
-    public static WalletId givenId() {
-        return WalletId
-                .newBuilder()
-                .setOwner(GivenUserId.generated())
-                .vBuild();
-    }
-
-    public static CreateWallet createWallet(WalletId id) {
-        return CreateWallet
+    public static WalletCreated walletCreatedWith(WalletId id) {
+        return WalletCreated
                 .newBuilder()
                 .setWallet(id)
-                .vBuild();
-    }
-
-    /**
-     * Creates a {@code Wallet} in {@code context} by sending {@code CreateWallet} command to it.
-     *
-     * @return the ID of created {@code Wallet}.
-     */
-    public static WalletId setUpWallet(BlackBoxContext context) {
-        WalletId wallet = givenId();
-        CreateWallet command = createWallet(wallet);
-        context.receivesCommand(command);
-        return wallet;
-    }
-
-    public static WalletId walletId(UserId user) {
-        return WalletId
-                .newBuilder()
-                .setOwner(user)
+                .setBalance(zero())
                 .vBuild();
     }
 
