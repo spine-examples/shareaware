@@ -28,6 +28,7 @@ package io.spine.examples.shareaware.server.given;
 
 import io.spine.core.UserId;
 import io.spine.examples.shareaware.WalletId;
+import io.spine.examples.shareaware.wallet.Iban;
 import io.spine.examples.shareaware.wallet.command.CreateWallet;
 import io.spine.testing.core.given.GivenUserId;
 import io.spine.testing.server.blackbox.BlackBoxContext;
@@ -39,6 +40,11 @@ public class GivenWallet {
      */
     private GivenWallet() {
     }
+
+    public static final Iban IBAN = Iban
+            .newBuilder()
+            .setValue("FI211234569876543210")
+            .vBuild();
 
     public static WalletId givenId() {
         return WalletId

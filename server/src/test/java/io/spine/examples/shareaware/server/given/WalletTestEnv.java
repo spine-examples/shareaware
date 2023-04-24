@@ -40,6 +40,7 @@ import io.spine.testing.server.blackbox.BlackBoxContext;
 import static io.spine.examples.shareaware.given.GivenMoney.moneyOf;
 import static io.spine.examples.shareaware.MoneyCalculator.subtract;
 import static io.spine.examples.shareaware.MoneyCalculator.sum;
+import static io.spine.examples.shareaware.server.given.GivenWallet.IBAN;
 import static io.spine.examples.shareaware.server.given.GivenWallet.setUpWallet;
 
 public final class WalletTestEnv {
@@ -49,11 +50,6 @@ public final class WalletTestEnv {
      */
     private WalletTestEnv() {
     }
-
-    private static final Iban IBAN = Iban
-            .newBuilder()
-            .setValue("FI211234569876543210")
-            .vBuild();
 
     /**
      * Generates {@code ReplenishWallet} command.
