@@ -24,37 +24,38 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Jackson
-import io.spine.examples.shareaware.dependency.Spine
+package io.spine.examples.shareaware.share;
 
-/*
- * Add the Gradle plugin for bootstrapping projects built with Spine.
- * See: https://github.com/SpineEventEngine/bootstrap
- */
-plugins {
-    id("io.spine.tools.gradle.bootstrap")
-}
+import com.google.common.collect.ImmutableSet;
+import io.spine.examples.shareaware.ShareId;
 
-spine {
-    assembleModel()
-    enableJava()
-}
+import java.util.Set;
 
-configurations {
-    create("test")
-}
+import static io.spine.examples.shareaware.given.GivenMoney.*;
 
-var testOutputTask = tasks.register<Jar>("testOutput") {
-    archiveBaseName.set("module-test")
-    from(project.the<SourceSetContainer>()["test"].output)
-}
+final class SharesReaderTestEnv {
 
-artifacts {
-    add("test", testOutputTask)
-}
+    /**
+     * Prevents instantiation of this class.
+     */
+    private SharesReaderTestEnv() {
+    }
 
-dependencies {
-    implementation(Spine.Server.lib)
-    implementation(Jackson.Databind.lib)
-    implementation(Jackson.DataformatYaml.lib)
+    static Set<Share> expectedSharesFromFile() {
+        Share goodShare = Share
+                .newBuilder()
+                .setId(ShareId.of("9c6456b3-eccb-48db-90d3-af2595f77f59"))
+                .setPrice(usd(100, 50))
+                .setCompanyName("AwesomeCompany")
+                .setCompanyLogo("https://awesome.site.org/images/logo.svg")
+                .vBuild();
+        Share awesomeShare = Share
+                .newBuilder()
+                .setId(ShareId.of("4b8326b3-eccb-48db-45d3-af2595d55f59"))
+                .setPrice(usd(100, 50))
+                .setCompanyName("GoodCompany")
+                .setCompanyLogo("https://good.site.org/images/logo.svg")
+                .vBuild();
+        return ImmutableSet.of(goodShare, awesomeShare);
+    }
 }

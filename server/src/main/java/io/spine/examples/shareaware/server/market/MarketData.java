@@ -27,15 +27,20 @@
 package io.spine.examples.shareaware.server.market;
 
 import com.google.common.collect.ImmutableList;
-import io.spine.examples.shareaware.Share;
+import io.spine.examples.shareaware.share.Share;
+import io.spine.examples.shareaware.share.SharesReader;
 import io.spine.money.Money;
 
+import java.io.File;
+import java.net.URL;
 import java.security.SecureRandom;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import static io.spine.examples.shareaware.server.market.AvailableShares.apple;
-import static io.spine.examples.shareaware.server.market.AvailableShares.meta;
-import static io.spine.examples.shareaware.server.market.AvailableShares.tesla;
+import static java.lang.Thread.currentThread;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Provides the currently available shares on the market.
@@ -45,19 +50,29 @@ import static io.spine.examples.shareaware.server.market.AvailableShares.tesla;
  */
 final class MarketData {
 
+    private static final Set<Share> shares;
+
     /**
      * Prevents instantiation of this class.
      */
     private MarketData() {
     }
 
+    static {
+        ClassLoader classLoader = currentThread().getContextClassLoader();
+        URL urlToFile = requireNonNull(classLoader.getResource("shares.yml"));
+        File file = new File(urlToFile.getFile());
+        shares = SharesReader.read(file);
+    }
+
     /**
      * Returns the list of up-to-date shares that are available on the market.
      */
     static ImmutableList<Share> actualShares() {
-        return ImmutableList.of(actualize(apple()),
-                                actualize(tesla()),
-                                actualize(meta()));
+        List<Share> actualShares = shares.stream()
+                .map(MarketData::actualize)
+                .collect(Collectors.toList());
+        return ImmutableList.copyOf(actualShares);
     }
 
     /**

@@ -28,7 +28,7 @@ package io.spine.examples.shareaware.server.market;
 
 import com.google.common.collect.ImmutableList;
 import io.spine.core.UserId;
-import io.spine.examples.shareaware.Share;
+import io.spine.examples.shareaware.share.Share;
 import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
 import io.spine.server.integration.ThirdPartyContext;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;

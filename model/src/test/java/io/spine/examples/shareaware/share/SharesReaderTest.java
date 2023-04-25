@@ -24,38 +24,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.market;
+package io.spine.examples.shareaware.share;
 
-import io.spine.examples.shareaware.share.Share;
+import com.google.common.truth.Truth;
 import io.spine.testing.UtilityClassTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.io.File;
+import java.net.URL;
+import java.util.Set;
 
-import static com.google.common.truth.Truth.assertThat;
-import static io.spine.examples.shareaware.server.market.given.MarketTestEnv.shareWithoutPrice;
+import static io.spine.examples.shareaware.share.SharesReaderTestEnv.expectedSharesFromFile;
+import static java.lang.Thread.currentThread;
+import static java.util.Objects.requireNonNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@DisplayName("`MarketData` should")
-final class MarketDataTest extends UtilityClassTest<MarketData> {
+@DisplayName("`SharesReader` should")
+final class SharesReaderTest extends UtilityClassTest<SharesReader> {
 
-    MarketDataTest() {
-        super(MarketData.class);
+    SharesReaderTest() {
+        super(SharesReader.class);
     }
 
     @Test
-    @DisplayName("expose a constant set of available shared, with their pricing slightly changing upon each update")
-    void actualizeShare() {
-        List<Share> firstResult = MarketData.actualShares();
-        List<Share> secondResult = MarketData.actualShares();
-        assertThat(firstResult).hasSize(secondResult.size());
+    @DisplayName("read shares from file")
+    void readShares() {
+        ClassLoader classLoader = currentThread().getContextClassLoader();
+        URL urlToFile = requireNonNull(classLoader.getResource("testing-shares.yml"));
+        File file = new File(urlToFile.getFile());
+        Set<Share> shares = SharesReader.read(file);
+        Set<Share> expected = expectedSharesFromFile();
 
-        for (int i = 0; i < firstResult.size(); i++) {
-            Share shareFromFirst = firstResult.get(i);
-            Share shareFromSecond = secondResult.get(i);
-            Share shareFromFirstWithoutPrice = shareWithoutPrice(shareFromFirst);
-            Share shareFromSecondWithoutPrice = shareWithoutPrice(shareFromSecond);
-            assertThat(shareFromFirstWithoutPrice).isEqualTo(shareFromSecondWithoutPrice);
-        }
+        Truth.assertThat(shares)
+             .isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("throw `IllegalArgumentException` when the provided file is invalid")
+    void throwException() {
+        File file = new File("notExistingFile.yml");
+        assertThrows(IllegalArgumentException.class, () -> SharesReader.read(file));
     }
 }

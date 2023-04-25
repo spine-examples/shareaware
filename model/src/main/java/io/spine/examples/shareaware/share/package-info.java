@@ -24,37 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Jackson
-import io.spine.examples.shareaware.dependency.Spine
-
-/*
- * Add the Gradle plugin for bootstrapping projects built with Spine.
- * See: https://github.com/SpineEventEngine/bootstrap
+/**
+ * Provides classes for working with {@code Share}.
  */
-plugins {
-    id("io.spine.tools.gradle.bootstrap")
-}
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.examples.shareaware.share;
 
-spine {
-    assembleModel()
-    enableJava()
-}
-
-configurations {
-    create("test")
-}
-
-var testOutputTask = tasks.register<Jar>("testOutput") {
-    archiveBaseName.set("module-test")
-    from(project.the<SourceSetContainer>()["test"].output)
-}
-
-artifacts {
-    add("test", testOutputTask)
-}
-
-dependencies {
-    implementation(Spine.Server.lib)
-    implementation(Jackson.Databind.lib)
-    implementation(Jackson.DataformatYaml.lib)
-}
+import javax.annotation.CheckReturnValue;
+import javax.annotation.ParametersAreNonnullByDefault;

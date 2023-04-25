@@ -1,0 +1,13 @@
+-
+  id: 9c6456b3-eccb-48db-90d3-af2595f77f59
+  priceUnits: 100
+  priceNanos: 50
+  companyName: AwesomeCompany
+  companyLogo: https://awesome.site.org/images/logo.svg
+
+-
+  id: 4b8326b3-eccb-48db-45d3-af2595d55f59
+  priceUnits: 100
+  priceNanos: 50
+  companyName: GoodCompany
+  companyLogo: https://good.site.org/images/logo.svg

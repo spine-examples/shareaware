@@ -30,7 +30,7 @@ import io.spine.core.UserId;
 import io.spine.examples.shareaware.MarketId;
 import io.spine.examples.shareaware.PurchaseId;
 import io.spine.examples.shareaware.SaleId;
-import io.spine.examples.shareaware.Share;
+import io.spine.examples.shareaware.share.Share;
 import io.spine.examples.shareaware.ShareId;
 import io.spine.examples.shareaware.market.AvailableMarketShares;
 import io.spine.examples.shareaware.market.Market;
