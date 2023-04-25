@@ -81,7 +81,7 @@ public class OneTimeVisitorTestEnv {
                 .vBuild();
     }
 
-    public static PurchaseShares purchaseTeslaShareFor(UserId user, Share tesla) {
+    public static PurchaseShares purchaseShareFor(UserId user, Share tesla) {
         return PurchaseShares
                 .newBuilder()
                 .setPurchaser(user)
