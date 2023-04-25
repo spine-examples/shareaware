@@ -51,6 +51,7 @@ import io.spine.examples.shareaware.wallet.event.MoneyWithdrawn;
 import io.spine.examples.shareaware.wallet.event.WalletCreated;
 import io.spine.examples.shareaware.wallet.event.WalletReplenished;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
+import io.spine.money.Money;
 import io.spine.server.Server;
 import io.spine.testing.core.given.GivenUserId;
 import org.junit.jupiter.api.AfterAll;
@@ -58,7 +59,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -79,9 +79,7 @@ import static io.spine.server.Server.atPort;
 import static java.time.Duration.ofMillis;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 
-@TestMethodOrder(OrderAnnotation.class)
 class OneTimeVisitorTest {
 
     private static final String ADDRESS = "localhost";
@@ -90,8 +88,6 @@ class OneTimeVisitorTest {
     private Server server;
     private ManagedChannel channel;
     private static final MarketDataProvider provider = MarketDataProvider.instance();
-    private final UserId user = GivenUserId.generated();
-    private final WalletId walletId = walletId(user);
 
     @BeforeAll
     static void startProvider() {
@@ -133,106 +129,128 @@ class OneTimeVisitorTest {
     @Test
     void oneTimeVisit() throws ExecutionException, InterruptedException {
         sleepUninterruptibly(ofMillis(1500));
-        createWalletForUser();
-        tryToPurchaseTeslaShare();
-        replenishWallet();
-        purchaseTeslaShare();
-        withdrawAllMoney();
+        UserId user = GivenUserId.generated();
+        WalletId walletId = walletId(user);
+        List<Share> shares = shares(user).get();
+        Share tesla = tesla(shares);
+
+        WalletBalance balanceAfterCreation = createWalletFor(user);
+        WalletBalance zeroBalance = zeroWalletBalance(walletId);
+        assertThat(balanceAfterCreation).isEqualTo(zeroBalance);
+
+        WalletBalance walletAfterFailedPurchase = tryToPurchaseTeslaShareFor(user, tesla);
+        assertThat(walletAfterFailedPurchase).isEqualTo(balanceAfterCreation);
+
+        Money replenishmentAmount = usd(500);
+        WalletBalance balanceAfterReplenishment = replenishWalletFor(replenishmentAmount, walletId);
+        WalletBalance expectedBalanceAfterReplenishment = walletBalanceWith(replenishmentAmount,
+                                                                            walletId);
+        assertThat(balanceAfterReplenishment).isEqualTo(expectedBalanceAfterReplenishment);
+
+        InvestmentView investmentView = purchaseTeslaShareFor(user, tesla);
+        InvestmentView expectedInvestmentView = investmentAfterTeslaPurchase(tesla, user);
+        WalletBalance balanceAfterPurchase = walletBalance(user);
+        WalletBalance expectedBalanceAfterPurchase =
+                balanceAfterTeslaPurchase(tesla.getPrice(), balanceAfterReplenishment);
+        assertThat(investmentView).isEqualTo(expectedInvestmentView);
+        assertThat(balanceAfterPurchase).isEqualTo(expectedBalanceAfterPurchase);
+
+        WalletBalance walletAfterWithdrawal = withdrawAllMoneyFrom(walletId);
+        assertThat(walletAfterWithdrawal).isEqualTo(zeroBalance);
     }
 
-    private void createWalletForUser() throws ExecutionException, InterruptedException {
+    private WalletBalance createWalletFor(UserId user)
+            throws ExecutionException, InterruptedException {
+        WalletId walletId = walletId(user);
         CreateWallet createWallet = createWallet(walletId);
-        WalletBalance zeroBalance = zeroWalletBalance(walletId);
 
         CompletableFuture<WalletCreated> actualWalletCreated =
-                subscribeToEvent(WalletCreated.class);
+                subscribeToEvent(WalletCreated.class, user);
         CompletableFuture<WalletBalance> actualBalance =
-                subscribeToState(WalletBalance.class);
-        command(createWallet);
+                subscribeToState(WalletBalance.class, user);
+        command(createWallet, user);
 
-        assertThat(actualBalance.get()).isEqualTo(zeroBalance);
         assertThat(actualWalletCreated.get()).isEqualTo(walletCreatedWith(walletId));
         client.subscriptions()
               .cancelAll();
+        return actualBalance.get();
     }
 
-    private void tryToPurchaseTeslaShare() throws ExecutionException,
-                                                  InterruptedException {
-        PurchaseShares purchaseTeslaShare = purchaseTeslaShareFor(user, shares().get());
+    private WalletBalance tryToPurchaseTeslaShareFor(UserId user, Share tesla)
+            throws ExecutionException, InterruptedException {
+        PurchaseShares purchaseTeslaShare = OneTimeVisitorTestEnv.purchaseTeslaShareFor(user,
+                                                                                        tesla);
         InsufficientFunds expectedInsufficientFunds = insufficientFundsAfter(purchaseTeslaShare);
 
         CompletableFuture<InsufficientFunds> actualInsufficientFunds =
-                subscribeToEvent(InsufficientFunds.class);
-        command(purchaseTeslaShare);
+                subscribeToEvent(InsufficientFunds.class, user);
+        command(purchaseTeslaShare, user);
 
         assertThat(actualInsufficientFunds.get()).isEqualTo(expectedInsufficientFunds);
         client.subscriptions()
               .cancelAll();
+        return walletBalance(user);
     }
 
-    private void replenishWallet() throws ExecutionException, InterruptedException {
-        ReplenishWallet replenishWallet = OneTimeVisitorTestEnv.replenishWallet(walletId, usd(500));
-        WalletBalance expectedBalance = walletBalanceAfterReplenishment(replenishWallet);
+    private WalletBalance replenishWalletFor(Money amount, WalletId walletId)
+            throws ExecutionException, InterruptedException {
+        ReplenishWallet replenishWallet = replenishWallet(walletId, amount);
         WalletReplenished expectedWalletReplenished = walletReplenishedAfter(replenishWallet);
 
+        UserId user = walletId.getOwner();
         CompletableFuture<WalletReplenished> actualWalletReplenished =
-                subscribeToEvent(WalletReplenished.class);
+                subscribeToEvent(WalletReplenished.class, user);
         CompletableFuture<WalletBalance> actualBalance =
-                subscribeToState(WalletBalance.class);
-        command(replenishWallet);
+                subscribeToState(WalletBalance.class, user);
+        command(replenishWallet, user);
 
         assertThat(actualWalletReplenished.get())
                 .isEqualTo(expectedWalletReplenished);
-        assertThat(actualBalance.get()).isEqualTo(expectedBalance);
         client.subscriptions()
               .cancelAll();
+        return actualBalance.get();
     }
 
-    private void purchaseTeslaShare() throws ExecutionException,
-                                             InterruptedException {
-        WalletBalance currentBalance = walletBalance();
-        PurchaseShares purchaseShares = purchaseTeslaShareFor(user, shares().get());
+    private InvestmentView purchaseTeslaShareFor(UserId user, Share tesla)
+            throws ExecutionException, InterruptedException {
+        PurchaseShares purchaseShares = OneTimeVisitorTestEnv.purchaseTeslaShareFor(user, tesla);
         SharesPurchased expectedSharesPurchased = sharesPurchasedAfter(purchaseShares);
-        WalletBalance expectedBalance = balanceAfterTeslaPurchase(purchaseShares,
-                                                                  currentBalance);
-        InvestmentView expectedInvestment = investmentAfterPurchase(purchaseShares);
 
-        CompletableFuture<WalletBalance> actualBalance =
-                subscribeToState(WalletBalance.class);
         CompletableFuture<SharesPurchased> actualSharesPurchased =
-                subscribeToEvent(SharesPurchased.class);
+                subscribeToEvent(SharesPurchased.class, user);
         CompletableFuture<InvestmentView> actualInvestment =
-                subscribeToState(InvestmentView.class);
-        command(purchaseShares);
+                subscribeToState(InvestmentView.class, user);
+        command(purchaseShares, user);
 
         assertThat(actualSharesPurchased.get()).isEqualTo(expectedSharesPurchased);
-        assertThat(actualBalance.get()).isEqualTo(expectedBalance);
-        assertThat(actualInvestment.get()).isEqualTo(expectedInvestment);
         client.subscriptions()
               .cancelAll();
+        return actualInvestment.get();
     }
 
-    void withdrawAllMoney() throws ExecutionException,
-                                   InterruptedException {
-        WalletBalance currentBalance = walletBalance();
+    private WalletBalance withdrawAllMoneyFrom(WalletId wallet)
+            throws ExecutionException, InterruptedException {
+        UserId user = wallet.getOwner();
+        WalletBalance currentBalance = walletBalance(user);
         WithdrawMoney withdrawAllMoney = OneTimeVisitorTestEnv.withdrawAllMoney(
-                currentBalance, walletId);
+                currentBalance, wallet);
         MoneyWithdrawn expectedMoneyWithdrawn = moneyWithdrawnAfter(withdrawAllMoney,
                                                                     currentBalance);
 
         CompletableFuture<MoneyWithdrawn> actualWithdrawnMoney =
-                subscribeToEvent(MoneyWithdrawn.class);
+                subscribeToEvent(MoneyWithdrawn.class, user);
         CompletableFuture<WalletBalance> balanceAfterWithdrawn =
-                subscribeToState(WalletBalance.class);
-        command(withdrawAllMoney);
+                subscribeToState(WalletBalance.class, user);
+        command(withdrawAllMoney, user);
 
         assertThat(actualWithdrawnMoney.get()).isEqualTo(expectedMoneyWithdrawn);
-        assertThat(balanceAfterWithdrawn.get()).isEqualTo(zeroWalletBalance(walletId));
         client.subscriptions()
               .cancelAll();
+        return balanceAfterWithdrawn.get();
     }
 
-    private <E extends EventMessage> CompletableFuture<E> subscribeToEvent(Class<E> type) {
+    private <E extends EventMessage> CompletableFuture<E> subscribeToEvent(Class<E> type,
+                                                                           UserId user) {
         CompletableFuture<E> future = new CompletableFuture<>();
         client.onBehalfOf(user)
               .subscribeToEvent(type)
@@ -241,7 +259,8 @@ class OneTimeVisitorTest {
         return future;
     }
 
-    private <S extends EntityState> CompletableFuture<S> subscribeToState(Class<S> type) {
+    private <S extends EntityState> CompletableFuture<S> subscribeToState(Class<S> type,
+                                                                          UserId user) {
         CompletableFuture<S> future = new CompletableFuture<>();
         client.onBehalfOf(user)
               .subscribeTo(type)
@@ -250,13 +269,13 @@ class OneTimeVisitorTest {
         return future;
     }
 
-    private void command(CommandMessage commandMessage) {
+    private void command(CommandMessage commandMessage, UserId user) {
         client.onBehalfOf(user)
               .command(commandMessage)
               .postAndForget();
     }
 
-    private WalletBalance walletBalance() {
+    private WalletBalance walletBalance(UserId user) {
         ImmutableList<WalletBalance> balances = client
                 .onBehalfOf(user)
                 .select(WalletBalance.class)
@@ -267,7 +286,7 @@ class OneTimeVisitorTest {
         return balances.get(0);
     }
 
-    private CompletableFuture<List<Share>> shares() {
+    private CompletableFuture<List<Share>> shares(UserId user) {
         CompletableFuture<List<Share>> shares = new CompletableFuture<>();
         client.onBehalfOf(user)
               .subscribeTo(AvailableMarketShares.class)

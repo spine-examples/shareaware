@@ -81,8 +81,7 @@ public class OneTimeVisitorTestEnv {
                 .vBuild();
     }
 
-    public static PurchaseShares purchaseTeslaShareFor(UserId user, Collection<Share> shares) {
-        Share tesla = getTesla(shares);
+    public static PurchaseShares purchaseTeslaShareFor(UserId user, Share tesla) {
         return PurchaseShares
                 .newBuilder()
                 .setPurchaser(user)
@@ -121,11 +120,11 @@ public class OneTimeVisitorTestEnv {
                 .vBuild();
     }
 
-    public static WalletBalance walletBalanceAfterReplenishment(ReplenishWallet command) {
+    public static WalletBalance walletBalanceWith(Money amount, WalletId walletId) {
         return WalletBalance
                 .newBuilder()
-                .setId(command.getWallet())
-                .setBalance(command.getMoneyAmount())
+                .setId(walletId)
+                .setBalance(amount)
                 .vBuild();
     }
 
@@ -139,21 +138,21 @@ public class OneTimeVisitorTestEnv {
                 .vBuild();
     }
 
-    public static WalletBalance balanceAfterTeslaPurchase(PurchaseShares command,
+    public static WalletBalance balanceAfterTeslaPurchase(Money sharePrice,
                                                           WalletBalance balance) {
-        Money reducedBalance = subtract(balance.getBalance(), command.totalCost());
+        Money reducedBalance = subtract(balance.getBalance(), sharePrice);
         return balance
                 .toBuilder()
                 .setBalance(reducedBalance)
                 .vBuild();
     }
 
-    public static InvestmentView investmentAfterPurchase(PurchaseShares command) {
-        InvestmentId id = investmentId(command.getPurchaser(), command.getShare());
+    public static InvestmentView investmentAfterTeslaPurchase(Share tesla, UserId user) {
+        InvestmentId id = investmentId(user, tesla.getId());
         return InvestmentView
                 .newBuilder()
                 .setId(id)
-                .setSharesAvailable(command.getQuantity())
+                .setSharesAvailable(1)
                 .vBuild();
     }
 
@@ -193,7 +192,7 @@ public class OneTimeVisitorTestEnv {
                 .vBuild();
     }
 
-    private static Share getTesla(Collection<Share> shares) {
+    public static Share tesla(Collection<Share> shares) {
         Optional<Share> tesla = shares
                 .stream()
                 .filter((share -> share.getCompanyName()
