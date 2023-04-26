@@ -79,9 +79,9 @@ public class E2ETestUser {
     /**
      * Allows user to send the provided command to the server.
      */
-    public void command(CommandMessage commandMessage) {
+    public void command(CommandMessage command) {
         client.onBehalfOf(userId)
-              .command(commandMessage)
+              .command(command)
               .postAndForget();
     }
 
