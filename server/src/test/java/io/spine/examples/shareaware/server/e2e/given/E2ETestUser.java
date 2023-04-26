@@ -40,13 +40,15 @@ import io.spine.testing.core.given.GivenUserId;
 
 import java.util.concurrent.CompletableFuture;
 
+import static io.spine.examples.shareaware.server.given.GivenWallet.*;
+
 /**
  * Represents a user for end-to-end tests which interacts
  * with the server-side with the help of {@link Client}.
  *
- * <p>In case when the user is needed to have actions that will describe the test scenario,
- * the inheritor must be defined as an inner private class in the test class
- * for test readability improvement.
+ * <p>In case when the user is needed to have actions that
+ * will describe the test scenario precisely, the inheritor must be defined
+ * as an inner private class in the test class for test readability improvement.
  */
 public class E2ETestUser {
 
@@ -58,10 +60,7 @@ public class E2ETestUser {
         this.client = client;
         this.userId = GivenUserId.generated();
         this.walletId = GivenWallet.walletId(userId);
-        CreateWallet createWallet = CreateWallet
-                .newBuilder()
-                .setWallet(walletId)
-                .vBuild();
+        CreateWallet createWallet = createWallet(walletId);
         client.onBehalfOf(userId)
               .command(createWallet)
               .postAndForget();
@@ -105,6 +104,8 @@ public class E2ETestUser {
      *
      * <p>Returns only the {@link CompletableFuture} that stores the {@code EntityState}
      * without {@link Subscription}.
+     *
+     * @see E2ETestUser#subscribeToState(Class)
      */
     protected <S extends EntityState> CompletableFuture<S>
     subscribeToStateAndForget(Class<S> type) {
