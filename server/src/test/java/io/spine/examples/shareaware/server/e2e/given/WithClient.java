@@ -66,7 +66,7 @@ public abstract class WithClient {
 
     @AfterAll
     static void stopProvider() {
-        provider.stop();
+        provider.stopEmission();
     }
 
     @BeforeEach

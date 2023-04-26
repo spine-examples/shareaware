@@ -57,20 +57,12 @@ import static io.spine.examples.shareaware.server.given.GivenWallet.walletId;
 import static io.spine.util.Exceptions.newIllegalArgumentException;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class OneSharePurchaseTestEnv {
+public class SharePurchaseTestEnv {
 
     /**
      * Prevents instantiation of this class.
      */
-    private OneSharePurchaseTestEnv() {
-    }
-
-    public static WalletCreated walletCreatedWith(WalletId id) {
-        return WalletCreated
-                .newBuilder()
-                .setWallet(id)
-                .setBalance(zero())
-                .vBuild();
+    private SharePurchaseTestEnv() {
     }
 
     public static WalletBalance zeroWalletBalance(WalletId wallet) {

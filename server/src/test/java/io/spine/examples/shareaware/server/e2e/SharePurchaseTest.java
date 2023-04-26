@@ -53,21 +53,20 @@ import java.util.concurrent.ExecutionException;
 import static com.google.common.truth.extensions.proto.ProtoTruth.assertThat;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static io.spine.examples.shareaware.given.GivenMoney.usd;
-import static io.spine.examples.shareaware.server.e2e.given.OneSharePurchaseTestEnv.*;
+import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.*;
 import static java.time.Duration.ofMillis;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * End-to-end test that describe such scenario:
  * <pre>
- *     - creation of the wallet for the user,
  *     - the user attempts to purchase shares with no money wallet,
  *     - the user replenishes his wallet for 500 dollars,
  *     - the user successfully purchases one 'Tesla' share,
  *     - the user withdraws all his money from the wallet.
  * </pre>
  */
-class OneSharePurchaseTest extends WithClient {
+class SharePurchaseTest extends WithClient {
 
     @Test
     @DisplayName("Should purchase one tesla share and withdraw all the money after this")
@@ -100,7 +99,7 @@ class OneSharePurchaseTest extends WithClient {
     }
 
     /**
-     * The user for a {@link OneSharePurchaseTest} test that can perform actions
+     * The user for a {@link SharePurchaseTest} test that can perform actions
      * that describe the test scenario.
      */
     private class OneSharePurchaseUser extends E2ETestUser {

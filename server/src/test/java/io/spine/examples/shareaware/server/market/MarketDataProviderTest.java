@@ -38,7 +38,6 @@ import java.time.Duration;
 
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 
-@Disabled
 @DisplayName("`MarketDataService` should")
 final class MarketDataProviderTest extends FreshContextTest {
 
@@ -59,6 +58,6 @@ final class MarketDataProviderTest extends FreshContextTest {
                  .withType(MarketSharesUpdated.class)
                  .hasSize(2);
 
-        service.stop();
+        service.stopEmission();
     }
 }

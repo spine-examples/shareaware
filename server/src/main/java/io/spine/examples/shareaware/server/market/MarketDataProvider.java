@@ -43,7 +43,7 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 /**
  * Provides data about currently available shares on the market to the ShareAware context.
  *
- * @implNote Once the provider has been stopped, it cannot be restarted.
+ * @implNote Once the provider has been terminated, it cannot be restarted.
  */
 public final class MarketDataProvider {
 
@@ -116,8 +116,18 @@ public final class MarketDataProvider {
 
     /**
      * Stops the event emission.
+     *
+     * <p>After this method is called, the provider can be restarted again.
      */
-    public synchronized void stop() {
+    public synchronized void stopEmission() {
+        active.set(false);
+    }
+
+    /**
+     * Stops the event emission and terminates the thread
+     * in which the provider is running.
+     */
+    public synchronized void terminate() {
         active.set(false);
         marketThread.shutdownNow();
     }
