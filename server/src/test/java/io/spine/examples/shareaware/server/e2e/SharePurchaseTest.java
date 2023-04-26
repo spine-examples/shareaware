@@ -28,7 +28,7 @@ package io.spine.examples.shareaware.server.e2e;
 
 import com.google.common.collect.ImmutableList;
 import io.spine.client.Client;
-import io.spine.examples.shareaware.Share;
+import io.spine.examples.shareaware.share.Share;
 import io.spine.examples.shareaware.investment.InvestmentView;
 import io.spine.examples.shareaware.investment.command.PurchaseShares;
 import io.spine.examples.shareaware.investment.event.SharesPurchased;
