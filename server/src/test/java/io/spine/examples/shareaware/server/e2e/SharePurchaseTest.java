@@ -60,13 +60,13 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * End-to-end test that describe such scenario:
  * <pre>
- *     - the user attempts to purchase shares with no money wallet,
+ *     - the user attempts to purchase shares with no money in the wallet,
  *     - the user replenishes his wallet for 500 dollars,
  *     - the user successfully purchases one 'Tesla' share,
  *     - the user withdraws all his money from the wallet.
  * </pre>
  */
-class SharePurchaseTest extends WithClient {
+final class SharePurchaseTest extends WithClient {
 
     @Test
     @DisplayName("Should purchase one tesla share and withdraw all the money after this")
@@ -76,7 +76,7 @@ class SharePurchaseTest extends WithClient {
         WalletBalance initialBalance = user.looksAtWalletBalance();
         sleepUninterruptibly(ofMillis(1500));
         List<Share> shares = user.looksAtShares();
-        Share tesla = tesla(shares);
+        Share tesla = chooseTeslaShareFrom(shares);
 
         WalletBalance balanceAfterFailedPurchase = user.attemptsToPurchaseShare(tesla);
         assertThat(balanceAfterFailedPurchase).isEqualTo(initialBalance);
@@ -99,7 +99,7 @@ class SharePurchaseTest extends WithClient {
     }
 
     /**
-     * The user for a {@link SharePurchaseTest} test that can perform actions
+     * The user for a {@link SharePurchaseTest} that can perform actions
      * that describe the test scenario.
      */
     private class SharePurchaseUser extends E2ETestUser {

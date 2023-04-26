@@ -42,7 +42,6 @@ import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.command.ReplenishWallet;
 import io.spine.examples.shareaware.wallet.command.WithdrawMoney;
 import io.spine.examples.shareaware.wallet.event.MoneyWithdrawn;
-import io.spine.examples.shareaware.wallet.event.WalletCreated;
 import io.spine.examples.shareaware.wallet.event.WalletReplenished;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
 import io.spine.money.Money;
@@ -57,7 +56,7 @@ import static io.spine.examples.shareaware.server.given.GivenWallet.walletId;
 import static io.spine.util.Exceptions.newIllegalArgumentException;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class SharePurchaseTestEnv {
+public final class SharePurchaseTestEnv {
 
     /**
      * Prevents instantiation of this class.
@@ -184,7 +183,7 @@ public class SharePurchaseTestEnv {
                 .vBuild();
     }
 
-    public static Share tesla(Collection<Share> shares) {
+    public static Share chooseTeslaShareFrom(Collection<Share> shares) {
         Optional<Share> tesla = shares
                 .stream()
                 .filter((share -> share.getCompanyName()
