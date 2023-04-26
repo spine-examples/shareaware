@@ -54,7 +54,6 @@ import static io.spine.examples.shareaware.given.GivenMoney.zero;
 import static io.spine.examples.shareaware.server.given.GivenWallet.IBAN;
 import static io.spine.examples.shareaware.server.given.GivenWallet.walletId;
 import static io.spine.util.Exceptions.newIllegalArgumentException;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public final class SharePurchaseTestEnv {
 
@@ -192,7 +191,6 @@ public final class SharePurchaseTestEnv {
         if (tesla.isPresent()) {
             return tesla.get();
         }
-        fail();
         throw newIllegalArgumentException("No 'Tesla' share were found in the provided `Collection`.");
     }
 }
