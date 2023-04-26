@@ -30,7 +30,6 @@ import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
 import io.spine.examples.shareaware.server.FreshContextTest;
 import io.spine.examples.shareaware.server.market.given.MarketTestContext;
 import io.spine.server.BoundedContextBuilder;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
