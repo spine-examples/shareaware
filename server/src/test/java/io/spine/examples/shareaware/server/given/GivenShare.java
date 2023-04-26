@@ -26,7 +26,7 @@
 
 package io.spine.examples.shareaware.server.given;
 
-import io.spine.examples.shareaware.Share;
+import io.spine.examples.shareaware.share.Share;
 import io.spine.examples.shareaware.ShareId;
 
 import static io.spine.examples.shareaware.given.GivenMoney.*;

@@ -26,13 +26,16 @@
 
 package io.spine.examples.shareaware.dependency
 
+// https://github.com/FasterXML/jackson
 object Jackson {
 
+    //https://github.com/FasterXML/jackson-dataformats-text
     object DataformatYaml {
         const val version = "2.14.2"
         const val lib = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${version}"
     }
 
+    // https://github.com/FasterXML/jackson-databind
     object Databind {
         const val version = "2.14.2"
         const val lib = "com.fasterxml.jackson.core:jackson-databind:${version}"

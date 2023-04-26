@@ -24,39 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.sharesreader;
+/**
+ * Provides classes for working with {@code Share}.
+ */
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.examples.shareaware.share;
 
-import com.google.common.collect.ImmutableSet;
-import io.spine.examples.shareaware.Share;
-import io.spine.examples.shareaware.ShareId;
-
-import java.util.Set;
-
-import static io.spine.examples.shareaware.given.GivenMoney.*;
-
-final class SharesReaderTestEnv {
-
-    /**
-     * Prevents instantiation of this class.
-     */
-    private SharesReaderTestEnv() {
-    }
-
-    static Set<Share> expectedSharesFromFile() {
-        Share goodShare = Share
-                .newBuilder()
-                .setId(ShareId.of("9c6456b3-eccb-48db-90d3-af2595f77f59"))
-                .setPrice(usd(100, 50))
-                .setCompanyName("AwesomeCompany")
-                .setCompanyLogo("https://awesome.site.org/images/logo.svg")
-                .vBuild();
-        Share awesomeShare = Share
-                .newBuilder()
-                .setId(ShareId.of("4b8326b3-eccb-48db-45d3-af2595d55f59"))
-                .setPrice(usd(100, 50))
-                .setCompanyName("GoodCompany")
-                .setCompanyLogo("https://good.site.org/images/logo.svg")
-                .vBuild();
-        return ImmutableSet.of(goodShare, awesomeShare);
-    }
-}
+import javax.annotation.CheckReturnValue;
+import javax.annotation.ParametersAreNonnullByDefault;

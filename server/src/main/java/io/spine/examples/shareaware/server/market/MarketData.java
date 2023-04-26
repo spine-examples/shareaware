@@ -27,8 +27,8 @@
 package io.spine.examples.shareaware.server.market;
 
 import com.google.common.collect.ImmutableList;
-import io.spine.examples.shareaware.Share;
-import io.spine.examples.shareaware.sharesreader.SharesReader;
+import io.spine.examples.shareaware.share.Share;
+import io.spine.examples.shareaware.share.SharesReader;
 import io.spine.money.Money;
 
 import java.io.File;

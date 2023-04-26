@@ -24,13 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.sharesreader;
+package io.spine.examples.shareaware.share;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import io.spine.examples.shareaware.Share;
 import io.spine.examples.shareaware.ShareId;
 import io.spine.money.Currency;
 import io.spine.money.Money;
@@ -61,15 +60,16 @@ public final class SharesReader {
      * Returns the set (to prevent duplication) of shares read from the provided YAML file.
      *
      * @implNote Shares must be written to the file in this way:
-     * <ul>
-     *     <li>-</li>
-     *     <li>id: value</li>
-     *     <li>priceUnits: value</li>
-     *     <li>priceNanos: value</li>
-     *     <li>companyName: value</li>
-     *     <li>companyLogo: value</li>
-     *     <li>(next share)</li>
-     * </ul>
+     * <pre> {@code
+     *     -
+     *     id: value
+     *     priceUnits: value
+     *     priceNanos: value
+     *     companyName: value
+     *     companyLogo: value
+     *     (next share)
+     * }
+     * </pre>
      */
     public static Set<Share> read(File file) {
         checkNotNull(file);
