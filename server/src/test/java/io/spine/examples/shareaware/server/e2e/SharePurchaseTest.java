@@ -58,7 +58,7 @@ import static java.time.Duration.ofMillis;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * End-to-end test that describe such scenario:
+ * End-to-end test that describes such a scenario:
  * <pre>
  *     - the user attempts to purchase shares with no money in the wallet,
  *     - the user replenishes his wallet for 500 dollars,
