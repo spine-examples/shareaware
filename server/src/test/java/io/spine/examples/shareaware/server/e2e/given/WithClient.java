@@ -26,15 +26,9 @@
 
 package io.spine.examples.shareaware.server.e2e.given;
 
-import com.google.common.collect.ImmutableList;
 import io.grpc.ManagedChannel;
 import io.grpc.StatusRuntimeException;
-import io.spine.base.CommandMessage;
-import io.spine.base.EntityState;
-import io.spine.base.EventMessage;
 import io.spine.client.Client;
-import io.spine.client.Subscription;
-import io.spine.core.UserId;
 import io.spine.examples.shareaware.server.TradingContext;
 import io.spine.examples.shareaware.server.market.MarketDataProvider;
 import io.spine.server.Server;
@@ -45,7 +39,6 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.concurrent.CompletableFuture;
 
 import static io.grpc.ManagedChannelBuilder.forAddress;
 import static io.grpc.Status.CANCELLED;
@@ -54,6 +47,9 @@ import static io.spine.server.Server.atPort;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.fail;
 
+/**
+ * Abstract base for end-to-end tests that aware of gRPC client.
+ */
 public abstract class WithClient {
 
     private static final String ADDRESS = "localhost";
@@ -102,58 +98,5 @@ public abstract class WithClient {
 
     protected Client client() {
         return client;
-    }
-
-    protected <E extends EventMessage> CompletableFuture<E> subscribeToEventAndForget(Class<E> type,
-                                                                                      UserId user) {
-        FutureAndSubscription<E> futureAndSubscription = subscribeToEvent(type, user);
-        return futureAndSubscription.future();
-    }
-
-    protected <S extends EntityState> CompletableFuture<S> subscribeToStateAndForget(Class<S> type,
-                                                                                     UserId user) {
-        FutureAndSubscription<S> futureAndSubscription = subscribeToState(type, user);
-        return futureAndSubscription.future();
-    }
-
-    protected <S extends EventMessage> FutureAndSubscription<S> subscribeToEvent(Class<S> type,
-                                                                                 UserId user) {
-        CompletableFuture<S> future = new CompletableFuture<>();
-        Subscription subscription = client
-                .onBehalfOf(user)
-                .subscribeToEvent(type)
-                .observe(future::complete)
-                .post();
-        return new FutureAndSubscription<>(future, subscription);
-    }
-
-    protected <S extends EntityState> FutureAndSubscription<S> subscribeToState(Class<S> type,
-                                                                                UserId user) {
-        CompletableFuture<S> future = new CompletableFuture<>();
-        Subscription subscription = client
-                .onBehalfOf(user)
-                .subscribeTo(type)
-                .observe(future::complete)
-                .post();
-        return new FutureAndSubscription<>(future, subscription);
-    }
-
-    protected void command(CommandMessage commandMessage, UserId user) {
-        client.onBehalfOf(user)
-              .command(commandMessage)
-              .postAndForget();
-    }
-
-    protected void cancel(Subscription subscription) {
-        client.subscriptions()
-              .cancel(subscription);
-    }
-
-    protected <S extends EntityState> ImmutableList<S> lookAt(Class<S> type,
-                                                              UserId user) {
-        return client
-                .onBehalfOf(user)
-                .select(type)
-                .run();
     }
 }

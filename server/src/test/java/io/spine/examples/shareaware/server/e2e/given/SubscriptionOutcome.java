@@ -31,13 +31,19 @@ import io.spine.client.Subscription;
 
 import java.util.concurrent.CompletableFuture;
 
-public class FutureAndSubscription<S extends KnownMessage> {
+/**
+ * The outcome of the subscription that was made by the {@link E2ETestUser}.
+ *
+ * <p>Contains the {@link CompletableFuture} that stores the received message
+ * of the subscribed type and the {@link Subscription} itself.
+ */
+public class SubscriptionOutcome<S extends KnownMessage> {
 
-    private CompletableFuture<S> future;
+    private final CompletableFuture<S> future;
 
-    private Subscription subscription;
+    private final Subscription subscription;
 
-    public FutureAndSubscription(CompletableFuture<S> future, Subscription subscription) {
+    SubscriptionOutcome(CompletableFuture<S> future, Subscription subscription) {
         this.future = future;
         this.subscription = subscription;
     }
