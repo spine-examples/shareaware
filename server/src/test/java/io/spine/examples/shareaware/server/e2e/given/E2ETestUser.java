@@ -68,7 +68,7 @@ public class E2ETestUser {
     }
 
     /**
-     * Allows user to look at the provided {@code EntityState}.
+     * Allows user to take a look at all the {@code EntityState}s with the provided type.
      */
     public <S extends EntityState> ImmutableList<S> lookAt(Class<S> type) {
         return client

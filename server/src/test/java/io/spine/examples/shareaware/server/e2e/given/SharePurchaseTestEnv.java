@@ -73,14 +73,14 @@ public class SharePurchaseTestEnv {
                 .vBuild();
     }
 
-    public static PurchaseShares purchaseShareFor(UserId user, Share tesla) {
+    public static PurchaseShares purchaseShareFor(UserId user, Share share) {
         return PurchaseShares
                 .newBuilder()
                 .setPurchaser(user)
                 .setPurchaseProcess(PurchaseId.generate())
                 .setQuantity(1)
-                .setShare(tesla.getId())
-                .setPrice(tesla.getPrice())
+                .setShare(share.getId())
+                .setPrice(share.getPrice())
                 .vBuild();
     }
 
@@ -194,6 +194,6 @@ public class SharePurchaseTestEnv {
             return tesla.get();
         }
         fail();
-        throw newIllegalArgumentException("No 'Tesla' share were found in the share list.");
+        throw newIllegalArgumentException("No 'Tesla' share were found in the provided `Collection`.");
     }
 }

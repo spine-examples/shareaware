@@ -71,7 +71,7 @@ class SharePurchaseTest extends WithClient {
     @Test
     @DisplayName("Should purchase one tesla share and withdraw all the money after this")
     void test() throws ExecutionException, InterruptedException {
-        OneSharePurchaseUser user = new OneSharePurchaseUser(client());
+        SharePurchaseUser user = new SharePurchaseUser(client());
 
         WalletBalance initialBalance = user.looksAtWalletBalance();
         sleepUninterruptibly(ofMillis(1500));
@@ -102,9 +102,9 @@ class SharePurchaseTest extends WithClient {
      * The user for a {@link SharePurchaseTest} test that can perform actions
      * that describe the test scenario.
      */
-    private class OneSharePurchaseUser extends E2ETestUser {
+    private class SharePurchaseUser extends E2ETestUser {
 
-        private OneSharePurchaseUser(Client client) {
+        private SharePurchaseUser(Client client) {
             super(client);
         }
 
