@@ -37,7 +37,7 @@ import java.util.concurrent.CompletableFuture;
  * <p>Contains the {@link CompletableFuture} that stores the received message
  * of the subscribed type and the {@link Subscription} itself.
  */
-public class SubscriptionOutcome<S extends KnownMessage> {
+public final class SubscriptionOutcome<S extends KnownMessage> {
 
     private final CompletableFuture<S> future;
 

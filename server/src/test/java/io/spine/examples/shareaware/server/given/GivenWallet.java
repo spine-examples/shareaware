@@ -33,7 +33,7 @@ import io.spine.examples.shareaware.wallet.command.CreateWallet;
 import io.spine.testing.core.given.GivenUserId;
 import io.spine.testing.server.blackbox.BlackBoxContext;
 
-public class GivenWallet {
+public final class GivenWallet {
 
     /**
      * Prevents instantiation of this class.
