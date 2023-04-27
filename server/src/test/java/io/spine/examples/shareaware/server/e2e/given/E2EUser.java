@@ -34,29 +34,46 @@ import io.spine.client.Client;
 import io.spine.client.Subscription;
 import io.spine.core.UserId;
 import io.spine.examples.shareaware.WalletId;
+import io.spine.examples.shareaware.investment.InvestmentView;
+import io.spine.examples.shareaware.investment.command.PurchaseShares;
+import io.spine.examples.shareaware.market.AvailableMarketShares;
 import io.spine.examples.shareaware.server.given.GivenWallet;
+import io.spine.examples.shareaware.share.Share;
+import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.command.CreateWallet;
+import io.spine.examples.shareaware.wallet.command.ReplenishWallet;
+import io.spine.examples.shareaware.wallet.command.WithdrawMoney;
+import io.spine.money.Money;
 import io.spine.testing.core.given.GivenUserId;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
-import static io.spine.examples.shareaware.server.given.GivenWallet.*;
+import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.purchaseSharesFor;
+import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.replenishWallet;
+import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.withdrawMoneyFrom;
+import static io.spine.examples.shareaware.server.given.GivenWallet.createWallet;
+import static io.spine.util.Exceptions.illegalStateWithCauseOf;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Represents a user for end-to-end tests which interacts
  * with the server-side with the help of {@link Client}.
  *
- * <p>In case when the user is needed to have actions that
- * will describe the test scenario precisely, the inheritor must be defined
- * as an inner private class in the test class for test readability improvement.
+ * <p>In some tests, it may be required to extend the API provided by this type.
+ * Then, subclassing should be done in a nested type, residing inside
+ * the target test class.
  */
-public class E2ETestUser {
+public class E2EUser {
 
     private final Client client;
     private final UserId userId;
     private final WalletId walletId;
 
-    public E2ETestUser(Client client) {
+    public E2EUser(Client client) {
         this.client = client;
         this.userId = GivenUserId.generated();
         this.walletId = GivenWallet.walletId(userId);
@@ -86,12 +103,107 @@ public class E2ETestUser {
     }
 
     /**
+     * Returns the ID of the user.
+     */
+    public UserId id() {
+        return userId;
+    }
+
+    /**
+     * Returns the ID of the user's wallet.
+     */
+    public WalletId walletId() {
+        return walletId;
+    }
+
+    /**
+     * Describes the user's action to replenish his wallet.
+     *
+     * <p>As a result, the wallet should be replenished on the passed amount.
+     */
+    public WalletBalance replenishesWalletFor(Money amount) {
+        ReplenishWallet replenishWallet = replenishWallet(walletId(), amount);
+
+        SubscriptionOutcome<WalletBalance> actualBalance =
+                subscribeToState(WalletBalance.class);
+        command(replenishWallet);
+
+        cancel(actualBalance.subscription());
+        try {
+            return actualBalance.future()
+                                .get(10, SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            throw illegalStateWithCauseOf(e);
+        }
+    }
+
+    /**
+     * Describes the user's action to purchase shares.
+     */
+    public InvestmentView purchasesShares(Share share, int quantity) {
+        PurchaseShares purchaseShares = purchaseSharesFor(id(), share, quantity);
+
+        CompletableFuture<InvestmentView> actualInvestment =
+                subscribeToStateAndForget(InvestmentView.class);
+        command(purchaseShares);
+
+        try {
+            return actualInvestment.get(10, SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            throw illegalStateWithCauseOf(e);
+        }
+    }
+
+    /**
+     * Describes the user's action to withdraw the exact amount of money from the wallet.
+     */
+    public WalletBalance withdrawMoney(Money amount) {
+        WithdrawMoney withdrawMoney = withdrawMoneyFrom(walletId, amount);
+
+        SubscriptionOutcome<WalletBalance> balanceAfterWithdrawal =
+                subscribeToState(WalletBalance.class);
+        command(withdrawMoney);
+
+        cancel(balanceAfterWithdrawal.subscription());
+        try {
+            return balanceAfterWithdrawal.future()
+                                         .get(10, SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            throw illegalStateWithCauseOf(e);
+        }
+    }
+
+    /**
+     * Describes the user's action to look at his wallet balance.
+     */
+    public WalletBalance looksAtWalletBalance() {
+        ImmutableList<WalletBalance> balances = lookAt(WalletBalance.class);
+        if (balances.size() != 1) {
+            fail();
+        }
+        return balances.get(0);
+    }
+
+    /**
+     * Describes the user's action to look at the available shares on the market.
+     */
+    public List<Share> looksAtShares() throws ExecutionException,
+                                              InterruptedException {
+        CompletableFuture<List<Share>> shares = new CompletableFuture<>();
+        client.onBehalfOf(id())
+              .subscribeTo(AvailableMarketShares.class)
+              .observe(projection -> shares.complete(projection.getShareList()))
+              .post();
+        return shares.get();
+    }
+
+    /**
      * Subscribes the user to receive the event of the passed type.
      *
      * <p>Returns only the {@link CompletableFuture} that stores the event
      * without {@link Subscription}.
      *
-     * @see E2ETestUser#subscribeToEvent(Class)
+     * @see E2EUser#subscribeToEvent(Class)
      */
     protected <E extends EventMessage> CompletableFuture<E>
     subscribeToEventAndForget(Class<E> type) {
@@ -105,7 +217,7 @@ public class E2ETestUser {
      * <p>Returns only the {@link CompletableFuture} that stores the {@code EntityState}
      * without {@link Subscription}.
      *
-     * @see E2ETestUser#subscribeToState(Class)
+     * @see E2EUser#subscribeToState(Class)
      */
     protected <S extends EntityState> CompletableFuture<S>
     subscribeToStateAndForget(Class<S> type) {
@@ -141,19 +253,9 @@ public class E2ETestUser {
 
     /**
      * Cancels the passed subscription.
-     *
-     * @see io.spine.client.Subscriptions#cancel(Subscription)
      */
     protected void cancel(Subscription subscription) {
         client.subscriptions()
               .cancel(subscription);
-    }
-
-    public UserId id() {
-        return userId;
-    }
-
-    public WalletId walletId() {
-        return walletId;
     }
 }

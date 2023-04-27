@@ -32,7 +32,7 @@ import io.spine.client.Subscription;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * The outcome of the subscription that was made by the {@link E2ETestUser}.
+ * The outcome of the subscription that was made by the {@link E2EUser}.
  *
  * <p>Contains the {@link CompletableFuture} that stores the received message
  * of the subscribed type and the {@link Subscription} itself.

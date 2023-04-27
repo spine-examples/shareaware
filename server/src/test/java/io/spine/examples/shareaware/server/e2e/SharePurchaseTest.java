@@ -26,23 +26,14 @@
 
 package io.spine.examples.shareaware.server.e2e;
 
-import com.google.common.collect.ImmutableList;
 import io.spine.client.Client;
-import io.spine.examples.shareaware.share.Share;
 import io.spine.examples.shareaware.investment.InvestmentView;
 import io.spine.examples.shareaware.investment.command.PurchaseShares;
-import io.spine.examples.shareaware.investment.event.SharesPurchased;
-import io.spine.examples.shareaware.market.AvailableMarketShares;
-import io.spine.examples.shareaware.server.e2e.given.SubscriptionOutcome;
-import io.spine.examples.shareaware.server.e2e.given.E2ETestUser;
+import io.spine.examples.shareaware.server.e2e.given.E2EUser;
 import io.spine.examples.shareaware.server.e2e.given.WithClient;
+import io.spine.examples.shareaware.share.Share;
 import io.spine.examples.shareaware.wallet.WalletBalance;
-import io.spine.examples.shareaware.wallet.command.ReplenishWallet;
-import io.spine.examples.shareaware.wallet.command.WithdrawMoney;
-import io.spine.examples.shareaware.wallet.event.MoneyWithdrawn;
-import io.spine.examples.shareaware.wallet.event.WalletReplenished;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
-import io.spine.money.Money;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -53,9 +44,14 @@ import java.util.concurrent.ExecutionException;
 import static com.google.common.truth.extensions.proto.ProtoTruth.assertThat;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static io.spine.examples.shareaware.given.GivenMoney.usd;
-import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.*;
+import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.purchaseSharesFor;
+import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.balanceAfterTeslaPurchase;
+import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.chooseTeslaShareFrom;
+import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.insufficientFundsAfter;
+import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.investmentAfterTeslaPurchase;
+import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.walletBalanceWith;
+import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.zeroWalletBalance;
 import static java.time.Duration.ofMillis;
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * End-to-end test that describes such a scenario:
@@ -86,7 +82,7 @@ final class SharePurchaseTest extends WithClient {
                 walletBalanceWith(usd(500), user.walletId());
         assertThat(balanceAfterReplenishment).isEqualTo(expectedBalanceAfterReplenishment);
 
-        InvestmentView investmentInTesla = user.purchasesShare(tesla);
+        InvestmentView investmentInTesla = user.purchasesShares(tesla, 1);
         InvestmentView expectedInvestmentInTesla = investmentAfterTeslaPurchase(tesla, user.id());
         WalletBalance balanceAfterPurchase = user.looksAtWalletBalance();
         WalletBalance expectedBalanceAfterPurchase =
@@ -94,7 +90,7 @@ final class SharePurchaseTest extends WithClient {
         assertThat(investmentInTesla).isEqualTo(expectedInvestmentInTesla);
         assertThat(balanceAfterPurchase).isEqualTo(expectedBalanceAfterPurchase);
 
-        WalletBalance walletAfterWithdrawal = user.withdrawsAllHisMoney();
+        WalletBalance walletAfterWithdrawal = user.withdrawsAllHisMoney(balanceAfterPurchase);
         assertThat(walletAfterWithdrawal).isEqualTo(zeroWalletBalance(user.walletId()));
     }
 
@@ -102,7 +98,7 @@ final class SharePurchaseTest extends WithClient {
      * The user for a {@link SharePurchaseTest} that can perform actions
      * that describe the test scenario.
      */
-    private class SharePurchaseUser extends E2ETestUser {
+    private class SharePurchaseUser extends E2EUser {
 
         private SharePurchaseUser(Client client) {
             super(client);
@@ -115,7 +111,7 @@ final class SharePurchaseTest extends WithClient {
          */
         private WalletBalance attemptsToPurchaseShare(Share tesla)
                 throws ExecutionException, InterruptedException {
-            PurchaseShares purchaseTeslaShare = purchaseShareFor(id(), tesla);
+            PurchaseShares purchaseTeslaShare = purchaseSharesFor(id(), tesla, 1);
             InsufficientFunds expectedInsufficientFunds =
                     insufficientFundsAfter(purchaseTeslaShare);
 
@@ -128,94 +124,13 @@ final class SharePurchaseTest extends WithClient {
         }
 
         /**
-         * Describes the user's action to replenish his wallet.
-         *
-         * <p>As a result, the wallet should be replenished on the passed amount.
-         */
-        private WalletBalance replenishesWalletFor(Money amount)
-                throws ExecutionException, InterruptedException {
-            ReplenishWallet replenishWallet = replenishWallet(walletId(), amount);
-            WalletReplenished expectedWalletReplenished =
-                    walletReplenishedAfter(replenishWallet);
-
-            CompletableFuture<WalletReplenished> actualWalletReplenished =
-                    subscribeToEventAndForget(WalletReplenished.class);
-            SubscriptionOutcome<WalletBalance> actualBalance =
-                    subscribeToState(WalletBalance.class);
-            command(replenishWallet);
-
-            assertThat(actualWalletReplenished.get())
-                    .isEqualTo(expectedWalletReplenished);
-            cancel(actualBalance.subscription());
-            return actualBalance.future()
-                                .get();
-        }
-
-        /**
-         * Describes the user's action to purchase a share with the replenished wallet.
-         *
-         * <p>As a result, the share should be purchased and added to the user's investment.
-         */
-        private InvestmentView purchasesShare(Share tesla)
-                throws ExecutionException, InterruptedException {
-            PurchaseShares purchaseShares = purchaseShareFor(id(), tesla);
-            SharesPurchased expectedSharesPurchased = sharesPurchasedAfter(purchaseShares);
-
-            CompletableFuture<SharesPurchased> actualSharesPurchased =
-                    subscribeToEventAndForget(SharesPurchased.class);
-            CompletableFuture<InvestmentView> actualInvestment =
-                    subscribeToStateAndForget(InvestmentView.class);
-            command(purchaseShares);
-
-            assertThat(actualSharesPurchased.get()).isEqualTo(expectedSharesPurchased);
-            return actualInvestment.get();
-        }
-
-        /**
          * Describes the user's action to withdraw all money from the wallet.
          *
          * <p>As a result, the wallet balance should be zero.
          */
-        private WalletBalance withdrawsAllHisMoney()
-                throws ExecutionException, InterruptedException {
-            WalletBalance currentBalance = looksAtWalletBalance();
-            WithdrawMoney withdrawAllMoney = withdrawAllMoney(currentBalance, walletId());
-            MoneyWithdrawn expectedMoneyWithdrawn = moneyWithdrawnAfter(withdrawAllMoney,
-                                                                        currentBalance);
-
-            CompletableFuture<MoneyWithdrawn> actualWithdrawnMoney =
-                    subscribeToEventAndForget(MoneyWithdrawn.class);
-            SubscriptionOutcome<WalletBalance> balanceAfterWithdrawal =
-                    subscribeToState(WalletBalance.class);
-            command(withdrawAllMoney);
-
-            assertThat(actualWithdrawnMoney.get()).isEqualTo(expectedMoneyWithdrawn);
-            return balanceAfterWithdrawal.future()
-                                         .get();
-        }
-
-        /**
-         * Describes the user's action to look at his wallet balance.
-         */
-        private WalletBalance looksAtWalletBalance() {
-            ImmutableList<WalletBalance> balances = lookAt(WalletBalance.class);
-            if (balances.size() != 1) {
-                fail();
-            }
-            return balances.get(0);
-        }
-
-        /**
-         * Describes the user's action to look at the available shares on the market.
-         */
-        private List<Share> looksAtShares() throws ExecutionException,
-                                                   InterruptedException {
-            CompletableFuture<List<Share>> shares = new CompletableFuture<>();
-            client().onBehalfOf(id())
-                    .subscribeTo(AvailableMarketShares.class)
-                    .observe(projection -> shares.complete(projection.getShareList()))
-                    .post();
-            return shares.get();
+        private WalletBalance withdrawsAllHisMoney(WalletBalance balance) {
+            WalletBalance balanceAfterWithdrawal = withdrawMoney(balance.getBalance());
+            return balanceAfterWithdrawal;
         }
     }
 }

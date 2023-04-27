@@ -29,20 +29,13 @@ package io.spine.examples.shareaware.server.e2e.given;
 import io.spine.core.UserId;
 import io.spine.examples.shareaware.InvestmentId;
 import io.spine.examples.shareaware.PurchaseId;
-import io.spine.examples.shareaware.ReplenishmentId;
-import io.spine.examples.shareaware.share.Share;
 import io.spine.examples.shareaware.ShareId;
 import io.spine.examples.shareaware.WalletId;
-import io.spine.examples.shareaware.WithdrawalId;
 import io.spine.examples.shareaware.WithdrawalOperationId;
 import io.spine.examples.shareaware.investment.InvestmentView;
 import io.spine.examples.shareaware.investment.command.PurchaseShares;
-import io.spine.examples.shareaware.investment.event.SharesPurchased;
+import io.spine.examples.shareaware.share.Share;
 import io.spine.examples.shareaware.wallet.WalletBalance;
-import io.spine.examples.shareaware.wallet.command.ReplenishWallet;
-import io.spine.examples.shareaware.wallet.command.WithdrawMoney;
-import io.spine.examples.shareaware.wallet.event.MoneyWithdrawn;
-import io.spine.examples.shareaware.wallet.event.WalletReplenished;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
 import io.spine.money.Money;
 
@@ -51,7 +44,6 @@ import java.util.Optional;
 
 import static io.spine.examples.shareaware.MoneyCalculator.subtract;
 import static io.spine.examples.shareaware.given.GivenMoney.zero;
-import static io.spine.examples.shareaware.server.given.GivenWallet.IBAN;
 import static io.spine.examples.shareaware.server.given.GivenWallet.walletId;
 import static io.spine.util.Exceptions.newIllegalArgumentException;
 
@@ -71,17 +63,6 @@ public final class SharePurchaseTestEnv {
                 .vBuild();
     }
 
-    public static PurchaseShares purchaseShareFor(UserId user, Share share) {
-        return PurchaseShares
-                .newBuilder()
-                .setPurchaser(user)
-                .setPurchaseProcess(PurchaseId.generate())
-                .setQuantity(1)
-                .setShare(share.getId())
-                .setPrice(share.getPrice())
-                .vBuild();
-    }
-
     public static InsufficientFunds insufficientFundsAfter(PurchaseShares command) {
         return InsufficientFunds
                 .newBuilder()
@@ -91,40 +72,11 @@ public final class SharePurchaseTestEnv {
                 .vBuild();
     }
 
-    public static ReplenishWallet replenishWallet(WalletId id, Money amount) {
-        return ReplenishWallet
-                .newBuilder()
-                .setWallet(id)
-                .setReplenishment(ReplenishmentId.generate())
-                .setIban(IBAN)
-                .setMoneyAmount(amount)
-                .vBuild();
-    }
-
-    public static WalletReplenished walletReplenishedAfter(ReplenishWallet command) {
-        return WalletReplenished
-                .newBuilder()
-                .setWallet(command.getWallet())
-                .setReplenishment(command.getReplenishment())
-                .setMoneyAmount(command.getMoneyAmount())
-                .vBuild();
-    }
-
     public static WalletBalance walletBalanceWith(Money amount, WalletId walletId) {
         return WalletBalance
                 .newBuilder()
                 .setId(walletId)
                 .setBalance(amount)
-                .vBuild();
-    }
-
-    public static SharesPurchased sharesPurchasedAfter(PurchaseShares command) {
-        return SharesPurchased
-                .newBuilder()
-                .setPurchaser(command.getPurchaser())
-                .setPurchaseProcess(command.getPurchaseProcess())
-                .setShare(command.getShare())
-                .setSharesAvailable(command.getQuantity())
                 .vBuild();
     }
 
@@ -143,27 +95,6 @@ public final class SharePurchaseTestEnv {
                 .newBuilder()
                 .setId(id)
                 .setSharesAvailable(1)
-                .vBuild();
-    }
-
-    public static WithdrawMoney withdrawAllMoney(WalletBalance balance, WalletId wallet) {
-        return WithdrawMoney
-                .newBuilder()
-                .setWithdrawalProcess(WithdrawalId.generate())
-                .setWallet(wallet)
-                .setRecipient(IBAN)
-                .setAmount(balance.getBalance())
-                .vBuild();
-    }
-
-    public static MoneyWithdrawn moneyWithdrawnAfter(WithdrawMoney command,
-                                                     WalletBalance currentBalance) {
-        Money reducedBalance = subtract(currentBalance.getBalance(), command.getAmount());
-        return MoneyWithdrawn
-                .newBuilder()
-                .setWithdrawalProcess(command.getWithdrawalProcess())
-                .setWallet(command.getWallet())
-                .setCurrentBalance(reducedBalance)
                 .vBuild();
     }
 
