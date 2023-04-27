@@ -59,17 +59,17 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * End-to-end test that describes such a scenario:
- * <pre>
- *     - the user attempts to purchase shares with no money in the wallet,
- *     - the user replenishes his wallet for 500 dollars,
- *     - the user successfully purchases one 'Tesla' share,
- *     - the user withdraws all his money from the wallet.
- * </pre>
+ * <ol>
+ *     <li>The user attempts to purchase shares with no money in the wallet.</li>
+ *     <li>The user replenishes his wallet for 500 dollars.</li>
+ *     <li>The user successfully purchases one 'Tesla' share.</li>
+ *     <li>The user withdraws all his money from the wallet.</li>
+ * </ol>
  */
 final class SharePurchaseTest extends WithClient {
 
     @Test
-    @DisplayName("Should purchase one tesla share and withdraw all the money after this")
+    @DisplayName("User should purchase one tesla share and withdraw all the money after this")
     void test() throws ExecutionException, InterruptedException {
         SharePurchaseUser user = new SharePurchaseUser(client());
 
