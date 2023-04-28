@@ -116,9 +116,9 @@ public final class SharePurchaseTestEnv {
     public static Share chooseTeslaShareFrom(Collection<Share> shares) {
         Optional<Share> tesla = shares
                 .stream()
-                .filter((share -> share.getCompanyName()
+                .filter(share -> share.getCompanyName()
                                        .toLowerCase()
-                                       .contains("tesla")))
+                                       .contains("tesla"))
                 .findAny();
         if (tesla.isPresent()) {
             return tesla.get();

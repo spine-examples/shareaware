@@ -50,6 +50,6 @@ tasks.withType<JavaCompile> {
          * execution of the `javac` task.
          */
         encoding = "UTF-8"
-        compilerArgs.addAll(listOf("-Xlint:unchecked", "-Xlint:deprecation"))
+        compilerArgs.addAll(listOf("-Werror", "-Xlint:unchecked", "-Xlint:deprecation"))
     }
 }
