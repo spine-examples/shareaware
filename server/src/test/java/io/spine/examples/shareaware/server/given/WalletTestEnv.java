@@ -40,7 +40,7 @@ import io.spine.testing.server.blackbox.BlackBoxContext;
 import static io.spine.examples.shareaware.given.GivenMoney.moneyOf;
 import static io.spine.examples.shareaware.MoneyCalculator.subtract;
 import static io.spine.examples.shareaware.MoneyCalculator.sum;
-import static io.spine.examples.shareaware.server.given.GivenWallet.IBAN;
+import static io.spine.examples.shareaware.server.given.GivenWallet.userIban;
 import static io.spine.examples.shareaware.server.given.GivenWallet.setUpWallet;
 
 public final class WalletTestEnv {
@@ -60,7 +60,7 @@ public final class WalletTestEnv {
                 .newBuilder()
                 .setWallet(wallet)
                 .setReplenishment(replenishment)
-                .setIban(IBAN)
+                .setIban(userIban())
                 .setMoneyAmount(amount)
                 .vBuild();
     }
@@ -179,7 +179,7 @@ public final class WalletTestEnv {
                 .newBuilder()
                 .setWithdrawalProcess(WithdrawalId.generate())
                 .setWallet(wallet)
-                .setRecipient(IBAN)
+                .setRecipient(userIban())
                 .setAmount(moneyOf(200, Currency.USD))
                 .vBuild();
     }

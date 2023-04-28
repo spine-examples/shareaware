@@ -37,7 +37,7 @@ import io.spine.examples.shareaware.wallet.command.ReplenishWallet;
 import io.spine.examples.shareaware.wallet.command.WithdrawMoney;
 import io.spine.money.Money;
 
-import static io.spine.examples.shareaware.server.given.GivenWallet.IBAN;
+import static io.spine.examples.shareaware.server.given.GivenWallet.userIban;
 
 public class E2EUserTestEnv {
 
@@ -52,7 +52,7 @@ public class E2EUserTestEnv {
                 .newBuilder()
                 .setWallet(id)
                 .setReplenishment(ReplenishmentId.generate())
-                .setIban(IBAN)
+                .setIban(userIban())
                 .setMoneyAmount(amount)
                 .vBuild();
     }
@@ -75,7 +75,7 @@ public class E2EUserTestEnv {
                 .newBuilder()
                 .setWithdrawalProcess(WithdrawalId.generate())
                 .setWallet(wallet)
-                .setRecipient(IBAN)
+                .setRecipient(userIban())
                 .setAmount(amount)
                 .vBuild();
     }

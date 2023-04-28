@@ -33,6 +33,9 @@ import io.spine.examples.shareaware.wallet.command.CreateWallet;
 import io.spine.testing.core.given.GivenUserId;
 import io.spine.testing.server.blackbox.BlackBoxContext;
 
+/**
+ * Provides the API to work with {@code Wallet} and related messages for test purposes.
+ */
 public final class GivenWallet {
 
     /**
@@ -41,10 +44,14 @@ public final class GivenWallet {
     private GivenWallet() {
     }
 
-    public static final Iban IBAN = Iban
+    private static final Iban IBAN = Iban
             .newBuilder()
             .setValue("FI211234569876543210")
             .vBuild();
+
+    public static Iban userIban() {
+        return IBAN;
+    }
 
     public static WalletId givenId() {
         return WalletId
