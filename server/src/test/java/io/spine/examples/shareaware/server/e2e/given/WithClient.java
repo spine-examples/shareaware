@@ -59,16 +59,25 @@ public abstract class WithClient {
     private ManagedChannel channel;
     private static final MarketDataProvider provider = MarketDataProvider.instance();
 
+    /**
+     * Runs the {@code MarketDataProvider} to provide data about available shares on the market.
+     */
     @BeforeAll
     static void startProvider() {
         provider.runWith(Duration.ofSeconds(1));
     }
 
+    /**
+     * Stops the {@code MarketDataProvider}.
+     */
     @AfterAll
     static void stopProvider() {
         provider.stopEmission();
     }
 
+    /**
+     * Sets up the {@code Client} and starts the server.
+     */
     @BeforeEach
     void startAndConnect() throws IOException {
         channel = forAddress(ADDRESS, PORT)
@@ -81,6 +90,9 @@ public abstract class WithClient {
         client = usingChannel(channel).build();
     }
 
+    /**
+     * Closes the {@code Client} and shuts the server down.
+     */
     @AfterEach
     void stopAndDisconnect() throws InterruptedException {
         try {
@@ -96,6 +108,9 @@ public abstract class WithClient {
         channel.awaitTermination(1, SECONDS);
     }
 
+    /**
+     * Returns the {@code Client} that was set up in the {@link #startAndConnect()} method.
+     */
     protected Client client() {
         return client;
     }
