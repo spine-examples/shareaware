@@ -70,7 +70,7 @@ final class SharePurchaseTest extends WithClient {
     void test() throws ExecutionException, InterruptedException {
         SharePurchaseUser user = new SharePurchaseUser(client());
 
-        WalletBalance initialBalance = user.looksAtWalletBalance();
+        WalletBalance initialBalance = user.signsUp();
         sleepUninterruptibly(ofMillis(1500));
         List<Share> shares = user.looksAtShares();
         Share tesla = chooseTeslaShareFrom(shares);

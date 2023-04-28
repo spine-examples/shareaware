@@ -27,6 +27,7 @@
 package io.spine.examples.shareaware.server.e2e.given;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.truth.Truth;
 import io.spine.base.CommandMessage;
 import io.spine.base.EntityState;
 import io.spine.base.EventMessage;
@@ -51,6 +52,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import static com.google.common.truth.Truth.*;
 import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.purchaseSharesFor;
 import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.replenishWallet;
 import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.withdrawMoneyFrom;
@@ -77,10 +79,6 @@ public class E2EUser {
         this.client = client;
         this.userId = GivenUserId.generated();
         this.walletId = GivenWallet.walletId(userId);
-        CreateWallet createWallet = createWallet(walletId);
-        client.onBehalfOf(userId)
-              .command(createWallet)
-              .postAndForget();
     }
 
     /**
@@ -104,6 +102,19 @@ public class E2EUser {
      */
     public WalletId walletId() {
         return walletId;
+    }
+
+    /**
+     * Describes the user's action to sign up in the application.
+     */
+    public WalletBalance signsUp() {
+        CreateWallet createWallet = createWallet(walletId);
+
+        SubscriptionOutcome<WalletBalance> initialBalance =
+                subscribeToState(WalletBalance.class);
+        command(createWallet);
+
+        return retrieveValueFrom(initialBalance);
     }
 
     /**
@@ -152,9 +163,7 @@ public class E2EUser {
      */
     public WalletBalance looksAtWalletBalance() {
         ImmutableList<WalletBalance> balances = lookAt(WalletBalance.class);
-        if (balances.size() != 1) {
-            fail();
-        }
+        assertThat(balances.size()).isEqualTo(1);
         return balances.get(0);
     }
 
