@@ -30,6 +30,7 @@ import io.spine.client.Client;
 import io.spine.examples.shareaware.investment.InvestmentView;
 import io.spine.examples.shareaware.investment.command.PurchaseShares;
 import io.spine.examples.shareaware.server.e2e.given.E2EUser;
+import io.spine.examples.shareaware.server.e2e.given.SubscriptionOutcome;
 import io.spine.examples.shareaware.server.e2e.given.WithClient;
 import io.spine.examples.shareaware.share.Share;
 import io.spine.examples.shareaware.wallet.WalletBalance;
@@ -82,9 +83,11 @@ final class SharePurchaseTest extends WithClient {
                 walletBalanceWith(usd(500), user.walletId());
         assertThat(balanceAfterReplenishment).isEqualTo(expectedBalanceAfterReplenishment);
 
+        SubscriptionOutcome<WalletBalance> reducedBalance =
+                user.expectsChangesIn(WalletBalance.class);
         InvestmentView investmentInTesla = user.purchasesShares(tesla, 1);
         InvestmentView expectedInvestmentInTesla = investmentAfterTeslaPurchase(tesla, user.id());
-        WalletBalance balanceAfterPurchase = user.looksAtWalletBalance();
+        WalletBalance balanceAfterPurchase = user.checksChangesIn(reducedBalance);
         WalletBalance expectedBalanceAfterPurchase =
                 balanceAfterTeslaPurchase(tesla.getPrice(), balanceAfterReplenishment);
         assertThat(investmentInTesla).isEqualTo(expectedInvestmentInTesla);
@@ -129,7 +132,7 @@ final class SharePurchaseTest extends WithClient {
          * <p>As a result, the wallet balance should be zero.
          */
         private WalletBalance withdrawsAllHisMoney(WalletBalance balance) {
-            WalletBalance balanceAfterWithdrawal = withdrawMoney(balance.getBalance());
+            WalletBalance balanceAfterWithdrawal = withdrawsMoney(balance.getBalance());
             return balanceAfterWithdrawal;
         }
     }

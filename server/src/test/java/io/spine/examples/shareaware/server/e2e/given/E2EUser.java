@@ -84,16 +84,6 @@ public class E2EUser {
     }
 
     /**
-     * Allows user to take a look at all the {@code EntityState}s with the provided type.
-     */
-    public <S extends EntityState> ImmutableList<S> lookAt(Class<S> type) {
-        return client
-                .onBehalfOf(userId)
-                .select(type)
-                .run();
-    }
-
-    /**
      * Allows user to send the provided command to the server.
      */
     public void command(CommandMessage command) {
@@ -128,13 +118,7 @@ public class E2EUser {
                 subscribeToState(WalletBalance.class);
         command(replenishWallet);
 
-        cancel(actualBalance.subscription());
-        try {
-            return actualBalance.future()
-                                .get(10, SECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            throw illegalStateWithCauseOf(e);
-        }
+        return retrieveValueFrom(actualBalance);
     }
 
     /**
@@ -143,34 +127,24 @@ public class E2EUser {
     public InvestmentView purchasesShares(Share share, int quantity) {
         PurchaseShares purchaseShares = purchaseSharesFor(id(), share, quantity);
 
-        CompletableFuture<InvestmentView> actualInvestment =
-                subscribeToStateAndForget(InvestmentView.class);
+        SubscriptionOutcome<InvestmentView> actualInvestment =
+                subscribeToState(InvestmentView.class);
         command(purchaseShares);
 
-        try {
-            return actualInvestment.get(10, SECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            throw illegalStateWithCauseOf(e);
-        }
+        return retrieveValueFrom(actualInvestment);
     }
 
     /**
      * Describes the user's action to withdraw the exact amount of money from the wallet.
      */
-    public WalletBalance withdrawMoney(Money amount) {
+    public WalletBalance withdrawsMoney(Money amount) {
         WithdrawMoney withdrawMoney = withdrawMoneyFrom(walletId, amount);
 
         SubscriptionOutcome<WalletBalance> balanceAfterWithdrawal =
                 subscribeToState(WalletBalance.class);
         command(withdrawMoney);
 
-        cancel(balanceAfterWithdrawal.subscription());
-        try {
-            return balanceAfterWithdrawal.future()
-                                         .get(10, SECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            throw illegalStateWithCauseOf(e);
-        }
+        return retrieveValueFrom(balanceAfterWithdrawal);
     }
 
     /**
@@ -195,6 +169,20 @@ public class E2EUser {
               .observe(projection -> shares.complete(projection.getShareList()))
               .post();
         return shares.get();
+    }
+
+    /**
+     * This method is a public alias for {@link #subscribeToState(Class)}.
+     */
+    public <S extends EntityState> SubscriptionOutcome<S> expectsChangesIn(Class<S> type) {
+       return subscribeToState(type);
+    }
+
+    /**
+     * This method is a public alias for {@link #retrieveValueFrom(SubscriptionOutcome)}.
+     */
+    public <S extends EntityState> S checksChangesIn(SubscriptionOutcome<S> changedState) {
+        return retrieveValueFrom(changedState);
     }
 
     /**
@@ -252,9 +240,32 @@ public class E2EUser {
     }
 
     /**
+     * Retrieves value from {@code SubscriptionOutcome} and cancels the subscription.
+     */
+    protected <S extends EntityState> S retrieveValueFrom(SubscriptionOutcome<S> changedState) {
+        try {
+            cancel(changedState.subscription());
+            return changedState.future()
+                               .get(10, SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            throw illegalStateWithCauseOf(e);
+        }
+    }
+
+    /**
+     * Allows user to take a look at all the {@code EntityState}s with the provided type.
+     */
+    private <S extends EntityState> ImmutableList<S> lookAt(Class<S> type) {
+        return client
+                .onBehalfOf(userId)
+                .select(type)
+                .run();
+    }
+
+    /**
      * Cancels the passed subscription.
      */
-    protected void cancel(Subscription subscription) {
+    private void cancel(Subscription subscription) {
         client.subscriptions()
               .cancel(subscription);
     }
