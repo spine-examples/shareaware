@@ -27,7 +27,6 @@
 package io.spine.examples.shareaware.server.e2e.given;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.truth.Truth;
 import io.spine.base.CommandMessage;
 import io.spine.base.EntityState;
 import io.spine.base.EventMessage;
@@ -59,7 +58,6 @@ import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.withd
 import static io.spine.examples.shareaware.server.given.GivenWallet.createWallet;
 import static io.spine.util.Exceptions.illegalStateWithCauseOf;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Represents a user for end-to-end tests which interacts
@@ -119,8 +117,6 @@ public class E2EUser {
 
     /**
      * Describes the user's action to replenish his wallet.
-     *
-     * <p>As a result, the wallet should be replenished on the passed amount.
      */
     public WalletBalance replenishesWalletFor(Money amount) {
         ReplenishWallet replenishWallet = replenishWallet(walletId(), amount);
