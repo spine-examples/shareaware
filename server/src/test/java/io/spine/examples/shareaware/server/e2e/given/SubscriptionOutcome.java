@@ -33,9 +33,6 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * The outcome of the subscription that was made by the {@link E2EUser}.
- *
- * <p>Contains the {@link CompletableFuture} that stores the received message
- * of the subscribed type and the {@link Subscription} itself.
  */
 public final class SubscriptionOutcome<S extends KnownMessage> {
 
@@ -48,10 +45,29 @@ public final class SubscriptionOutcome<S extends KnownMessage> {
         this.subscription = subscription;
     }
 
+    /**
+     * Returns the future which stores the received message of the subscribed type.
+     *
+     * <p>The received message should be retrieved from future in this way:
+     * <pre> {@code
+     *     CompletableFuture future = subscriptionOutcome.future();
+     *     future.get(timeout, timeunit);
+     * }
+     * </pre>
+     * We recommend using future.get() with timeout because the simple future.get()
+     * method will block the calling thread until the future is completed,
+     * but there is no guarantee that the future will be completed at all.
+     */
     public CompletableFuture<S> future() {
         return future;
     }
 
+    /**
+     * Returns the subscription object.
+     *
+     * <p>In case when the subscription is no longer needed,
+     * it is recommended to cancel it via {@code Client}.
+     */
     public Subscription subscription() {
         return subscription;
     }
