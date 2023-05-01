@@ -63,13 +63,12 @@ public final class SharePurchaseTestEnv {
                 .vBuild();
     }
 
-    public static InsufficientFunds insufficientFundsAfter(PurchaseShares command) {
+    public static InsufficientFunds insufficientFundsWith(WalletId wallet, Money amount) {
         return InsufficientFunds
                 .newBuilder()
-                .setWallet(walletId(command.getPurchaser()))
-                .setAmount(command.totalCost())
-                .setOperation(operationId(command.getPurchaseProcess()))
-                .vBuild();
+                .setWallet(wallet)
+                .setAmount(amount)
+                .buildPartial();
     }
 
     public static WalletBalance walletBalanceWith(Money amount, WalletId walletId) {

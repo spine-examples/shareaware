@@ -30,11 +30,11 @@ import com.google.common.collect.ImmutableList;
 import io.spine.base.CommandMessage;
 import io.spine.base.EntityState;
 import io.spine.base.EventMessage;
+import io.spine.base.KnownMessage;
 import io.spine.client.Client;
 import io.spine.client.Subscription;
 import io.spine.core.UserId;
 import io.spine.examples.shareaware.WalletId;
-import io.spine.examples.shareaware.investment.InvestmentView;
 import io.spine.examples.shareaware.investment.command.PurchaseShares;
 import io.spine.examples.shareaware.market.AvailableMarketShares;
 import io.spine.examples.shareaware.server.given.GivenWallet;
@@ -43,7 +43,9 @@ import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.command.CreateWallet;
 import io.spine.examples.shareaware.wallet.command.ReplenishWallet;
 import io.spine.examples.shareaware.wallet.command.WithdrawMoney;
+import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
 import io.spine.money.Money;
+import io.spine.server.tuple.EitherOf2;
 import io.spine.testing.core.given.GivenUserId;
 
 import java.util.List;
@@ -53,6 +55,7 @@ import java.util.concurrent.TimeoutException;
 
 import static com.google.common.truth.Truth.*;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+import static io.spine.examples.shareaware.MoneyCalculator.*;
 import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.purchaseSharesFor;
 import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.replenishWallet;
 import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.withdrawMoneyFrom;
@@ -142,15 +145,30 @@ public class E2EUser {
 
     /**
      * Describes the user's action to purchase shares.
+     *
+     * <p>Returns either {@code InsufficientFunds} in the case when the total cost of purchase
+     * was more than the amount of money on balance, or the {@code WalletBalance}
+     * if the purchase was successful.
      */
-    public InvestmentView purchasesShares(Share share, int quantity) {
-        PurchaseShares purchaseShares = purchaseSharesFor(id(), share, quantity);
+    public EitherOf2<WalletBalance, InsufficientFunds> purchase(Share share, int howMany) {
+        PurchaseShares purchaseShares = purchaseSharesFor(id(), share, howMany);
 
-        SubscriptionOutcome<InvestmentView> actualInvestment =
-                subscribeToState(InvestmentView.class);
+        WalletBalance wallet = looksAtWalletBalance();
+        if (isGreater(purchaseShares.totalCost(), wallet.getBalance())) {
+            SubscriptionOutcome<InsufficientFunds> subscriptionOutcome =
+                    subscribeToEvent(InsufficientFunds.class);
+            command(purchaseShares);
+
+            InsufficientFunds insufficientFunds = retrieveValueFrom(subscriptionOutcome);
+            return EitherOf2.withB(insufficientFunds);
+        }
+
+        SubscriptionOutcome<WalletBalance> subscriptionOutcome =
+                subscribeToState(WalletBalance.class);
         command(purchaseShares);
 
-        return retrieveValueFrom(actualInvestment);
+        WalletBalance actualBalance = retrieveValueFrom(subscriptionOutcome);
+        return EitherOf2.withA(actualBalance);
     }
 
     /**
@@ -262,7 +280,7 @@ public class E2EUser {
     /**
      * Retrieves value from {@code SubscriptionOutcome} and cancels the subscription.
      */
-    protected <S extends EntityState> S retrieveValueFrom(SubscriptionOutcome<S> changedState) {
+    protected <S extends KnownMessage> S retrieveValueFrom(SubscriptionOutcome<S> changedState) {
         try {
             cancel(changedState.subscription());
             return changedState.future()

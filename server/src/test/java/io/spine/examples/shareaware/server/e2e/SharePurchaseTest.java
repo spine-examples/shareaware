@@ -28,27 +28,25 @@ package io.spine.examples.shareaware.server.e2e;
 
 import io.spine.client.Client;
 import io.spine.examples.shareaware.investment.InvestmentView;
-import io.spine.examples.shareaware.investment.command.PurchaseShares;
 import io.spine.examples.shareaware.server.e2e.given.E2EUser;
 import io.spine.examples.shareaware.server.e2e.given.SubscriptionOutcome;
 import io.spine.examples.shareaware.server.e2e.given.WithClient;
 import io.spine.examples.shareaware.share.Share;
 import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
+import io.spine.server.tuple.EitherOf2;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static com.google.common.truth.extensions.proto.ProtoTruth.assertThat;
 import static io.spine.examples.shareaware.given.GivenMoney.usd;
-import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.purchaseSharesFor;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.balanceAfterTeslaPurchase;
-import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.pickTesla;
-import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.insufficientFundsAfter;
+import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.insufficientFundsWith;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.investmentAfterTeslaPurchase;
+import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.pickTesla;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.walletBalanceWith;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.zeroWalletBalance;
 
@@ -72,21 +70,25 @@ final class SharePurchaseTest extends WithClient {
         List<Share> shares = user.waitsForSharesToUpdate();
         Share tesla = pickTesla(shares);
 
-        WalletBalance balanceAfterFailedPurchase = user.attemptsToPurchaseShare(tesla);
-        assertThat(balanceAfterFailedPurchase).isEqualTo(initialBalance);
+        EitherOf2<WalletBalance, InsufficientFunds> failedPurchase = user.purchase(tesla, 1);
+        InsufficientFunds expectedInsufficientFunds =
+                insufficientFundsWith(user.walletId(), tesla.getPrice());
+        assertThat(failedPurchase.getB()).comparingExpectedFieldsOnly()
+                                         .isEqualTo(expectedInsufficientFunds);
 
         WalletBalance balanceAfterReplenishment = user.replenishesWalletFor(usd(500));
         WalletBalance expectedBalanceAfterReplenishment =
                 walletBalanceWith(usd(500), user.walletId());
         assertThat(balanceAfterReplenishment).isEqualTo(expectedBalanceAfterReplenishment);
 
-        SubscriptionOutcome<WalletBalance> reducedBalance =
-                user.expectsChangesIn(WalletBalance.class);
-        InvestmentView investmentInTesla = user.purchasesShares(tesla, 1);
-        InvestmentView expectedInvestmentInTesla = investmentAfterTeslaPurchase(tesla, user.id());
-        WalletBalance balanceAfterPurchase = user.checksChangesIn(reducedBalance);
+        SubscriptionOutcome<InvestmentView> increasedInvestment =
+                user.expectsChangesIn(InvestmentView.class);
+        EitherOf2<WalletBalance, InsufficientFunds> successfulPurchase = user.purchase(tesla, 1);
+        WalletBalance balanceAfterPurchase = successfulPurchase.getA();
+        InvestmentView investmentInTesla = user.checksChangesIn(increasedInvestment);
         WalletBalance expectedBalanceAfterPurchase =
                 balanceAfterTeslaPurchase(tesla.getPrice(), balanceAfterReplenishment);
+        InvestmentView expectedInvestmentInTesla = investmentAfterTeslaPurchase(tesla, user.id());
         assertThat(investmentInTesla).isEqualTo(expectedInvestmentInTesla);
         assertThat(balanceAfterPurchase).isEqualTo(expectedBalanceAfterPurchase);
 
@@ -102,25 +104,6 @@ final class SharePurchaseTest extends WithClient {
 
         private SharePurchaseUser(Client client) {
             super(client);
-        }
-
-        /**
-         * Describes the user attempting to purchase a share with no money in the wallet.
-         *
-         * <p>As a result the user should get the {@link InsufficientFunds} rejection.
-         */
-        private WalletBalance attemptsToPurchaseShare(Share tesla)
-                throws ExecutionException, InterruptedException {
-            PurchaseShares purchaseTeslaShare = purchaseSharesFor(id(), tesla, 1);
-            InsufficientFunds expectedInsufficientFunds =
-                    insufficientFundsAfter(purchaseTeslaShare);
-
-            CompletableFuture<InsufficientFunds> actualInsufficientFunds =
-                    subscribeToEventAndForget(InsufficientFunds.class);
-            command(purchaseTeslaShare);
-
-            assertThat(actualInsufficientFunds.get()).isEqualTo(expectedInsufficientFunds);
-            return looksAtWalletBalance();
         }
 
         /**
