@@ -39,7 +39,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import static com.google.common.truth.extensions.proto.ProtoTruth.assertThat;
 import static io.spine.examples.shareaware.given.GivenMoney.usd;
@@ -62,7 +61,7 @@ final class SharePurchaseTest extends WithClient {
 
     @Test
     @DisplayName("User should purchase one tesla share and withdraw all the money after this")
-    void test() throws ExecutionException, InterruptedException {
+    void test() {
         SharePurchaseUser user = new SharePurchaseUser(client());
 
         WalletBalance initialBalance = user.signsUp();

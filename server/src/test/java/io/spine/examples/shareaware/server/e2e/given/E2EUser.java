@@ -81,11 +81,13 @@ public class E2EUser {
     private final Client client;
     private final UserId userId;
     private final WalletId walletId;
+    private final WalletBalanceSubscription wallet;
 
     public E2EUser(Client client) {
         this.client = client;
         this.userId = GivenUserId.generated();
         this.walletId = GivenWallet.walletId(userId);
+        wallet = new WalletBalanceSubscription(client, userId);
     }
 
     /**
@@ -143,7 +145,7 @@ public class E2EUser {
                 subscribeToState(WalletBalance.class);
         command(replenishWallet);
 
-        WalletBalance balanceAfterReplenishment = retrieveValueFrom(actualBalance);
+        WalletBalance balanceAfterReplenishment = wallet.balance();
         WalletBalance expectedBalanceAfterReplenishment =
                 walletBalanceWith(usd(500), walletId);
         assertThat(balanceAfterReplenishment).isEqualTo(expectedBalanceAfterReplenishment);
@@ -160,8 +162,8 @@ public class E2EUser {
     public EitherOf2<WalletBalance, InsufficientFunds> purchase(Share share, int howMany) {
         PurchaseShares purchaseShares = purchaseSharesFor(id(), share, howMany);
 
-        WalletBalance wallet = looksAtWalletBalance();
-        if (isGreater(purchaseShares.totalCost(), wallet.getBalance())) {
+        WalletBalance walletBeforePurchase = looksAtWalletBalance();
+        if (isGreater(purchaseShares.totalCost(), walletBeforePurchase.getBalance())) {
             SubscriptionOutcome<InsufficientFunds> subscriptionOutcome =
                     subscribeToEvent(InsufficientFunds.class);
             command(purchaseShares);
@@ -169,13 +171,8 @@ public class E2EUser {
             InsufficientFunds insufficientFunds = retrieveValueFrom(subscriptionOutcome);
             return EitherOf2.withB(insufficientFunds);
         }
-
-        SubscriptionOutcome<WalletBalance> subscriptionOutcome =
-                subscribeToState(WalletBalance.class);
         command(purchaseShares);
-
-        WalletBalance actualBalance = retrieveValueFrom(subscriptionOutcome);
-        return EitherOf2.withA(actualBalance);
+        return EitherOf2.withA(wallet.balance());
     }
 
     /**
@@ -183,12 +180,8 @@ public class E2EUser {
      */
     public WalletBalance withdrawsMoney(Money amount) {
         WithdrawMoney withdrawMoney = withdrawMoneyFrom(walletId, amount);
-
-        SubscriptionOutcome<WalletBalance> balanceAfterWithdrawal =
-                subscribeToState(WalletBalance.class);
         command(withdrawMoney);
-
-        return retrieveValueFrom(balanceAfterWithdrawal);
+        return wallet.balance();
     }
 
     /**
