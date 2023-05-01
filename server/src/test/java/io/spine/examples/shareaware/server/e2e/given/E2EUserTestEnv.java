@@ -39,7 +39,7 @@ import io.spine.money.Money;
 
 import static io.spine.examples.shareaware.server.given.GivenWallet.userIban;
 
-public class E2EUserTestEnv {
+final class E2EUserTestEnv {
 
     /**
      * Prevents instantiation of this class.
@@ -47,7 +47,7 @@ public class E2EUserTestEnv {
     private E2EUserTestEnv() {
     }
 
-    public static ReplenishWallet replenishWallet(WalletId id, Money amount) {
+    static ReplenishWallet replenishWallet(WalletId id, Money amount) {
         return ReplenishWallet
                 .newBuilder()
                 .setWallet(id)
@@ -57,9 +57,9 @@ public class E2EUserTestEnv {
                 .vBuild();
     }
 
-    public static PurchaseShares purchaseSharesFor(UserId user,
-                                                   Share share,
-                                                   int quantity) {
+    static PurchaseShares purchaseSharesFor(UserId user,
+                                            Share share,
+                                            int quantity) {
         return PurchaseShares
                 .newBuilder()
                 .setPurchaser(user)
@@ -70,7 +70,7 @@ public class E2EUserTestEnv {
                 .vBuild();
     }
 
-    public static WithdrawMoney withdrawMoneyFrom(WalletId wallet, Money amount) {
+    static WithdrawMoney withdrawMoneyFrom(WalletId wallet, Money amount) {
         return WithdrawMoney
                 .newBuilder()
                 .setWithdrawalProcess(WithdrawalId.generate())

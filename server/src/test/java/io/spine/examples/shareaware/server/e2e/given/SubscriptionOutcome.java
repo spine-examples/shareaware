@@ -54,7 +54,8 @@ public final class SubscriptionOutcome<S extends KnownMessage> {
      *     future.get(timeout, timeunit);
      * }
      * </pre>
-     * We recommend using future.get() with timeout because the simple future.get()
+     *
+     * <p>We recommend using future.get() with timeout because the simple future.get()
      * method will block the calling thread until the future is completed,
      * but there is no guarantee that the future will be completed at all.
      */
