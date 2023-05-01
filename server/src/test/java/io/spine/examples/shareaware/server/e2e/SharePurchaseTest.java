@@ -47,7 +47,6 @@ import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.insufficientFundsWith;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.investmentAfterTeslaPurchase;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.pickTesla;
-import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.walletBalanceWith;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.zeroWalletBalance;
 
 /**
@@ -77,9 +76,6 @@ final class SharePurchaseTest extends WithClient {
                                          .isEqualTo(expectedInsufficientFunds);
 
         WalletBalance balanceAfterReplenishment = user.replenishesWalletFor(usd(500));
-        WalletBalance expectedBalanceAfterReplenishment =
-                walletBalanceWith(usd(500), user.walletId());
-        assertThat(balanceAfterReplenishment).isEqualTo(expectedBalanceAfterReplenishment);
 
         SubscriptionOutcome<InvestmentView> increasedInvestment =
                 user.expectsChangesIn(InvestmentView.class);

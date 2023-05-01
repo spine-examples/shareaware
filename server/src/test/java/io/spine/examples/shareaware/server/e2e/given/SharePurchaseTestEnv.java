@@ -28,12 +28,9 @@ package io.spine.examples.shareaware.server.e2e.given;
 
 import io.spine.core.UserId;
 import io.spine.examples.shareaware.InvestmentId;
-import io.spine.examples.shareaware.PurchaseId;
 import io.spine.examples.shareaware.ShareId;
 import io.spine.examples.shareaware.WalletId;
-import io.spine.examples.shareaware.WithdrawalOperationId;
 import io.spine.examples.shareaware.investment.InvestmentView;
-import io.spine.examples.shareaware.investment.command.PurchaseShares;
 import io.spine.examples.shareaware.share.Share;
 import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
@@ -44,7 +41,6 @@ import java.util.Optional;
 
 import static io.spine.examples.shareaware.MoneyCalculator.subtract;
 import static io.spine.examples.shareaware.given.GivenMoney.zero;
-import static io.spine.examples.shareaware.server.given.GivenWallet.walletId;
 import static io.spine.util.Exceptions.newIllegalArgumentException;
 
 public final class SharePurchaseTestEnv {
@@ -94,13 +90,6 @@ public final class SharePurchaseTestEnv {
                 .newBuilder()
                 .setId(id)
                 .setSharesAvailable(1)
-                .vBuild();
-    }
-
-    private static WithdrawalOperationId operationId(PurchaseId id) {
-        return WithdrawalOperationId
-                .newBuilder()
-                .setPurchase(id)
                 .vBuild();
     }
 

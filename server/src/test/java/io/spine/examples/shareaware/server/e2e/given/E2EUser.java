@@ -53,12 +53,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import static com.google.common.truth.Truth.*;
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.extensions.proto.ProtoTruth.assertThat;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static io.spine.examples.shareaware.MoneyCalculator.*;
+import static io.spine.examples.shareaware.given.GivenMoney.usd;
 import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.purchaseSharesFor;
 import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.replenishWallet;
 import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.withdrawMoneyFrom;
+import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.walletBalanceWith;
 import static io.spine.examples.shareaware.server.given.GivenWallet.createWallet;
 import static io.spine.util.Exceptions.illegalStateWithCauseOf;
 import static java.time.Duration.ofMillis;
@@ -134,13 +137,17 @@ public class E2EUser {
      * Describes the user's action to replenish his wallet.
      */
     public WalletBalance replenishesWalletFor(Money amount) {
-        ReplenishWallet replenishWallet = replenishWallet(walletId(), amount);
+        ReplenishWallet replenishWallet = replenishWallet(walletId, amount);
 
         SubscriptionOutcome<WalletBalance> actualBalance =
                 subscribeToState(WalletBalance.class);
         command(replenishWallet);
 
-        return retrieveValueFrom(actualBalance);
+        WalletBalance balanceAfterReplenishment = retrieveValueFrom(actualBalance);
+        WalletBalance expectedBalanceAfterReplenishment =
+                walletBalanceWith(usd(500), walletId);
+        assertThat(balanceAfterReplenishment).isEqualTo(expectedBalanceAfterReplenishment);
+        return balanceAfterReplenishment;
     }
 
     /**
