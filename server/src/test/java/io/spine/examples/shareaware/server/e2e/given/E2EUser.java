@@ -62,6 +62,7 @@ import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.purch
 import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.replenishWallet;
 import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.withdrawMoneyFrom;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.walletBalanceWith;
+import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.zeroWalletBalance;
 import static io.spine.examples.shareaware.server.given.GivenWallet.createWallet;
 import static io.spine.util.Exceptions.illegalStateWithCauseOf;
 import static java.time.Duration.ofMillis;
@@ -69,14 +70,10 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
- * Represents a user for end-to-end tests which interacts
+ * Represents a user for end-to-end ShareAware application tests which interacts
  * with the server-side with the help of {@link Client}.
- *
- * <p>In some tests, it may be required to extend the API provided by this type.
- * Then, subclassing should be done in a nested type, residing inside
- * the target test class.
  */
-public class E2EUser {
+public final class E2EUser {
 
     private final Client client;
     private final UserId userId;
@@ -88,6 +85,7 @@ public class E2EUser {
         this.userId = GivenUserId.generated();
         this.walletId = GivenWallet.walletId(userId);
         wallet = new WalletBalanceSubscription(client, userId);
+        createWalletForUser();
     }
 
     /**
@@ -120,19 +118,6 @@ public class E2EUser {
         sleepUninterruptibly(ofMillis(1500));
         List<Share> shares = looksAtShares();
         return shares;
-    }
-
-    /**
-     * Describes the user's action to sign up in the application.
-     */
-    public WalletBalance signsUp() {
-        CreateWallet createWallet = createWallet(walletId);
-
-        SubscriptionOutcome<WalletBalance> initialBalance =
-                subscribeToState(WalletBalance.class);
-        command(createWallet);
-
-        return retrieveValueFrom(initialBalance);
     }
 
     /**
@@ -173,6 +158,16 @@ public class E2EUser {
         }
         command(purchaseShares);
         return EitherOf2.withA(wallet.balance());
+    }
+
+    /**
+     * Describes the user's action to withdraw all money from the wallet.
+     *
+     * <p>As a result, the wallet balance should be zero.
+     */
+    public WalletBalance withdrawsAllMoney(WalletBalance balance) {
+        WalletBalance balanceAfterWithdrawal = withdrawsMoney(balance.getBalance());
+        return balanceAfterWithdrawal;
     }
 
     /**
@@ -231,7 +226,7 @@ public class E2EUser {
      *
      * @see E2EUser#subscribeToEvent(Class)
      */
-    protected <E extends EventMessage> CompletableFuture<E>
+    private <E extends EventMessage> CompletableFuture<E>
     subscribeToEventAndForget(Class<E> type) {
         SubscriptionOutcome<E> subscriptionOutcome = subscribeToEvent(type);
         return subscriptionOutcome.future();
@@ -245,7 +240,7 @@ public class E2EUser {
      *
      * @see E2EUser#subscribeToState(Class)
      */
-    protected <S extends EntityState> CompletableFuture<S>
+    private <S extends EntityState> CompletableFuture<S>
     subscribeToStateAndForget(Class<S> type) {
         SubscriptionOutcome<S> subscriptionOutcome = subscribeToState(type);
         return subscriptionOutcome.future();
@@ -254,7 +249,7 @@ public class E2EUser {
     /**
      * Subscribes the user to receive the event of the passed type.
      */
-    protected <S extends EventMessage> SubscriptionOutcome<S> subscribeToEvent(Class<S> type) {
+    private <S extends EventMessage> SubscriptionOutcome<S> subscribeToEvent(Class<S> type) {
         CompletableFuture<S> future = new CompletableFuture<>();
         Subscription subscription = client
                 .onBehalfOf(userId)
@@ -267,7 +262,7 @@ public class E2EUser {
     /**
      * Subscribes the user on changes of the passed type of the {@code EntityState}.
      */
-    protected <S extends EntityState> SubscriptionOutcome<S> subscribeToState(Class<S> type) {
+    private <S extends EntityState> SubscriptionOutcome<S> subscribeToState(Class<S> type) {
         CompletableFuture<S> future = new CompletableFuture<>();
         Subscription subscription = client
                 .onBehalfOf(userId)
@@ -280,7 +275,7 @@ public class E2EUser {
     /**
      * Retrieves value from {@code SubscriptionOutcome} and cancels the subscription.
      */
-    protected <S extends KnownMessage> S retrieveValueFrom(SubscriptionOutcome<S> changedState) {
+    private <S extends KnownMessage> S retrieveValueFrom(SubscriptionOutcome<S> changedState) {
         try {
             cancel(changedState.subscription());
             return changedState.future()
@@ -306,5 +301,12 @@ public class E2EUser {
     private void cancel(Subscription subscription) {
         client.subscriptions()
               .cancel(subscription);
+    }
+
+    private void createWalletForUser() {
+        CreateWallet createWallet = createWallet(walletId);
+        command(createWallet);
+        WalletBalance initialBalance = wallet.balance();
+        assertThat(initialBalance).isEqualTo(zeroWalletBalance(walletId));
     }
 }

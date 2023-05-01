@@ -26,7 +26,6 @@
 
 package io.spine.examples.shareaware.server.e2e;
 
-import io.spine.client.Client;
 import io.spine.examples.shareaware.investment.InvestmentView;
 import io.spine.examples.shareaware.server.e2e.given.E2EUser;
 import io.spine.examples.shareaware.server.e2e.given.SubscriptionOutcome;
@@ -62,9 +61,8 @@ final class SharePurchaseTest extends WithClient {
     @Test
     @DisplayName("User should purchase one tesla share and withdraw all the money after this")
     void test() {
-        SharePurchaseUser user = new SharePurchaseUser(client());
+        E2EUser user = new E2EUser(client());
 
-        WalletBalance initialBalance = user.signsUp();
         List<Share> shares = user.waitsForSharesToUpdate();
         Share tesla = pickTesla(shares);
 
@@ -87,28 +85,7 @@ final class SharePurchaseTest extends WithClient {
         assertThat(investmentInTesla).isEqualTo(expectedInvestmentInTesla);
         assertThat(balanceAfterPurchase).isEqualTo(expectedBalanceAfterPurchase);
 
-        WalletBalance walletAfterWithdrawal = user.withdrawsAllHisMoney(balanceAfterPurchase);
+        WalletBalance walletAfterWithdrawal = user.withdrawsAllMoney(balanceAfterPurchase);
         assertThat(walletAfterWithdrawal).isEqualTo(zeroWalletBalance(user.walletId()));
-    }
-
-    /**
-     * The user for a {@link SharePurchaseTest} that can perform actions
-     * that describe the test scenario.
-     */
-    private class SharePurchaseUser extends E2EUser {
-
-        private SharePurchaseUser(Client client) {
-            super(client);
-        }
-
-        /**
-         * Describes the user's action to withdraw all money from the wallet.
-         *
-         * <p>As a result, the wallet balance should be zero.
-         */
-        private WalletBalance withdrawsAllHisMoney(WalletBalance balance) {
-            WalletBalance balanceAfterWithdrawal = withdrawsMoney(balance.getBalance());
-            return balanceAfterWithdrawal;
-        }
     }
 }
