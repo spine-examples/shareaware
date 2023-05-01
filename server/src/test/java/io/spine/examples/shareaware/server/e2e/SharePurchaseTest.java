@@ -43,16 +43,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static com.google.common.truth.extensions.proto.ProtoTruth.assertThat;
-import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static io.spine.examples.shareaware.given.GivenMoney.usd;
 import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.purchaseSharesFor;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.balanceAfterTeslaPurchase;
-import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.chooseTeslaShareFrom;
+import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.pickTesla;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.insufficientFundsAfter;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.investmentAfterTeslaPurchase;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.walletBalanceWith;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.zeroWalletBalance;
-import static java.time.Duration.ofMillis;
 
 /**
  * End-to-end test that describes such a scenario:
@@ -71,9 +69,8 @@ final class SharePurchaseTest extends WithClient {
         SharePurchaseUser user = new SharePurchaseUser(client());
 
         WalletBalance initialBalance = user.signsUp();
-        sleepUninterruptibly(ofMillis(1500));
-        List<Share> shares = user.looksAtShares();
-        Share tesla = chooseTeslaShareFrom(shares);
+        List<Share> shares = user.waitsForSharesToUpdate();
+        Share tesla = pickTesla(shares);
 
         WalletBalance balanceAfterFailedPurchase = user.attemptsToPurchaseShare(tesla);
         assertThat(balanceAfterFailedPurchase).isEqualTo(initialBalance);

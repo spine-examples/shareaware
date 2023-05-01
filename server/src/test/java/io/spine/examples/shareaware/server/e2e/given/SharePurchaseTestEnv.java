@@ -113,7 +113,7 @@ public final class SharePurchaseTestEnv {
                 .vBuild();
     }
 
-    public static Share chooseTeslaShareFrom(Collection<Share> shares) {
+    public static Share pickTesla(Collection<Share> shares) {
         Optional<Share> tesla = shares
                 .stream()
                 .filter(share -> share.getCompanyName()
