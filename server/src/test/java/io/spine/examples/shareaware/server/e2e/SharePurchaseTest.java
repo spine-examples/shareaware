@@ -26,10 +26,11 @@
 
 package io.spine.examples.shareaware.server.e2e;
 
+import io.grpc.ManagedChannel;
 import io.spine.examples.shareaware.investment.InvestmentView;
 import io.spine.examples.shareaware.server.e2e.given.E2EUser;
 import io.spine.examples.shareaware.server.e2e.given.SubscriptionOutcome;
-import io.spine.examples.shareaware.server.e2e.given.WithClient;
+import io.spine.examples.shareaware.server.e2e.given.WithServer;
 import io.spine.examples.shareaware.share.Share;
 import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
@@ -56,12 +57,13 @@ import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv
  *     <li>The user withdraws all his money from the wallet.</li>
  * </ol>
  */
-final class SharePurchaseTest extends WithClient {
+final class SharePurchaseTest extends WithServer {
 
     @Test
     @DisplayName("User should purchase one tesla share and withdraw all the money after this")
     void test() {
-        E2EUser user = new E2EUser(client());
+        ManagedChannel channel = openChannel();
+        E2EUser user = new E2EUser(channel);
 
         List<Share> shares = user.waitsForSharesToUpdate();
         Share tesla = pickTesla(shares);

@@ -27,8 +27,6 @@
 package io.spine.examples.shareaware.server.e2e.given;
 
 import io.grpc.ManagedChannel;
-import io.grpc.StatusRuntimeException;
-import io.spine.client.Client;
 import io.spine.examples.shareaware.server.TradingContext;
 import io.spine.examples.shareaware.server.market.MarketDataProvider;
 import io.spine.server.Server;
@@ -39,24 +37,23 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import static io.grpc.ManagedChannelBuilder.forAddress;
-import static io.grpc.Status.CANCELLED;
-import static io.spine.client.Client.usingChannel;
 import static io.spine.server.Server.atPort;
+import static io.spine.util.Exceptions.illegalStateWithCauseOf;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * Abstract base for end-to-end tests that aware of gRPC client.
+ * An abstract base for tests that need a gRPC server.
  */
-public abstract class WithClient {
+public abstract class WithServer {
 
     private static final String ADDRESS = "localhost";
     private static final int PORT = 4242;
-    private Client client;
     private Server server;
-    private ManagedChannel channel;
+    private final Collection<ManagedChannel> channels = new ArrayList<>();
     private static final MarketDataProvider provider = MarketDataProvider.instance();
 
     /**
@@ -76,42 +73,41 @@ public abstract class WithClient {
     }
 
     /**
-     * Sets up the {@code Client} and starts the server.
+     * Starts the server.
      */
     @BeforeEach
     void startAndConnect() throws IOException {
-        channel = forAddress(ADDRESS, PORT)
-                .usePlaintext()
-                .build();
         server = atPort(PORT)
                 .add(TradingContext.newBuilder())
                 .build();
         server.start();
-        client = usingChannel(channel).build();
     }
 
     /**
-     * Closes the {@code Client} and shuts the server down.
+     * Shuts the server down.
      */
     @AfterEach
-    void stopAndDisconnect() throws InterruptedException {
-        try {
-            client.close();
-        } catch (StatusRuntimeException e) {
-            if (e.getStatus()
-                 .equals(CANCELLED)) {
-                fail(e);
-            }
-        }
+    void stopAndDisconnect() {
         server.shutdown();
-        channel.shutdown();
-        channel.awaitTermination(1, SECONDS);
+        channels.forEach(channel -> {
+                             channel.shutdown();
+                             try {
+                                 channel.awaitTermination(1, SECONDS);
+                             } catch (InterruptedException e) {
+                                 throw illegalStateWithCauseOf(e);
+                             }
+                         }
+        );
     }
 
     /**
-     * Returns the {@code Client} that was set up in the {@link #startAndConnect()} method.
+     * Opens a chanel.
      */
-    protected Client client() {
-        return client;
+    protected ManagedChannel openChannel() {
+        ManagedChannel channel = forAddress(ADDRESS, PORT)
+                .usePlaintext()
+                .build();
+        channels.add(channel);
+        return channel;
     }
 }

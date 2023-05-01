@@ -27,6 +27,7 @@
 package io.spine.examples.shareaware.server.e2e.given;
 
 import com.google.common.collect.ImmutableList;
+import io.grpc.ManagedChannel;
 import io.spine.base.CommandMessage;
 import io.spine.base.EntityState;
 import io.spine.base.EventMessage;
@@ -56,6 +57,7 @@ import java.util.concurrent.TimeoutException;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.extensions.proto.ProtoTruth.assertThat;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+import static io.spine.client.Client.usingChannel;
 import static io.spine.examples.shareaware.MoneyCalculator.*;
 import static io.spine.examples.shareaware.given.GivenMoney.usd;
 import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.purchaseSharesFor;
@@ -80,8 +82,8 @@ public final class E2EUser {
     private final WalletId walletId;
     private final WalletBalanceSubscription wallet;
 
-    public E2EUser(Client client) {
-        this.client = client;
+    public E2EUser(ManagedChannel channel) {
+        this.client = usingChannel(channel).build();
         this.userId = GivenUserId.generated();
         this.walletId = GivenWallet.walletId(userId);
         wallet = new WalletBalanceSubscription(client, userId);
