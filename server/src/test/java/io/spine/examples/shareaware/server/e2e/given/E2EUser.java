@@ -28,7 +28,6 @@ package io.spine.examples.shareaware.server.e2e.given;
 
 import io.grpc.ManagedChannel;
 import io.spine.base.CommandMessage;
-import io.spine.base.EntityState;
 import io.spine.base.EventMessage;
 import io.spine.base.KnownMessage;
 import io.spine.client.Client;
@@ -194,19 +193,6 @@ public final class E2EUser {
         Subscription subscription = client
                 .onBehalfOf(userId)
                 .subscribeToEvent(type)
-                .observe(future::complete)
-                .post();
-        return new SubscriptionOutcome<>(future, subscription);
-    }
-
-    /**
-     * Subscribes the user on changes of the passed type of the {@code EntityState}.
-     */
-    private <S extends EntityState> SubscriptionOutcome<S> subscribeToState(Class<S> type) {
-        CompletableFuture<S> future = new CompletableFuture<>();
-        Subscription subscription = client
-                .onBehalfOf(userId)
-                .subscribeTo(type)
                 .observe(future::complete)
                 .post();
         return new SubscriptionOutcome<>(future, subscription);
