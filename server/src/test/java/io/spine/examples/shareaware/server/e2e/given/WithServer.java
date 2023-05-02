@@ -89,15 +89,7 @@ public abstract class WithServer {
     @AfterEach
     void stopAndDisconnect() {
         server.shutdown();
-        channels.forEach(channel -> {
-                             channel.shutdown();
-                             try {
-                                 channel.awaitTermination(1, SECONDS);
-                             } catch (InterruptedException e) {
-                                 throw illegalStateWithCauseOf(e);
-                             }
-                         }
-        );
+        channels.forEach(WithServer::closeChannel);
     }
 
     /**
@@ -109,5 +101,14 @@ public abstract class WithServer {
                 .build();
         channels.add(channel);
         return channel;
+    }
+
+    private static void closeChannel(ManagedChannel channel) {
+        channel.shutdown();
+        try {
+            channel.awaitTermination(1, SECONDS);
+        } catch (InterruptedException e) {
+            throw illegalStateWithCauseOf(e);
+        }
     }
 }
