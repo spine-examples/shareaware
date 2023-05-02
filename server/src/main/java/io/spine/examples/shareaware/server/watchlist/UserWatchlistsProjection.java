@@ -42,7 +42,7 @@ final class UserWatchlistsProjection
 
     @Subscribe
     void on(WatchlistCreated e) {
-        WatchlistView watchlist = WatchlistView
+        var watchlist = WatchlistView
                 .newBuilder()
                 .setId(e.getWatchlist())
                 .setName(e.getName())
