@@ -39,12 +39,16 @@ import io.spine.money.Money;
 
 import static io.spine.examples.shareaware.server.given.GivenWallet.userIban;
 
-final class E2EUserTestEnv {
+/**
+ * Factory methods for creating the main commands of ShareAware application
+ * for end-to-end test purposes.
+ */
+final class E2ECommands {
 
     /**
      * Prevents instantiation of this class.
      */
-    private E2EUserTestEnv() {
+    private E2ECommands() {
     }
 
     static ReplenishWallet replenishWallet(WalletId id, Money amount) {

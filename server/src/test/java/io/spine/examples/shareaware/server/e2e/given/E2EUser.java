@@ -60,9 +60,9 @@ import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterrup
 import static io.spine.client.Client.usingChannel;
 import static io.spine.examples.shareaware.MoneyCalculator.*;
 import static io.spine.examples.shareaware.given.GivenMoney.usd;
-import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.purchaseSharesFor;
-import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.replenishWallet;
-import static io.spine.examples.shareaware.server.e2e.given.E2EUserTestEnv.withdrawMoneyFrom;
+import static io.spine.examples.shareaware.server.e2e.given.E2ECommands.purchaseSharesFor;
+import static io.spine.examples.shareaware.server.e2e.given.E2ECommands.replenishWallet;
+import static io.spine.examples.shareaware.server.e2e.given.E2ECommands.withdrawMoneyFrom;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.walletBalanceWith;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.zeroWalletBalance;
 import static io.spine.examples.shareaware.server.given.GivenWallet.createWallet;
