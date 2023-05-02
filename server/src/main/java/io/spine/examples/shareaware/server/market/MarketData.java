@@ -32,9 +32,7 @@ import io.spine.examples.shareaware.share.SharesReader;
 import io.spine.money.Money;
 
 import java.io.File;
-import java.net.URL;
 import java.security.SecureRandom;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -59,9 +57,9 @@ final class MarketData {
     }
 
     static {
-        ClassLoader classLoader = currentThread().getContextClassLoader();
-        URL urlToFile = requireNonNull(classLoader.getResource("shares.yml"));
-        File file = new File(urlToFile.getFile());
+        var classLoader = currentThread().getContextClassLoader();
+        var urlToFile = requireNonNull(classLoader.getResource("shares.yml"));
+        var file = new File(urlToFile.getFile());
         shares = SharesReader.read(file);
     }
 
@@ -69,7 +67,7 @@ final class MarketData {
      * Returns the list of up-to-date shares that are available on the market.
      */
     static ImmutableList<Share> actualShares() {
-        List<Share> actualShares = shares.stream()
+        var actualShares = shares.stream()
                 .map(MarketData::actualize)
                 .collect(Collectors.toList());
         return ImmutableList.copyOf(actualShares);
@@ -81,7 +79,7 @@ final class MarketData {
      * <p>Simulates the share price updates on the market.
      */
     private static Share actualize(Share share) {
-        Money updatedPrice = updatePrice(share.getPrice());
+        var updatedPrice = updatePrice(share.getPrice());
         return share
                 .toBuilder()
                 .setPrice(updatedPrice)
@@ -89,12 +87,12 @@ final class MarketData {
     }
 
     private static Money updatePrice(Money previousPrice) {
-        int nanosInUnit = 100;
+        var nanosInUnit = 100;
         Random random = new SecureRandom();
-        int valueToSumWithUnits = random.nextInt(21) - 10;
-        long updatedUnits = previousPrice.getUnits() + valueToSumWithUnits;
-        int valueToSumWithNanos = random.nextInt(nanosInUnit) - 50;
-        int updatedNanos = previousPrice.getNanos() + valueToSumWithNanos;
+        var valueToSumWithUnits = random.nextInt(21) - 10;
+        var updatedUnits = previousPrice.getUnits() + valueToSumWithUnits;
+        var valueToSumWithNanos = random.nextInt(nanosInUnit) - 50;
+        var updatedNanos = previousPrice.getNanos() + valueToSumWithNanos;
         if (updatedNanos / nanosInUnit >= 1) {
             updatedUnits++;
             updatedNanos -= nanosInUnit;

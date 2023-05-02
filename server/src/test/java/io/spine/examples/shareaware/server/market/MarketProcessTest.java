@@ -26,15 +26,6 @@
 
 package io.spine.examples.shareaware.server.market;
 
-import io.spine.examples.shareaware.market.Market;
-import io.spine.examples.shareaware.market.command.CloseMarket;
-import io.spine.examples.shareaware.market.command.ObtainShares;
-import io.spine.examples.shareaware.market.command.OpenMarket;
-import io.spine.examples.shareaware.market.command.SellSharesOnMarket;
-import io.spine.examples.shareaware.market.event.MarketClosed;
-import io.spine.examples.shareaware.market.event.MarketOpened;
-import io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeSoldOnMarket;
-import io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeObtained;
 import io.spine.examples.shareaware.server.FreshContextTest;
 import io.spine.examples.shareaware.server.market.given.MarketTestContext;
 import io.spine.server.BoundedContextBuilder;
@@ -54,12 +45,12 @@ public final class MarketProcessTest extends FreshContextTest {
     @Test
     @DisplayName("change state after `OpenMarket` command")
     void stateWhenOpened() {
-        CloseMarket commandToClose = closeMarket();
+        var commandToClose = closeMarket();
         context().receivesCommand(commandToClose);
 
-        OpenMarket commandToOpen = openMarket();
+        var commandToOpen = openMarket();
         context().receivesCommand(commandToOpen);
-        Market expected = marketAfter(commandToOpen);
+        var expected = marketAfter(commandToOpen);
 
         context().assertState(commandToOpen.getMarket(), expected);
     }
@@ -67,9 +58,9 @@ public final class MarketProcessTest extends FreshContextTest {
     @Test
     @DisplayName("change state after `CloseMarket` command")
     void stateWhenClosed() {
-        CloseMarket command = closeMarket();
+        var command = closeMarket();
         context().receivesCommand(command);
-        Market expected = marketAfter(command);
+        var expected = marketAfter(command);
 
         context().assertState(command.getMarket(), expected);
     }
@@ -77,9 +68,9 @@ public final class MarketProcessTest extends FreshContextTest {
     @Test
     @DisplayName("emit the `MarketOpened` event")
     void marketOpened() {
-        OpenMarket command = openMarket();
+        var command = openMarket();
         context().receivesCommand(command);
-        MarketOpened expected = marketOpenedAfter(command);
+        var expected = marketOpenedAfter(command);
 
         context().assertEvent(expected);
     }
@@ -87,9 +78,9 @@ public final class MarketProcessTest extends FreshContextTest {
     @Test
     @DisplayName("emit the `MarketClosed` event")
     void marketClosed() {
-        CloseMarket command = closeMarket();
+        var command = closeMarket();
         context().receivesCommand(command);
-        MarketClosed expected = marketClosedAfter(command);
+        var expected = marketClosedAfter(command);
 
         context().assertEvent(expected);
     }
@@ -98,12 +89,12 @@ public final class MarketProcessTest extends FreshContextTest {
     @DisplayName("throw rejection to the response for the " +
             "`ObtainShares` command when the market is closed")
     void sharesCannotBeObtained() {
-        CloseMarket commandToCloseMarket = closeMarket();
+        var commandToCloseMarket = closeMarket();
         context().receivesCommand(commandToCloseMarket);
 
-        ObtainShares commandToObtainShares = obtainShares();
+        var commandToObtainShares = obtainShares();
         context().receivesCommand(commandToObtainShares);
-        SharesCannotBeObtained expected =
+        var expected =
                 sharesCannotBeObtainedCausedBy(commandToObtainShares);
 
         context().assertEvent(expected);
@@ -113,12 +104,12 @@ public final class MarketProcessTest extends FreshContextTest {
     @DisplayName("throw rejection to the response for the " +
             "`SellSharesOnMarket` command when the market is closed")
     void sharesCannotBeSoldOnMarket() {
-        CloseMarket commandToCloseMarket = closeMarket();
+        var commandToCloseMarket = closeMarket();
         context().receivesCommand(commandToCloseMarket);
 
-        SellSharesOnMarket commandToSellShares = sellSharesOnMarket();
+        var commandToSellShares = sellSharesOnMarket();
         context().receivesCommand(commandToSellShares);
-        SharesCannotBeSoldOnMarket expected =
+        var expected =
                 sharesCannotBeSoldOnMarketCausedBy(commandToSellShares);
 
         context().assertEvent(expected);
