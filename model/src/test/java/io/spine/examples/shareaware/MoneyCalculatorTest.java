@@ -26,7 +26,6 @@
 
 package io.spine.examples.shareaware;
 
-import io.spine.money.Money;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -35,9 +34,9 @@ import org.junit.jupiter.params.provider.Arguments;
 
 import java.util.stream.Stream;
 
-import static io.spine.examples.shareaware.given.GivenMoney.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.params.provider.Arguments.*;
+import static io.spine.examples.shareaware.given.GivenMoney.usd;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @DisplayName("`MoneyCalculator` should")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -89,8 +88,8 @@ final class MoneyCalculatorTest extends MoneyCalculatorAbstractTest {
     @Test
     @DisplayName("validate arguments when calculating the difference")
     void validateSubtract() {
-        Money smaller = usd(20, 20);
-        Money greater = usd(40, 20);
+        var smaller = usd(20, 20);
+        var greater = usd(40, 20);
 
         testValidation(MoneyCalculator::subtract);
         assertThrows(IllegalStateException.class,
@@ -110,7 +109,7 @@ final class MoneyCalculatorTest extends MoneyCalculatorAbstractTest {
         @Test
         @DisplayName("for negative `Money` value")
         void performNegativeUnits() {
-            Money negativeUnits = usd(-20);
+            var negativeUnits = usd(-20);
             assertThrows(IllegalStateException.class,
                          () -> MoneyCalculator.multiply(negativeUnits, 2));
         }
@@ -118,7 +117,7 @@ final class MoneyCalculatorTest extends MoneyCalculatorAbstractTest {
         @Test
         @DisplayName("for out of bounds `Money.nanos` value")
         void performNanosOutOfBounds() {
-            Money nanosOutOfBound = usd(0, -120);
+            var nanosOutOfBound = usd(0, -120);
             assertThrows(IllegalArgumentException.class,
                          () -> MoneyCalculator.multiply(nanosOutOfBound, 2));
         }
@@ -126,7 +125,7 @@ final class MoneyCalculatorTest extends MoneyCalculatorAbstractTest {
         @Test
         @DisplayName("for negative multiplier value")
         void performNegativeMultiplier() {
-            Money money = usd(20);
+            var money = usd(20);
             assertThrows(IllegalArgumentException.class,
                          () -> MoneyCalculator.multiply(money, -2));
         }

@@ -32,8 +32,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.net.URL;
-import java.util.Set;
 
 import static io.spine.examples.shareaware.share.SharesReaderTestEnv.expectedSharesFromFile;
 import static java.lang.Thread.currentThread;
@@ -50,11 +48,11 @@ final class SharesReaderTest extends UtilityClassTest<SharesReader> {
     @Test
     @DisplayName("read shares from file")
     void readShares() {
-        ClassLoader classLoader = currentThread().getContextClassLoader();
-        URL urlToFile = requireNonNull(classLoader.getResource("testing-shares.yml"));
-        File file = new File(urlToFile.getFile());
-        Set<Share> shares = SharesReader.read(file);
-        Set<Share> expected = expectedSharesFromFile();
+        var classLoader = currentThread().getContextClassLoader();
+        var urlToFile = requireNonNull(classLoader.getResource("testing-shares.yml"));
+        var file = new File(urlToFile.getFile());
+        var shares = SharesReader.read(file);
+        var expected = expectedSharesFromFile();
 
         Truth.assertThat(shares)
              .isEqualTo(expected);
@@ -63,7 +61,7 @@ final class SharesReaderTest extends UtilityClassTest<SharesReader> {
     @Test
     @DisplayName("throw `IllegalArgumentException` when the provided file is invalid")
     void throwException() {
-        File file = new File("notExistingFile.yml");
+        var file = new File("notExistingFile.yml");
         assertThrows(IllegalArgumentException.class, () -> SharesReader.read(file));
     }
 }
