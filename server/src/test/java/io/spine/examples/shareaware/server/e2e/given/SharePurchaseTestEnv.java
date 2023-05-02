@@ -33,7 +33,6 @@ import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.investment.InvestmentView;
 import io.spine.examples.shareaware.share.Share;
 import io.spine.examples.shareaware.wallet.WalletBalance;
-import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
 import io.spine.money.Money;
 
 import java.util.Collection;
@@ -59,15 +58,7 @@ public final class SharePurchaseTestEnv {
                 .vBuild();
     }
 
-    public static InsufficientFunds insufficientFundsWith(WalletId wallet, Money amount) {
-        return InsufficientFunds
-                .newBuilder()
-                .setWallet(wallet)
-                .setAmount(amount)
-                .buildPartial();
-    }
-
-    public static WalletBalance walletBalanceWith(Money amount, WalletId walletId) {
+    static WalletBalance walletBalanceWith(Money amount, WalletId walletId) {
         return WalletBalance
                 .newBuilder()
                 .setId(walletId)

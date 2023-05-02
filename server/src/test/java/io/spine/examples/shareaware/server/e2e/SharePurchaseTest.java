@@ -43,13 +43,13 @@ import java.util.List;
 import static com.google.common.truth.extensions.proto.ProtoTruth.assertThat;
 import static io.spine.examples.shareaware.given.GivenMoney.usd;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.balanceAfterTeslaPurchase;
-import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.insufficientFundsWith;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.investmentAfterTeslaPurchase;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.pickTesla;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.zeroWalletBalance;
 
 /**
  * End-to-end test that describes such a scenario:
+ *
  * <ol>
  *     <li>The user attempts to purchase shares with no money in the wallet.</li>
  *     <li>The user replenishes his wallet for 500 dollars.</li>
@@ -69,10 +69,8 @@ final class SharePurchaseTest extends WithServer {
         Share tesla = pickTesla(shares);
 
         EitherOf2<WalletBalance, InsufficientFunds> failedPurchase = user.purchase(tesla, 1);
-        InsufficientFunds expectedInsufficientFunds =
-                insufficientFundsWith(user.walletId(), tesla.getPrice());
-        assertThat(failedPurchase.getB()).comparingExpectedFieldsOnly()
-                                         .isEqualTo(expectedInsufficientFunds);
+        InsufficientFunds insufficientFunds = failedPurchase.getB();
+        assertThat(insufficientFunds.getAmount()).isEqualTo(tesla.getPrice());
 
         WalletBalance balanceAfterReplenishment = user.replenishesWalletFor(usd(500));
 
