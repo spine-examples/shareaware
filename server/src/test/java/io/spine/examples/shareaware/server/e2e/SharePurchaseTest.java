@@ -29,7 +29,6 @@ package io.spine.examples.shareaware.server.e2e;
 import io.grpc.ManagedChannel;
 import io.spine.examples.shareaware.investment.InvestmentView;
 import io.spine.examples.shareaware.server.e2e.given.E2EUser;
-import io.spine.examples.shareaware.server.e2e.given.SubscriptionOutcome;
 import io.spine.examples.shareaware.server.e2e.given.WithServer;
 import io.spine.examples.shareaware.share.Share;
 import io.spine.examples.shareaware.wallet.WalletBalance;
@@ -65,7 +64,7 @@ final class SharePurchaseTest extends WithServer {
         ManagedChannel channel = openChannel();
         E2EUser user = new E2EUser(channel);
 
-        List<Share> shares = user.waitsForSharesToUpdate();
+        List<Share> shares = user.looksAtAvailableShares();
         Share tesla = pickTesla(shares);
 
         EitherOf2<WalletBalance, InsufficientFunds> failedPurchase = user.purchase(tesla, 1);
@@ -74,16 +73,14 @@ final class SharePurchaseTest extends WithServer {
 
         WalletBalance balanceAfterReplenishment = user.replenishesWalletFor(usd(500));
 
-        SubscriptionOutcome<InvestmentView> increasedInvestment =
-                user.expectsChangesIn(InvestmentView.class);
         EitherOf2<WalletBalance, InsufficientFunds> successfulPurchase = user.purchase(tesla, 1);
         WalletBalance balanceAfterPurchase = successfulPurchase.getA();
-        InvestmentView investmentInTesla = user.checksChangesIn(increasedInvestment);
+        InvestmentView investmentInTesla = user.looksAtInvestment();
         WalletBalance expectedBalanceAfterPurchase =
                 balanceAfterTeslaPurchase(tesla.getPrice(), balanceAfterReplenishment);
         InvestmentView expectedInvestmentInTesla = investmentAfterTeslaPurchase(tesla, user.id());
-        assertThat(investmentInTesla).isEqualTo(expectedInvestmentInTesla);
         assertThat(balanceAfterPurchase).isEqualTo(expectedBalanceAfterPurchase);
+        assertThat(investmentInTesla).isEqualTo(expectedInvestmentInTesla);
 
         WalletBalance walletAfterWithdrawal = user.withdrawsAllMoney(balanceAfterPurchase);
         assertThat(walletAfterWithdrawal).isEqualTo(zeroWalletBalance(user.walletId()));

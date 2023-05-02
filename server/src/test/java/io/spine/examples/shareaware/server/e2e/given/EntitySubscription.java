@@ -26,46 +26,52 @@
 
 package io.spine.examples.shareaware.server.e2e.given;
 
+import io.spine.base.EntityState;
 import io.spine.client.Client;
 import io.spine.core.UserId;
-import io.spine.examples.shareaware.wallet.WalletBalance;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import static io.spine.util.Exceptions.*;
+import static io.spine.util.Exceptions.illegalStateWithCauseOf;
 
 /**
- * Subscription for the {@code WalletBalance} state changes.
+ * Subscription for the {@code EntityState} changes.
  */
-public final class WalletBalanceSubscription {
+public class EntitySubscription<S extends EntityState> {
 
-    private final List<CompletableFuture<WalletBalance>> balances = new ArrayList<>();
+    private final ObservedEntity<S> entity = new ObservedEntity<>();
 
-    public WalletBalanceSubscription(Client client, UserId user) {
-        balances.add(new CompletableFuture<>());
+    EntitySubscription(Class<S> entityType, Client client, UserId user) {
         client.onBehalfOf(user)
-              .subscribeTo(WalletBalance.class)
-              .observe(state -> {
-                  if (balances.get(0).isDone()) {
-                      balances.set(0, new CompletableFuture<>());
-                  }
-                  balances.get(0)
-                          .complete(state);
-              })
+              .subscribeTo(entityType)
+              .observe(entity::set)
               .post();
     }
 
     /**
-     * Provides current state of the {@code WalletBalance}.
+     * Provides the current state of the subscribed entity.
      */
-    public WalletBalance balance()  {
-        try {
-            return balances.get(0).get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw illegalStateWithCauseOf(e);
+    public S state() {
+        return entity.value();
+    }
+
+    private static final class ObservedEntity<S extends EntityState> {
+        private CompletableFuture<S> future = new CompletableFuture<>();
+
+        private void set(S value) {
+            if(future.isDone()) {
+                future = new CompletableFuture<>();
+            }
+            future.complete(value);
+        }
+
+        private S value() {
+            try {
+                return future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw illegalStateWithCauseOf(e);
+            }
         }
     }
 }

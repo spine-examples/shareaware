@@ -26,7 +26,6 @@
 
 package io.spine.examples.shareaware.server.e2e.given;
 
-import com.google.common.collect.ImmutableList;
 import io.grpc.ManagedChannel;
 import io.spine.base.CommandMessage;
 import io.spine.base.EntityState;
@@ -36,6 +35,7 @@ import io.spine.client.Client;
 import io.spine.client.Subscription;
 import io.spine.core.UserId;
 import io.spine.examples.shareaware.WalletId;
+import io.spine.examples.shareaware.investment.InvestmentView;
 import io.spine.examples.shareaware.investment.command.PurchaseShares;
 import io.spine.examples.shareaware.market.AvailableMarketShares;
 import io.spine.examples.shareaware.server.given.GivenWallet;
@@ -54,9 +54,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.extensions.proto.ProtoTruth.assertThat;
-import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static io.spine.client.Client.usingChannel;
 import static io.spine.examples.shareaware.MoneyCalculator.*;
 import static io.spine.examples.shareaware.given.GivenMoney.usd;
@@ -67,8 +65,6 @@ import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.zeroWalletBalance;
 import static io.spine.examples.shareaware.server.given.GivenWallet.createWallet;
 import static io.spine.util.Exceptions.illegalStateWithCauseOf;
-import static java.time.Duration.ofMillis;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
@@ -80,13 +76,18 @@ public final class E2EUser {
     private final Client client;
     private final UserId userId;
     private final WalletId walletId;
-    private final WalletBalanceSubscription wallet;
+    private final EntitySubscription<WalletBalance> wallet;
+    private final EntitySubscription<InvestmentView> investment;
+    private final EntitySubscription<AvailableMarketShares> availableMarketShares;
 
     public E2EUser(ManagedChannel channel) {
         this.client = usingChannel(channel).build();
         this.userId = GivenUserId.generated();
         this.walletId = GivenWallet.walletId(userId);
-        wallet = new WalletBalanceSubscription(client, userId);
+        wallet = new EntitySubscription<>(WalletBalance.class, client, userId);
+        investment = new EntitySubscription<>(InvestmentView.class, client, userId);
+        availableMarketShares =
+                new EntitySubscription<>(AvailableMarketShares.class, client, userId);
         createWalletForUser();
     }
 
@@ -114,12 +115,19 @@ public final class E2EUser {
     }
 
     /**
-     * Describes the user's action to wait for shares to update on the market.
+     * Describes the user's action to look at available shares on the market.
      */
-    public List<Share> waitsForSharesToUpdate() {
-        sleepUninterruptibly(ofMillis(1500));
-        List<Share> shares = looksAtShares();
+    public List<Share> looksAtAvailableShares() {
+        List<Share> shares = availableMarketShares.state()
+                                                  .getShareList();
         return shares;
+    }
+
+    /**
+     * Describes the user's action to look at the investment.
+     */
+    public InvestmentView looksAtInvestment() {
+        return investment.state();
     }
 
     /**
@@ -129,7 +137,7 @@ public final class E2EUser {
         ReplenishWallet replenishWallet = replenishWallet(walletId, amount);
 
         command(replenishWallet);
-        WalletBalance balanceAfterReplenishment = wallet.balance();
+        WalletBalance balanceAfterReplenishment = wallet.state();
         WalletBalance expectedBalanceAfterReplenishment =
                 walletBalanceWith(usd(500), walletId);
         assertThat(balanceAfterReplenishment).isEqualTo(expectedBalanceAfterReplenishment);
@@ -146,7 +154,7 @@ public final class E2EUser {
     public EitherOf2<WalletBalance, InsufficientFunds> purchase(Share share, int howMany) {
         PurchaseShares purchaseShares = purchaseSharesFor(id(), share, howMany);
 
-        WalletBalance walletBeforePurchase = looksAtWalletBalance();
+        WalletBalance walletBeforePurchase = wallet.state();
         if (isGreater(purchaseShares.totalCost(), walletBeforePurchase.getBalance())) {
             SubscriptionOutcome<InsufficientFunds> subscriptionOutcome =
                     subscribeToEvent(InsufficientFunds.class);
@@ -156,7 +164,7 @@ public final class E2EUser {
             return EitherOf2.withB(insufficientFunds);
         }
         command(purchaseShares);
-        return EitherOf2.withA(wallet.balance());
+        return EitherOf2.withA(wallet.state());
     }
 
     /**
@@ -175,46 +183,7 @@ public final class E2EUser {
     private WalletBalance withdrawsMoney(Money amount) {
         WithdrawMoney withdrawMoney = withdrawMoneyFrom(walletId, amount);
         command(withdrawMoney);
-        return wallet.balance();
-    }
-
-    /**
-     * Describes the user's action to look at his wallet balance.
-     */
-    private WalletBalance looksAtWalletBalance() {
-        ImmutableList<WalletBalance> balances = lookAt(WalletBalance.class);
-        assertThat(balances.size()).isEqualTo(1);
-        return balances.get(0);
-    }
-
-    /**
-     * Describes the user's action to look at the available shares on the market.
-     */
-    private List<Share> looksAtShares() {
-        CompletableFuture<List<Share>> shares = new CompletableFuture<>();
-        client.onBehalfOf(id())
-              .subscribeTo(AvailableMarketShares.class)
-              .observe(projection -> shares.complete(projection.getShareList()))
-              .post();
-        try {
-            return shares.get(1500, MILLISECONDS);
-        } catch (TimeoutException | InterruptedException | ExecutionException e) {
-            throw illegalStateWithCauseOf(e);
-        }
-    }
-
-    /**
-     * This method is a public alias for {@link #subscribeToState(Class)}.
-     */
-    public <S extends EntityState> SubscriptionOutcome<S> expectsChangesIn(Class<S> type) {
-       return subscribeToState(type);
-    }
-
-    /**
-     * This method is a public alias for {@link #retrieveValueFrom(SubscriptionOutcome)}.
-     */
-    public <S extends EntityState> S checksChangesIn(SubscriptionOutcome<S> changedState) {
-        return retrieveValueFrom(changedState);
+        return wallet.state();
     }
 
     /**
@@ -257,16 +226,6 @@ public final class E2EUser {
     }
 
     /**
-     * Allows user to take a look at all the {@code EntityState}s with the provided type.
-     */
-    private <S extends EntityState> ImmutableList<S> lookAt(Class<S> type) {
-        return client
-                .onBehalfOf(userId)
-                .select(type)
-                .run();
-    }
-
-    /**
      * Cancels the passed subscription.
      */
     private void cancel(Subscription subscription) {
@@ -277,7 +236,7 @@ public final class E2EUser {
     private void createWalletForUser() {
         CreateWallet createWallet = createWallet(walletId);
         command(createWallet);
-        WalletBalance initialBalance = wallet.balance();
+        WalletBalance initialBalance = wallet.state();
         assertThat(initialBalance).isEqualTo(zeroWalletBalance(walletId));
     }
 }
