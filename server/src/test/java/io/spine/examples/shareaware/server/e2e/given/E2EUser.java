@@ -128,10 +128,7 @@ public final class E2EUser {
     public WalletBalance replenishesWalletFor(Money amount) {
         ReplenishWallet replenishWallet = replenishWallet(walletId, amount);
 
-        SubscriptionOutcome<WalletBalance> actualBalance =
-                subscribeToState(WalletBalance.class);
         command(replenishWallet);
-
         WalletBalance balanceAfterReplenishment = wallet.balance();
         WalletBalance expectedBalanceAfterReplenishment =
                 walletBalanceWith(usd(500), walletId);
@@ -175,7 +172,7 @@ public final class E2EUser {
     /**
      * Describes the user's action to withdraw the exact amount of money from the wallet.
      */
-    public WalletBalance withdrawsMoney(Money amount) {
+    private WalletBalance withdrawsMoney(Money amount) {
         WithdrawMoney withdrawMoney = withdrawMoneyFrom(walletId, amount);
         command(withdrawMoney);
         return wallet.balance();
@@ -184,7 +181,7 @@ public final class E2EUser {
     /**
      * Describes the user's action to look at his wallet balance.
      */
-    public WalletBalance looksAtWalletBalance() {
+    private WalletBalance looksAtWalletBalance() {
         ImmutableList<WalletBalance> balances = lookAt(WalletBalance.class);
         assertThat(balances.size()).isEqualTo(1);
         return balances.get(0);
@@ -193,7 +190,7 @@ public final class E2EUser {
     /**
      * Describes the user's action to look at the available shares on the market.
      */
-    public List<Share> looksAtShares() {
+    private List<Share> looksAtShares() {
         CompletableFuture<List<Share>> shares = new CompletableFuture<>();
         client.onBehalfOf(id())
               .subscribeTo(AvailableMarketShares.class)
@@ -218,34 +215,6 @@ public final class E2EUser {
      */
     public <S extends EntityState> S checksChangesIn(SubscriptionOutcome<S> changedState) {
         return retrieveValueFrom(changedState);
-    }
-
-    /**
-     * Subscribes the user to receive the event of the passed type.
-     *
-     * <p>Returns only the {@link CompletableFuture} that stores the event
-     * without {@link Subscription}.
-     *
-     * @see E2EUser#subscribeToEvent(Class)
-     */
-    private <E extends EventMessage> CompletableFuture<E>
-    subscribeToEventAndForget(Class<E> type) {
-        SubscriptionOutcome<E> subscriptionOutcome = subscribeToEvent(type);
-        return subscriptionOutcome.future();
-    }
-
-    /**
-     * Subscribes the user on changes of the passed type of the {@code EntityState}.
-     *
-     * <p>Returns only the {@link CompletableFuture} that stores the {@code EntityState}
-     * without {@link Subscription}.
-     *
-     * @see E2EUser#subscribeToState(Class)
-     */
-    private <S extends EntityState> CompletableFuture<S>
-    subscribeToStateAndForget(Class<S> type) {
-        SubscriptionOutcome<S> subscriptionOutcome = subscribeToState(type);
-        return subscriptionOutcome.future();
     }
 
     /**
