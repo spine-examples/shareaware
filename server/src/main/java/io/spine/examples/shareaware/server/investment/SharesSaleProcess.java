@@ -65,8 +65,8 @@ final class SharesSaleProcess
     @Command
     ReserveShares on(SellShares c) {
         initState(c);
-        UserId user = c.getSeller();
-        ShareId share = c.getShare();
+        var user = c.getSeller();
+        var share = c.getShare();
         return ReserveShares
                 .newBuilder()
                 .setProcess(c.getSaleProcess())
@@ -159,8 +159,8 @@ final class SharesSaleProcess
      */
     @Command
     CompleteSharesReservation on(BalanceRecharged e) {
-        SaleId process = e.getOperation()
-                          .getSale();
+        var process = e.getOperation()
+                       .getSale();
         return CompleteSharesReservation
                 .newBuilder()
                 .setInvestment(investmentId())

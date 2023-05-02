@@ -43,8 +43,8 @@ final class InvestmentViewProjection
 
     @Subscribe
     void on(SharesPurchased e) {
-        UserId owner = e.getPurchaser();
-        ShareId share = e.getShare();
+        var owner = e.getPurchaser();
+        var share = e.getShare();
         builder()
                 .setId(investmentId(owner, share))
                 .setSharesAvailable(e.getSharesAvailable());
@@ -52,8 +52,8 @@ final class InvestmentViewProjection
 
     @Subscribe
     void on(SharesSold e) {
-        UserId owner = e.getSeller();
-        ShareId share = e.getShare();
+        var owner = e.getSeller();
+        var share = e.getShare();
         builder()
                 .setId(investmentId(owner, share))
                 .setSharesAvailable(e.getSharesAvailable());

@@ -31,15 +31,15 @@ import io.spine.examples.shareaware.ReplenishmentOperationId;
 import io.spine.examples.shareaware.SaleId;
 import io.spine.examples.shareaware.ShareId;
 import io.spine.examples.shareaware.WalletId;
-import io.spine.examples.shareaware.investment.InvestmentView;
+import io.spine.examples.shareaware.given.GivenMoney;
 import io.spine.examples.shareaware.investment.Investment;
+import io.spine.examples.shareaware.investment.InvestmentView;
 import io.spine.examples.shareaware.investment.SharesSale;
 import io.spine.examples.shareaware.investment.command.PurchaseShares;
 import io.spine.examples.shareaware.investment.command.SellShares;
 import io.spine.examples.shareaware.investment.event.SharesSaleFailed;
 import io.spine.examples.shareaware.investment.event.SharesSold;
 import io.spine.examples.shareaware.market.command.SellSharesOnMarket;
-import io.spine.examples.shareaware.given.GivenMoney;
 import io.spine.examples.shareaware.server.market.MarketProcess;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.WalletBalance;
@@ -63,18 +63,18 @@ public final class SharesSaleTestEnv {
     }
 
     public static SellShares sellShareFrom(Investment investment) {
-        UserId user = investment.getId()
-                                .getOwner();
-        ShareId share = investment.getId()
-                                  .getShare();
+        var user = investment.getId()
+                             .getOwner();
+        var share = investment.getId()
+                              .getShare();
         return sellShares(user, share, 1);
     }
 
     public static SellShares sellMoreSharesThanIn(Investment investment) {
-        UserId user = investment.getId()
-                                .getOwner();
-        ShareId share = investment.getId()
-                                  .getShare();
+        var user = investment.getId()
+                             .getOwner();
+        var share = investment.getId()
+                              .getShare();
         return sellShares(user, share, investment.getSharesAvailable() + 1);
     }
 
@@ -94,7 +94,7 @@ public final class SharesSaleTestEnv {
     public static Wallet walletAfter(PurchaseShares purchaseCommand,
                                      SellShares saleCommand,
                                      Wallet wallet) {
-        Money currentBalance = subtract(wallet.getBalance(), purchaseCommand.totalCost());
+        var currentBalance = subtract(wallet.getBalance(), purchaseCommand.totalCost());
         return wallet
                 .toBuilder()
                 .setBalance(sum(currentBalance, saleCommand.totalCost()))
@@ -102,16 +102,15 @@ public final class SharesSaleTestEnv {
     }
 
     public static BalanceRecharged balanceRechargedBy(SellShares command, Wallet wallet) {
-        Money currentBalance = sum(wallet.getBalance(), command.totalCost());
+        var currentBalance = sum(wallet.getBalance(), command.totalCost());
         return balanceRecharged(command, currentBalance);
     }
 
     public static BalanceRecharged balanceRechargedAfter(SellShares saleCommand,
                                                          PurchaseShares purchaseCommand,
                                                          Wallet wallet) {
-        Money balanceAfterPurchase = subtract(wallet.getBalance(),
-                                              purchaseCommand.totalCost());
-        Money currentBalance = sum(balanceAfterPurchase, saleCommand.totalCost());
+        var balanceAfterPurchase = subtract(wallet.getBalance(), purchaseCommand.totalCost());
+        var currentBalance = sum(balanceAfterPurchase, saleCommand.totalCost());
         return balanceRecharged(saleCommand, currentBalance);
     }
 
@@ -155,7 +154,7 @@ public final class SharesSaleTestEnv {
     }
 
     public static SharesSold sharesSoldBy(SellShares command, Investment investment) {
-        int sharesAvailable = investment.getSharesAvailable() - command.getQuantity();
+        var sharesAvailable = investment.getSharesAvailable() - command.getQuantity();
         return SharesSold
                 .newBuilder()
                 .setSaleProcess(command.getSaleProcess())
@@ -177,8 +176,8 @@ public final class SharesSaleTestEnv {
     public static InvestmentView investmentViewAfter(SellShares firstSale,
                                                      SellShares secondSale,
                                                      Investment investment) {
-        int saleAmount = firstSale.getQuantity() + secondSale.getQuantity();
-        int sharesAvailable = investment.getSharesAvailable() - saleAmount;
+        var saleAmount = firstSale.getQuantity() + secondSale.getQuantity();
+        var sharesAvailable = investment.getSharesAvailable() - saleAmount;
         return InvestmentView
                 .newBuilder()
                 .setId(investment.getId())
@@ -189,9 +188,8 @@ public final class SharesSaleTestEnv {
     public static WalletBalance walletBalanceAfter(PurchaseShares purchaseCommand,
                                                    SellShares sellCommand,
                                                    Wallet wallet) {
-        Money balanceAfterPurchase =
-                subtract(wallet.getBalance(), purchaseCommand.totalCost());
-        Money currentBalance = sum(balanceAfterPurchase, sellCommand.totalCost());
+        var balanceAfterPurchase = subtract(wallet.getBalance(), purchaseCommand.totalCost());
+        var currentBalance = sum(balanceAfterPurchase, sellCommand.totalCost());
         return WalletBalance
                 .newBuilder()
                 .setId(wallet.getId())
