@@ -55,9 +55,10 @@ public final class SubscriptionOutcome<S extends KnownMessage> {
      * }
      * </pre>
      *
-     * <p>We recommend using future.get() with timeout because the simple future.get()
-     * method will block the calling thread until the future is completed,
-     * but there is no guarantee that the future will be completed at all.
+     * <p>We recommend using {@code future.get()} with timeout
+     * because the simple {@code future.get()} method will block the calling
+     * thread until the future is completed, but there is no guarantee
+     * that the future will be completed at all.
      */
     public CompletableFuture<S> future() {
         return future;
@@ -69,7 +70,7 @@ public final class SubscriptionOutcome<S extends KnownMessage> {
      * <p>In case when the subscription is no longer needed,
      * it is recommended to cancel it via {@code Client}.
      */
-    public Subscription subscription() {
+    Subscription subscription() {
         return subscription;
     }
 }
