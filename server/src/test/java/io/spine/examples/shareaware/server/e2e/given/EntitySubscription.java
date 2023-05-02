@@ -45,7 +45,7 @@ public class EntitySubscription<S extends EntityState> {
     EntitySubscription(Class<S> entityType, Client client, UserId user) {
         client.onBehalfOf(user)
               .subscribeTo(entityType)
-              .observe(entity::set)
+              .observe(entity::setState)
               .post();
     }
 
@@ -53,20 +53,20 @@ public class EntitySubscription<S extends EntityState> {
      * Provides the current state of the subscribed entity.
      */
     public S state() {
-        return entity.value();
+        return entity.state();
     }
 
     private static final class ObservedEntity<S extends EntityState> {
         private CompletableFuture<S> future = new CompletableFuture<>();
 
-        private void set(S value) {
+        private void setState(S value) {
             if(future.isDone()) {
                 future = new CompletableFuture<>();
             }
             future.complete(value);
         }
 
-        private S value() {
+        private S state() {
             try {
                 return future.get();
             } catch (InterruptedException | ExecutionException e) {
