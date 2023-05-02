@@ -26,26 +26,13 @@
 
 package io.spine.examples.shareaware.server.wallet;
 
-import io.spine.examples.shareaware.WalletId;
-import io.spine.examples.shareaware.WithdrawalId;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
-import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
 import io.spine.examples.shareaware.server.FreshContextTest;
-import io.spine.examples.shareaware.server.given.WalletTestContext;
 import io.spine.examples.shareaware.server.given.RejectingPaymentProcess;
-import io.spine.examples.shareaware.wallet.Wallet;
-import io.spine.examples.shareaware.wallet.WalletBalance;
-import io.spine.examples.shareaware.wallet.WalletWithdrawal;
+import io.spine.examples.shareaware.server.given.WalletTestContext;
 import io.spine.examples.shareaware.wallet.command.CancelMoneyReservation;
 import io.spine.examples.shareaware.wallet.command.DebitReservedMoney;
 import io.spine.examples.shareaware.wallet.command.ReserveMoney;
-import io.spine.examples.shareaware.wallet.command.WithdrawMoney;
-import io.spine.examples.shareaware.wallet.event.MoneyNotWithdrawn;
-import io.spine.examples.shareaware.wallet.event.MoneyReservationCanceled;
-import io.spine.examples.shareaware.wallet.event.MoneyReserved;
-import io.spine.examples.shareaware.wallet.event.MoneyWithdrawn;
-import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
-import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
 import io.spine.server.BoundedContextBuilder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -69,12 +56,12 @@ public final class WalletWithdrawalTest extends FreshContextTest {
         @Test
         @DisplayName("for expected amount of money")
         void entity() {
-            Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney firstWithdraw = withdrawMoneyFrom(wallet.getId());
-            WithdrawMoney secondWithdraw = withdrawMoneyFrom(wallet.getId());
-            Wallet expectedWallet = walletWhichWasWithdrawnBy(firstWithdraw,
-                                                              secondWithdraw,
-                                                              wallet);
+            var wallet = setUpReplenishedWallet(context());
+            var firstWithdraw = withdrawMoneyFrom(wallet.getId());
+            var secondWithdraw = withdrawMoneyFrom(wallet.getId());
+            var expectedWallet = walletWhichWasWithdrawnBy(firstWithdraw,
+                                                           secondWithdraw,
+                                                           wallet);
             context().receivesCommands(firstWithdraw, secondWithdraw);
 
             context().assertState(wallet.getId(), expectedWallet);
@@ -83,9 +70,9 @@ public final class WalletWithdrawalTest extends FreshContextTest {
         @Test
         @DisplayName("emitting the `ReservedMoneyDebited` event")
         void debitMoney() {
-            Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
-            ReservedMoneyDebited expected = reservedMoneyDebitedFrom(wallet, command);
+            var wallet = setUpReplenishedWallet(context());
+            var command = withdrawMoneyFrom(wallet.getId());
+            var expected = reservedMoneyDebitedFrom(wallet, command);
             context().receivesCommand(command);
 
             context().assertEvent(expected);
@@ -94,9 +81,9 @@ public final class WalletWithdrawalTest extends FreshContextTest {
         @Test
         @DisplayName("emitting the `MoneyReserved` event")
         void reserveMoney() {
-            Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
-            MoneyReserved expected = moneyReservedBy(command);
+            var wallet = setUpReplenishedWallet(context());
+            var command = withdrawMoneyFrom(wallet.getId());
+            var expected = moneyReservedBy(command);
             context().receivesCommand(command);
 
             context().assertEvent(expected);
@@ -105,9 +92,9 @@ public final class WalletWithdrawalTest extends FreshContextTest {
         @Test
         @DisplayName("emitting the `InsufficientFunds` rejection")
         void insufficientFunds() {
-            WalletId wallet = setUpWallet(context());
-            WithdrawMoney command = withdrawMoneyFrom(wallet);
-            InsufficientFunds expected = insufficientFundsIn(wallet, command);
+            var wallet = setUpWallet(context());
+            var command = withdrawMoneyFrom(wallet);
+            var expected = insufficientFundsIn(wallet, command);
             context().receivesCommand(command);
 
             context().assertEvent(expected);
@@ -116,9 +103,9 @@ public final class WalletWithdrawalTest extends FreshContextTest {
         @Test
         @DisplayName("emitting the `MoneyReservationCanceled` event")
         void cancelMoneyReservation() {
-            Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
-            MoneyReservationCanceled event = moneyReservationCanceledBy(command);
+            var wallet = setUpReplenishedWallet(context());
+            var command = withdrawMoneyFrom(wallet.getId());
+            var event = moneyReservationCanceledBy(command);
             RejectingPaymentProcess.switchToRejectionMode();
             context().receivesCommand(command);
 
@@ -134,12 +121,12 @@ public final class WalletWithdrawalTest extends FreshContextTest {
 
         @Test
         void balance() {
-            Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney firstWithdraw = withdrawMoneyFrom(wallet.getId());
-            WithdrawMoney secondWithdraw = withdrawMoneyFrom(wallet.getId());
-            WalletBalance expected = walletBalanceReducedBy(firstWithdraw,
-                                                            secondWithdraw,
-                                                            wallet);
+            var wallet = setUpReplenishedWallet(context());
+            var firstWithdraw = withdrawMoneyFrom(wallet.getId());
+            var secondWithdraw = withdrawMoneyFrom(wallet.getId());
+            var expected = walletBalanceReducedBy(firstWithdraw,
+                                                  secondWithdraw,
+                                                  wallet);
             context().receivesCommands(firstWithdraw, secondWithdraw);
 
             context().assertState(wallet.getId(), expected);
@@ -153,9 +140,9 @@ public final class WalletWithdrawalTest extends FreshContextTest {
         @Test
         @DisplayName("with state")
         void entity() {
-            Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
-            WalletWithdrawal expected = walletWithdrawalBy(command);
+            var wallet = setUpReplenishedWallet(context());
+            var command = withdrawMoneyFrom(wallet.getId());
+            var expected = walletWithdrawalBy(command);
             context().receivesCommand(command);
 
             context().assertState(command.getWithdrawalProcess(), expected);
@@ -164,9 +151,9 @@ public final class WalletWithdrawalTest extends FreshContextTest {
         @Test
         @DisplayName("which sends the `ReserveMoney` command")
         void reserveMoney() {
-            Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
-            ReserveMoney expected = reserveMoneyWith(command);
+            var wallet = setUpReplenishedWallet(context());
+            var command = withdrawMoneyFrom(wallet.getId());
+            var expected = reserveMoneyWith(command);
             context().receivesCommand(command);
 
             context().assertCommands()
@@ -178,10 +165,9 @@ public final class WalletWithdrawalTest extends FreshContextTest {
         @Test
         @DisplayName("which sends the `TransferMoneyToUser` command")
         void transferMoneyToUser() {
-            Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
-            TransferMoneyToUser expected =
-                    transferMoneyToUserWith(command, shareAwareIban);
+            var wallet = setUpReplenishedWallet(context());
+            var command = withdrawMoneyFrom(wallet.getId());
+            var expected = transferMoneyToUserWith(command, shareAwareIban);
             context().receivesCommand(command);
 
             context().assertCommands()
@@ -193,9 +179,9 @@ public final class WalletWithdrawalTest extends FreshContextTest {
         @Test
         @DisplayName("which sends the `DebitReservedMoney` command")
         void debitReservedMoney() {
-            Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
-            DebitReservedMoney expected = debitReservedMoneyWith(command);
+            var wallet = setUpReplenishedWallet(context());
+            var command = withdrawMoneyFrom(wallet.getId());
+            var expected = debitReservedMoneyWith(command);
             context().receivesCommand(command);
 
             context().assertCommands()
@@ -207,9 +193,9 @@ public final class WalletWithdrawalTest extends FreshContextTest {
         @Test
         @DisplayName("which emits the `WalletWithdrawn` event and archives itself after it")
         void event() {
-            Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
-            MoneyWithdrawn expected = moneyWithdrawnBy(command, wallet);
+            var wallet = setUpReplenishedWallet(context());
+            var command = withdrawMoneyFrom(wallet.getId());
+            var expected = moneyWithdrawnBy(command, wallet);
             context().receivesCommand(command);
 
             context().assertEvent(expected);
@@ -222,10 +208,10 @@ public final class WalletWithdrawalTest extends FreshContextTest {
         @Test
         @DisplayName("which emits the `WalletNotWithdrawn` event when insufficient funds on the wallet")
         void insufficientFunds() {
-            WalletId wallet = setUpWallet(context());
-            WithdrawMoney command = withdrawMoneyFrom(wallet);
-            WithdrawalId withdrawalProcess = command.getWithdrawalProcess();
-            MoneyNotWithdrawn expected = moneyNotWithdrawnBy(withdrawalProcess);
+            var wallet = setUpWallet(context());
+            var command = withdrawMoneyFrom(wallet);
+            var withdrawalProcess = command.getWithdrawalProcess();
+            var expected = moneyNotWithdrawnBy(withdrawalProcess);
             context().receivesCommand(command);
 
             context().assertEvent(expected);
@@ -237,9 +223,9 @@ public final class WalletWithdrawalTest extends FreshContextTest {
         @Test
         @DisplayName("which sends `CancelMoneyReservation` command when something went wrong in payment system")
         void moneyCannotBeTransferredToUser() {
-            Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
-            CancelMoneyReservation expected = cancelMoneyReservationBy(command);
+            var wallet = setUpReplenishedWallet(context());
+            var command = withdrawMoneyFrom(wallet.getId());
+            var expected = cancelMoneyReservationBy(command);
             RejectingPaymentProcess.switchToRejectionMode();
             context().receivesCommand(command);
 
@@ -253,10 +239,10 @@ public final class WalletWithdrawalTest extends FreshContextTest {
         @Test
         @DisplayName("which emits the `WalletNotWithdrawn` event when money reservation was canceled")
         void moneyReservationCanceled() {
-            Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
-            WithdrawalId withdrawalProcess = command.getWithdrawalProcess();
-            MoneyNotWithdrawn expected = moneyNotWithdrawnBy(withdrawalProcess);
+            var wallet = setUpReplenishedWallet(context());
+            var command = withdrawMoneyFrom(wallet.getId());
+            var withdrawalProcess = command.getWithdrawalProcess();
+            var expected = moneyNotWithdrawnBy(withdrawalProcess);
             RejectingPaymentProcess.switchToRejectionMode();
             context().receivesCommand(command);
 
@@ -275,9 +261,9 @@ public final class WalletWithdrawalTest extends FreshContextTest {
         @Test
         @DisplayName("which emits the `MoneyTransferredToUser` event")
         void transferMoney() {
-            Wallet wallet = setUpReplenishedWallet(context());
-            WithdrawMoney command = withdrawMoneyFrom(wallet.getId());
-            MoneyTransferredToUser expected = moneyTransferredToUserBy(command);
+            var wallet = setUpReplenishedWallet(context());
+            var command = withdrawMoneyFrom(wallet.getId());
+            var expected = moneyTransferredToUserBy(command);
             context().receivesCommand(command);
 
             context().assertEvent(expected);

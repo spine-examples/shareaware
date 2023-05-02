@@ -26,19 +26,11 @@
 
 package io.spine.examples.shareaware.server.wallet;
 
-import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyFromUser;
 import io.spine.examples.shareaware.server.FreshContextTest;
 import io.spine.examples.shareaware.server.given.RejectingPaymentProcess;
 import io.spine.examples.shareaware.server.given.WalletTestContext;
-import io.spine.examples.shareaware.wallet.Wallet;
-import io.spine.examples.shareaware.wallet.WalletBalance;
-import io.spine.examples.shareaware.wallet.WalletReplenishment;
 import io.spine.examples.shareaware.wallet.command.RechargeBalance;
-import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
-import io.spine.examples.shareaware.wallet.command.ReplenishWallet;
-import io.spine.examples.shareaware.wallet.event.WalletNotReplenished;
-import io.spine.examples.shareaware.wallet.event.WalletReplenished;
 import io.spine.server.BoundedContextBuilder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -62,12 +54,12 @@ public final class WalletReplenishmentTest extends FreshContextTest {
         @Test
         @DisplayName("for 1000 USD")
         void entity() {
-            WalletId wallet = setUpWallet(context());
-            ReplenishWallet firstReplenishment = replenish(wallet);
-            ReplenishWallet secondReplenishment = replenish(wallet);
-            Wallet expectedWallet = walletReplenishedBy(firstReplenishment,
-                                                        secondReplenishment,
-                                                        wallet);
+            var wallet = setUpWallet(context());
+            var firstReplenishment = replenish(wallet);
+            var secondReplenishment = replenish(wallet);
+            var expectedWallet = walletReplenishedBy(firstReplenishment,
+                                                     secondReplenishment,
+                                                     wallet);
             context().receivesCommands(firstReplenishment, secondReplenishment);
 
             context().assertState(wallet, expectedWallet);
@@ -76,9 +68,9 @@ public final class WalletReplenishmentTest extends FreshContextTest {
         @Test
         @DisplayName("emitting the `BalanceRecharged` event")
         void event() {
-            WalletId wallet = setUpWallet(context());
-            ReplenishWallet command = replenish(wallet);
-            BalanceRecharged expected = balanceRechargedBy(command, wallet);
+            var wallet = setUpWallet(context());
+            var command = replenish(wallet);
+            var expected = balanceRechargedBy(command, wallet);
             context().receivesCommand(command);
 
             context().assertEvent(expected);
@@ -92,12 +84,12 @@ public final class WalletReplenishmentTest extends FreshContextTest {
         @Test
         @DisplayName("to 1000 USD")
         void balance() {
-            WalletId wallet = setUpWallet(context());
-            ReplenishWallet firstReplenishment = replenish(wallet);
-            ReplenishWallet secondReplenishment = replenish(wallet);
-            WalletBalance expected = walletBalanceAfterReplenishment(firstReplenishment,
-                                                                     secondReplenishment,
-                                                                     wallet);
+            var wallet = setUpWallet(context());
+            var firstReplenishment = replenish(wallet);
+            var secondReplenishment = replenish(wallet);
+            var expected = walletBalanceAfterReplenishment(firstReplenishment,
+                                                           secondReplenishment,
+                                                           wallet);
             context().receivesCommands(firstReplenishment, secondReplenishment);
 
             context().assertState(wallet, expected);
@@ -111,9 +103,9 @@ public final class WalletReplenishmentTest extends FreshContextTest {
         @Test
         @DisplayName("with state")
         void entity() {
-            WalletId wallet = setUpWallet(context());
-            ReplenishWallet command = replenish(wallet);
-            WalletReplenishment expectedReplenishment = walletReplenishmentBy(command);
+            var wallet = setUpWallet(context());
+            var command = replenish(wallet);
+            var expectedReplenishment = walletReplenishmentBy(command);
             context().receivesCommand(command);
 
             context().assertState(command.getReplenishment(), expectedReplenishment);
@@ -122,10 +114,9 @@ public final class WalletReplenishmentTest extends FreshContextTest {
         @Test
         @DisplayName("which sends the `TransferMoney` command")
         void commandToTransferMoney() {
-            WalletId wallet = setUpWallet(context());
-            ReplenishWallet command = replenish(wallet);
-            TransferMoneyFromUser expected =
-                    transferMoneyFromUserBy(command, shareAwareIban);
+            var wallet = setUpWallet(context());
+            var command = replenish(wallet);
+            var expected = transferMoneyFromUserBy(command, shareAwareIban);
             context().receivesCommand(command);
 
             context().assertCommands()
@@ -137,9 +128,9 @@ public final class WalletReplenishmentTest extends FreshContextTest {
         @Test
         @DisplayName("which sends the `RechargeBalance` command")
         void commandToRechargeBalance() {
-            WalletId wallet = setUpWallet(context());
-            ReplenishWallet command = replenish(wallet);
-            RechargeBalance expected = rechargeBalanceWhen(command);
+            var wallet = setUpWallet(context());
+            var command = replenish(wallet);
+            var expected = rechargeBalanceWhen(command);
             context().receivesCommand(command);
 
             context().assertCommands()
@@ -151,14 +142,13 @@ public final class WalletReplenishmentTest extends FreshContextTest {
         @Test
         @DisplayName("which emits the `WalletReplenished` event and archives itself after it")
         void event() {
-            WalletId wallet = setUpWallet(context());
-            ReplenishWallet command = replenish(wallet);
-            WalletReplenished event = walletReplenishedAfter(command);
+            var wallet = setUpWallet(context());
+            var command = replenish(wallet);
+            var event = walletReplenishedAfter(command);
             context().receivesCommand(command);
 
             context().assertEvent(event);
-            context().assertEntity(command.getReplenishment(),
-                                   WalletReplenishmentProcess.class)
+            context().assertEntity(command.getReplenishment(), WalletReplenishmentProcess.class)
                      .archivedFlag()
                      .isTrue();
         }
@@ -166,9 +156,9 @@ public final class WalletReplenishmentTest extends FreshContextTest {
         @Test
         @DisplayName("which emits the `WalletNotReplenished` event and archives itself after it")
         void rejection() {
-            WalletId wallet = setUpWallet(context());
-            ReplenishWallet command = replenish(wallet);
-            WalletNotReplenished expected = walletNotReplenishedAfter(command);
+            var wallet = setUpWallet(context());
+            var command = replenish(wallet);
+            var expected = walletNotReplenishedAfter(command);
             RejectingPaymentProcess.switchToRejectionMode();
             context().receivesCommand(command);
 
