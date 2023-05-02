@@ -84,7 +84,7 @@ public abstract class WithServer {
     }
 
     /**
-     * Shuts the server down.
+     * Shuts the server and all channels down.
      */
     @AfterEach
     void stopAndDisconnect() {
