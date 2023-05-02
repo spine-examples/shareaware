@@ -28,7 +28,6 @@ package io.spine.examples.shareaware.share;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.spine.examples.shareaware.ShareId;
 import io.spine.money.Currency;
@@ -73,9 +72,9 @@ public final class SharesReader {
      */
     public static Set<Share> read(File file) {
         checkNotNull(file);
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        MapLikeType mapType = mapper.getTypeFactory()
-                                    .constructMapLikeType(Map.class, String.class, String.class);
+        var mapper = new ObjectMapper(new YAMLFactory());
+        var mapType = mapper.getTypeFactory()
+                            .constructMapLikeType(Map.class, String.class, String.class);
         JavaType listType = mapper.getTypeFactory()
                                   .constructCollectionType(List.class, mapType);
         try {
@@ -89,8 +88,8 @@ public final class SharesReader {
     }
 
     private static Share toShare(Map<String, String> shareData) {
-        ShareId id = ShareId.of(shareData.get("id"));
-        Money price = priceFrom(shareData.get("priceUnits"), shareData.get("priceNanos"));
+        var id = ShareId.of(shareData.get("id"));
+        var price = priceFrom(shareData.get("priceUnits"), shareData.get("priceNanos"));
         return Share
                 .newBuilder()
                 .setId(id)
