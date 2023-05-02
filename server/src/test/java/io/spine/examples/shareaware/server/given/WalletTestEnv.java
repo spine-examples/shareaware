@@ -1,17 +1,16 @@
 package io.spine.examples.shareaware.server.given;
 
-import io.spine.examples.shareaware.WithdrawalOperationId;
 import io.spine.examples.shareaware.ReplenishmentId;
 import io.spine.examples.shareaware.ReplenishmentOperationId;
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.WithdrawalId;
+import io.spine.examples.shareaware.WithdrawalOperationId;
 import io.spine.examples.shareaware.given.GivenMoney;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyFromUser;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
 import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredFromUser;
 import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
-import io.spine.examples.shareaware.MoneyCalculator;
 import io.spine.examples.shareaware.wallet.Iban;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.WalletBalance;
@@ -39,9 +38,9 @@ import io.spine.money.Money;
 import io.spine.testing.core.given.GivenUserId;
 import io.spine.testing.server.blackbox.BlackBoxContext;
 
-import static io.spine.examples.shareaware.given.GivenMoney.moneyOf;
 import static io.spine.examples.shareaware.MoneyCalculator.subtract;
 import static io.spine.examples.shareaware.MoneyCalculator.sum;
+import static io.spine.examples.shareaware.given.GivenMoney.moneyOf;
 
 public final class WalletTestEnv {
 
@@ -74,7 +73,7 @@ public final class WalletTestEnv {
      * Generates {@code ReplenishWallet} command.
      */
     private static ReplenishWallet replenish(WalletId wallet, Money amount) {
-        ReplenishmentId replenishment = ReplenishmentId.generate();
+        var replenishment = ReplenishmentId.generate();
         return ReplenishWallet
                 .newBuilder()
                 .setWallet(wallet)
@@ -88,7 +87,7 @@ public final class WalletTestEnv {
      * Generates {@code ReplenishWallet} command on 500 USD for the wallet.
      */
     public static ReplenishWallet replenish(WalletId wallet) {
-        Money replenishmentAmount = moneyOf(500, Currency.USD);
+        var replenishmentAmount = moneyOf(500, Currency.USD);
         return replenish(wallet, replenishmentAmount);
     }
 
@@ -98,8 +97,8 @@ public final class WalletTestEnv {
      * @return the ID of created {@code Wallet}.
      */
     public static WalletId setUpWallet(BlackBoxContext context) {
-        WalletId wallet = givenId();
-        CreateWallet command = createWallet(wallet);
+        var wallet = givenId();
+        var command = createWallet(wallet);
         context.receivesCommand(command);
         return wallet;
     }
@@ -107,9 +106,8 @@ public final class WalletTestEnv {
     public static Wallet walletReplenishedBy(ReplenishWallet firstReplenishment,
                                              ReplenishWallet secondReplenishment,
                                              WalletId wallet) {
-        Money expectedBalance =
-                MoneyCalculator.sum(firstReplenishment.getMoneyAmount(),
-                                    secondReplenishment.getMoneyAmount());
+        var expectedBalance = sum(firstReplenishment.getMoneyAmount(),
+                                  secondReplenishment.getMoneyAmount());
         return Wallet
                 .newBuilder()
                 .setId(wallet)
@@ -129,9 +127,9 @@ public final class WalletTestEnv {
     public static WalletBalance walletBalanceAfterReplenishment(ReplenishWallet firstReplenishment,
                                                                 ReplenishWallet secondReplenishment,
                                                                 WalletId wallet) {
-        Wallet replenishedWallet = walletReplenishedBy(firstReplenishment,
-                                                 secondReplenishment,
-                                                 wallet);
+        var replenishedWallet = walletReplenishedBy(firstReplenishment,
+                                                    secondReplenishment,
+                                                    wallet);
         return WalletBalance
                 .newBuilder()
                 .setId(replenishedWallet.getId())
@@ -195,8 +193,8 @@ public final class WalletTestEnv {
     }
 
     public static Wallet setUpReplenishedWallet(BlackBoxContext context) {
-        WalletId wallet = setUpWallet(context);
-        ReplenishWallet command = replenish(wallet);
+        var wallet = setUpWallet(context);
+        var command = replenish(wallet);
         context.receivesCommand(command);
         return Wallet
                 .newBuilder()
@@ -224,7 +222,7 @@ public final class WalletTestEnv {
 
     public static ReservedMoneyDebited reservedMoneyDebitedFrom(Wallet wallet,
                                                                 WithdrawMoney command) {
-        Money reducedBalance = subtract(wallet.getBalance(), command.getAmount());
+        var reducedBalance = subtract(wallet.getBalance(), command.getAmount());
         return ReservedMoneyDebited
                 .newBuilder()
                 .setOperation(operationId(command.getWithdrawalProcess()))
@@ -298,7 +296,7 @@ public final class WalletTestEnv {
     }
 
     public static MoneyWithdrawn moneyWithdrawnBy(WithdrawMoney command, Wallet wallet) {
-        Money reducedBalance = subtract(wallet.getBalance(), command.getAmount());
+        var reducedBalance = subtract(wallet.getBalance(), command.getAmount());
         return MoneyWithdrawn
                 .newBuilder()
                 .setWithdrawalProcess(command.getWithdrawalProcess())
@@ -334,10 +332,8 @@ public final class WalletTestEnv {
     public static Wallet walletWhichWasWithdrawnBy(WithdrawMoney firstWithdraw,
                                                    WithdrawMoney secondWithdraw,
                                                    Wallet wallet) {
-        Money withdrawalAmount =
-                sum(firstWithdraw.getAmount(), secondWithdraw.getAmount());
-        Money expectedBalance =
-                subtract(wallet.getBalance(), withdrawalAmount);
+        var withdrawalAmount = sum(firstWithdraw.getAmount(), secondWithdraw.getAmount());
+        var expectedBalance = subtract(wallet.getBalance(), withdrawalAmount);
         return Wallet
                 .newBuilder()
                 .setId(wallet.getId())
@@ -348,10 +344,8 @@ public final class WalletTestEnv {
     public static WalletBalance walletBalanceReducedBy(WithdrawMoney firstWithdraw,
                                                        WithdrawMoney secondWithdraw,
                                                        Wallet wallet) {
-        Money withdrawalAmount =
-                sum(firstWithdraw.getAmount(), secondWithdraw.getAmount());
-        Money expectedBalance =
-                subtract(wallet.getBalance(), withdrawalAmount);
+        var withdrawalAmount = sum(firstWithdraw.getAmount(), secondWithdraw.getAmount());
+        var expectedBalance = subtract(wallet.getBalance(), withdrawalAmount);
         return WalletBalance
                 .newBuilder()
                 .setId(wallet.getId())

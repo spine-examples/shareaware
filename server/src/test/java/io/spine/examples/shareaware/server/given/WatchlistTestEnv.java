@@ -55,7 +55,7 @@ public final class WatchlistTestEnv {
     }
 
     public static Watchlist setUpWatchlist(BlackBoxContext context) {
-        CreateWatchlist command = createWatchlist();
+        var command = createWatchlist();
         context.receivesCommand(command);
         return Watchlist
                 .newBuilder()
