@@ -75,18 +75,26 @@ public final class InvestmentTestEnv {
     private InvestmentTestEnv() {
     }
 
-    public static PurchaseShares purchaseSharesFor(UserId purchaser) {
-        return purchaseSharesFor(purchaser, ShareId.generate());
+    public static PurchaseShares purchaseShares(Wallet wallet) {
+        return purchaseShares(wallet.getId(), ShareId.generate());
     }
 
-    public static PurchaseShares purchaseSharesFor(UserId purchaser, ShareId share) {
+    public static PurchaseShares purchaseShares(WalletId wallet) {
+        return purchaseShares(wallet, ShareId.generate());
+    }
+
+    public static PurchaseShares purchaseShares(Wallet wallet, ShareId share) {
+        return purchaseShares(wallet.getId(), share);
+    }
+
+    private static PurchaseShares purchaseShares(WalletId wallet, ShareId share) {
         return PurchaseShares
                 .newBuilder()
                 .setShare(share)
                 .setPurchaseProcess(PurchaseId.generate())
                 .setQuantity(5)
                 .setPrice(usd(20))
-                .setPurchaser(purchaser)
+                .setPurchaser(wallet.getOwner())
                 .vBuild();
     }
 
@@ -243,7 +251,7 @@ public final class InvestmentTestEnv {
         var wallet = setUpReplenishedWallet(context);
         var user = wallet.getId()
                          .getOwner();
-        var command = purchaseSharesFor(user);
+        var command = purchaseShares(wallet);
         context.receivesCommand(command);
         return Investment
                 .newBuilder()

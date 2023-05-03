@@ -60,10 +60,8 @@ public final class SharesPurchaseTest extends FreshContextTest {
         @DisplayName("for the purchase price amount")
         void walletState() {
             var wallet = setUpReplenishedWallet(context());
-            var user = wallet.getId()
-                             .getOwner();
-            var firstPurchase = purchaseSharesFor(user);
-            var secondPurchase = purchaseSharesFor(user);
+            var firstPurchase = purchaseShares(wallet);
+            var secondPurchase = purchaseShares(wallet);
             var walletAfterPurchase =
                     walletAfter(firstPurchase, secondPurchase, wallet);
             context().receivesCommands(firstPurchase, secondPurchase);
@@ -75,8 +73,7 @@ public final class SharesPurchaseTest extends FreshContextTest {
         @DisplayName("emitting the `MoneyReserved` event")
         void moneyReserved() {
             var wallet = setUpReplenishedWallet(context());
-            var command = purchaseSharesFor(wallet.getId()
-                                                  .getOwner());
+            var command = purchaseShares(wallet);
             var expected = moneyReservedBy(command);
             context().receivesCommand(command);
 
@@ -87,8 +84,7 @@ public final class SharesPurchaseTest extends FreshContextTest {
         @DisplayName("emitting the `ReservedMoneyDebited` event")
         void reservedMoneyDebited() {
             var wallet = setUpReplenishedWallet(context());
-            var command = purchaseSharesFor(wallet.getId()
-                                                  .getOwner());
+            var command = purchaseShares(wallet);
             var expected = reservedMoneyDebitedBy(command, wallet);
             context().receivesCommand(command);
 
@@ -99,7 +95,7 @@ public final class SharesPurchaseTest extends FreshContextTest {
         @DisplayName("emitting the `InsufficientFunds` rejection")
         void insufficientFunds() {
             var walletId = setUpWallet(context());
-            var command = purchaseSharesFor(walletId.getOwner());
+            var command = purchaseShares(walletId);
             var expected = insufficientFundsIn(walletId, command);
             context().receivesCommand(command);
 
@@ -110,8 +106,7 @@ public final class SharesPurchaseTest extends FreshContextTest {
         @DisplayName("emitting the `MoneyReservationCanceled` event")
         void reservationCanceled() {
             var wallet = setUpReplenishedWallet(context());
-            var command = purchaseSharesFor(wallet.getId()
-                                                  .getOwner());
+            var command = purchaseShares(wallet);
             var expected = moneyReservationCanceledAfter(command);
             RejectingMarket.switchToRejectionMode();
             context().receivesCommand(command);
@@ -132,8 +127,8 @@ public final class SharesPurchaseTest extends FreshContextTest {
             var user = wallet.getId()
                              .getOwner();
             var share = ShareId.generate();
-            var firstPurchase = purchaseSharesFor(user, share);
-            var secondPurchase = purchaseSharesFor(user, share);
+            var firstPurchase = purchaseShares(wallet, share);
+            var secondPurchase = purchaseShares(wallet, share);
             var expected = investmentAfter(firstPurchase, secondPurchase);
             var investmentId = investmentId(user, share);
             context().receivesCommands(firstPurchase, secondPurchase);
@@ -144,9 +139,7 @@ public final class SharesPurchaseTest extends FreshContextTest {
         @Test
         void sharesAdded() {
             var wallet = setUpReplenishedWallet(context());
-            var user = wallet.getId()
-                             .getOwner();
-            var command = purchaseSharesFor(user);
+            var command = purchaseShares(wallet);
             var expected = sharesAddedBy(command);
             context().receivesCommand(command);
 
@@ -162,8 +155,7 @@ public final class SharesPurchaseTest extends FreshContextTest {
         @DisplayName("with state")
         void state() {
             var wallet = setUpReplenishedWallet(context());
-            var command = purchaseSharesFor(wallet.getId()
-                                                  .getOwner());
+            var command = purchaseShares(wallet);
             var expected = sharesPurchaseStateWhen(command);
             context().receivesCommand(command);
 
@@ -174,8 +166,7 @@ public final class SharesPurchaseTest extends FreshContextTest {
         @DisplayName("which issues the `ReserveMoney` command")
         void reserveMoney() {
             var wallet = setUpReplenishedWallet(context());
-            var command = purchaseSharesFor(wallet.getId()
-                                                  .getOwner());
+            var command = purchaseShares(wallet);
             var expected = reserveMoneyInitiatedBy(command);
             context().receivesCommand(command);
 
@@ -189,8 +180,7 @@ public final class SharesPurchaseTest extends FreshContextTest {
         @DisplayName("which issues the `ObtainShares` command")
         void obtainShares() {
             var wallet = setUpReplenishedWallet(context());
-            var command = purchaseSharesFor(wallet.getId()
-                                                  .getOwner());
+            var command = purchaseShares(wallet);
             var expected = obtainSharesWith(command);
             context().receivesCommand(command);
 
@@ -204,8 +194,7 @@ public final class SharesPurchaseTest extends FreshContextTest {
         @DisplayName("which issues the `AddShares` command")
         void addShares() {
             var wallet = setUpReplenishedWallet(context());
-            var command = purchaseSharesFor(wallet.getId()
-                                                  .getOwner());
+            var command = purchaseShares(wallet);
             var expected = addSharesWith(command);
             context().receivesCommand(command);
 
@@ -219,8 +208,7 @@ public final class SharesPurchaseTest extends FreshContextTest {
         @DisplayName("which issues the `DebitReservedMoney` command")
         void debitReservedMoney() {
             var wallet = setUpReplenishedWallet(context());
-            var command = purchaseSharesFor(wallet.getId()
-                                                  .getOwner());
+            var command = purchaseShares(wallet);
             var expected = debitReservedMoneyWith(command);
             context().receivesCommand(command);
 
@@ -234,8 +222,7 @@ public final class SharesPurchaseTest extends FreshContextTest {
         @DisplayName("which emits the `SharesPurchased` event")
         void sharesPurchased() {
             var wallet = setUpReplenishedWallet(context());
-            var command = purchaseSharesFor(wallet.getId()
-                                                  .getOwner());
+            var command = purchaseShares(wallet);
             var expected = sharesPurchasedAsResultOf(command);
             context().receivesCommand(command);
 
@@ -246,7 +233,7 @@ public final class SharesPurchaseTest extends FreshContextTest {
         @DisplayName("which emits the `SharesPurchaseFailed` event when insufficient funds in the wallet")
         void processFailedAfterInsufficientFunds() {
             var walletId = setUpWallet(context());
-            var command = purchaseSharesFor(walletId.getOwner());
+            var command = purchaseShares(walletId);
             var expected = sharesPurchaseFailedAsResultOf(command);
             context().receivesCommand(command);
 
@@ -257,8 +244,7 @@ public final class SharesPurchaseTest extends FreshContextTest {
         @DisplayName("which issues the `CancelMoneyReservation` command")
         void cancelMoneyReservation() {
             var wallet = setUpReplenishedWallet(context());
-            var command = purchaseSharesFor(wallet.getId()
-                                                  .getOwner());
+            var command = purchaseShares(wallet);
             var expected = cancelMoneyReservationAfter(command);
             RejectingMarket.switchToRejectionMode();
             context().receivesCommand(command);
@@ -274,8 +260,7 @@ public final class SharesPurchaseTest extends FreshContextTest {
         @DisplayName("which emits the `SharesPurchasedFailed` event after error in the Shares Market")
         void sharesPurchaseFailed() {
             var wallet = setUpReplenishedWallet(context());
-            var command = purchaseSharesFor(wallet.getId()
-                                                  .getOwner());
+            var command = purchaseShares(wallet);
             var expected = sharesPurchaseFailedAsResultOf(command);
             RejectingMarket.switchToRejectionMode();
             context().receivesCommand(command);
@@ -289,11 +274,9 @@ public final class SharesPurchaseTest extends FreshContextTest {
     @DisplayName("increase the number of available shares in the `InvestmentView` projection")
     void state() {
         var wallet = setUpReplenishedWallet(context());
-        var user = wallet.getId()
-                         .getOwner();
         var share = ShareId.generate();
-        var firstPurchase = purchaseSharesFor(user, share);
-        var secondPurchase = purchaseSharesFor(user, share);
+        var firstPurchase = purchaseShares(wallet, share);
+        var secondPurchase = purchaseShares(wallet, share);
         context().receivesCommands(firstPurchase, secondPurchase);
         var expected = investmentViewAfter(firstPurchase, secondPurchase);
 
@@ -304,11 +287,9 @@ public final class SharesPurchaseTest extends FreshContextTest {
     @DisplayName("reduce the balance value in the `WalletBalance` projection")
     void reduceWalletBalance() {
         var wallet = setUpReplenishedWallet(context());
-        var user = wallet.getId()
-                         .getOwner();
         var share = ShareId.generate();
-        var firstPurchase = purchaseSharesFor(user, share);
-        var secondPurchase = purchaseSharesFor(user, share);
+        var firstPurchase = purchaseShares(wallet, share);
+        var secondPurchase = purchaseShares(wallet, share);
         context().receivesCommands(firstPurchase, secondPurchase);
         var expected = walletBalanceAfter(firstPurchase, secondPurchase, wallet);
 

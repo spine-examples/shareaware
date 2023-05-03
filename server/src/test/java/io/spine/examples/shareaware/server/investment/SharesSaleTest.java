@@ -60,9 +60,7 @@ public class SharesSaleTest extends FreshContextTest {
         @DisplayName("for the sell price")
         void state() {
             var wallet = setUpReplenishedWallet(context());
-            var user = wallet.getId()
-                             .getOwner();
-            var purchaseCommand = purchaseSharesFor(user);
+            var purchaseCommand = purchaseShares(wallet);
             context().receivesCommand(purchaseCommand);
 
             var sellCommand = sellShareAfter(purchaseCommand);
@@ -76,9 +74,7 @@ public class SharesSaleTest extends FreshContextTest {
         @DisplayName("emitting the `BalanceRecharged` event")
         void event() {
             var wallet = setUpReplenishedWallet(context());
-            var user = wallet.getId()
-                             .getOwner();
-            var purchaseCommand = purchaseSharesFor(user);
+            var purchaseCommand = purchaseShares(wallet);
             context().receivesCommand(purchaseCommand);
 
             var sellCommand = sellShareAfter(purchaseCommand);
@@ -171,9 +167,7 @@ public class SharesSaleTest extends FreshContextTest {
     @DisplayName("increase the amount of money in the `WalletBalance` projection")
     void increaseWalletBalance() {
         var wallet = setUpReplenishedWallet(context());
-        var user = wallet.getId()
-                         .getOwner();
-        var purchaseCommand = purchaseSharesFor(user);
+        var purchaseCommand = purchaseShares(wallet);
         context().receivesCommand(purchaseCommand);
 
         var sellCommand = sellShareAfter(purchaseCommand);
