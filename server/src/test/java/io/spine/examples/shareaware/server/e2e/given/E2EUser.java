@@ -91,9 +91,9 @@ public final class E2EUser {
     }
 
     /**
-     * Allows user to send the provided command to the server.
+     * Allows user to post the provided command to the server.
      */
-    public void command(CommandMessage command) {
+    public void post(CommandMessage command) {
         client.onBehalfOf(userId)
               .command(command)
               .postAndForget();
@@ -135,11 +135,11 @@ public final class E2EUser {
     public WalletBalance replenishesWalletFor(Money amount) {
         ReplenishWallet replenishWallet = replenishWallet(walletId, amount);
 
-        command(replenishWallet);
+        post(replenishWallet);
         WalletBalance balanceAfterReplenishment = wallet.state();
-        WalletBalance expectedBalanceAfterReplenishment =
+        WalletBalance expectedBalance =
                 walletBalanceWith(usd(500), walletId);
-        assertThat(balanceAfterReplenishment).isEqualTo(expectedBalanceAfterReplenishment);
+        assertThat(balanceAfterReplenishment).isEqualTo(expectedBalance);
         return balanceAfterReplenishment;
     }
 
@@ -157,12 +157,12 @@ public final class E2EUser {
         if (isGreater(purchaseShares.totalCost(), walletBeforePurchase.getBalance())) {
             SubscriptionOutcome<InsufficientFunds> subscriptionOutcome =
                     subscribeToEvent(InsufficientFunds.class);
-            command(purchaseShares);
+            post(purchaseShares);
 
             InsufficientFunds insufficientFunds = retrieveValueFrom(subscriptionOutcome);
             return EitherOf2.withB(insufficientFunds);
         }
-        command(purchaseShares);
+        post(purchaseShares);
         return EitherOf2.withA(wallet.state());
     }
 
@@ -181,7 +181,7 @@ public final class E2EUser {
      */
     private WalletBalance withdrawsMoney(Money amount) {
         WithdrawMoney withdrawMoney = withdrawMoneyFrom(walletId, amount);
-        command(withdrawMoney);
+        post(withdrawMoney);
         return wallet.state();
     }
 
@@ -221,7 +221,7 @@ public final class E2EUser {
 
     private void createWalletForUser() {
         CreateWallet createWallet = createWallet(walletId);
-        command(createWallet);
+        post(createWallet);
         WalletBalance initialBalance = wallet.state();
         assertThat(initialBalance).isEqualTo(zeroWalletBalance(walletId));
     }
