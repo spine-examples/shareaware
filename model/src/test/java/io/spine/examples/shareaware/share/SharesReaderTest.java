@@ -61,7 +61,7 @@ final class SharesReaderTest extends UtilityClassTest<SharesReader> {
     @Test
     @DisplayName("throw `IllegalArgumentException` when the provided file is invalid")
     void throwException() {
-        var file = new File("notExistingFile.yml");
+        var file = new File("nonexistentFile.yml");
         assertThrows(IllegalArgumentException.class, () -> SharesReader.read(file));
     }
 }
