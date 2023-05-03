@@ -41,8 +41,8 @@ import java.util.List;
 
 import static com.google.common.truth.extensions.proto.ProtoTruth.assertThat;
 import static io.spine.examples.shareaware.given.GivenMoney.usd;
-import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.balanceAfterTeslaPurchase;
-import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.investmentAfterTeslaPurchase;
+import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.balanceAfterPurchase;
+import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.investmentAfterPurchase;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.pickTesla;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.zeroWalletBalance;
 
@@ -76,10 +76,10 @@ final class SharePurchaseTest extends WithServer {
         EitherOf2<WalletBalance, InsufficientFunds> successfulPurchase = user.purchase(tesla, 1);
         WalletBalance balanceAfterPurchase = successfulPurchase.getA();
         InvestmentView investmentInTesla = user.looksAtInvestment();
-        WalletBalance expectedBalanceAfterPurchase =
-                balanceAfterTeslaPurchase(tesla.getPrice(), balanceAfterReplenishment);
-        InvestmentView expectedInvestmentInTesla = investmentAfterTeslaPurchase(tesla, user.id());
-        assertThat(balanceAfterPurchase).isEqualTo(expectedBalanceAfterPurchase);
+        WalletBalance expectedBalance =
+                balanceAfterPurchase(tesla.getPrice(), balanceAfterReplenishment);
+        InvestmentView expectedInvestmentInTesla = investmentAfterPurchase(tesla, user.id());
+        assertThat(balanceAfterPurchase).isEqualTo(expectedBalance);
         assertThat(investmentInTesla).isEqualTo(expectedInvestmentInTesla);
 
         WalletBalance walletAfterWithdrawal = user.withdrawsAllMoney(balanceAfterPurchase);

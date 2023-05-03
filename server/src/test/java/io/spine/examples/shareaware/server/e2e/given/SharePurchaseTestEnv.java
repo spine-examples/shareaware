@@ -66,8 +66,8 @@ public final class SharePurchaseTestEnv {
                 .vBuild();
     }
 
-    public static WalletBalance balanceAfterTeslaPurchase(Money sharePrice,
-                                                          WalletBalance balance) {
+    public static WalletBalance balanceAfterPurchase(Money sharePrice,
+                                                     WalletBalance balance) {
         Money reducedBalance = subtract(balance.getBalance(), sharePrice);
         return balance
                 .toBuilder()
@@ -75,7 +75,7 @@ public final class SharePurchaseTestEnv {
                 .vBuild();
     }
 
-    public static InvestmentView investmentAfterTeslaPurchase(Share tesla, UserId user) {
+    public static InvestmentView investmentAfterPurchase(Share tesla, UserId user) {
         InvestmentId id = investmentId(user, tesla.getId());
         return InvestmentView
                 .newBuilder()
