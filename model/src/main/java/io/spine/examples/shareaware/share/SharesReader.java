@@ -73,10 +73,12 @@ public final class SharesReader {
     public static Set<Share> read(File file) {
         checkNotNull(file);
         var mapper = new ObjectMapper(new YAMLFactory());
-        var mapType = mapper.getTypeFactory()
-                            .constructMapLikeType(Map.class, String.class, String.class);
-        JavaType listType = mapper.getTypeFactory()
-                                  .constructCollectionType(List.class, mapType);
+        var mapType = mapper
+                .getTypeFactory()
+                .constructMapLikeType(Map.class, String.class, String.class);
+        JavaType listType = mapper
+                .getTypeFactory()
+                .constructCollectionType(List.class, mapType);
         try {
             List<Map<String, String>> sharesData = mapper.readValue(file, listType);
             return sharesData.stream()

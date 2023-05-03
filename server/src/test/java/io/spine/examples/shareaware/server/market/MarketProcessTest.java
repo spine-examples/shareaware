@@ -94,8 +94,7 @@ public final class MarketProcessTest extends FreshContextTest {
 
         var commandToObtainShares = obtainShares();
         context().receivesCommand(commandToObtainShares);
-        var expected =
-                sharesCannotBeObtainedCausedBy(commandToObtainShares);
+        var expected = sharesCannotBeObtainedCausedBy(commandToObtainShares);
 
         context().assertEvent(expected);
     }
@@ -109,8 +108,7 @@ public final class MarketProcessTest extends FreshContextTest {
 
         var commandToSellShares = sellSharesOnMarket();
         context().receivesCommand(commandToSellShares);
-        var expected =
-                sharesCannotBeSoldOnMarketCausedBy(commandToSellShares);
+        var expected = sharesCannotBeSoldOnMarketCausedBy(commandToSellShares);
 
         context().assertEvent(expected);
     }

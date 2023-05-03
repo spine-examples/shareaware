@@ -67,7 +67,8 @@ final class MarketData {
      * Returns the list of up-to-date shares that are available on the market.
      */
     static ImmutableList<Share> actualShares() {
-        var actualShares = shares.stream()
+        var actualShares = shares
+                .stream()
                 .map(MarketData::actualize)
                 .collect(Collectors.toList());
         return ImmutableList.copyOf(actualShares);
