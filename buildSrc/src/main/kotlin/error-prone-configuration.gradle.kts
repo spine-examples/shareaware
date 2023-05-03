@@ -41,7 +41,6 @@ plugins {
 
 dependencies {
     errorprone(ErrorProne.CorePlugin.lib)
-    errorproneJavac(ErrorProne.JavacPlugin.lib)
 }
 
 tasks.withType<JavaCompile> {
