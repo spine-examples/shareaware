@@ -47,7 +47,7 @@ message SharesAdded {
     PurchaseId process = 2 [(required) = true];
 
     // How many shares are available in the investment.
-    int32 shares_available = 3 [(required) = true];
+    int32 shares_available = 3 [(min).value = "1"];
 }
 
 // Shares have been reserved in the investment.
@@ -60,7 +60,7 @@ message SharesReserved {
     SaleId process = 2 [(required) = true];
 
     // The quantity of shares that was reserved.
-    int32 quantity = 3 [(required) = true];
+    int32 quantity = 3 [(min).value = "1"];
 }
 
 // The shares reservation has been completed.
@@ -73,7 +73,7 @@ message SharesReservationCompleted {
     SaleId process = 2 [(required) = true];
 
     // How many shares are available in the investment.
-    int32 shares_available = 3 [(required) = true];
+    int32 shares_available = 3 [(min).value = "1"];
 }
 
 // The shares reservation has been canceled.

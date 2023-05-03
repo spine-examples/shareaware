@@ -63,5 +63,5 @@ message SellShares {
     spine.money.Money price = 4 [(required) = true];
 
     // The quantity of shares to sell.
-    int32 quantity = 5 [(required) = true];
+    int32 quantity = 5 [(min).value = "1"];
 }

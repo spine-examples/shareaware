@@ -45,5 +45,5 @@ message InvestmentView {
     InvestmentId id = 1;
 
     // How many shares are available in the investment.
-    int32 shares_available = 2;
+    int32 shares_available = 2 [(min).value = "1"];
 }

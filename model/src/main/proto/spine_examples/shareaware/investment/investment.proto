@@ -48,7 +48,7 @@ message Investment {
     //
     // Does not include those which are reserved. See `shares_reserved` field.
     //
-    int32 shares_available = 2 [(required) = true];
+    int32 shares_available = 2 [(min).value = "1"];
 
     // The reserved amount of shares per sale operation.
     //

@@ -51,7 +51,7 @@ message SharesPurchased {
     ShareId share = 3 [(required) = true];
 
     // How many shares are available after the purchase.
-    int32 shares_available = 4 [(required) = true];
+    int32 shares_available = 4 [(min).value = "1"];
 }
 
 // Shares purchase process failed.
