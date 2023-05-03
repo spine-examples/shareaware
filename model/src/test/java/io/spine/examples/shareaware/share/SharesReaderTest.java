@@ -26,13 +26,13 @@
 
 package io.spine.examples.shareaware.share;
 
-import com.google.common.truth.Truth;
 import io.spine.testing.UtilityClassTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
+import static com.google.common.truth.Truth.assertThat;
 import static io.spine.examples.shareaware.share.SharesReaderTestEnv.expectedSharesFromFile;
 import static java.lang.Thread.currentThread;
 import static java.util.Objects.requireNonNull;
@@ -54,8 +54,7 @@ final class SharesReaderTest extends UtilityClassTest<SharesReader> {
         var shares = SharesReader.read(file);
         var expected = expectedSharesFromFile();
 
-        Truth.assertThat(shares)
-             .isEqualTo(expected);
+        assertThat(shares).isEqualTo(expected);
     }
 
     @Test
