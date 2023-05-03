@@ -25,31 +25,11 @@
  */
 
 /**
- * Configures the `Javac`.
- *
- * This plugin performs the following configuration:
- * - sets source and target compatibility to Java 8;
- * - states the encoding of source files;
- * - enables warnings about deprecated and unchecked code.
+ * Test environment classes for end-to-end tests.
  */
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.examples.shareaware.server.e2e.given;
 
-plugins {
-    java
-}
-
-val javaVersion = JavaVersion.VERSION_1_8
-java {
-    sourceCompatibility = javaVersion
-    targetCompatibility = javaVersion
-}
-
-tasks.withType<JavaCompile> {
-    with(options) {
-        /*
-         * Explicitly state the encoding of the source files, ensuring the correct
-         * execution of the `javac` task.
-         */
-        encoding = "UTF-8"
-        compilerArgs.addAll(listOf("-Werror", "-Xlint:unchecked", "-Xlint:deprecation"))
-    }
-}
+import javax.annotation.CheckReturnValue;
+import javax.annotation.ParametersAreNonnullByDefault;

@@ -31,8 +31,8 @@ import io.spine.examples.shareaware.WithdrawalId;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
 import io.spine.examples.shareaware.server.FreshContextTest;
-import io.spine.examples.shareaware.server.given.WalletTestContext;
 import io.spine.examples.shareaware.server.given.RejectingPaymentProcess;
+import io.spine.examples.shareaware.server.given.WalletTestContext;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.WalletWithdrawal;
@@ -51,6 +51,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import static io.spine.examples.shareaware.server.given.GivenWallet.setUpWallet;
 import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
 import static io.spine.examples.shareaware.server.wallet.WalletReplenishmentProcess.*;
 

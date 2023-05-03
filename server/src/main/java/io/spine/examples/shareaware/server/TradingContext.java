@@ -30,6 +30,7 @@ import io.spine.examples.shareaware.server.investment.InvestmentViewRepository;
 import io.spine.examples.shareaware.server.investment.InvestmentAggregate;
 import io.spine.examples.shareaware.server.investment.SharesPurchaseRepository;
 import io.spine.examples.shareaware.server.investment.SharesSaleRepository;
+import io.spine.examples.shareaware.server.market.AvailableMarketSharesRepository;
 import io.spine.examples.shareaware.server.market.MarketProcess;
 import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.server.wallet.WalletAggregate;
@@ -73,6 +74,7 @@ public final class TradingContext {
                 .add(new UserWatchlistsRepository())
                 .add(new SharesPurchaseRepository())
                 .add(new SharesSaleRepository())
-                .add(new InvestmentViewRepository());
+                .add(new InvestmentViewRepository())
+                .add(new AvailableMarketSharesRepository());
     }
 }

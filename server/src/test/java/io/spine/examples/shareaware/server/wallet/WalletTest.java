@@ -27,8 +27,8 @@
 package io.spine.examples.shareaware.server.wallet;
 
 import io.spine.examples.shareaware.WalletId;
-import io.spine.examples.shareaware.server.TradingContext;
 import io.spine.examples.shareaware.given.GivenMoney;
+import io.spine.examples.shareaware.server.TradingContext;
 import io.spine.examples.shareaware.wallet.Wallet;
 import io.spine.examples.shareaware.wallet.command.CreateWallet;
 import io.spine.examples.shareaware.wallet.event.WalletCreated;
@@ -38,7 +38,10 @@ import io.spine.testing.server.blackbox.ContextAwareTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
+import static io.spine.examples.shareaware.server.given.GivenWallet.createWallet;
+import static io.spine.examples.shareaware.server.given.GivenWallet.givenId;
+import static io.spine.examples.shareaware.server.given.WalletTestEnv.walletCreatedWith;
+import static io.spine.examples.shareaware.server.given.WalletTestEnv.walletWith;
 
 @DisplayName("`Wallet` should")
 public final class WalletTest extends ContextAwareTest {
