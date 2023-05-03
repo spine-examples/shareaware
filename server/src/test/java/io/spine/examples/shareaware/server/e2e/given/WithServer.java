@@ -57,7 +57,7 @@ public abstract class WithServer {
     private static final MarketDataProvider provider = MarketDataProvider.instance();
 
     /**
-     * Runs the {@code MarketDataProvider} to provide data about available shares on the market.
+     * Runs the {@link MarketDataProvider} to provide data about available shares on the market.
      */
     @BeforeAll
     static void startProvider() {
@@ -65,7 +65,7 @@ public abstract class WithServer {
     }
 
     /**
-     * Stops the {@code MarketDataProvider}.
+     * Stops the {@link MarketDataProvider}.
      */
     @AfterAll
     static void stopProvider() {
@@ -93,7 +93,7 @@ public abstract class WithServer {
     }
 
     /**
-     * Opens a chanel.
+     * Opens a channel.
      */
     protected ManagedChannel openChannel() {
         ManagedChannel channel = forAddress(ADDRESS, PORT)
