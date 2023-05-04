@@ -46,5 +46,5 @@ message InsufficientShares {
     SaleId process = 2 [(required) = true];
 
     // The quantity of shares that initially wanted to be reserved.
-    int32 quantity = 4 [(required) = true];
+    int32 quantity = 4 [(min).value = "1"];
 }

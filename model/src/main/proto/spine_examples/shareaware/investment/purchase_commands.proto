@@ -53,7 +53,7 @@ message PurchaseShares {
     ShareId share = 3 [(required) = true];
 
     // The quantity of shares to purchase.
-    int32 quantity = 4 [(required) = true];
+    int32 quantity = 4 [(min).value = "1"];
 
     // The price per share at the time of purchase.
     spine.money.Money price = 5 [(required) = true];

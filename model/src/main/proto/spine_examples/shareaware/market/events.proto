@@ -52,7 +52,7 @@ message SharesObtained {
     ShareId share = 3 [(required) = true];
 
     // The quantity of shares that was obtained by the process.
-    int32 quantity = 4 [(required) = true];
+    int32 quantity = 4 [(min).value = "1"];
 }
 
 // Shares have been sold on the market.
@@ -68,7 +68,7 @@ message SharesSoldOnMarket {
     ShareId share = 3 [(required) = true];
 
     // The quantity of the sold shares.
-    int32 quantity = 4 [(required) = true];
+    int32 quantity = 4 [(min).value = "1"];
 
     // The price for which the shares were sold.
     spine.money.Money price = 5 [(required) = true];

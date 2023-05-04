@@ -51,7 +51,7 @@ message ObtainShares {
     ShareId share = 3 [(required) = true];
 
     // The quantity of the shares that the purchase process wants to obtain.
-    int32 quantity = 4 [(required) = true];
+    int32 quantity = 4 [(min).value = "1"];
 }
 
 // A command to sell shares on the market.
@@ -70,7 +70,7 @@ message SellSharesOnMarket {
     spine.money.Money price = 4 [(required) = true];
 
     // The quantity of shares to sell on the market.
-    int32 quantity = 5 [(required) = true];
+    int32 quantity = 5 [(min).value = "1"];
 }
 
 // A command to open the shares market.

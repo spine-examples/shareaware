@@ -55,7 +55,7 @@ message SharesSold {
     spine.money.Money price = 4 [(required) = true];
 
     // How many shares are available after the sell.
-    int32 shares_available = 5 [(required) = true];
+    int32 shares_available = 5 [(min).value = "1"];
 }
 
 // Shares sale process has been failed.
