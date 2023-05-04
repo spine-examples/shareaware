@@ -49,7 +49,7 @@ public final class InvestmentAggregate
 
     @Assign
     SharesAdded on(AddShares c) {
-        int newAvailableShares = state().getSharesAvailable() + c.getQuantity();
+        var newAvailableShares = state().getSharesAvailable() + c.getQuantity();
         return SharesAdded
                 .newBuilder()
                 .setInvestment(c.getInvestment())
@@ -85,9 +85,9 @@ public final class InvestmentAggregate
 
     @Apply
     private void event(SharesReserved e) {
-        int newAvailableShares = state().getSharesAvailable() - e.getQuantity();
-        String saleId = e.getProcess()
-                         .getUuid();
+        var newAvailableShares = state().getSharesAvailable() - e.getQuantity();
+        var saleId = e.getProcess()
+                      .getUuid();
         builder()
                 .setSharesAvailable(newAvailableShares)
                 .putSharesReserved(saleId, e.getQuantity());
@@ -120,10 +120,10 @@ public final class InvestmentAggregate
 
     @Apply
     private void event(SharesReservationCanceled e) {
-        String saleId = e.getProcess()
-                         .getUuid();
-        int reservedSharesAmount = state().getSharesReservedOrThrow(saleId);
-        int restoredAvailableShares = state().getSharesAvailable() + reservedSharesAmount;
+        var saleId = e.getProcess()
+                      .getUuid();
+        var reservedSharesAmount = state().getSharesReservedOrThrow(saleId);
+        var restoredAvailableShares = state().getSharesAvailable() + reservedSharesAmount;
         builder()
                 .setSharesAvailable(restoredAvailableShares)
                 .removeSharesReserved(saleId);

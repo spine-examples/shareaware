@@ -36,7 +36,6 @@ import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.money.Money;
 
 import java.util.Collection;
-import java.util.Optional;
 
 import static io.spine.examples.shareaware.MoneyCalculator.subtract;
 import static io.spine.examples.shareaware.given.GivenMoney.zero;
@@ -68,7 +67,7 @@ public final class SharePurchaseTestEnv {
 
     public static WalletBalance balanceAfterPurchase(Money sharePrice,
                                                      WalletBalance balance) {
-        Money reducedBalance = subtract(balance.getBalance(), sharePrice);
+        var reducedBalance = subtract(balance.getBalance(), sharePrice);
         return balance
                 .toBuilder()
                 .setBalance(reducedBalance)
@@ -76,7 +75,7 @@ public final class SharePurchaseTestEnv {
     }
 
     public static InvestmentView investmentAfterPurchase(Share tesla, UserId user) {
-        InvestmentId id = investmentId(user, tesla.getId());
+        var id = investmentId(user, tesla.getId());
         return InvestmentView
                 .newBuilder()
                 .setId(id)
@@ -93,7 +92,7 @@ public final class SharePurchaseTestEnv {
     }
 
     public static Share pickTesla(Collection<Share> shares) {
-        Optional<Share> tesla = shares
+        var tesla = shares
                 .stream()
                 .filter(share -> share.getCompanyName()
                                        .toLowerCase()

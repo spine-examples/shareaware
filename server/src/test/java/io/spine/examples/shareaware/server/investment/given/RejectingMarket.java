@@ -34,7 +34,6 @@ import io.spine.examples.shareaware.market.event.SharesObtained;
 import io.spine.examples.shareaware.market.event.SharesSoldOnMarket;
 import io.spine.examples.shareaware.market.rejection.SharesCannotBeObtained;
 import io.spine.examples.shareaware.market.rejection.SharesCannotBeSoldOnMarket;
-import io.spine.money.Money;
 import io.spine.server.command.Assign;
 import io.spine.server.procman.ProcessManager;
 
@@ -80,7 +79,7 @@ public class RejectingMarket
                     .setSaleProcess(c.getSaleProcess())
                     .build();
         }
-        Money sellPrice = multiply(c.getPrice(), c.getQuantity());
+        var sellPrice = multiply(c.getPrice(), c.getQuantity());
         return SharesSoldOnMarket
                 .newBuilder()
                 .setMarket(c.getMarket())

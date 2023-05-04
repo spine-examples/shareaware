@@ -26,14 +26,10 @@
 
 package io.spine.examples.shareaware.server.wallet;
 
-import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.given.GivenMoney;
 import io.spine.examples.shareaware.server.TradingContext;
-import io.spine.examples.shareaware.wallet.Wallet;
-import io.spine.examples.shareaware.wallet.command.CreateWallet;
 import io.spine.examples.shareaware.wallet.event.WalletCreated;
 import io.spine.server.BoundedContextBuilder;
-import io.spine.testing.server.EventSubject;
 import io.spine.testing.server.blackbox.ContextAwareTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,12 +50,12 @@ public final class WalletTest extends ContextAwareTest {
     @Test
     @DisplayName("allow the creation and emit the `WalletCreated` event")
     void event() {
-        WalletId wallet = givenId();
-        CreateWallet command = createWallet(wallet);
-        WalletCreated expectedEvent = walletCreatedWith(GivenMoney.zero(), wallet);
-        Wallet expectedState = walletWith(GivenMoney.zero(), wallet);
+        var wallet = givenId();
+        var command = createWallet(wallet);
+        var expectedEvent = walletCreatedWith(GivenMoney.zero(), wallet);
+        var expectedState = walletWith(GivenMoney.zero(), wallet);
         context().receivesCommand(command);
-        EventSubject assertEvents = context()
+        var assertEvents = context()
                 .assertEvents()
                 .withType(WalletCreated.class);
 

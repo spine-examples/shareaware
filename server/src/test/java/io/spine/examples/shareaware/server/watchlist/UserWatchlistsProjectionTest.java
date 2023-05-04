@@ -37,7 +37,7 @@ import io.spine.testing.server.blackbox.ContextAwareTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static io.spine.examples.shareaware.watchlist.UserWatchlists.*;
+import static io.spine.examples.shareaware.watchlist.UserWatchlists.WatchlistView;
 
 @DisplayName("`UserWatchlistsProjection` should")
 public final class UserWatchlistsProjectionTest extends ContextAwareTest {
@@ -50,12 +50,12 @@ public final class UserWatchlistsProjectionTest extends ContextAwareTest {
     @Test
     @DisplayName("display all user's watchlists, as soon as they are created")
     void watchlists() {
-        UserId user = GivenUserId.generated();
-        CreateWatchlist firstCommand = generateCommand(user, "first");
-        CreateWatchlist secondCommand = generateCommand(user, "second");
-        WatchlistView firstWatchlist = generateWatchlistView(firstCommand);
-        WatchlistView secondWatchlist = generateWatchlistView(secondCommand);
-        UserWatchlists expected = UserWatchlists
+        var user = GivenUserId.generated();
+        var firstCommand = generateCommand(user, "first");
+        var secondCommand = generateCommand(user, "second");
+        var firstWatchlist = generateWatchlistView(firstCommand);
+        var secondWatchlist = generateWatchlistView(secondCommand);
+        var expected = UserWatchlists
                 .newBuilder()
                 .setId(firstCommand.getUser())
                 .addWatchlist(firstWatchlist)

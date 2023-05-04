@@ -29,6 +29,7 @@ import io.spine.examples.shareaware.dependency.Guava
 import io.spine.examples.shareaware.dependency.JUnit
 import io.spine.examples.shareaware.dependency.Spine
 import io.spine.examples.shareaware.dependency.Truth
+import io.spine.examples.shareaware.dependency.Javax
 
 /**
  * Configures repositories, adds dependencies and forces transitive dependencies.
@@ -56,6 +57,7 @@ repositories {
 
 dependencies {
     implementation(Spine.Money.lib)
+    implementation(Javax.Annotation.Api.lib)
     implementation(Guava.lib)
     runtimeOnly(Grpc.lib)
     testImplementation(JUnit.Params.lib)

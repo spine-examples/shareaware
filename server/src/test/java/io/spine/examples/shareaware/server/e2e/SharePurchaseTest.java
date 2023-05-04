@@ -26,18 +26,10 @@
 
 package io.spine.examples.shareaware.server.e2e;
 
-import io.grpc.ManagedChannel;
-import io.spine.examples.shareaware.investment.InvestmentView;
 import io.spine.examples.shareaware.server.e2e.given.E2EUser;
 import io.spine.examples.shareaware.server.e2e.given.WithServer;
-import io.spine.examples.shareaware.share.Share;
-import io.spine.examples.shareaware.wallet.WalletBalance;
-import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
-import io.spine.server.tuple.EitherOf2;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 import static com.google.common.truth.extensions.proto.ProtoTruth.assertThat;
 import static io.spine.examples.shareaware.given.GivenMoney.usd;
@@ -61,28 +53,27 @@ final class SharePurchaseTest extends WithServer {
     @Test
     @DisplayName("User should purchase one tesla share and withdraw all the money after this")
     void test() {
-        ManagedChannel channel = openChannel();
-        E2EUser user = new E2EUser(channel);
+        var channel = openChannel();
+        var user = new E2EUser(channel);
 
-        List<Share> shares = user.looksAtAvailableShares();
-        Share tesla = pickTesla(shares);
+        var shares = user.looksAtAvailableShares();
+        var tesla = pickTesla(shares);
 
-        EitherOf2<WalletBalance, InsufficientFunds> failedPurchase = user.purchase(tesla, 1);
-        InsufficientFunds insufficientFunds = failedPurchase.getB();
+        var failedPurchase = user.purchase(tesla, 1);
+        var insufficientFunds = failedPurchase.getB();
         assertThat(insufficientFunds.getAmount()).isEqualTo(tesla.getPrice());
 
-        WalletBalance balanceAfterReplenishment = user.replenishesWalletFor(usd(500));
+        var balanceAfterReplenishment = user.replenishesWalletFor(usd(500));
 
-        EitherOf2<WalletBalance, InsufficientFunds> successfulPurchase = user.purchase(tesla, 1);
-        WalletBalance balanceAfterPurchase = successfulPurchase.getA();
-        InvestmentView investmentInTesla = user.looksAtInvestment();
-        WalletBalance expectedBalance =
-                balanceAfterPurchase(tesla.getPrice(), balanceAfterReplenishment);
-        InvestmentView expectedInvestmentInTesla = investmentAfterPurchase(tesla, user.id());
+        var successfulPurchase = user.purchase(tesla, 1);
+        var balanceAfterPurchase = successfulPurchase.getA();
+        var investmentInTesla = user.looksAtInvestment();
+        var expectedBalance = balanceAfterPurchase(tesla.getPrice(), balanceAfterReplenishment);
+        var expectedInvestmentInTesla = investmentAfterPurchase(tesla, user.id());
         assertThat(balanceAfterPurchase).isEqualTo(expectedBalance);
         assertThat(investmentInTesla).isEqualTo(expectedInvestmentInTesla);
 
-        WalletBalance walletAfterWithdrawal = user.withdrawsAllMoney(balanceAfterPurchase);
+        var walletAfterWithdrawal = user.withdrawsAllMoney(balanceAfterPurchase);
         assertThat(walletAfterWithdrawal).isEqualTo(zeroWalletBalance(user.walletId()));
     }
 }

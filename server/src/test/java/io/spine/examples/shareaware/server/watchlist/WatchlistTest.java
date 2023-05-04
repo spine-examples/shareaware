@@ -28,12 +28,9 @@ package io.spine.examples.shareaware.server.watchlist;
 
 import io.spine.examples.shareaware.server.TradingContext;
 import io.spine.examples.shareaware.watchlist.Watchlist;
-import io.spine.examples.shareaware.watchlist.command.CreateWatchlist;
-import io.spine.examples.shareaware.watchlist.command.WatchShare;
 import io.spine.examples.shareaware.watchlist.event.ShareWatched;
 import io.spine.examples.shareaware.watchlist.event.WatchlistCreated;
 import io.spine.server.BoundedContextBuilder;
-import io.spine.testing.server.EventSubject;
 import io.spine.testing.server.blackbox.ContextAwareTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -56,18 +53,18 @@ public final class WatchlistTest extends ContextAwareTest {
         @Test
         @DisplayName("and emit the `WatchlistCreated` event")
         void event() {
-            CreateWatchlist command = createWatchlist();
+            var command = createWatchlist();
             context().receivesCommand(command);
-            WatchlistCreated expected = WatchlistCreated
+            var expected = WatchlistCreated
                     .newBuilder()
                     .setOwner(command.getUser())
                     .setWatchlist(command.getWatchlist())
                     .setName(command.getName())
                     .vBuild();
-            EventSubject assertEvents = context()
+            var assertEvents = context()
                     .assertEvents()
                     .withType(WatchlistCreated.class);
-            Watchlist expectedState = Watchlist
+            var expectedState = Watchlist
                     .newBuilder()
                     .setId(command.getWatchlist())
                     .setOwner(command.getUser())
@@ -87,9 +84,9 @@ public final class WatchlistTest extends ContextAwareTest {
         @Test
         @DisplayName("and emit the `ShareWatched` event")
         void event() {
-            Watchlist watchlist = setUpWatchlist(context());
-            WatchShare command = watchShare(watchlist.getId(), watchlist.getOwner());
-            ShareWatched expected = ShareWatched
+            var watchlist = setUpWatchlist(context());
+            var command = watchShare(watchlist.getId(), watchlist.getOwner());
+            var expected = ShareWatched
                     .newBuilder()
                     .setWatchlist(command.getWatchlist())
                     .setShare(command.getShare())
@@ -103,11 +100,11 @@ public final class WatchlistTest extends ContextAwareTest {
         @Test
         @DisplayName("by adding share to watchlist")
         void state() {
-            Watchlist watchlist = setUpWatchlist(context());
-            WatchShare firstCommand = watchShare(watchlist.getId(), watchlist.getOwner());
-            WatchShare secondCommand = watchShare(watchlist.getId(), watchlist.getOwner());
+            var watchlist = setUpWatchlist(context());
+            var firstCommand = watchShare(watchlist.getId(), watchlist.getOwner());
+            var secondCommand = watchShare(watchlist.getId(), watchlist.getOwner());
             context().receivesCommands(firstCommand, secondCommand);
-            Watchlist expected = watchlist
+            var expected = watchlist
                     .toBuilder()
                     .addShare(firstCommand.getShare())
                     .addShare(secondCommand.getShare())
