@@ -9,7 +9,6 @@ import io.spine.examples.shareaware.given.GivenMoney;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyFromUser;
 import io.spine.examples.shareaware.paymentgateway.command.TransferMoneyToUser;
 import io.spine.examples.shareaware.paymentgateway.event.MoneyTransferredToUser;
-import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredFromUser;
 import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.wallet.Iban;
 import io.spine.examples.shareaware.wallet.Wallet;
@@ -17,7 +16,6 @@ import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.WalletReplenishment;
 import io.spine.examples.shareaware.wallet.WalletWithdrawal;
 import io.spine.examples.shareaware.wallet.command.CancelMoneyReservation;
-import io.spine.examples.shareaware.wallet.command.CreateWallet;
 import io.spine.examples.shareaware.wallet.command.DebitReservedMoney;
 import io.spine.examples.shareaware.wallet.command.RechargeBalance;
 import io.spine.examples.shareaware.wallet.command.ReplenishWallet;
@@ -35,7 +33,6 @@ import io.spine.examples.shareaware.wallet.event.WalletReplenished;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
 import io.spine.money.Currency;
 import io.spine.money.Money;
-import io.spine.testing.core.given.GivenUserId;
 import io.spine.testing.server.blackbox.BlackBoxContext;
 
 import static io.spine.examples.shareaware.MoneyCalculator.subtract;
@@ -144,14 +141,6 @@ public final class WalletTestEnv {
                 .setReplenishment(command.getReplenishment())
                 .setWallet(command.getWallet())
                 .setMoneyAmount(command.getMoneyAmount())
-                .vBuild();
-    }
-
-    public static MoneyCannotBeTransferredFromUser
-    moneyCannotBeTransferredFromUserBy(ReplenishmentId replenishmentProcess) {
-        return MoneyCannotBeTransferredFromUser
-                .newBuilder()
-                .setReplenishment(replenishmentProcess)
                 .vBuild();
     }
 
