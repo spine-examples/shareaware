@@ -54,8 +54,8 @@ public final class MoneyCalculator {
      */
     public static Money sum(Money first, Money second) {
         checkArguments(first, second);
-        int resultNanos = first.getNanos() + second.getNanos();
-        long resultUnits = first.getUnits() + second.getUnits();
+        var resultNanos = first.getNanos() + second.getNanos();
+        var resultUnits = first.getUnits() + second.getUnits();
         if (resultNanos / NANOS_IN_UNIT >= 1) {
             resultUnits++;
             resultNanos -= NANOS_IN_UNIT;
@@ -74,8 +74,8 @@ public final class MoneyCalculator {
     public static Money subtract(Money first, Money second) {
         checkArguments(first, second);
         checkState(isGreater(first, second) || first.equals(second));
-        int resultNanos = first.getNanos() - second.getNanos();
-        long resultUnits = first.getUnits() - second.getUnits();
+        var resultNanos = first.getNanos() - second.getNanos();
+        var resultUnits = first.getUnits() - second.getUnits();
         if (resultNanos < 0) {
             resultUnits--;
             resultNanos += NANOS_IN_UNIT;
@@ -94,10 +94,10 @@ public final class MoneyCalculator {
     public static Money multiply(Money money, int multiplier) {
         checkArgument(money);
         Preconditions.checkArgument(multiplier >= 0);
-        int fullyFledgedNanos = money.getNanos() * multiplier;
-        int additionalUnits = fullyFledgedNanos / NANOS_IN_UNIT;
-        int nanos = fullyFledgedNanos % NANOS_IN_UNIT;
-        long units = money.getUnits() * multiplier + additionalUnits;
+        var fullyFledgedNanos = money.getNanos() * multiplier;
+        var additionalUnits = fullyFledgedNanos / NANOS_IN_UNIT;
+        var nanos = fullyFledgedNanos % NANOS_IN_UNIT;
+        var units = money.getUnits() * multiplier + additionalUnits;
         return Money
                 .newBuilder()
                 .setUnits(units)

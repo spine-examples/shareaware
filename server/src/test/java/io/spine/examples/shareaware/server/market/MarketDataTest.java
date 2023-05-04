@@ -50,11 +50,11 @@ final class MarketDataTest extends UtilityClassTest<MarketData> {
         List<Share> secondResult = MarketData.actualShares();
         assertThat(firstResult).hasSize(secondResult.size());
 
-        for (int i = 0; i < firstResult.size(); i++) {
-            Share shareFromFirst = firstResult.get(i);
-            Share shareFromSecond = secondResult.get(i);
-            Share shareFromFirstWithoutPrice = shareWithoutPrice(shareFromFirst);
-            Share shareFromSecondWithoutPrice = shareWithoutPrice(shareFromSecond);
+        for (var i = 0; i < firstResult.size(); i++) {
+            var shareFromFirst = firstResult.get(i);
+            var shareFromSecond = secondResult.get(i);
+            var shareFromFirstWithoutPrice = shareWithoutPrice(shareFromFirst);
+            var shareFromSecondWithoutPrice = shareWithoutPrice(shareFromSecond);
             assertThat(shareFromFirstWithoutPrice).isEqualTo(shareFromSecondWithoutPrice);
         }
     }

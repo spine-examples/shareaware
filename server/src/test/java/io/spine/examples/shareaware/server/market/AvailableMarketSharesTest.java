@@ -26,8 +26,6 @@
 
 package io.spine.examples.shareaware.server.market;
 
-import io.spine.examples.shareaware.market.AvailableMarketShares;
-import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
 import io.spine.examples.shareaware.server.FreshContextTest;
 import io.spine.examples.shareaware.server.market.given.MarketTestContext;
 import io.spine.server.BoundedContextBuilder;
@@ -64,9 +62,9 @@ final class AvailableMarketSharesTest extends FreshContextTest {
     @Test
     @DisplayName("subscribe to the external event `MarketSharesUpdated` and update its state")
     void state() {
-        MarketSharesUpdated event = marketSharesUpdated();
+        var event = marketSharesUpdated();
         marketData.emittedEvent(event, newUuid());
-        AvailableMarketShares expected = availableMarketSharesAfter(event);
+        var expected = availableMarketSharesAfter(event);
 
         context().assertState(MarketProcess.ID, expected);
     }

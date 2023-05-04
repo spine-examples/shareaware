@@ -96,7 +96,7 @@ public abstract class WithServer {
      * Opens a channel.
      */
     protected ManagedChannel openChannel() {
-        ManagedChannel channel = forAddress(ADDRESS, PORT)
+        var channel = forAddress(ADDRESS, PORT)
                 .usePlaintext()
                 .build();
         channels.add(channel);

@@ -35,14 +35,10 @@ import io.spine.client.Subscription;
 import io.spine.core.UserId;
 import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.investment.InvestmentView;
-import io.spine.examples.shareaware.investment.command.PurchaseShares;
 import io.spine.examples.shareaware.market.AvailableMarketShares;
 import io.spine.examples.shareaware.server.given.GivenWallet;
 import io.spine.examples.shareaware.share.Share;
 import io.spine.examples.shareaware.wallet.WalletBalance;
-import io.spine.examples.shareaware.wallet.command.CreateWallet;
-import io.spine.examples.shareaware.wallet.command.ReplenishWallet;
-import io.spine.examples.shareaware.wallet.command.WithdrawMoney;
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
 import io.spine.money.Money;
 import io.spine.server.tuple.EitherOf2;
@@ -55,7 +51,7 @@ import java.util.concurrent.TimeoutException;
 
 import static com.google.common.truth.extensions.proto.ProtoTruth.assertThat;
 import static io.spine.client.Client.usingChannel;
-import static io.spine.examples.shareaware.MoneyCalculator.*;
+import static io.spine.examples.shareaware.MoneyCalculator.isGreater;
 import static io.spine.examples.shareaware.given.GivenMoney.usd;
 import static io.spine.examples.shareaware.server.e2e.given.E2ECommands.purchaseSharesFor;
 import static io.spine.examples.shareaware.server.e2e.given.E2ECommands.replenishWallet;
@@ -117,8 +113,9 @@ public final class E2EUser {
      * Describes the user's action to look at available shares on the market.
      */
     public List<Share> looksAtAvailableShares() {
-        List<Share> shares = availableMarketShares.state()
-                                                  .getShareList();
+        var shares = availableMarketShares
+                .state()
+                .getShareList();
         return shares;
     }
 
@@ -133,12 +130,11 @@ public final class E2EUser {
      * Describes the user's action to replenish his wallet.
      */
     public WalletBalance replenishesWalletFor(Money amount) {
-        ReplenishWallet replenishWallet = replenishWallet(walletId, amount);
+        var replenishWallet = replenishWallet(walletId, amount);
 
         post(replenishWallet);
-        WalletBalance balanceAfterReplenishment = wallet.state();
-        WalletBalance expectedBalance =
-                walletBalanceWith(usd(500), walletId);
+        var balanceAfterReplenishment = wallet.state();
+        var expectedBalance = walletBalanceWith(usd(500), walletId);
         assertThat(balanceAfterReplenishment).isEqualTo(expectedBalance);
         return balanceAfterReplenishment;
     }
@@ -151,15 +147,14 @@ public final class E2EUser {
      * if the purchase was successful.
      */
     public EitherOf2<WalletBalance, InsufficientFunds> purchase(Share share, int howMany) {
-        PurchaseShares purchaseShares = purchaseSharesFor(id(), share, howMany);
+        var purchaseShares = purchaseSharesFor(id(), share, howMany);
 
-        WalletBalance walletBeforePurchase = wallet.state();
+        var walletBeforePurchase = wallet.state();
         if (isGreater(purchaseShares.totalCost(), walletBeforePurchase.getBalance())) {
-            SubscriptionOutcome<InsufficientFunds> subscriptionOutcome =
-                    subscribeToEvent(InsufficientFunds.class);
+            var subscriptionOutcome = subscribeToEvent(InsufficientFunds.class);
             post(purchaseShares);
 
-            InsufficientFunds insufficientFunds = retrieveValueFrom(subscriptionOutcome);
+            var insufficientFunds = retrieveValueFrom(subscriptionOutcome);
             return EitherOf2.withB(insufficientFunds);
         }
         post(purchaseShares);
@@ -172,7 +167,7 @@ public final class E2EUser {
      * <p>As a result, the wallet balance should be zero.
      */
     public WalletBalance withdrawsAllMoney(WalletBalance balance) {
-        WalletBalance balanceAfterWithdrawal = withdrawsMoney(balance.getBalance());
+        var balanceAfterWithdrawal = withdrawsMoney(balance.getBalance());
         return balanceAfterWithdrawal;
     }
 
@@ -180,7 +175,7 @@ public final class E2EUser {
      * Describes the user's action to withdraw the exact amount of money from the wallet.
      */
     private WalletBalance withdrawsMoney(Money amount) {
-        WithdrawMoney withdrawMoney = withdrawMoneyFrom(walletId, amount);
+        var withdrawMoney = withdrawMoneyFrom(walletId, amount);
         post(withdrawMoney);
         return wallet.state();
     }
@@ -189,8 +184,8 @@ public final class E2EUser {
      * Subscribes the user to receive the event of the passed type.
      */
     private <S extends EventMessage> SubscriptionOutcome<S> subscribeToEvent(Class<S> type) {
-        CompletableFuture<S> future = new CompletableFuture<>();
-        Subscription subscription = client
+        var future = new CompletableFuture<S>();
+        var subscription = client
                 .onBehalfOf(userId)
                 .subscribeToEvent(type)
                 .observe(future::complete)
@@ -220,9 +215,9 @@ public final class E2EUser {
     }
 
     private void createWalletForUser() {
-        CreateWallet createWallet = createWallet(walletId);
+        var createWallet = createWallet(walletId);
         post(createWallet);
-        WalletBalance initialBalance = wallet.state();
+        var initialBalance = wallet.state();
         assertThat(initialBalance).isEqualTo(zeroWalletBalance(walletId));
     }
 }

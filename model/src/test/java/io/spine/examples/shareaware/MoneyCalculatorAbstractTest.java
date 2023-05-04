@@ -36,8 +36,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.function.BiFunction;
 
 import static com.google.common.truth.Truth.assertThat;
-import static io.spine.examples.shareaware.given.GivenMoney.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static io.spine.examples.shareaware.given.GivenMoney.moneyOf;
+import static io.spine.examples.shareaware.given.GivenMoney.usd;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * The abstract base designed for {@link MoneyCalculator} testing.
@@ -90,14 +91,14 @@ abstract class MoneyCalculatorAbstractTest extends UtilityClassTest<MoneyCalcula
 
     private static void testMathCalculation(Money first, Money second, Money expected,
                                             BiFunction<Money, Money, Money> operation) {
-        Money actual = operation.apply(first, second);
+        var actual = operation.apply(first, second);
 
         assertThat(actual).isEqualTo(expected);
     }
 
     private static void testMathCalculation(Money money, int multiplier, Money expected,
                                             BiFunction<Money, Integer, Money> operation) {
-        Money actual = operation.apply(money, multiplier);
+        var actual = operation.apply(money, multiplier);
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -110,33 +111,32 @@ abstract class MoneyCalculatorAbstractTest extends UtilityClassTest<MoneyCalcula
     }
 
     private static <R> void testDifferentCurrencies(BiFunction<Money, Money, R> operation) {
-        Money first = moneyOf(20, Currency.UAH);
-        Money second = moneyOf(30, Currency.USD);
+        var first = moneyOf(20, Currency.UAH);
+        var second = moneyOf(30, Currency.USD);
 
-        IllegalStateException exception =
-                assertThrows(IllegalStateException.class,
-                                        () -> operation.apply(first, second));
+        var exception = assertThrows(IllegalStateException.class,
+                                     () -> operation.apply(first, second));
         assertThat(exception.getMessage())
                 .isEqualTo("Cannot calculate two `Money` objects with different currencies.");
     }
 
     private static <R> void testNegativeUnits(BiFunction<Money, Money, R> operation) {
-        Money positiveUnits = usd(20);
-        Money negativeUnits = usd(-50);
+        var positiveUnits = usd(20);
+        var negativeUnits = usd(-50);
 
         assertThrows(IllegalStateException.class,
-                                () -> operation.apply(positiveUnits, negativeUnits));
+                     () -> operation.apply(positiveUnits, negativeUnits));
         assertThrows(IllegalStateException.class,
-                                () -> operation.apply(negativeUnits, positiveUnits));
+                     () -> operation.apply(negativeUnits, positiveUnits));
     }
 
     private static <R> void testNanosOutOfBounds(BiFunction<Money, Money, R> operation) {
-        Money positiveUnits = usd(0, 120);
-        Money negativeUnits = usd(0, -10);
+        var positiveUnits = usd(0, 120);
+        var negativeUnits = usd(0, -10);
 
         assertThrows(IllegalArgumentException.class,
-                                () -> operation.apply(positiveUnits, negativeUnits));
+                     () -> operation.apply(positiveUnits, negativeUnits));
         assertThrows(IllegalArgumentException.class,
-                                () -> operation.apply(negativeUnits, positiveUnits));
+                     () -> operation.apply(negativeUnits, positiveUnits));
     }
 }

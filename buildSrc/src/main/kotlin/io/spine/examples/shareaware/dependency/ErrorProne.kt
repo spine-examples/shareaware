@@ -35,11 +35,6 @@ object ErrorProne {
         const val lib = "${group}:error_prone_core:${version}"
     }
 
-    object JavacPlugin {
-        const val version = "9+181-r4173-1"
-        const val lib = "${group}:javac:${version}"
-    }
-
     // https://github.com/tbroyer/gradle-errorprone-plugin
     object GradlePlugin {
         const val id = "net.ltgt.errorprone"

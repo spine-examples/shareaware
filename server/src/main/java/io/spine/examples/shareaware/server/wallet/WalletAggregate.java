@@ -83,7 +83,7 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
 
     @Assign
     BalanceRecharged handle(RechargeBalance c) {
-        Money newBalance = sum(state().getBalance(), c.getMoneyAmount());
+        var newBalance = sum(state().getBalance(), c.getMoneyAmount());
         return BalanceRecharged
                 .newBuilder()
                 .setWallet(c.getWallet())
@@ -117,8 +117,8 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
 
     @Apply
     private void event(MoneyReserved e) {
-        Money newBalance = subtract(state().getBalance(), e.getAmount());
-        String operationId = e.operationIdValue();
+        var newBalance = subtract(state().getBalance(), e.getAmount());
+        var operationId = e.operationIdValue();
         builder()
                 .setBalance(newBalance)
                 .putReservedMoney(operationId, e.getAmount());
@@ -136,7 +136,7 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
 
     @Apply
     private void event(ReservedMoneyDebited e) {
-        String operationId = e.operationIdValue();
+        var operationId = e.operationIdValue();
         builder().removeReservedMoney(operationId);
     }
 
@@ -151,9 +151,9 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
 
     @Apply
     private void event(MoneyReservationCanceled e) {
-        String operationId = e.operationIdValue();
-        Money reservedAmount = state().getReservedMoneyOrThrow(operationId);
-        Money restoredBalance = sum(state().getBalance(), reservedAmount);
+        var operationId = e.operationIdValue();
+        var reservedAmount = state().getReservedMoneyOrThrow(operationId);
+        var restoredBalance = sum(state().getBalance(), reservedAmount);
         builder()
                 .setBalance(restoredBalance)
                 .removeReservedMoney(operationId);

@@ -73,8 +73,8 @@ public final class GivenWallet {
      * @return the ID of created {@code Wallet}.
      */
     public static WalletId setUpWallet(BlackBoxContext context) {
-        WalletId wallet = givenId();
-        CreateWallet command = createWallet(wallet);
+        var wallet = givenId();
+        var command = createWallet(wallet);
         context.receivesCommand(command);
         return wallet;
     }

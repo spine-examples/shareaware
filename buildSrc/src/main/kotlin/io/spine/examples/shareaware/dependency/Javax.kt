@@ -24,31 +24,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.watchlist;
+package io.spine.examples.shareaware.dependency
 
-import io.spine.core.Subscribe;
-import io.spine.core.UserId;
-import io.spine.examples.shareaware.watchlist.UserWatchlists;
-import io.spine.examples.shareaware.watchlist.event.WatchlistCreated;
-import io.spine.server.projection.Projection;
+object Javax {
 
-import static io.spine.examples.shareaware.watchlist.UserWatchlists.*;
-
-/**
- * Manages instances of {@code UserWatchlists} projections.
- */
-final class UserWatchlistsProjection
-        extends Projection<UserId, UserWatchlists, UserWatchlists.Builder> {
-
-    @Subscribe
-    void on(WatchlistCreated e) {
-        var watchlist = WatchlistView
-                .newBuilder()
-                .setId(e.getWatchlist())
-                .setName(e.getName())
-                .vBuild();
-        builder()
-                .setId(e.getOwner())
-                .addWatchlist(watchlist);
+    // https://jcp.org/en/jsr/detail?id=250
+    object Annotation {
+        object Api {
+            const val version = "1.3.2"
+            const val lib = "javax.annotation:javax.annotation-api:${version}"
+        }
     }
 }

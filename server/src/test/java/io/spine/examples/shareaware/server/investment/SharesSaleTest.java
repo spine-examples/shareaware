@@ -26,27 +26,13 @@
 
 package io.spine.examples.shareaware.server.investment;
 
-import io.spine.core.UserId;
-import io.spine.examples.shareaware.investment.InvestmentView;
-import io.spine.examples.shareaware.investment.Investment;
-import io.spine.examples.shareaware.investment.SharesSale;
 import io.spine.examples.shareaware.investment.command.CancelSharesReservation;
 import io.spine.examples.shareaware.investment.command.CompleteSharesReservation;
-import io.spine.examples.shareaware.investment.command.PurchaseShares;
 import io.spine.examples.shareaware.investment.command.ReserveShares;
-import io.spine.examples.shareaware.investment.command.SellShares;
-import io.spine.examples.shareaware.investment.event.SharesReservationCanceled;
-import io.spine.examples.shareaware.investment.event.SharesReservationCompleted;
-import io.spine.examples.shareaware.investment.event.SharesReserved;
-import io.spine.examples.shareaware.investment.event.SharesSaleFailed;
-import io.spine.examples.shareaware.investment.event.SharesSold;
-import io.spine.examples.shareaware.investment.rejection.Rejections.InsufficientShares;
 import io.spine.examples.shareaware.market.command.SellSharesOnMarket;
 import io.spine.examples.shareaware.server.FreshContextTest;
 import io.spine.examples.shareaware.server.investment.given.InvestmentTestContext;
 import io.spine.examples.shareaware.server.investment.given.RejectingMarket;
-import io.spine.examples.shareaware.wallet.Wallet;
-import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.command.RechargeBalance;
 import io.spine.examples.shareaware.wallet.event.BalanceRecharged;
 import io.spine.server.BoundedContextBuilder;
@@ -54,7 +40,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
+import static io.spine.examples.shareaware.server.given.WalletTestEnv.setUpReplenishedWallet;
 import static io.spine.examples.shareaware.server.investment.given.InvestmentTestEnv.*;
 import static io.spine.examples.shareaware.server.investment.given.SharesSaleTestEnv.*;
 
@@ -73,15 +59,13 @@ public class SharesSaleTest extends FreshContextTest {
         @Test
         @DisplayName("for the sell price")
         void state() {
-            Wallet wallet = setUpReplenishedWallet(context());
-            UserId user = wallet.getId()
-                                .getOwner();
-            PurchaseShares purchaseCommand = purchaseSharesFor(user);
+            var wallet = setUpReplenishedWallet(context());
+            var purchaseCommand = purchaseShares(wallet);
             context().receivesCommand(purchaseCommand);
 
-            SellShares sellCommand = sellShareAfter(purchaseCommand);
+            var sellCommand = sellShareAfter(purchaseCommand);
             context().receivesCommand(sellCommand);
-            Wallet expected = walletAfter(purchaseCommand, sellCommand, wallet);
+            var expected = walletAfter(purchaseCommand, sellCommand, wallet);
 
             context().assertState(wallet.getId(), expected);
         }
@@ -89,16 +73,13 @@ public class SharesSaleTest extends FreshContextTest {
         @Test
         @DisplayName("emitting the `BalanceRecharged` event")
         void event() {
-            Wallet wallet = setUpReplenishedWallet(context());
-            UserId user = wallet.getId()
-                                .getOwner();
-            PurchaseShares purchaseCommand = purchaseSharesFor(user);
+            var wallet = setUpReplenishedWallet(context());
+            var purchaseCommand = purchaseShares(wallet);
             context().receivesCommand(purchaseCommand);
 
-            SellShares sellCommand = sellShareAfter(purchaseCommand);
+            var sellCommand = sellShareAfter(purchaseCommand);
             context().receivesCommand(sellCommand);
-            BalanceRecharged expected =
-                    balanceRechargedAfter(sellCommand, purchaseCommand, wallet);
+            var expected = balanceRechargedAfter(sellCommand, purchaseCommand, wallet);
 
             context().assertEvents()
                      .withType(BalanceRecharged.class)
@@ -114,10 +95,10 @@ public class SharesSaleTest extends FreshContextTest {
         @Test
         @DisplayName("by reducing the number of available shares")
         void state() {
-            Investment investment = setUpInvestment(context());
-            SellShares command = sellShareFrom(investment);
+            var investment = setUpInvestment(context());
+            var command = sellShareFrom(investment);
             context().receivesCommand(command);
-            Investment expected = investmentAfter(command, investment);
+            var expected = investmentAfter(command, investment);
 
             context().assertState(investment.getId(), expected);
         }
@@ -125,10 +106,10 @@ public class SharesSaleTest extends FreshContextTest {
         @Test
         @DisplayName("by emitting the `SharesReserved` event")
         void sharesReserved() {
-            Investment investment = setUpInvestment(context());
-            SellShares command = sellShareFrom(investment);
+            var investment = setUpInvestment(context());
+            var command = sellShareFrom(investment);
             context().receivesCommand(command);
-            SharesReserved expected = sharesReservedBy(command);
+            var expected = sharesReservedBy(command);
 
             context().assertEvent(expected);
         }
@@ -136,11 +117,10 @@ public class SharesSaleTest extends FreshContextTest {
         @Test
         @DisplayName("by emitting the `SharesReservationCompleted` event")
         void sharesReservationCompleted() {
-            Investment investment = setUpInvestment(context());
-            SellShares command = sellShareFrom(investment);
+            var investment = setUpInvestment(context());
+            var command = sellShareFrom(investment);
             context().receivesCommand(command);
-            SharesReservationCompleted expected =
-                    sharesReservationCompletedBy(command, investment);
+            var expected = sharesReservationCompletedBy(command, investment);
 
             context().assertEvent(expected);
         }
@@ -149,12 +129,11 @@ public class SharesSaleTest extends FreshContextTest {
         @DisplayName("by emitting the `SharesReservationCanceled event " +
                 "after error in the shares market")
         void sharesReservationCanceled() {
-            Investment investment = setUpInvestment(context());
-            SellShares command = sellShareFrom(investment);
+            var investment = setUpInvestment(context());
+            var command = sellShareFrom(investment);
             RejectingMarket.switchToRejectionMode();
             context().receivesCommand(command);
-            SharesReservationCanceled expected =
-                    sharesReservationCanceledAfter(command);
+            var expected = sharesReservationCanceledAfter(command);
 
             context().assertEvent(expected);
             RejectingMarket.switchToEventsMode();
@@ -163,10 +142,10 @@ public class SharesSaleTest extends FreshContextTest {
         @Test
         @DisplayName("by emitting the `InsufficientShares` rejection")
         void insufficientShares() {
-            Investment investment = setUpInvestment(context());
-            SellShares command = sellMoreSharesThanIn(investment);
+            var investment = setUpInvestment(context());
+            var command = sellMoreSharesThanIn(investment);
             context().receivesCommand(command);
-            InsufficientShares expected = insufficientSharesCausedBy(command);
+            var expected = insufficientSharesCausedBy(command);
 
             context().assertEvent(expected);
         }
@@ -175,11 +154,11 @@ public class SharesSaleTest extends FreshContextTest {
     @Test
     @DisplayName("reduce the number of available shares in the `InvestmentView` projection")
     void projection() {
-        Investment investment = setUpInvestment(context());
-        SellShares firstSale = sellShareFrom(investment);
-        SellShares secondSale = sellShareFrom(investment);
+        var investment = setUpInvestment(context());
+        var firstSale = sellShareFrom(investment);
+        var secondSale = sellShareFrom(investment);
         context().receivesCommands(firstSale, secondSale);
-        InvestmentView expected = investmentViewAfter(firstSale, secondSale, investment);
+        var expected = investmentViewAfter(firstSale, secondSale, investment);
 
         context().assertState(investment.getId(), expected);
     }
@@ -187,15 +166,13 @@ public class SharesSaleTest extends FreshContextTest {
     @Test
     @DisplayName("increase the amount of money in the `WalletBalance` projection")
     void increaseWalletBalance() {
-        Wallet wallet = setUpReplenishedWallet(context());
-        UserId user = wallet.getId()
-                            .getOwner();
-        PurchaseShares purchaseCommand = purchaseSharesFor(user);
+        var wallet = setUpReplenishedWallet(context());
+        var purchaseCommand = purchaseShares(wallet);
         context().receivesCommand(purchaseCommand);
 
-        SellShares sellCommand = sellShareAfter(purchaseCommand);
+        var sellCommand = sellShareAfter(purchaseCommand);
         context().receivesCommand(sellCommand);
-        WalletBalance expected = walletBalanceAfter(purchaseCommand, sellCommand, wallet);
+        var expected = walletBalanceAfter(purchaseCommand, sellCommand, wallet);
 
         context().assertState(wallet.getId(), expected);
     }
@@ -203,10 +180,10 @@ public class SharesSaleTest extends FreshContextTest {
     @Test
     @DisplayName("have an expected state")
     void state() {
-        Investment investment = setUpInvestment(context());
-        SellShares command = sellShareFrom(investment);
+        var investment = setUpInvestment(context());
+        var command = sellShareFrom(investment);
         context().receivesCommand(command);
-        SharesSale expected = sharesSaleInitiatedBy(command);
+        var expected = sharesSaleInitiatedBy(command);
 
         context().assertState(command.getSaleProcess(), expected);
     }
@@ -214,10 +191,10 @@ public class SharesSaleTest extends FreshContextTest {
     @Test
     @DisplayName("issue the `ReserveShares` command")
     void reserveShares() {
-        Investment investment = setUpInvestment(context());
-        SellShares command = sellShareFrom(investment);
+        var investment = setUpInvestment(context());
+        var command = sellShareFrom(investment);
         context().receivesCommand(command);
-        ReserveShares expected = reserveSharesWith(command);
+        var expected = reserveSharesWith(command);
 
         context().assertCommands()
                  .withType(ReserveShares.class)
@@ -228,10 +205,10 @@ public class SharesSaleTest extends FreshContextTest {
     @Test
     @DisplayName("issue the `SellSharesOnMarket` command")
     void sellSharesOnMarket() {
-        Investment investment = setUpInvestment(context());
-        SellShares command = sellShareFrom(investment);
+        var investment = setUpInvestment(context());
+        var command = sellShareFrom(investment);
         context().receivesCommand(command);
-        SellSharesOnMarket expected = sellSharesOnMarketWith(command);
+        var expected = sellSharesOnMarketWith(command);
 
         context().assertCommands()
                  .withType(SellSharesOnMarket.class)
@@ -242,10 +219,10 @@ public class SharesSaleTest extends FreshContextTest {
     @Test
     @DisplayName("issue the `RechargeBalance` command")
     void rechargeBalance() {
-        Investment investment = setUpInvestment(context());
-        SellShares command = sellShareFrom(investment);
+        var investment = setUpInvestment(context());
+        var command = sellShareFrom(investment);
         context().receivesCommand(command);
-        RechargeBalance expected = rechargeBalanceWith(command);
+        var expected = rechargeBalanceWith(command);
 
         context().assertCommands()
                  .withType(RechargeBalance.class)
@@ -256,11 +233,10 @@ public class SharesSaleTest extends FreshContextTest {
     @Test
     @DisplayName("issue the `CompleteSharesReservation` command")
     void completeSharesReservation() {
-        Investment investment = setUpInvestment(context());
-        SellShares command = sellShareFrom(investment);
+        var investment = setUpInvestment(context());
+        var command = sellShareFrom(investment);
         context().receivesCommand(command);
-        CompleteSharesReservation expected =
-                completeSharesReservationWith(command);
+        var expected = completeSharesReservationWith(command);
 
         context().assertCommands()
                  .withType(CompleteSharesReservation.class)
@@ -271,10 +247,10 @@ public class SharesSaleTest extends FreshContextTest {
     @Test
     @DisplayName("emit the `SharesSold` event")
     void sharesSold() {
-        Investment investment = setUpInvestment(context());
-        SellShares command = sellShareFrom(investment);
+        var investment = setUpInvestment(context());
+        var command = sellShareFrom(investment);
         context().receivesCommand(command);
-        SharesSold expected = sharesSoldBy(command, investment);
+        var expected = sharesSoldBy(command, investment);
 
         context().assertEvent(expected);
     }
@@ -283,10 +259,10 @@ public class SharesSaleTest extends FreshContextTest {
     @DisplayName("emit the `SharesSaleFailed` " +
             "due to insufficient quantity of shares owned")
     void sharesSaleFailedAfterInsufficientShares() {
-        Investment investment = setUpInvestment(context());
-        SellShares command = sellMoreSharesThanIn(investment);
+        var investment = setUpInvestment(context());
+        var command = sellMoreSharesThanIn(investment);
         context().receivesCommand(command);
-        SharesSaleFailed expected = sharesSaleFailedAfter(command);
+        var expected = sharesSaleFailedAfter(command);
 
         context().assertEvent(expected);
     }
@@ -295,11 +271,11 @@ public class SharesSaleTest extends FreshContextTest {
     @DisplayName("issue the `CancelSharesReservation` command " +
             "after error in the shares market")
     void cancelSharesReservation() {
-        Investment investment = setUpInvestment(context());
-        SellShares command = sellShareFrom(investment);
+        var investment = setUpInvestment(context());
+        var command = sellShareFrom(investment);
         RejectingMarket.switchToRejectionMode();
         context().receivesCommand(command);
-        CancelSharesReservation expected = cancelSharesReservationBy(command);
+        var expected = cancelSharesReservationBy(command);
 
         context().assertCommands()
                  .withType(CancelSharesReservation.class)
@@ -312,11 +288,11 @@ public class SharesSaleTest extends FreshContextTest {
     @DisplayName("emit the `SharesSaleFailed` event " +
             "after error in the shares market")
     void sharesSaleFailedAfterError() {
-        Investment investment = setUpInvestment(context());
-        SellShares command = sellShareFrom(investment);
+        var investment = setUpInvestment(context());
+        var command = sellShareFrom(investment);
         RejectingMarket.switchToRejectionMode();
         context().receivesCommand(command);
-        SharesSaleFailed expected = sharesSaleFailedAfter(command);
+        var expected = sharesSaleFailedAfter(command);
 
         context().assertEvent(expected);
         context().assertState(investment.getId(), investment);

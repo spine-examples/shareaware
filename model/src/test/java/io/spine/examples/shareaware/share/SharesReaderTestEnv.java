@@ -31,7 +31,7 @@ import io.spine.examples.shareaware.ShareId;
 
 import java.util.Set;
 
-import static io.spine.examples.shareaware.given.GivenMoney.*;
+import static io.spine.examples.shareaware.given.GivenMoney.usd;
 
 final class SharesReaderTestEnv {
 
@@ -42,14 +42,14 @@ final class SharesReaderTestEnv {
     }
 
     static Set<Share> expectedSharesFromFile() {
-        Share goodShare = Share
+        var goodShare = Share
                 .newBuilder()
                 .setId(ShareId.of("9c6456b3-eccb-48db-90d3-af2595f77f59"))
                 .setPrice(usd(100, 50))
                 .setCompanyName("AwesomeCompany")
                 .setCompanyLogo("https://awesome.site.org/images/logo.svg")
                 .vBuild();
-        Share awesomeShare = Share
+        var awesomeShare = Share
                 .newBuilder()
                 .setId(ShareId.of("4b8326b3-eccb-48db-45d3-af2595d55f59"))
                 .setPrice(usd(100, 50))
