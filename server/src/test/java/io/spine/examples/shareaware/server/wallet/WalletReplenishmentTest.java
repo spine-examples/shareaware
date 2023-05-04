@@ -36,8 +36,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import static io.spine.examples.shareaware.server.given.GivenWallet.setUpWallet;
 import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
-import static io.spine.examples.shareaware.server.wallet.WalletReplenishmentProcess.*;
+import static io.spine.examples.shareaware.server.wallet.WalletReplenishmentProcess.shareAwareIban;
 
 @DisplayName("`WalletReplenishment` should")
 public final class WalletReplenishmentTest extends FreshContextTest {

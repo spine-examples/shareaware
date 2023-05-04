@@ -40,6 +40,8 @@ import io.spine.testing.server.blackbox.BlackBoxContext;
 
 import static io.spine.examples.shareaware.MoneyCalculator.subtract;
 import static io.spine.examples.shareaware.MoneyCalculator.sum;
+import static io.spine.examples.shareaware.server.given.GivenWallet.userIban;
+import static io.spine.examples.shareaware.server.given.GivenWallet.setUpWallet;
 import static io.spine.examples.shareaware.given.GivenMoney.moneyOf;
 
 public final class WalletTestEnv {
@@ -48,25 +50,6 @@ public final class WalletTestEnv {
      * Prevents instantiation of this test environment.
      */
     private WalletTestEnv() {
-    }
-
-    private static final Iban IBAN = Iban
-            .newBuilder()
-            .setValue("FI211234569876543210")
-            .vBuild();
-
-    public static WalletId givenId() {
-        return WalletId
-                .newBuilder()
-                .setOwner(GivenUserId.generated())
-                .vBuild();
-    }
-
-    public static CreateWallet createWallet(WalletId id) {
-        return CreateWallet
-                .newBuilder()
-                .setWallet(id)
-                .vBuild();
     }
 
     /**
@@ -78,7 +61,7 @@ public final class WalletTestEnv {
                 .newBuilder()
                 .setWallet(wallet)
                 .setReplenishment(replenishment)
-                .setIban(IBAN)
+                .setIban(userIban())
                 .setMoneyAmount(amount)
                 .vBuild();
     }
@@ -89,18 +72,6 @@ public final class WalletTestEnv {
     public static ReplenishWallet replenish(WalletId wallet) {
         var replenishmentAmount = moneyOf(500, Currency.USD);
         return replenish(wallet, replenishmentAmount);
-    }
-
-    /**
-     * Creates a {@code Wallet} in {@code context} by sending {@code CreateWallet} command to it.
-     *
-     * @return the ID of created {@code Wallet}.
-     */
-    public static WalletId setUpWallet(BlackBoxContext context) {
-        var wallet = givenId();
-        var command = createWallet(wallet);
-        context.receivesCommand(command);
-        return wallet;
     }
 
     public static Wallet walletReplenishedBy(ReplenishWallet firstReplenishment,
@@ -208,7 +179,7 @@ public final class WalletTestEnv {
                 .newBuilder()
                 .setWithdrawalProcess(WithdrawalId.generate())
                 .setWallet(wallet)
-                .setRecipient(IBAN)
+                .setRecipient(userIban())
                 .setAmount(moneyOf(200, Currency.USD))
                 .vBuild();
     }

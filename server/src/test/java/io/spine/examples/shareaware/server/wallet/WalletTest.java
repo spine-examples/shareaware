@@ -34,7 +34,10 @@ import io.spine.testing.server.blackbox.ContextAwareTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.*;
+import static io.spine.examples.shareaware.server.given.GivenWallet.createWallet;
+import static io.spine.examples.shareaware.server.given.GivenWallet.givenId;
+import static io.spine.examples.shareaware.server.given.WalletTestEnv.walletCreatedWith;
+import static io.spine.examples.shareaware.server.given.WalletTestEnv.walletWith;
 
 @DisplayName("`Wallet` should")
 public final class WalletTest extends ContextAwareTest {

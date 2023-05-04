@@ -57,6 +57,6 @@ final class MarketDataProviderTest extends FreshContextTest {
                  .withType(MarketSharesUpdated.class)
                  .hasSize(2);
 
-        service.stop();
+        service.stopEmission();
     }
 }

@@ -26,23 +26,39 @@
 
 package io.spine.examples.shareaware.server.investment;
 
+import io.spine.core.UserId;
+import io.spine.examples.shareaware.InvestmentId;
 import io.spine.examples.shareaware.ShareId;
+import io.spine.examples.shareaware.WalletId;
+import io.spine.examples.shareaware.investment.InvestmentView;
+import io.spine.examples.shareaware.investment.Investment;
+import io.spine.examples.shareaware.investment.SharesPurchase;
 import io.spine.examples.shareaware.investment.command.AddShares;
+import io.spine.examples.shareaware.investment.command.PurchaseShares;
+import io.spine.examples.shareaware.investment.event.SharesAdded;
+import io.spine.examples.shareaware.investment.event.SharesPurchaseFailed;
+import io.spine.examples.shareaware.investment.event.SharesPurchased;
 import io.spine.examples.shareaware.market.command.ObtainShares;
 import io.spine.examples.shareaware.server.FreshContextTest;
 import io.spine.examples.shareaware.server.investment.given.InvestmentTestContext;
 import io.spine.examples.shareaware.server.investment.given.RejectingMarket;
+import io.spine.examples.shareaware.wallet.Wallet;
+import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.examples.shareaware.wallet.command.CancelMoneyReservation;
 import io.spine.examples.shareaware.wallet.command.DebitReservedMoney;
 import io.spine.examples.shareaware.wallet.command.ReserveMoney;
+import io.spine.examples.shareaware.wallet.event.MoneyReservationCanceled;
+import io.spine.examples.shareaware.wallet.event.MoneyReserved;
+import io.spine.examples.shareaware.wallet.event.ReservedMoneyDebited;
+import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds;
 import io.spine.server.BoundedContextBuilder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.setUpReplenishedWallet;
-import static io.spine.examples.shareaware.server.given.WalletTestEnv.setUpWallet;
 import static io.spine.examples.shareaware.server.investment.given.InvestmentTestEnv.*;
+import static io.spine.examples.shareaware.server.given.WalletTestEnv.setUpReplenishedWallet;
+import static io.spine.examples.shareaware.server.given.GivenWallet.setUpWallet;
 
 @DisplayName("`SharesPurchase` should")
 public final class SharesPurchaseTest extends FreshContextTest {
