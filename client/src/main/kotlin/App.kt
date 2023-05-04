@@ -24,25 +24,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-plugins {
-    kotlin("jvm") version "1.8.20"
-    id("org.jetbrains.compose") version "1.4.0"
-}
+import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
-repositories {
-    google()
-    mavenCentral()
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-}
+@Composable
+@Preview
+fun App() {
+    var text by remember { mutableStateOf("Hello, World!") }
 
-dependencies {
-    implementation(compose.desktop.currentOs)
-    implementation(project(":model"))
-    implementation(project(":server"))
-}
-
-compose.desktop {
-    application {
-        mainClass = "MainKt"
+    MaterialTheme {
+        Button(onClick = {
+            text = "Hello, Desktop!"
+        }) {
+            Text(text)
+        }
     }
 }
