@@ -24,25 +24,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-plugins {
-    kotlin("jvm") version "1.8.20"
-    id("org.jetbrains.compose") version "1.4.0"
-}
+package io.spine.examples.shareaware.client
 
-repositories {
-    google()
-    mavenCentral()
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-}
+import androidx.compose.ui.graphics.Color
 
-dependencies {
-    implementation(compose.desktop.currentOs)
-    implementation(project(":model"))
-    implementation(project(":server"))
-}
-
-compose.desktop {
-    application {
-        mainClass = "io.spine.examples.shareaware.client.Main"
-    }
+/**
+ * Provides common colors of the application.
+ */
+object Colors {
+    val BLUE = Color(0xff1d267d)
+    val WHITE = Color(0xfff8f5e4)
+    val BEIGE = Color(0xfff9f5eb)
+    val DARKBEIGE = Color(0xffe3dccf)
+    val AQUABLUE = Color(0xff088395)
 }

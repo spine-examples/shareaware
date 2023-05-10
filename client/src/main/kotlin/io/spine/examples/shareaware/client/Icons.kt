@@ -24,16 +24,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.application
+package io.spine.examples.shareaware.client
 
-class MainKt {
-    companion object {
-        @JvmStatic
-        fun main(args: Array<String>) = application {
-            Window(onCloseRequest = ::exitApplication) {
-                App()
-            }
-        }
-    }
+/**
+ * Provides the paths to the icons images.
+ */
+object Icons {
+    private const val iconFolder = "icons"
+    const val HOME = "${iconFolder}/home.png"
+    const val WALLET = "${iconFolder}/wallet.png"
+    const val MARKET = "${iconFolder}/market.png"
+    const val INVESTMENT = "${iconFolder}/investment.png"
+    const val WATCHLIST = "${iconFolder}/watchlist.png"
 }
