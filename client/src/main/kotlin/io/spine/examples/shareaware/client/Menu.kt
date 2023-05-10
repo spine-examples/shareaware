@@ -41,7 +41,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 /**
- * Represents the item of the menu with name, icon and navigation function.
+ * Represents the item of the menu.
  */
 data class MenuItem(val name: String,
                     val iconPath: String,
