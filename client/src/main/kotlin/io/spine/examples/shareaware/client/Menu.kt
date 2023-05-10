@@ -34,10 +34,6 @@ import androidx.compose.material.NavigationRail
 import androidx.compose.material.NavigationRailItem
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
@@ -55,8 +51,7 @@ data class MenuItem(val name: String,
  * The component that represents the menu for navigation through [Pages].
  */
 @Composable
-fun Menu(items: Map<Pages, MenuItem>, home: Pages) {
-    var selectedItem by remember { mutableStateOf(home) }
+fun Menu(items: Map<Pages, MenuItem>, currentPage: Pages) {
     NavigationRail(
         modifier = Modifier.fillMaxWidth(),
         backgroundColor = Colors.BEIGE
@@ -76,9 +71,8 @@ fun Menu(items: Map<Pages, MenuItem>, home: Pages) {
                     )
                 },
                 label = { Text(item.value.name) },
-                selected = selectedItem == item.key,
+                selected = currentPage == item.key,
                 onClick = {
-                    selectedItem = item.key
                     item.value.toPage()
                 },
                 selectedContentColor = Colors.BLUE
