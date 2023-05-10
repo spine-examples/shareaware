@@ -44,11 +44,10 @@ import androidx.compose.ui.unit.sp
 import io.spine.examples.shareaware.client.Colors
 
 /**
- * The component that represents the button
- * in the primary color of the application with default size.
+ * The component that represents the default button of the application.
  */
 @Composable
-fun primaryButton(
+fun PrimaryButton(
     onClick: () -> Unit,
     label: String,
     modifier: Modifier = Modifier

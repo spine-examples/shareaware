@@ -46,7 +46,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.spine.examples.shareaware.client.Colors
-import io.spine.examples.shareaware.client.components.primaryButton
+import io.spine.examples.shareaware.client.components.PrimaryButton
 
 /**
  * The page component that provides data about
@@ -105,14 +105,14 @@ fun WalletPage() = Column {
                 modifier = Modifier
                     .fillMaxHeight()
             ) {
-                primaryButton({}, "Replenish")
+                PrimaryButton({}, "Replenish")
             }
             Column(
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxHeight()
             ) {
-                primaryButton({}, "Withdraw")
+                PrimaryButton({}, "Withdraw")
             }
         }
     }
