@@ -24,7 +24,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-rootProject.name = "ShareAware"
-include("model")
-include("server")
-include("client")
+import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.application
+
+class MainKt {
+    companion object {
+        @JvmStatic
+        fun main(args: Array<String>) = application {
+            Window(onCloseRequest = ::exitApplication) {
+                App()
+            }
+        }
+    }
+}

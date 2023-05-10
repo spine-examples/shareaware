@@ -24,7 +24,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-rootProject.name = "ShareAware"
-include("model")
-include("server")
-include("client")
+plugins {
+    kotlin("jvm") version "1.8.20"
+    id("org.jetbrains.compose") version "1.4.0"
+}
+
+repositories {
+    google()
+    mavenCentral()
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+}
+
+dependencies {
+    implementation(compose.desktop.currentOs)
+    implementation(project(":model"))
+    implementation(project(":server"))
+}
+
+compose.desktop {
+    application {
+        mainClass = "MainKt"
+    }
+}

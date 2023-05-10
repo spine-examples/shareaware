@@ -24,7 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-rootProject.name = "ShareAware"
-include("model")
-include("server")
-include("client")
+/**
+ * Provides client-side code of the application.
+ */
+package io.spine.examples.shareaware.client;
