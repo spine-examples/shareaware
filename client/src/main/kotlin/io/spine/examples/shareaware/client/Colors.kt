@@ -24,16 +24,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.application
+package io.spine.examples.shareaware.client
 
-class MainKt {
-    companion object {
-        @JvmStatic
-        fun main(args: Array<String>) = application {
-            Window(onCloseRequest = ::exitApplication) {
-                App()
-            }
-        }
-    }
+import androidx.compose.ui.graphics.Color
+
+/**
+ * Provides common colors of the application.
+ */
+object Colors {
+    val BLUE = Color(0xff1d267d)
+    val WHITE = Color(0xfff8f5e4)
+    val BEIGE = Color(0xfff9f5eb)
+    val DARKBEIGE = Color(0xffe3dccf)
+    val AQUABLUE = Color(0xff088395)
 }
