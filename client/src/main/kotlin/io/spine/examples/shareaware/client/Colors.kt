@@ -32,9 +32,10 @@ import androidx.compose.ui.graphics.Color
  * Provides common colors of the application.
  */
 object Colors {
-    val BLUE = Color(0xff1d267d)
-    val WHITE = Color(0xfff8f5e4)
-    val BEIGE = Color(0xfff9f5eb)
-    val DARKBEIGE = Color(0xffe3dccf)
-    val AQUABLUE = Color(0xff088395)
+    val Blue90 = Color(0xffb0daff)
+    val Blue30 = Color(0xff1d267d)
+    val Blue80 = Color(0xffacb3ec)
+    val White = Color(0xfff8f5e4)
+    val Beige90 = Color(0xfff9f5eb)
+    val Beige40 = Color(0xffe3dccf)
 }

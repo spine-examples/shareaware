@@ -26,17 +26,17 @@
 
 package io.spine.examples.shareaware.client
 
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Icon
-import androidx.compose.material.NavigationRail
-import androidx.compose.material.NavigationRailItem
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
@@ -54,13 +54,12 @@ data class MenuItem(val name: String,
 fun Menu(items: Map<Pages, MenuItem>, currentPage: Pages) {
     NavigationRail(
         modifier = Modifier.fillMaxWidth(),
-        backgroundColor = Colors.BEIGE
+        containerColor = Colors.Beige90
     ) {
         items.entries.forEach { item ->
             NavigationRailItem(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RectangleShape),
+                    .fillMaxWidth(),
                 icon = {
                     Icon(
                         painterResource(item.value.iconPath),
@@ -75,8 +74,12 @@ fun Menu(items: Map<Pages, MenuItem>, currentPage: Pages) {
                 onClick = {
                     item.value.toPage()
                 },
-                selectedContentColor = Colors.BLUE
+                colors = NavigationRailItemDefaults.colors(
+                    selectedIconColor = Colors.White,
+                    indicatorColor = Colors.Blue30,
+                )
             )
+            Spacer(modifier = Modifier.height(10.dp))
         }
     }
 }

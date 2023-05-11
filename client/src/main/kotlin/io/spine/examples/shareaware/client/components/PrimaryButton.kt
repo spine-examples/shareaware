@@ -26,18 +26,20 @@
 
 package io.spine.examples.shareaware.client.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,19 +59,20 @@ fun PrimaryButton(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isHovered by interactionSource.collectIsHoveredAsState()
-    Button(
+    OutlinedButton(
         onClick,
         modifier = modifier,
         interactionSource = interactionSource,
+        border = BorderStroke(width = 2.dp, color = Colors.Blue30),
+        shape = CircleShape,
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = if (isHovered) Colors.AQUABLUE else Colors.BLUE,
-            contentColor = Colors.WHITE
-        ),
-        shape = CircleShape
+            containerColor = if (isHovered) Colors.Blue30 else Color.Transparent
+        )
     ) {
         Text(
             label,
-            fontSize = fontSize
+            fontSize = fontSize,
+            color = if (isHovered) Colors.White else Color.Black
         )
     }
 }

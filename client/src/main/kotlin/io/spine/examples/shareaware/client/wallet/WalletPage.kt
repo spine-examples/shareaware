@@ -36,8 +36,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Card
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +54,7 @@ import io.spine.examples.shareaware.client.components.PrimaryButton
  * The page component that provides data about
  * the user's current wallet balance and ways to interact with it.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WalletPage() = Column {
     Column(
@@ -64,33 +67,29 @@ fun WalletPage() = Column {
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            Card(
+            ElevatedCard (
                 modifier = Modifier
                     .align(Alignment.Bottom)
                     .width(350.dp)
                     .height(100.dp)
                     .padding(vertical = 15.dp, horizontal = 20.dp),
-                backgroundColor = Colors.BLUE,
+                colors = CardDefaults.cardColors(
+                    containerColor = Colors.Blue30,
+                ),
                 shape = CircleShape,
-                elevation = 10.dp,
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 20.dp,
+                ),
             ) {
                 Text(
-                    "Balance: ",
+                    "Balance: 200$",
                     fontSize = 30.sp,
-                    color = Colors.WHITE,
-                    textAlign = TextAlign.Start,
+                    color = Colors.White,
+                    textAlign = TextAlign.Center,
                     textDecoration = TextDecoration.Underline,
                     modifier = Modifier
-                        .padding(start = 40.dp, 10.dp)
-                )
-                Text(
-                    "200$",
-                    fontSize = 30.sp,
-                    color = Colors.WHITE,
-                    textAlign = TextAlign.End,
-                    textDecoration = TextDecoration.Underline,
-                    modifier = Modifier
-                        .padding(top = 10.dp, bottom = 10.dp, end = 40.dp)
+                        .padding(10.dp)
+                        .fillMaxWidth()
                 )
             }
         }
