@@ -38,6 +38,7 @@ repositories {
 dependencies {
     implementation(compose.desktop.currentOs)
     implementation(project(":model"))
+    implementation("org.jetbrains.compose.material3:material3-desktop:1.2.1")
     implementation(project(":server"))
 }
 
