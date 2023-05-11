@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemDefaults
@@ -54,7 +55,7 @@ data class MenuItem(val name: String,
 fun Menu(items: Map<Pages, MenuItem>, currentPage: Pages) {
     NavigationRail(
         modifier = Modifier.fillMaxWidth(),
-        containerColor = Colors.Beige90
+        containerColor = MaterialTheme.colorScheme.background
     ) {
         items.entries.forEach { item ->
             NavigationRailItem(
@@ -75,8 +76,8 @@ fun Menu(items: Map<Pages, MenuItem>, currentPage: Pages) {
                     item.value.toPage()
                 },
                 colors = NavigationRailItemDefaults.colors(
-                    selectedIconColor = Colors.White,
-                    indicatorColor = Colors.Blue30,
+                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                    indicatorColor = MaterialTheme.colorScheme.primary,
                 )
             )
             Spacer(modifier = Modifier.height(10.dp))

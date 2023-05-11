@@ -40,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,7 +48,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.spine.examples.shareaware.client.Colors
 import io.spine.examples.shareaware.client.components.PrimaryButton
 
 /**
@@ -74,7 +74,7 @@ fun WalletPage() = Column {
                     .height(100.dp)
                     .padding(vertical = 15.dp, horizontal = 20.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = Colors.Blue30,
+                    containerColor = MaterialTheme.colorScheme.primary,
                 ),
                 shape = CircleShape,
                 elevation = CardDefaults.cardElevation(
@@ -84,7 +84,6 @@ fun WalletPage() = Column {
                 Text(
                     "Balance: 200$",
                     fontSize = 30.sp,
-                    color = Colors.White,
                     textAlign = TextAlign.Center,
                     textDecoration = TextDecoration.Underline,
                     modifier = Modifier

@@ -32,18 +32,17 @@ import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Text
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.spine.examples.shareaware.client.Colors
 
 /**
  * The component that represents the default button of the application.
@@ -63,16 +62,18 @@ fun PrimaryButton(
         onClick,
         modifier = modifier,
         interactionSource = interactionSource,
-        border = BorderStroke(width = 2.dp, color = Colors.Blue30),
+        border = BorderStroke(width = 2.dp, MaterialTheme.colorScheme.primary),
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (isHovered) Colors.Blue30 else Color.Transparent
+            containerColor = if (isHovered) MaterialTheme.colorScheme.primary else
+                MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Text(
             label,
             fontSize = fontSize,
-            color = if (isHovered) Colors.White else Color.Black
+            color = if (isHovered) MaterialTheme.colorScheme.onPrimary else
+                MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }

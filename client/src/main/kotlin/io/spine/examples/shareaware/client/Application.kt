@@ -31,7 +31,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
+import io.spine.examples.shareaware.client.theme.ShareAwareTheme
 import io.spine.examples.shareaware.client.wallet.WalletPage
 
 /**
@@ -49,52 +51,56 @@ import io.spine.examples.shareaware.client.wallet.WalletPage
  * Responsible for navigation and composition of pages.
  */
 fun application() = application {
-    Window(
-        onCloseRequest = ::exitApplication,
-        state = WindowState(width = 1200.dp, height = 600.dp),
-        title = "ShareAware"
-    ) {
-        var page by remember { mutableStateOf(Pages.HOME) }
-        val items = mapOf(
-            Pages.HOME to MenuItem(
-                "Home",
-                Icons.HOME
-            ) { page = Pages.HOME },
-            Pages.WALLET to MenuItem(
-                "Wallet",
-                Icons.WALLET
-            ) { page = Pages.WALLET },
-            Pages.MARKET to MenuItem(
-                "Market",
-                Icons.MARKET
-            ) { page = Pages.MARKET },
-            Pages.INVESTMENTS to MenuItem(
-                "Investments",
-                Icons.INVESTMENT
-            ) { page = Pages.INVESTMENTS },
-            Pages.WATCHLISTS to MenuItem(
-                "Watchlists",
-                Icons.WATCHLIST
-            ) { page = Pages.WATCHLISTS }
-        )
-        Row(
-            modifier = Modifier
-                .background(Colors.DARKBEIGE)
-                .fillMaxSize()
-        ) {
-            Column(
-                modifier = Modifier.width(150.dp)
+    ShareAwareTheme(
+        content = {
+            Window(
+                onCloseRequest = ::exitApplication,
+                state = WindowState(width = 1200.dp, height = 600.dp),
+                title = "ShareAware"
             ) {
-                Logo()
-                Menu(items, page)
-            }
-            when (page) {
-                Pages.HOME -> Text("HOME")
-                Pages.WALLET -> WalletPage()
-                Pages.MARKET -> Text("MARKET")
-                Pages.INVESTMENTS -> Text("INVESTMENTS")
-                Pages.WATCHLISTS -> Text("WATCHLISTS")
+                var page by remember { mutableStateOf(Pages.HOME) }
+                val items = mapOf(
+                    Pages.HOME to MenuItem(
+                        "Home",
+                        Icons.HOME
+                    ) { page = Pages.HOME },
+                    Pages.WALLET to MenuItem(
+                        "Wallet",
+                        Icons.WALLET
+                    ) { page = Pages.WALLET },
+                    Pages.MARKET to MenuItem(
+                        "Market",
+                        Icons.MARKET
+                    ) { page = Pages.MARKET },
+                    Pages.INVESTMENTS to MenuItem(
+                        "Investments",
+                        Icons.INVESTMENT
+                    ) { page = Pages.INVESTMENTS },
+                    Pages.WATCHLISTS to MenuItem(
+                        "Watchlists",
+                        Icons.WATCHLIST
+                    ) { page = Pages.WATCHLISTS }
+                )
+                Row(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.surface)
+                        .fillMaxSize()
+                ) {
+                    Column(
+                        modifier = Modifier.width(150.dp)
+                    ) {
+                        Logo()
+                        Menu(items, page)
+                    }
+                    when (page) {
+                        Pages.HOME -> Text("HOME")
+                        Pages.WALLET -> WalletPage()
+                        Pages.MARKET -> Text("MARKET")
+                        Pages.INVESTMENTS -> Text("INVESTMENTS")
+                        Pages.WATCHLISTS -> Text("WATCHLISTS")
+                    }
+                }
             }
         }
-    }
+    )
 }

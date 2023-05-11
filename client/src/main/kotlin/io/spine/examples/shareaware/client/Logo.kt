@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -49,7 +50,7 @@ fun Logo() = Column(
     modifier = Modifier
         .height(60.dp)
         .fillMaxWidth()
-        .background(Colors.Blue30),
+        .background(MaterialTheme.colorScheme.primary),
 ) {
     Row(
         modifier = Modifier
@@ -59,8 +60,8 @@ fun Logo() = Column(
     ) {
         Text(
             "ShareAware",
-            color = Colors.White,
             fontFamily = FontFamily.Monospace,
+            color = MaterialTheme.colorScheme.onPrimary,
             fontSize = 17.sp,
             modifier = Modifier
                 .align(Alignment.CenterVertically)

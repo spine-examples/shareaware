@@ -24,18 +24,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.client
+package io.spine.examples.shareaware.client.theme
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
+private val lightColors = lightColorScheme(
+    primary = Colors.Blue30,
+    onPrimary = Colors.White,
+    secondary = Colors.Blue90,
+    onSecondary = Color.Black,
+    onSecondaryContainer = Color.Black,
+    surface = Colors.Beige40,
+    onSurface = Colors.Blue30,
+    surfaceVariant = Color.Transparent,
+    onSurfaceVariant = Color.Black,
+    surfaceTint = Colors.Blue80,
+    background = Colors.Beige90,
+    onBackground = Color.Black,
+    outline = Colors.Blue30
+)
+
 /**
- * Provides common colors of the application.
+ * The `MaterialScheme` of the application.
  */
-object Colors {
-    val Blue90 = Color(0xffb0daff)
-    val Blue30 = Color(0xff1d267d)
-    val Blue80 = Color(0xffacb3ec)
-    val White = Color(0xfff8f5e4)
-    val Beige90 = Color(0xfff9f5eb)
-    val Beige40 = Color(0xffe3dccf)
+@Composable
+fun ShareAwareTheme(content: @Composable () -> Unit) {
+    MaterialTheme  (
+        colorScheme = lightColors,
+        content = content
+    )
 }
