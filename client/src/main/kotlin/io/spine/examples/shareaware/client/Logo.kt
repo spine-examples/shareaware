@@ -38,9 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 /**
  * The component that represents the logo of the 'ShareAware' application.
@@ -60,9 +58,8 @@ public fun Logo(): Unit = Column(
     ) {
         Text(
             "ShareAware",
-            fontFamily = FontFamily.Monospace,
             color = MaterialTheme.colorScheme.onPrimary,
-            fontSize = 17.sp,
+            style = MaterialTheme.typography.labelSmall,
             modifier = Modifier
                 .align(Alignment.CenterVertically)
         )

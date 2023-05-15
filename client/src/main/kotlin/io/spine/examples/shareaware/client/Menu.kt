@@ -30,12 +30,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -70,7 +70,11 @@ public fun Menu(items: Map<Pages, MenuItem>, currentPage: Pages) {
                             .height(24.dp)
                     )
                 },
-                label = { Text(item.value.name) },
+                label = {
+                    Text(
+                        item.value.name, style = MaterialTheme.typography.bodyMedium
+                    )
+                },
                 selected = currentPage == item.key,
                 onClick = {
                     item.value.toPage()

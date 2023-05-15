@@ -50,7 +50,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.spine.examples.shareaware.client.components.Dialog
 import io.spine.examples.shareaware.client.components.Input
 import io.spine.examples.shareaware.client.components.PrimaryButton
@@ -87,7 +86,7 @@ public fun WalletPage(): Unit = Column {
             ) {
                 Text(
                     "Balance: 200$",
-                    fontSize = 30.sp,
+                    style = MaterialTheme.typography.labelLarge,
                     textAlign = TextAlign.Center,
                     textDecoration = TextDecoration.Underline,
                     modifier = Modifier

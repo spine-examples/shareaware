@@ -26,35 +26,32 @@
 
 package io.spine.examples.shareaware.client.theme
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.lightColorScheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-
-private val lightColors = lightColorScheme(
-    primary = Colors.Blue30,
-    onPrimary = Colors.White,
-    secondary = Colors.Blue90,
-    onSecondary = Color.Black,
-    onSecondaryContainer = Color.Black,
-    surface = Colors.Beige40,
-    onSurface = Color.Black,
-    surfaceVariant = Color.Transparent,
-    onSurfaceVariant = Color.Black,
-    surfaceTint = Colors.Blue80,
-    background = Colors.Beige90,
-    onBackground = Color.Black,
-    outline = Colors.Blue30
-)
+import androidx.compose.material3.Typography
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.sp
 
 /**
- * The `MaterialScheme` of the application.
+ * Text styles of the application.
  */
-@Composable
-public fun ShareAwareTheme(content: @Composable () -> Unit) {
-    MaterialTheme (
-        colorScheme = lightColors,
-        typography = Typography,
-        content = content
-    )
-}
+public val Typography: Typography = Typography(
+    bodySmall = TextStyle(
+        fontSize = 12.sp
+    ),
+    bodyMedium = TextStyle(
+        fontSize = 14.sp,
+    ),
+    bodyLarge = TextStyle(
+        fontSize = 16.sp
+    ),
+    labelSmall = TextStyle(
+        fontFamily = FontFamily.Monospace,
+        fontSize = 17.sp
+    ),
+    labelMedium = TextStyle(
+        fontSize = 20.sp
+    ),
+    labelLarge = TextStyle(
+        fontSize = 30.sp
+    ),
+)

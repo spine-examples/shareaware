@@ -43,7 +43,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 /**
  * Dialog window component.
@@ -76,33 +75,36 @@ public fun Dialog(
                     onCancel,
                     "Cancel",
                     modifier = Modifier
-                        .width(100.dp)
+                        .width(110.dp)
                         .height(40.dp),
-                    fontSize = 12.sp
+                    labelStyle = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(modifier = Modifier.width(5.dp))
                 PrimaryButton(
                     onConfirm,
                     "Confirm",
                     modifier = Modifier
-                        .width(100.dp)
+                        .width(110.dp)
                         .height(40.dp),
-                    fontSize = 12.sp
+                    labelStyle = MaterialTheme.typography.bodyMedium
                 )
             }
         },
         modifier = Modifier
             .width(400.dp)
-            .height(270.dp),
+            .height(250.dp),
         title = {
             Column(
                 modifier = Modifier
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(title, fontSize = 20.sp)
+                Text(
+                    title,
+                    style = MaterialTheme.typography.labelMedium,
+                )
                 Spacer(modifier = Modifier.height(20.dp))
-                inputs.forEach { input ->
+                inputs.forEachIndexed { index, input ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
@@ -110,9 +112,10 @@ public fun Dialog(
                     ) {
                         input()
                     }
-                    Spacer(modifier = Modifier.height(10.dp))
+                    if (index != inputs.size - 1) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
                 }
-                Spacer(modifier = Modifier.height(20.dp))
             }
         },
         shape = MaterialTheme.shapes.large,

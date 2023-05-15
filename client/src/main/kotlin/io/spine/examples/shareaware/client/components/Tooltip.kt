@@ -41,7 +41,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 /**
  * Warning tooltip component with icon.
@@ -69,8 +68,9 @@ public fun WarningTooltip(tip: String) {
             ) {
                 Text(
                     tip,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(10.dp))
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(10.dp)
+                )
             }
         },
         content = {

@@ -40,9 +40,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 /**
  * The component that represents the default button of the application.
@@ -54,7 +53,7 @@ public fun PrimaryButton(
     modifier: Modifier = Modifier
         .width(200.dp)
         .height(50.dp),
-    fontSize: TextUnit = 20.sp
+    labelStyle: TextStyle = MaterialTheme.typography.labelMedium
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isHovered by interactionSource.collectIsHoveredAsState()
@@ -71,7 +70,7 @@ public fun PrimaryButton(
     ) {
         Text(
             label,
-            fontSize = fontSize,
+            style = labelStyle,
             color = if (isHovered) MaterialTheme.colorScheme.onPrimary else
                 MaterialTheme.colorScheme.onSurfaceVariant
         )

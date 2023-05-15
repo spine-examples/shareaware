@@ -34,7 +34,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.sp
 
 /**
  * The input component that supports the error state.
@@ -55,7 +54,12 @@ public fun Input(value: String,
     TextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(label, fontSize = 14.sp) },
+        label = {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        },
         modifier = Modifier
             .fillMaxWidth(),
         colors = TextFieldDefaults.textFieldColors(
@@ -64,6 +68,7 @@ public fun Input(value: String,
             placeholderColor = MaterialTheme.colorScheme.onSurface,
             cursorColor = MaterialTheme.colorScheme.onSurface
         ),
+        textStyle = MaterialTheme.typography.bodyMedium,
         isError = isError,
         trailingIcon = {
             if (isError) {
