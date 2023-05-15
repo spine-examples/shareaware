@@ -26,17 +26,25 @@
 
 package io.spine.examples.shareaware.client.theme
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.ui.graphics.Color
 
 /**
- * The `MaterialTheme` of the application.
+ * The light colors scheme of the application.
  */
-@Composable
-public fun ShareAwareTheme(content: @Composable () -> Unit) {
-    MaterialTheme (
-        colorScheme = lightColors,
-        typography = Typography,
-        content = content
-    )
-}
+public val lightColors: ColorScheme = lightColorScheme(
+    primary = Colors.Blue30,
+    onPrimary = Colors.White,
+    secondary = Colors.Blue90,
+    onSecondary = Color.Black,
+    onSecondaryContainer = Color.Black,
+    surface = Colors.Beige40,
+    onSurface = Color.Black,
+    surfaceVariant = Color.Transparent,
+    onSurfaceVariant = Color.Black,
+    surfaceTint = Colors.Blue80,
+    background = Colors.Beige90,
+    onBackground = Color.Black,
+    outline = Colors.Blue30
+)
