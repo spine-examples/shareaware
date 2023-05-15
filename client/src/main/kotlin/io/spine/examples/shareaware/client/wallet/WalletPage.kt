@@ -176,10 +176,10 @@ private fun MoneyOperationDialog(
                 onValueChange = onIbanChange,
                 label = "Please enter your IBAN",
                 isError = mistakeInIbanField,
-                errorMessage = "Please ensure sure that your IBAN " +
+                errorMessage = "Please ensure that your IBAN " +
                         "contains 2 letters and 2 digits in the beginning and " +
                         "up to 26 alphanumeric characters after." +
-                        "Example: FI211234569876543210."
+                        "Example: FI211234569876543210"
             )
         },
         {
@@ -188,7 +188,7 @@ private fun MoneyOperationDialog(
                 onValueChange = onMoneyChange,
                 label = "Please enter money amount",
                 isError = mistakeInMoneyField,
-                errorMessage = "Please enter only digits. For example: 500.50."
+                errorMessage = "Please enter only digits. Example: 500.50"
             )
         }
     )
