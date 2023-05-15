@@ -36,27 +36,31 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Text
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.spine.examples.shareaware.client.components.Dialog
+import io.spine.examples.shareaware.client.components.Input
 import io.spine.examples.shareaware.client.components.PrimaryButton
 
 /**
  * The page component that provides data about
  * the user's current wallet balance and ways to interact with it.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WalletPage() = Column {
+public fun WalletPage(): Unit = Column {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -92,6 +96,8 @@ fun WalletPage() = Column {
                 )
             }
         }
+        var replenishmentState by remember { mutableStateOf(false) }
+        var withdrawalState by remember { mutableStateOf(false) }
         Row(
             modifier = Modifier
                 .weight(1f)
@@ -103,15 +109,99 @@ fun WalletPage() = Column {
                 modifier = Modifier
                     .fillMaxHeight()
             ) {
-                PrimaryButton({}, "Replenish")
+                PrimaryButton({ replenishmentState = true }, "Replenish")
             }
             Column(
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxHeight()
             ) {
-                PrimaryButton({}, "Withdraw")
+                PrimaryButton({ withdrawalState = true }, "Withdraw")
             }
         }
+        var replenishmentIbanValue by remember { mutableStateOf("") }
+        var replenishmentAmount by remember { mutableStateOf("") }
+        if (replenishmentState) {
+            MoneyOperationDialog(
+                onCancel = { replenishmentState = false },
+                onConfirm = {},
+                title = "Wallet Replenishment",
+                ibanValue = replenishmentIbanValue,
+                onIbanChange = { replenishmentIbanValue = it },
+                moneyValue = replenishmentAmount,
+                onMoneyChange = { replenishmentAmount = it }
+            )
+        }
+        var withdrawalIbanValue by remember { mutableStateOf("") }
+        var withdrawalAmount by remember { mutableStateOf("") }
+        if (withdrawalState) {
+            MoneyOperationDialog(
+                onCancel = { withdrawalState = false },
+                onConfirm = {},
+                title = "Wallet Withdrawal",
+                ibanValue = withdrawalIbanValue,
+                onIbanChange = { withdrawalIbanValue = it },
+                moneyValue = withdrawalAmount,
+                onMoneyChange = { withdrawalAmount = it }
+            )
+        }
     }
+}
+
+@Composable
+private fun MoneyOperationDialog(
+    onCancel: () -> Unit,
+    onConfirm: () -> Unit,
+    title: String,
+    ibanValue: String,
+    onIbanChange: (String) -> Unit,
+    moneyValue: String,
+    onMoneyChange: (String) -> Unit
+) {
+    var mistakeInIbanField by remember { mutableStateOf(false) }
+    var mistakeInMoneyField by remember { mutableStateOf(false) }
+    Dialog(
+        onCancel = onCancel,
+        onConfirm = {
+            mistakeInIbanField = validateIban(ibanValue)
+            mistakeInMoneyField = validateMoney(moneyValue)
+            if (!mistakeInIbanField && !mistakeInMoneyField) {
+                onConfirm()
+                onCancel()
+            }
+        },
+        title = title,
+        {
+            Input(
+                value = ibanValue,
+                onValueChange = onIbanChange,
+                label = "Please enter your IBAN",
+                isError = mistakeInIbanField,
+                errorMessage = "Please ensure sure that your IBAN " +
+                        "contains 2 letters and 2 digits in the beginning and " +
+                        "up to 26 alphanumeric characters after." +
+                        "Example: FI211234569876543210."
+            )
+        },
+        {
+            Input(
+                value = moneyValue,
+                onValueChange = onMoneyChange,
+                label = "Please enter money amount",
+                isError = mistakeInMoneyField,
+                errorMessage = "Please enter only digits. For example: 500.50."
+            )
+        }
+    )
+}
+
+private fun validateIban(iban: String): Boolean {
+    val ibanRegex =
+        """[A-Z]{2}[0-9]{2}(?:[ ]?[0-9]{4}){4}(?!(?:[ ]?[0-9]){3})(?:[ ]?[0-9]{1,2})?""".toRegex()
+    return !ibanRegex.containsMatchIn(iban)
+}
+
+private fun validateMoney(money: String): Boolean {
+    val decimalRegex = """^\d+\.?\d*${'$'}""".toRegex()
+    return !decimalRegex.containsMatchIn(money)
 }

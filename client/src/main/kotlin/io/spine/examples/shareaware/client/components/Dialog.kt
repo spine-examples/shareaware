@@ -51,8 +51,7 @@ import androidx.compose.ui.unit.sp
  * @param onCancel callback that will be called when the user clicks on `Cancel` button
  * @param onConfirm callback that will be called when the user clicks on `Confirm` button
  * @param title the title of the Dialog which should specify the purpose of the Dialog
- * @param firstInput the composable that should represent input field. Will be rendered first
- * @param secondInput the composable that should represent input field. Will be rendered second
+ * @param inputs the list of composable that should represent the list of input fields.
  */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -60,8 +59,7 @@ public fun Dialog(
     onCancel: () -> Unit,
     onConfirm: () -> Unit,
     title: String,
-    firstInput: @Composable () -> Unit,
-    secondInput: @Composable () -> Unit
+    vararg inputs: @Composable () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onCancel,
@@ -104,20 +102,15 @@ public fun Dialog(
             ) {
                 Text(title, fontSize = 20.sp)
                 Spacer(modifier = Modifier.height(20.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    firstInput()
-                }
-                Spacer(modifier = Modifier.height(10.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    secondInput()
+                inputs.forEach { input ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        input()
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
                 Spacer(modifier = Modifier.height(20.dp))
             }
