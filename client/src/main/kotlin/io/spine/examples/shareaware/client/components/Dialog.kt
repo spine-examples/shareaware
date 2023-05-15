@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.dp
  *
  * @param onCancel callback that will be called when the user clicks on `Cancel` button
  * @param onConfirm callback that will be called when the user clicks on `Confirm` button
- * @param title the title of the Dialog which should specify the purpose of the Dialog
+ * @param title the title of the dialog which should specify the purpose of the dialog
  * @param inputs the list of composable that should represent the list of input fields.
  */
 @OptIn(ExperimentalMaterialApi::class)

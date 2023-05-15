@@ -59,7 +59,7 @@ public fun WarningTooltip(tip: String) {
                 ),
                 modifier = Modifier
                     .padding(10.dp)
-                    .widthIn(min = 90.dp, max = 200.dp)
+                    .widthIn(min = 90.dp, max = 210.dp)
                     .border(
                         width = 1.dp,
                         color = MaterialTheme.colorScheme.error,
