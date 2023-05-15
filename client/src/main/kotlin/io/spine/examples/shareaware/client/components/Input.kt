@@ -47,11 +47,11 @@ import androidx.compose.ui.unit.sp
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Input(value: String,
-          onValueChange: (String) -> Unit,
-          label: String,
-          isError: Boolean,
-          errorMessage: String) {
+public fun Input(value: String,
+                 onValueChange: (String) -> Unit,
+                 label: String,
+                 isError: Boolean,
+                 errorMessage: String) {
     TextField(
         value = value,
         onValueChange = onValueChange,

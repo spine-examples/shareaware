@@ -51,8 +51,8 @@ private val lightColors = lightColorScheme(
  * The `MaterialScheme` of the application.
  */
 @Composable
-fun ShareAwareTheme(content: @Composable () -> Unit) {
-    MaterialTheme  (
+public fun ShareAwareTheme(content: @Composable () -> Unit) {
+    MaterialTheme (
         colorScheme = lightColors,
         content = content
     )

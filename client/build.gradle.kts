@@ -31,6 +31,10 @@ plugins {
     id("org.jetbrains.compose") version "1.4.0"
 }
 
+kotlin {
+    explicitApi()
+}
+
 repositories {
     google()
     mavenCentral()

@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.sp
  * The component that represents the default button of the application.
  */
 @Composable
-fun PrimaryButton(
+public fun PrimaryButton(
     onClick: () -> Unit,
     label: String,
     modifier: Modifier = Modifier

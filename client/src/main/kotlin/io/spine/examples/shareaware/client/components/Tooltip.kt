@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.sp
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun WarningTooltip(tip: String) {
+public fun WarningTooltip(tip: String) {
     TooltipArea(
         tooltip = {
             Card (

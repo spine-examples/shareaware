@@ -29,6 +29,6 @@ package io.spine.examples.shareaware.client
 /**
  * Provides the pages of the application.
  */
-enum class Pages {
+public enum class Pages {
     HOME, WALLET, MARKET, INVESTMENTS, WATCHLISTS
 }

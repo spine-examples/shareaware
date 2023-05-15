@@ -56,7 +56,7 @@ import androidx.compose.ui.unit.sp
  */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun Dialog(
+public fun Dialog(
     onCancel: () -> Unit,
     onConfirm: () -> Unit,
     title: String,

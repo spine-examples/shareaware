@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.sp
  * The component that represents the logo of the 'ShareAware' application.
  */
 @Composable
-fun Logo() = Column(
+public fun Logo(): Unit = Column(
     modifier = Modifier
         .height(60.dp)
         .fillMaxWidth()

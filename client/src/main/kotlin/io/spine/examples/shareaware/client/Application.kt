@@ -50,7 +50,7 @@ import io.spine.examples.shareaware.client.wallet.WalletPage
  *
  * Responsible for navigation and composition of pages.
  */
-fun application() = application {
+public fun application(): Unit = application {
     ShareAwareTheme(
         content = {
             Window(

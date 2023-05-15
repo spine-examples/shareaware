@@ -44,15 +44,15 @@ import androidx.compose.ui.unit.dp
 /**
  * Represents the item of the menu.
  */
-data class MenuItem(val name: String,
-                    val iconPath: String,
-                    val toPage: () -> Unit)
+public data class MenuItem(val name: String,
+                           val iconPath: String,
+                           val toPage: () -> Unit)
 
 /**
  * The component that represents the menu for navigation through [Pages].
  */
 @Composable
-fun Menu(items: Map<Pages, MenuItem>, currentPage: Pages) {
+public fun Menu(items: Map<Pages, MenuItem>, currentPage: Pages) {
     NavigationRail(
         modifier = Modifier.fillMaxWidth(),
         containerColor = MaterialTheme.colorScheme.background
