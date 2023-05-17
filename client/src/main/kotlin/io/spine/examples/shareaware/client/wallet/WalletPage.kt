@@ -147,6 +147,16 @@ public fun WalletPage(): Unit = Column {
     }
 }
 
+/**
+ * Dialog window component with a from for money operations.
+ *
+ * @param ibanValue the IBAN value to be shown in the relevant input
+ * @param onIbanChange the callback that is triggered when the IBAN value change
+ * @param moneyValue the money amount value to be shown in the relevant input
+ * @param onMoneyChange the callback that is triggered when the money amount value change
+ *
+ * @see Dialog
+ */
 @Composable
 private fun MoneyOperationDialog(
     onCancel: () -> Unit,
