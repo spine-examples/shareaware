@@ -26,16 +26,37 @@
 
 package io.spine.examples.shareaware.client.theme
 
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
+
+/**
+ * The light colors scheme of the application.
+ */
+public val lightColors: ColorScheme = lightColorScheme(
+    primary = Colors.Blue30,
+    onPrimary = Colors.White,
+    secondary = Colors.Blue90,
+    onSecondary = Color.Black,
+    onSecondaryContainer = Color.Black,
+    surface = Colors.Beige40,
+    onSurface = Color.Black,
+    surfaceVariant = Color.Transparent,
+    onSurfaceVariant = Color.Black,
+    surfaceTint = Colors.Blue80,
+    background = Colors.Beige90,
+    onBackground = Color.Black,
+    outline = Colors.Blue30
+)
 
 /**
  * Provides common colors of the application.
  */
-public object Colors {
-    public val Blue90: Color = Color(0xffb0daff)
-    public val Blue30: Color = Color(0xff1d267d)
-    public val Blue80: Color = Color(0xffacb3ec)
-    public val White: Color = Color(0xfff8f5e4)
-    public val Beige90: Color = Color(0xfff9f5eb)
-    public val Beige40: Color = Color(0xffe3dccf)
+private object Colors {
+    val Blue90: Color = Color(0xffb0daff)
+    val Blue30: Color = Color(0xff1d267d)
+    val Blue80: Color = Color(0xffacb3ec)
+    val White: Color = Color(0xfff8f5e4)
+    val Beige90: Color = Color(0xfff9f5eb)
+    val Beige40: Color = Color(0xffe3dccf)
 }

@@ -41,7 +41,7 @@ import androidx.compose.ui.Modifier
  * @param value the input text to be shown in the text field
  * @param onValueChange the callback that is triggered when the input service updates the text
  * @param label the label to be displayed inside the input container
- * @param isError indicates if the inputs current value is in error.
+ * @param isError indicates if the inputs current value is in error
  * @param errorMessage error message to be displayed in the tooltip when [isError] set to true
  */
 @OptIn(ExperimentalMaterial3Api::class)
