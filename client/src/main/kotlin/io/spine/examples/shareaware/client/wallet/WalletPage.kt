@@ -50,8 +50,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import io.spine.examples.shareaware.client.moneyoperation.Dialog
-import io.spine.examples.shareaware.client.moneyoperation.Input
+import io.spine.examples.shareaware.client.payment.Dialog
+import io.spine.examples.shareaware.client.payment.Input
 import io.spine.examples.shareaware.client.PrimaryButton
 
 /**
