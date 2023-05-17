@@ -75,19 +75,19 @@ public object MenuModel {
         Pages.HOME to MenuItem(
             "Home",
             Icons.HOME
-        ) { CurrentPage.changesTo(Pages.HOME)},
+        ) { CurrentPage.changesTo(Pages.HOME) },
         Pages.WALLET to MenuItem(
             "Wallet",
             Icons.WALLET
-        ) { CurrentPage.changesTo(Pages.WALLET)},
+        ) { CurrentPage.changesTo(Pages.WALLET) },
         Pages.MARKET to MenuItem(
             "Market",
             Icons.MARKET
-        ) { CurrentPage.changesTo(Pages.MARKET)},
+        ) { CurrentPage.changesTo(Pages.MARKET) },
         Pages.INVESTMENTS to MenuItem(
             "Investments",
             Icons.INVESTMENT
-        ) { CurrentPage.changesTo(Pages.INVESTMENTS)},
+        ) { CurrentPage.changesTo(Pages.INVESTMENTS) },
         Pages.WATCHLISTS to MenuItem(
             "Watchlists",
             Icons.WATCHLIST

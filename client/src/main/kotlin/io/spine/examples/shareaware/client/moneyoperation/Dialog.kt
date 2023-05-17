@@ -51,7 +51,7 @@ import io.spine.examples.shareaware.client.PrimaryButton
  * @param onCancel callback that will be called when the user clicks on `Cancel` button
  * @param onConfirm callback that will be called when the user clicks on `Confirm` button
  * @param title the title of the dialog which should specify the purpose of the dialog
- * @param inputs the list of composable that should represent the list of input fields.
+ * @param inputs the list of composable that should represent the list of input fields
  */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -62,64 +62,92 @@ public fun Dialog(
     vararg inputs: @Composable () -> Unit
 ) {
     AlertDialog(
-        onDismissRequest = onCancel,
-        buttons = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(60.dp)
-                    .padding(end = 20.dp),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                PrimaryButton(
-                    onCancel,
-                    "Cancel",
-                    modifier = Modifier
-                        .width(110.dp)
-                        .height(40.dp),
-                    labelStyle = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(modifier = Modifier.width(5.dp))
-                PrimaryButton(
-                    onConfirm,
-                    "Confirm",
-                    modifier = Modifier
-                        .width(110.dp)
-                        .height(40.dp),
-                    labelStyle = MaterialTheme.typography.bodyMedium
-                )
-            }
+        title = {
+            MainSection(
+                title = title,
+                inputs = inputs
+            )
         },
+        buttons = {
+            ControlSection(onCancel, onConfirm)
+        },
+        onDismissRequest = onCancel,
         modifier = Modifier
             .width(400.dp)
             .height(250.dp),
-        title = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    title,
-                    style = MaterialTheme.typography.labelMedium,
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-                inputs.forEachIndexed { index, input ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        input()
-                    }
-                    if (index != inputs.size - 1) {
-                        Spacer(modifier = Modifier.height(10.dp))
-                    }
-                }
-            }
-        },
         shape = MaterialTheme.shapes.large,
         backgroundColor = MaterialTheme.colorScheme.background
     )
+}
+
+/**
+ * The main section of the dialog window.
+ *
+ * @param title the title of the window
+ * @param inputs the list of inputs that will be located one below the other
+ */
+@Composable
+private fun MainSection(
+    title: String,
+    vararg inputs: @Composable () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            title,
+            style = MaterialTheme.typography.labelMedium,
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+        inputs.forEachIndexed { index, input ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                input()
+            }
+            if (index != inputs.size - 1) {
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+        }
+    }
+}
+
+/**
+ * The control section of the dialog window.
+ */
+@Composable
+private fun ControlSection(
+    onCancel: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .padding(end = 20.dp),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        PrimaryButton(
+            onCancel,
+            "Cancel",
+            modifier = Modifier
+                .width(110.dp)
+                .height(40.dp),
+            labelStyle = MaterialTheme.typography.bodyMedium
+        )
+        Spacer(modifier = Modifier.width(5.dp))
+        PrimaryButton(
+            onConfirm,
+            "Confirm",
+            modifier = Modifier
+                .width(110.dp)
+                .height(40.dp),
+            labelStyle = MaterialTheme.typography.bodyMedium
+        )
+    }
 }
