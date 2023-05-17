@@ -52,32 +52,46 @@ public data class MenuItem(val name: String,
                            val toPage: () -> Unit)
 
 /**
+ * The current page of the application.
+ */
+private object CurrentPage {
+    private val currentPage: MutableStateFlow<Pages> = MutableStateFlow(Pages.HOME)
+
+    fun changesTo(page: Pages) {
+        currentPage.value = page
+    }
+
+    fun asStateFlow(): StateFlow<Pages> {
+        return currentPage.asStateFlow()
+    }
+}
+
+/**
  * Provides menu state and configuration.
  */
 public object MenuModel {
-    private val _currentPage: MutableStateFlow<Pages> = MutableStateFlow(Pages.HOME)
-    public val currentPage: StateFlow<Pages> = _currentPage.asStateFlow()
+    public val currentPage: StateFlow<Pages> = CurrentPage.asStateFlow()
     public val items: Map<Pages, MenuItem> = mapOf(
         Pages.HOME to MenuItem(
             "Home",
             Icons.HOME
-        ) { _currentPage.value = Pages.HOME },
+        ) { CurrentPage.changesTo(Pages.HOME)},
         Pages.WALLET to MenuItem(
             "Wallet",
             Icons.WALLET
-        ) { _currentPage.value = Pages.WALLET },
+        ) { CurrentPage.changesTo(Pages.WALLET)},
         Pages.MARKET to MenuItem(
             "Market",
             Icons.MARKET
-        ) { _currentPage.value = Pages.MARKET },
+        ) { CurrentPage.changesTo(Pages.MARKET)},
         Pages.INVESTMENTS to MenuItem(
             "Investments",
             Icons.INVESTMENT
-        ) { _currentPage.value = Pages.INVESTMENTS },
+        ) { CurrentPage.changesTo(Pages.INVESTMENTS)},
         Pages.WATCHLISTS to MenuItem(
             "Watchlists",
             Icons.WATCHLIST
-        ) { _currentPage.value = Pages.WATCHLISTS }
+        ) { CurrentPage.changesTo(Pages.WATCHLISTS) }
     )
 }
 
