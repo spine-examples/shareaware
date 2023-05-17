@@ -64,7 +64,7 @@ public fun application(): Unit = application {
                         modifier = Modifier.width(150.dp)
                     ) {
                         Logo()
-                        MenuView(MenuModel.items, MenuModel.currentPage.value)
+                        MenuView(MenuModel.items, currentPage.value)
                     }
                     when (currentPage.value) {
                         Pages.HOME -> Text("HOME")
