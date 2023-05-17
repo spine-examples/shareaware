@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
-import io.spine.examples.shareaware.client.theme.ShareAwareTheme
 import io.spine.examples.shareaware.client.wallet.WalletPage
 
 /**

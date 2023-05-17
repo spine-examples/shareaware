@@ -24,7 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.client.theme
+package io.spine.examples.shareaware.client
 
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -100,7 +100,7 @@ private val typography: Typography = Typography(
     ),
     labelLarge = TextStyle(
         fontSize = 30.sp
-    ),
+    )
 )
 
 private object Colors {
