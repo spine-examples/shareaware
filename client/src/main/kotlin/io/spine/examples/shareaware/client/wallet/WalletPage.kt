@@ -38,8 +38,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,8 +54,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import io.spine.examples.shareaware.client.payment.Dialog
-import io.spine.examples.shareaware.client.payment.Input
 import io.spine.examples.shareaware.client.PrimaryButton
+import io.spine.examples.shareaware.client.payment.WarningTooltip
 
 /**
  * The page component that provides data about
@@ -200,6 +203,50 @@ private fun MoneyOperationDialog(
                 isError = mistakeInMoneyField,
                 errorMessage = "Please enter only digits. Example: 500.50"
             )
+        }
+    )
+}
+
+
+/**
+ * The input component that supports displaying an error related to its state.
+ *
+ * @param value the input text to be shown in the text field
+ * @param onValueChange the callback that is triggered when the input's value change
+ * @param label the label to be displayed inside the input container
+ * @param isError indicates if the input's current value is in error
+ * @param errorMessage error message to be displayed in the tooltip when [isError] set to `true`
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+public fun Input(value: String,
+                 onValueChange: (String) -> Unit,
+                 label: String,
+                 isError: Boolean,
+                 errorMessage: String) {
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        },
+        modifier = Modifier
+            .fillMaxWidth(),
+        colors = TextFieldDefaults.textFieldColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            textColor = MaterialTheme.colorScheme.onSurface,
+            placeholderColor = MaterialTheme.colorScheme.onSurface,
+            cursorColor = MaterialTheme.colorScheme.onSurface
+        ),
+        textStyle = MaterialTheme.typography.bodyMedium,
+        isError = isError,
+        trailingIcon = {
+            if (isError) {
+                WarningTooltip(errorMessage)
+            }
         }
     )
 }
