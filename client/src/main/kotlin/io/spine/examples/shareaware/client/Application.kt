@@ -33,10 +33,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -57,29 +54,7 @@ public fun application(): Unit = application {
                 state = WindowState(width = 1200.dp, height = 600.dp),
                 title = "ShareAware"
             ) {
-                var page by remember { mutableStateOf(Pages.HOME) }
-                val items = mapOf(
-                    Pages.HOME to MenuItem(
-                        "Home",
-                        Icons.HOME
-                    ) { page = Pages.HOME },
-                    Pages.WALLET to MenuItem(
-                        "Wallet",
-                        Icons.WALLET
-                    ) { page = Pages.WALLET },
-                    Pages.MARKET to MenuItem(
-                        "Market",
-                        Icons.MARKET
-                    ) { page = Pages.MARKET },
-                    Pages.INVESTMENTS to MenuItem(
-                        "Investments",
-                        Icons.INVESTMENT
-                    ) { page = Pages.INVESTMENTS },
-                    Pages.WATCHLISTS to MenuItem(
-                        "Watchlists",
-                        Icons.WATCHLIST
-                    ) { page = Pages.WATCHLISTS }
-                )
+                val currentPage = MenuModel.currentPage.collectAsState()
                 Row(
                     modifier = Modifier
                         .background(MaterialTheme.colorScheme.surface)
@@ -89,9 +64,9 @@ public fun application(): Unit = application {
                         modifier = Modifier.width(150.dp)
                     ) {
                         Logo()
-                        Menu(items, page)
+                        MenuView(MenuModel.items, MenuModel.currentPage.value)
                     }
-                    when (page) {
+                    when (currentPage.value) {
                         Pages.HOME -> Text("HOME")
                         Pages.WALLET -> WalletPage()
                         Pages.MARKET -> Text("MARKET")

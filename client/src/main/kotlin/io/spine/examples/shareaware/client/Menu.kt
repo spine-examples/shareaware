@@ -40,6 +40,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * Represents the item of the menu.
@@ -49,10 +52,40 @@ public data class MenuItem(val name: String,
                            val toPage: () -> Unit)
 
 /**
+ * Provides menu state and configuration.
+ */
+public object MenuModel {
+    private val _currentPage: MutableStateFlow<Pages> = MutableStateFlow(Pages.HOME)
+    public val currentPage: StateFlow<Pages> = _currentPage.asStateFlow()
+    public val items: Map<Pages, MenuItem> = mapOf(
+        Pages.HOME to MenuItem(
+            "Home",
+            Icons.HOME
+        ) { _currentPage.value = Pages.HOME },
+        Pages.WALLET to MenuItem(
+            "Wallet",
+            Icons.WALLET
+        ) { _currentPage.value = Pages.WALLET },
+        Pages.MARKET to MenuItem(
+            "Market",
+            Icons.MARKET
+        ) { _currentPage.value = Pages.MARKET },
+        Pages.INVESTMENTS to MenuItem(
+            "Investments",
+            Icons.INVESTMENT
+        ) { _currentPage.value = Pages.INVESTMENTS },
+        Pages.WATCHLISTS to MenuItem(
+            "Watchlists",
+            Icons.WATCHLIST
+        ) { _currentPage.value = Pages.WATCHLISTS }
+    )
+}
+
+/**
  * The component that represents the menu for navigation through [Pages].
  */
 @Composable
-public fun Menu(items: Map<Pages, MenuItem>, currentPage: Pages) {
+public fun MenuView(items: Map<Pages, MenuItem>, currentPage: Pages) {
     NavigationRail(
         modifier = Modifier.fillMaxWidth(),
         containerColor = MaterialTheme.colorScheme.background
