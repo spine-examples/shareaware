@@ -172,8 +172,8 @@ private fun MoneyOperationDialog(
     Dialog(
         onCancel = onCancel,
         onConfirm = {
-            mistakeInIbanField = validateIban(ibanValue)
-            mistakeInMoneyField = validateMoney(moneyValue)
+            mistakeInIbanField = ibanValue.validateIban()
+            mistakeInMoneyField = moneyValue.validateMoney()
             if (!mistakeInIbanField && !mistakeInMoneyField) {
                 onConfirm()
                 onCancel()
@@ -204,13 +204,13 @@ private fun MoneyOperationDialog(
     )
 }
 
-private fun validateIban(iban: String): Boolean {
+private fun String.validateIban(): Boolean {
     val ibanRegex =
         """[A-Z]{2}[0-9]{2}(?:[ ]?[0-9]{4}){4}(?!(?:[ ]?[0-9]){3})(?:[ ]?[0-9]{1,2})?""".toRegex()
-    return !ibanRegex.containsMatchIn(iban)
+    return !ibanRegex.containsMatchIn(this)
 }
 
-private fun validateMoney(money: String): Boolean {
+private fun String.validateMoney(): Boolean {
     val decimalRegex = """^\d+\.?\d*${'$'}""".toRegex()
-    return !decimalRegex.containsMatchIn(money)
+    return !decimalRegex.containsMatchIn(this)
 }
