@@ -36,4 +36,6 @@ public object Icons {
     public const val MARKET: String = "${iconFolder}/market.png"
     public const val INVESTMENT: String = "${iconFolder}/investment.png"
     public const val WATCHLIST: String = "${iconFolder}/watchlist.png"
+    public const val CARD: String = "${iconFolder}/card.png"
+    public const val USD: String = "${iconFolder}/usd.png"
 }

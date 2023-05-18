@@ -39,6 +39,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -50,11 +51,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import io.spine.examples.shareaware.client.payment.Dialog
+import io.spine.examples.shareaware.client.Icons
 import io.spine.examples.shareaware.client.PrimaryButton
+import io.spine.examples.shareaware.client.payment.Dialog
 import io.spine.examples.shareaware.client.payment.WarningTooltip
 
 /**
@@ -88,7 +92,7 @@ public fun WalletPage(): Unit = Column {
                 ),
             ) {
                 Text(
-                    "Balance: 200$",
+                    "Balance: $200",
                     style = MaterialTheme.typography.labelLarge,
                     textAlign = TextAlign.Center,
                     textDecoration = TextDecoration.Underline,
@@ -151,7 +155,7 @@ public fun WalletPage(): Unit = Column {
 }
 
 /**
- * Dialog window component with a from for money operations.
+ * Dialog window component with a form for money operations.
  *
  * @param ibanValue the IBAN value to be shown in the relevant input
  * @param onIbanChange the callback that is triggered when the IBAN value change
@@ -187,11 +191,13 @@ private fun MoneyOperationDialog(
             Input(
                 value = ibanValue,
                 onValueChange = onIbanChange,
-                label = "Please enter your IBAN",
+                label = "IBAN",
+                icon = painterResource(Icons.CARD),
+                iconDescription = "IBAN",
                 isError = mistakeInIbanField,
-                errorMessage = "Please ensure that your IBAN " +
+                errorMessage = "Ensure that your IBAN " +
                         "contains 2 letters and 2 digits in the beginning and " +
-                        "up to 26 alphanumeric characters after." +
+                        "up to 26 alphanumeric characters after. " +
                         "Example: FI211234569876543210"
             )
         },
@@ -199,9 +205,11 @@ private fun MoneyOperationDialog(
             Input(
                 value = moneyValue,
                 onValueChange = onMoneyChange,
-                label = "Please enter money amount",
+                label = "How much",
+                icon = painterResource(Icons.USD),
+                iconDescription = "USD Currency",
                 isError = mistakeInMoneyField,
-                errorMessage = "Please enter only digits. Example: 500.50"
+                errorMessage = "This field must contain only digits. Example: 500.50"
             )
         }
     )
@@ -214,16 +222,22 @@ private fun MoneyOperationDialog(
  * @param value the input text to be shown in the text field
  * @param onValueChange the callback that is triggered when the input's value change
  * @param label the label to be displayed inside the input container
+ * @param icon leading icon to be displayed at the beginning of the input container
+ * @param iconDescription what is icon represents
  * @param isError indicates if the input's current value is in error
  * @param errorMessage error message to be displayed in the tooltip when [isError] set to `true`
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-public fun Input(value: String,
-                 onValueChange: (String) -> Unit,
-                 label: String,
-                 isError: Boolean,
-                 errorMessage: String) {
+public fun Input(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    icon: Painter,
+    iconDescription: String?,
+    isError: Boolean,
+    errorMessage: String
+) {
     TextField(
         value = value,
         onValueChange = onValueChange,
@@ -243,6 +257,15 @@ public fun Input(value: String,
         ),
         textStyle = MaterialTheme.typography.bodyMedium,
         isError = isError,
+        leadingIcon = {
+            Icon(
+                painter = icon,
+                contentDescription = iconDescription,
+                modifier = Modifier
+                    .width(24.dp)
+                    .height(24.dp)
+            )
+        },
         trailingIcon = {
             if (isError) {
                 WarningTooltip(errorMessage)
