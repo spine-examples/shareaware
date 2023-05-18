@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 /**
  * Warning tooltip component with icon.
  *
- * @param tip message that will be shown when the icon hovers
+ * @param tip message shown on the icon hover
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
