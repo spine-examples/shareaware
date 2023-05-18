@@ -52,21 +52,6 @@ public data class MenuItem(val name: String,
                            val toPage: () -> Unit)
 
 /**
- * The current page of the application.
- */
-private object CurrentPage {
-    private val currentPage: MutableStateFlow<Pages> = MutableStateFlow(Pages.HOME)
-
-    fun changesTo(page: Pages) {
-        currentPage.value = page
-    }
-
-    fun asStateFlow(): StateFlow<Pages> {
-        return currentPage.asStateFlow()
-    }
-}
-
-/**
  * Provides menu state and configuration.
  */
 public object MenuModel {
@@ -93,6 +78,27 @@ public object MenuModel {
             Icons.WATCHLIST
         ) { CurrentPage.changesTo(Pages.WATCHLISTS) }
     )
+}
+
+/**
+ * The current page of the application.
+ */
+private object CurrentPage {
+    private val currentPage: MutableStateFlow<Pages> = MutableStateFlow(Pages.HOME)
+
+    /**
+     * Changes current page.
+     */
+    fun changesTo(page: Pages) {
+        currentPage.value = page
+    }
+
+    /**
+     * Represents the current page as a read-only state flow.
+     */
+    fun asStateFlow(): StateFlow<Pages> {
+        return currentPage.asStateFlow()
+    }
 }
 
 /**
