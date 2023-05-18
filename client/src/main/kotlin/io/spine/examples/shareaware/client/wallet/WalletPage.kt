@@ -45,6 +45,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,6 +62,60 @@ import io.spine.examples.shareaware.client.Icons
 import io.spine.examples.shareaware.client.PrimaryButton
 import io.spine.examples.shareaware.client.payment.Dialog
 import io.spine.examples.shareaware.client.payment.WarningTooltip
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+
+/**
+ * Provides the wallet page state.
+ */
+private object WalletPageModel {
+    private var replenishmentState: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private var withdrawalState: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
+    /**
+     * Sets page to default state.
+     */
+    fun toDefaultState() {
+        replenishmentState.value = false
+        withdrawalState.value = false
+    }
+
+    /**
+     * Sets page to replenishment state.
+     */
+    fun toReplenishmentState() {
+        replenishmentState.value = true
+        withdrawalState.value = false
+    }
+
+    /**
+     * Sets page to withdrawal state.
+     */
+    fun toWithdrawalState() {
+        withdrawalState.value = true
+        replenishmentState.value = false
+    }
+
+    /**
+     * Returns the replenishment state of the page.
+     */
+    @Composable
+    fun replenishmentState(): State<Boolean> {
+        return replenishmentState
+            .asStateFlow()
+            .collectAsState()
+    }
+
+    /**
+     * Returns the withdrawal state of the page.
+     */
+    @Composable
+    fun withdrawalState(): State<Boolean> {
+        return withdrawalState
+            .asStateFlow()
+            .collectAsState()
+    }
+}
 
 /**
  * The page component that provides data about
@@ -102,8 +158,8 @@ public fun WalletPage(): Unit = Column {
                 )
             }
         }
-        var replenishmentState by remember { mutableStateOf(false) }
-        var withdrawalState by remember { mutableStateOf(false) }
+        val replenishmentState = WalletPageModel.replenishmentState()
+        val withdrawalState = WalletPageModel.withdrawalState()
         Row(
             modifier = Modifier
                 .weight(1f)
@@ -115,21 +171,21 @@ public fun WalletPage(): Unit = Column {
                 modifier = Modifier
                     .fillMaxHeight()
             ) {
-                PrimaryButton({ replenishmentState = true }, "Replenish")
+                PrimaryButton({ WalletPageModel.toReplenishmentState() }, "Replenish")
             }
             Column(
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxHeight()
             ) {
-                PrimaryButton({ withdrawalState = true }, "Withdraw")
+                PrimaryButton({ WalletPageModel.toWithdrawalState() }, "Withdraw")
             }
         }
         var replenishmentIbanValue by remember { mutableStateOf("") }
         var replenishmentAmount by remember { mutableStateOf("") }
-        if (replenishmentState) {
+        if (replenishmentState.value) {
             MoneyOperationDialog(
-                onCancel = { replenishmentState = false },
+                onCancel = { WalletPageModel.toDefaultState() },
                 onConfirm = {},
                 title = "Wallet Replenishment",
                 ibanValue = replenishmentIbanValue,
@@ -140,9 +196,9 @@ public fun WalletPage(): Unit = Column {
         }
         var withdrawalIbanValue by remember { mutableStateOf("") }
         var withdrawalAmount by remember { mutableStateOf("") }
-        if (withdrawalState) {
+        if (withdrawalState.value) {
             MoneyOperationDialog(
-                onCancel = { withdrawalState = false },
+                onCancel = { WalletPageModel.toDefaultState() },
                 onConfirm = {},
                 title = "Wallet Withdrawal",
                 ibanValue = withdrawalIbanValue,
