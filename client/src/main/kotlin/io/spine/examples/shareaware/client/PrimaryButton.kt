@@ -36,6 +36,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -57,6 +58,8 @@ public fun PrimaryButton(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isHovered by interactionSource.collectIsHoveredAsState()
+    val background = if (isHovered) MaterialTheme.colorScheme.primary else
+        MaterialTheme.colorScheme.surfaceVariant
     OutlinedButton(
         onClick,
         modifier = modifier,
@@ -64,15 +67,13 @@ public fun PrimaryButton(
         border = BorderStroke(width = 2.dp, MaterialTheme.colorScheme.primary),
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (isHovered) MaterialTheme.colorScheme.primary else
-                MaterialTheme.colorScheme.surfaceVariant
+            containerColor = background
         )
     ) {
         Text(
             label,
             style = labelStyle,
-            color = if (isHovered) MaterialTheme.colorScheme.onPrimary else
-                MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.contentColorFor(background)
         )
     }
 }
