@@ -54,7 +54,7 @@ public fun application(): Unit = application {
                 state = WindowState(width = 1200.dp, height = 600.dp),
                 title = "ShareAware"
             ) {
-                val currentPage = MenuModel.currentPage.collectAsState()
+                val currentPage = Navigation.currentPage.collectAsState()
                 Row(
                     modifier = Modifier
                         .background(MaterialTheme.colorScheme.surface)
@@ -64,7 +64,7 @@ public fun application(): Unit = application {
                         modifier = Modifier.width(150.dp)
                     ) {
                         Logo()
-                        MenuLayout(MenuModel.items, currentPage.value)
+                        MenuLayout(Navigation.items, currentPage.value)
                     }
                     when (currentPage.value) {
                         Pages.HOME -> Text("HOME")

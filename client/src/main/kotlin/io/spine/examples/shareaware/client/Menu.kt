@@ -54,7 +54,7 @@ public data class MenuItem(val name: String,
 /**
  * Provides menu state and configuration.
  */
-public object MenuModel {
+public object Navigation {
     public val currentPage: StateFlow<Pages> = CurrentPage.asStateFlow()
     public val items: Map<Pages, MenuItem> = mapOf(
         Pages.HOME to MenuItem(
