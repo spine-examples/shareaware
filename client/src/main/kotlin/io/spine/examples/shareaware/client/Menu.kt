@@ -99,7 +99,7 @@ public object MenuModel {
  * The component that represents the menu for navigation through [Pages].
  */
 @Composable
-public fun MenuView(items: Map<Pages, MenuItem>, currentPage: Pages) {
+public fun MenuLayout(items: Map<Pages, MenuItem>, currentPage: Pages) {
     NavigationRail(
         modifier = Modifier.fillMaxWidth(),
         containerColor = MaterialTheme.colorScheme.background
