@@ -256,7 +256,7 @@ private fun MoneyOperationDialog(
                     icon = painterResource(Icons.CARD),
                     iconDescription = "IBAN",
                     isError = mistakeInIbanField,
-                    errorMessage = "Ensure that your IBAN " +
+                    errorMessage = "Ensure your IBAN " +
                             "contains 2 letters and 2 digits in the beginning and " +
                             "up to 26 alphanumeric characters after. " +
                             "Example: FI211234569876543210"

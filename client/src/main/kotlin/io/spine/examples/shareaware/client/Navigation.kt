@@ -37,12 +37,52 @@ import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+
+/**
+ * Provides current page state and menu component configuration.
+ */
+public object Navigation {
+    public val currentPage: StateFlow<Page> = CurrentPage.state()
+    public val items: List<MenuItem> = listOf(
+        MenuItem(
+            "Home",
+            Icons.HOME
+        ) { CurrentPage.home() },
+        MenuItem(
+            "Wallet",
+            Icons.WALLET
+        ) { CurrentPage.wallet() },
+        MenuItem(
+            "Market",
+            Icons.MARKET
+        ) { CurrentPage.market() },
+        MenuItem(
+            "Investments",
+            Icons.INVESTMENT
+        ) { CurrentPage.investments() },
+        MenuItem(
+            "Watchlists",
+            Icons.WATCHLIST
+        ) { CurrentPage.watchlists() }
+    )
+}
+
+/**
+ * Provides pages of the application.
+ */
+public enum class Page {
+    HOME, WALLET, MARKET, INVESTMENTS, WATCHLISTS;
+}
 
 /**
  * Represents the item of the menu.
@@ -52,72 +92,23 @@ public data class MenuItem(val name: String,
                            val toPage: () -> Unit)
 
 /**
- * Provides menu state and configuration.
- */
-public object Navigation {
-    public val currentPage: StateFlow<Pages> = CurrentPage.asStateFlow()
-    public val items: Map<Pages, MenuItem> = mapOf(
-        Pages.HOME to MenuItem(
-            "Home",
-            Icons.HOME
-        ) { CurrentPage.changesTo(Pages.HOME) },
-        Pages.WALLET to MenuItem(
-            "Wallet",
-            Icons.WALLET
-        ) { CurrentPage.changesTo(Pages.WALLET) },
-        Pages.MARKET to MenuItem(
-            "Market",
-            Icons.MARKET
-        ) { CurrentPage.changesTo(Pages.MARKET) },
-        Pages.INVESTMENTS to MenuItem(
-            "Investments",
-            Icons.INVESTMENT
-        ) { CurrentPage.changesTo(Pages.INVESTMENTS) },
-        Pages.WATCHLISTS to MenuItem(
-            "Watchlists",
-            Icons.WATCHLIST
-        ) { CurrentPage.changesTo(Pages.WATCHLISTS) }
-    )
-}
-
-/**
- * The current page of the application.
- */
-private object CurrentPage {
-    private val currentPage: MutableStateFlow<Pages> = MutableStateFlow(Pages.HOME)
-
-    /**
-     * Changes current page.
-     */
-    fun changesTo(page: Pages) {
-        currentPage.value = page
-    }
-
-    /**
-     * Represents the current page as a read-only state flow.
-     */
-    fun asStateFlow(): StateFlow<Pages> {
-        return currentPage.asStateFlow()
-    }
-}
-
-/**
- * The component that represents the menu for navigation through [Pages].
+ * The component that represents the menu for navigation through [Page].
  */
 @Composable
-public fun MenuLayout(items: Map<Pages, MenuItem>, currentPage: Pages) {
+public fun MenuLayout(items: List<MenuItem>) {
+    var selectedItem by remember { mutableStateOf(0) }
     NavigationRail(
         modifier = Modifier.fillMaxWidth(),
         containerColor = MaterialTheme.colorScheme.background
     ) {
-        items.entries.forEach { item ->
+        items.forEachIndexed { index, item ->
             NavigationRailItem(
                 modifier = Modifier
                     .fillMaxWidth(),
                 icon = {
                     Icon(
-                        painterResource(item.value.iconPath),
-                        contentDescription = item.value.name,
+                        painterResource(item.iconPath),
+                        contentDescription = item.name,
                         modifier = Modifier
                             .width(24.dp)
                             .height(24.dp)
@@ -125,12 +116,13 @@ public fun MenuLayout(items: Map<Pages, MenuItem>, currentPage: Pages) {
                 },
                 label = {
                     Text(
-                        item.value.name, style = MaterialTheme.typography.bodyMedium
+                        item.name, style = MaterialTheme.typography.bodyMedium
                     )
                 },
-                selected = currentPage == item.key,
+                selected = selectedItem == index,
                 onClick = {
-                    item.value.toPage()
+                    selectedItem = index
+                    item.toPage()
                 },
                 colors = NavigationRailItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.onPrimary,
@@ -139,5 +131,55 @@ public fun MenuLayout(items: Map<Pages, MenuItem>, currentPage: Pages) {
             )
             Spacer(modifier = Modifier.height(10.dp))
         }
+    }
+}
+
+/**
+ * The current page of the application.
+ */
+private object CurrentPage {
+
+    private val currentPage: MutableStateFlow<Page> = MutableStateFlow(Page.HOME)
+
+    /**
+     * Represents the current page as a read-only state flow.
+     */
+    fun state(): StateFlow<Page> {
+        return currentPage.asStateFlow()
+    }
+
+    /**
+     * Changes the current page to the "Home" page.
+     */
+    fun home() {
+        currentPage.value = Page.HOME
+    }
+
+    /**
+     * Changes the current page to the "Wallet" page.
+     */
+    fun wallet() {
+        currentPage.value = Page.WALLET
+    }
+
+    /**
+     * Changes the current page to the "Market" page.
+     */
+    fun market() {
+        currentPage.value = Page.MARKET
+    }
+
+    /**
+     * Changes the current page to the "Investments" page.
+     */
+    fun investments() {
+        currentPage.value = Page.INVESTMENTS
+    }
+
+    /**
+     * Changes the current page to the "Watchlists" page.
+     */
+    fun watchlists() {
+        currentPage.value = Page.WATCHLISTS
     }
 }

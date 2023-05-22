@@ -64,14 +64,14 @@ public fun application(): Unit = application {
                         modifier = Modifier.width(150.dp)
                     ) {
                         Logo()
-                        MenuLayout(Navigation.items, currentPage.value)
+                        MenuLayout(Navigation.items)
                     }
                     when (currentPage.value) {
-                        Pages.HOME -> Text("HOME")
-                        Pages.WALLET -> WalletPage()
-                        Pages.MARKET -> Text("MARKET")
-                        Pages.INVESTMENTS -> Text("INVESTMENTS")
-                        Pages.WATCHLISTS -> Text("WATCHLISTS")
+                        Page.HOME -> Text("HOME")
+                        Page.WALLET -> WalletPage()
+                        Page.MARKET -> Text("MARKET")
+                        Page.INVESTMENTS -> Text("INVESTMENTS")
+                        Page.WATCHLISTS -> Text("WATCHLISTS")
                     }
                 }
             }
