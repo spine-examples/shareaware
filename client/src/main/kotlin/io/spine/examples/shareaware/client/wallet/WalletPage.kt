@@ -63,7 +63,6 @@ import io.spine.examples.shareaware.client.payment.Dialog
 import io.spine.examples.shareaware.client.payment.WarningTooltip
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * Provides the wallet page state.
@@ -105,7 +104,6 @@ private object WalletPageModel {
      */
     fun replenishmentState(): StateFlow<Boolean> {
         return replenishmentState
-            .asStateFlow()
     }
 
     /**
@@ -113,7 +111,6 @@ private object WalletPageModel {
      */
     fun withdrawalState(): StateFlow<Boolean> {
         return withdrawalState
-            .asStateFlow()
     }
 }
 
@@ -296,7 +293,7 @@ public fun Input(
     onValueChange: (String) -> Unit,
     label: String,
     icon: Painter,
-    iconDescription: String?,
+    iconDescription: String,
     isError: Boolean,
     errorMessage: String
 ) {
