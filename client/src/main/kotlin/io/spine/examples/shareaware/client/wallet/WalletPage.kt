@@ -45,7 +45,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,6 +62,7 @@ import io.spine.examples.shareaware.client.PrimaryButton
 import io.spine.examples.shareaware.client.payment.Dialog
 import io.spine.examples.shareaware.client.payment.WarningTooltip
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
@@ -81,7 +81,9 @@ private object WalletPageModel {
     }
 
     /**
-     * Sets page to replenishment state.
+     * Sets page to "replenishment" state.
+     *
+     * Page state when the user wants to replenish the wallet.
      */
     fun toReplenishmentState() {
         replenishmentState.value = true
@@ -89,7 +91,9 @@ private object WalletPageModel {
     }
 
     /**
-     * Sets page to withdrawal state.
+     * Sets page to "withdrawal" state.
+     *
+     * Page state when the user wants to withdraw money from the wallet.
      */
     fun toWithdrawalState() {
         withdrawalState.value = true
@@ -97,23 +101,19 @@ private object WalletPageModel {
     }
 
     /**
-     * Returns the replenishment state of the page.
+     * Returns the "replenishment" state of the page.
      */
-    @Composable
-    fun replenishmentState(): State<Boolean> {
+    fun replenishmentState(): StateFlow<Boolean> {
         return replenishmentState
             .asStateFlow()
-            .collectAsState()
     }
 
     /**
-     * Returns the withdrawal state of the page.
+     * Returns the "withdrawal" state of the page.
      */
-    @Composable
-    fun withdrawalState(): State<Boolean> {
+    fun withdrawalState(): StateFlow<Boolean> {
         return withdrawalState
             .asStateFlow()
-            .collectAsState()
     }
 }
 
@@ -158,8 +158,6 @@ public fun WalletPage(): Unit = Column {
                 )
             }
         }
-        val replenishmentState = WalletPageModel.replenishmentState()
-        val withdrawalState = WalletPageModel.withdrawalState()
         Row(
             modifier = Modifier
                 .weight(1f)
@@ -181,38 +179,43 @@ public fun WalletPage(): Unit = Column {
                 PrimaryButton({ WalletPageModel.toWithdrawalState() }, "Withdraw")
             }
         }
+        val replenishmentState = WalletPageModel
+            .replenishmentState()
+            .collectAsState()
         var replenishmentIbanValue by remember { mutableStateOf("") }
         var replenishmentAmount by remember { mutableStateOf("") }
-        if (replenishmentState.value) {
-            MoneyOperationDialog(
-                onCancel = { WalletPageModel.toDefaultState() },
-                onConfirm = {},
-                title = "Wallet Replenishment",
-                ibanValue = replenishmentIbanValue,
-                onIbanChange = { replenishmentIbanValue = it },
-                moneyValue = replenishmentAmount,
-                onMoneyChange = { replenishmentAmount = it }
-            )
-        }
+        MoneyOperationDialog(
+            onCancel = { WalletPageModel.toDefaultState() },
+            onConfirm = {},
+            isShown = replenishmentState.value,
+            title = "Wallet Replenishment",
+            ibanValue = replenishmentIbanValue,
+            onIbanChange = { replenishmentIbanValue = it },
+            moneyValue = replenishmentAmount,
+            onMoneyChange = { replenishmentAmount = it }
+        )
+        val withdrawalState = WalletPageModel
+            .withdrawalState()
+            .collectAsState()
         var withdrawalIbanValue by remember { mutableStateOf("") }
         var withdrawalAmount by remember { mutableStateOf("") }
-        if (withdrawalState.value) {
-            MoneyOperationDialog(
-                onCancel = { WalletPageModel.toDefaultState() },
-                onConfirm = {},
-                title = "Wallet Withdrawal",
-                ibanValue = withdrawalIbanValue,
-                onIbanChange = { withdrawalIbanValue = it },
-                moneyValue = withdrawalAmount,
-                onMoneyChange = { withdrawalAmount = it }
-            )
-        }
+        MoneyOperationDialog(
+            onCancel = { WalletPageModel.toDefaultState() },
+            onConfirm = {},
+            isShown = withdrawalState.value,
+            title = "Wallet Withdrawal",
+            ibanValue = withdrawalIbanValue,
+            onIbanChange = { withdrawalIbanValue = it },
+            moneyValue = withdrawalAmount,
+            onMoneyChange = { withdrawalAmount = it }
+        )
     }
 }
 
 /**
  * Dialog window component with a form for money operations.
  *
+ * @param isShown is a dialog window shown to the user
  * @param ibanValue the IBAN value to be shown in the relevant input
  * @param onIbanChange the callback that is triggered when the IBAN value change
  * @param moneyValue the money amount value to be shown in the relevant input
@@ -224,51 +227,54 @@ public fun WalletPage(): Unit = Column {
 private fun MoneyOperationDialog(
     onCancel: () -> Unit,
     onConfirm: () -> Unit,
+    isShown: Boolean,
     title: String,
     ibanValue: String,
     onIbanChange: (String) -> Unit,
     moneyValue: String,
     onMoneyChange: (String) -> Unit
 ) {
-    var mistakeInIbanField by remember { mutableStateOf(false) }
-    var mistakeInMoneyField by remember { mutableStateOf(false) }
-    Dialog(
-        onCancel = onCancel,
-        onConfirm = {
-            mistakeInIbanField = ibanValue.validateIban()
-            mistakeInMoneyField = moneyValue.validateMoney()
-            if (!mistakeInIbanField && !mistakeInMoneyField) {
-                onConfirm()
-                onCancel()
+    if (isShown) {
+        var mistakeInIbanField by remember { mutableStateOf(false) }
+        var mistakeInMoneyField by remember { mutableStateOf(false) }
+        Dialog(
+            onCancel = onCancel,
+            onConfirm = {
+                mistakeInIbanField = ibanValue.validateIban()
+                mistakeInMoneyField = moneyValue.validateMoney()
+                if (!mistakeInIbanField && !mistakeInMoneyField) {
+                    onConfirm()
+                    onCancel()
+                }
+            },
+            title = title,
+            {
+                Input(
+                    value = ibanValue,
+                    onValueChange = onIbanChange,
+                    label = "IBAN",
+                    icon = painterResource(Icons.CARD),
+                    iconDescription = "IBAN",
+                    isError = mistakeInIbanField,
+                    errorMessage = "Ensure that your IBAN " +
+                            "contains 2 letters and 2 digits in the beginning and " +
+                            "up to 26 alphanumeric characters after. " +
+                            "Example: FI211234569876543210"
+                )
+            },
+            {
+                Input(
+                    value = moneyValue,
+                    onValueChange = onMoneyChange,
+                    label = "How much",
+                    icon = painterResource(Icons.USD),
+                    iconDescription = "USD Currency",
+                    isError = mistakeInMoneyField,
+                    errorMessage = "This field must contain only digits. Example: 500.50"
+                )
             }
-        },
-        title = title,
-        {
-            Input(
-                value = ibanValue,
-                onValueChange = onIbanChange,
-                label = "IBAN",
-                icon = painterResource(Icons.CARD),
-                iconDescription = "IBAN",
-                isError = mistakeInIbanField,
-                errorMessage = "Ensure that your IBAN " +
-                        "contains 2 letters and 2 digits in the beginning and " +
-                        "up to 26 alphanumeric characters after. " +
-                        "Example: FI211234569876543210"
-            )
-        },
-        {
-            Input(
-                value = moneyValue,
-                onValueChange = onMoneyChange,
-                label = "How much",
-                icon = painterResource(Icons.USD),
-                iconDescription = "USD Currency",
-                isError = mistakeInMoneyField,
-                errorMessage = "This field must contain only digits. Example: 500.50"
-            )
-        }
-    )
+        )
+    }
 }
 
 
