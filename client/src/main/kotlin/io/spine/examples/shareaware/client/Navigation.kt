@@ -92,7 +92,7 @@ public data class MenuItem(val name: String,
                            val toPage: () -> Unit)
 
 /**
- * The component that represents the menu for navigation through [Page].
+ * Component that represents the menu for navigating through the application.
  */
 @Composable
 public fun MenuLayout(items: List<MenuItem>) {
