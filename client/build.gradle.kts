@@ -25,6 +25,7 @@
  */
 
 import io.spine.examples.shareaware.dependency.Material3
+import io.spine.examples.shareaware.dependency.Spine
 
 plugins {
     kotlin("jvm") version "1.8.20"
@@ -45,6 +46,7 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation(project(":model"))
     implementation(Material3.Desktop.lib)
+    implementation(Spine.Server.lib)
     implementation(project(":server"))
 }
 
