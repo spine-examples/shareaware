@@ -49,66 +49,44 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
- * Provides current page state and menu component configuration.
- */
-public object Navigation {
-    public val currentPage: StateFlow<Page> = CurrentPage.state()
-    public val items: List<MenuItem> = listOf(
-        MenuItem(
-            "Home",
-            Icons.HOME
-        ) { CurrentPage.home() },
-        MenuItem(
-            "Wallet",
-            Icons.WALLET
-        ) { CurrentPage.wallet() },
-        MenuItem(
-            "Market",
-            Icons.MARKET
-        ) { CurrentPage.market() },
-        MenuItem(
-            "Investments",
-            Icons.INVESTMENT
-        ) { CurrentPage.investments() },
-        MenuItem(
-            "Watchlists",
-            Icons.WATCHLIST
-        ) { CurrentPage.watchlists() }
-    )
-}
-
-/**
  * Provides pages of the application.
  */
-public enum class Page {
-    HOME, WALLET, MARKET, INVESTMENTS, WATCHLISTS;
-}
+public enum class Page(
+    public val label: String,
+    public val iconPath: String
+) {
+    HOME("Home", Icons.HOME),
+    WALLET("Wallet", Icons.WALLET),
+    MARKET("Market", Icons.MARKET),
+    INVESTMENTS("Investments", Icons.INVESTMENT),
+    WATCHLISTS("Watchlists", Icons.WATCHLIST);
 
-/**
- * Represents the item of the menu.
- */
-public data class MenuItem(val name: String,
-                           val iconPath: String,
-                           val toPage: () -> Unit)
+    /**
+     * Provides the current page of the application.
+     */
+    public companion object {
+        public val current: StateFlow<Page> = CurrentPage.state()
+    }
+}
 
 /**
  * Component that represents the menu for navigating through the application.
  */
 @Composable
-public fun MenuLayout(items: List<MenuItem>) {
+public fun MenuLayout() {
     var selectedItem by remember { mutableStateOf(0) }
     NavigationRail(
         modifier = Modifier.fillMaxWidth(),
         containerColor = MaterialTheme.colorScheme.background
     ) {
-        items.forEachIndexed { index, item ->
+        Page.values().forEachIndexed { index, page ->
             NavigationRailItem(
                 modifier = Modifier
                     .fillMaxWidth(),
                 icon = {
                     Icon(
-                        painterResource(item.iconPath),
-                        contentDescription = item.name,
+                        painterResource(page.iconPath),
+                        contentDescription = page.label,
                         modifier = Modifier
                             .width(24.dp)
                             .height(24.dp)
@@ -116,13 +94,13 @@ public fun MenuLayout(items: List<MenuItem>) {
                 },
                 label = {
                     Text(
-                        item.name, style = MaterialTheme.typography.bodyMedium
+                        page.label, style = MaterialTheme.typography.bodyMedium
                     )
                 },
                 selected = selectedItem == index,
                 onClick = {
                     selectedItem = index
-                    item.toPage()
+                    CurrentPage.set(page)
                 },
                 colors = NavigationRailItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.onPrimary,
@@ -149,37 +127,9 @@ private object CurrentPage {
     }
 
     /**
-     * Changes the current page to the "Home" page.
+     * Changes the current page to the provided.
      */
-    fun home() {
-        currentPage.value = Page.HOME
-    }
-
-    /**
-     * Changes the current page to the "Wallet" page.
-     */
-    fun wallet() {
-        currentPage.value = Page.WALLET
-    }
-
-    /**
-     * Changes the current page to the "Market" page.
-     */
-    fun market() {
-        currentPage.value = Page.MARKET
-    }
-
-    /**
-     * Changes the current page to the "Investments" page.
-     */
-    fun investments() {
-        currentPage.value = Page.INVESTMENTS
-    }
-
-    /**
-     * Changes the current page to the "Watchlists" page.
-     */
-    fun watchlists() {
-        currentPage.value = Page.WATCHLISTS
+    fun set(page: Page) {
+        currentPage.value = page
     }
 }
