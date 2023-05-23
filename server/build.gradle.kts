@@ -30,6 +30,7 @@
  */
 plugins {
     id("io.spine.tools.gradle.bootstrap")
+    application
 }
 
 spine {
@@ -44,4 +45,8 @@ spine {
 dependencies {
     implementation(project(":model"))
     testImplementation(project(":model", "test"))
+}
+
+application {
+    mainClass.set("io.spine.examples.shareaware.server.ShareAwareServer")
 }
