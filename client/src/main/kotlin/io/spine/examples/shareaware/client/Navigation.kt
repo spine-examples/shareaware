@@ -50,6 +50,9 @@ import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * Provides pages of the application.
+ *
+ * @param label the name of the page
+ * @param iconPath the path to the icon that should represent the page
  */
 public enum class Page(
     public val label: String,
