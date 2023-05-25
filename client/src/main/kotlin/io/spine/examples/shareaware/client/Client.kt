@@ -36,9 +36,9 @@ import io.spine.core.UserId
 import io.spine.examples.shareaware.WalletId
 
 /**
- * Facade above [Client] that provides API for interacting with the `gRPC` server.
+ * Interacts with the app server via gRPC.
  */
-public class ClientFacade private constructor(
+public class DesktopClient private constructor(
     private val user: UserId,
     host: String,
     port: Int
@@ -47,11 +47,11 @@ public class ClientFacade private constructor(
     public companion object {
 
         @Volatile
-        private var instance: ClientFacade? = null
+        private var instance: DesktopClient? = null
 
-        public fun init(userId: UserId, host: String, port: Int): ClientFacade =
+        public fun init(userId: UserId, host: String, port: Int): DesktopClient =
             instance ?: synchronized(this) {
-                instance ?: ClientFacade(userId, host, port).also { instance = it }
+                instance ?: DesktopClient(userId, host, port).also { instance = it }
             }
     }
 
