@@ -107,12 +107,15 @@ public class ClientFacade private constructor(
     /**
      * Retrieves the entity with a provided type and ID.
      */
-    public fun <E : EntityState> readEntity(type: Class<E>, id: Message): E {
+    public fun <E : EntityState> readEntity(type: Class<E>, id: Message): E? {
         val entities = client
             .onBehalfOf(user)
             .select(type)
             .byId(id)
             .run()
+        if (entities.isEmpty()) {
+            return null
+        }
         return entities[0]
     }
 
