@@ -83,7 +83,10 @@ public class DesktopClient private constructor(
     }
 
     /**
-     * Subscribes the `observer` to the entity with a provided `type`.
+     * Subscribes to the changes in entities of the given type.
+     *
+     * @param type type of the entity on which changes subscription works
+     * @param observer callback function that will be triggered when the entity state changes
      */
     public fun <S : EntityState> subscribeToEntity(type: Class<S>, observer: (S) -> Unit) {
         client
@@ -94,7 +97,10 @@ public class DesktopClient private constructor(
     }
 
     /**
-     * Subscribes the `observer` to the event with a provided `type`.
+     * Subscribes to the events of the provided type.
+     *
+     * @param type type of the event to subscribe on
+     * @param observer callback function that will be triggered when the event arrives
      */
     public fun <E : EventMessage> subscribeToEvent(type: Class<E>, observer: (E) -> Unit) {
         client
@@ -106,6 +112,9 @@ public class DesktopClient private constructor(
 
     /**
      * Retrieves the entity with a provided type and ID.
+     *
+     * @param type type of the entity to be retrieved
+     * @param id entity ID by which the query result will be filtered
      */
     public fun <E : EntityState> readEntity(type: Class<E>, id: Message): E? {
         val entities = client
