@@ -32,14 +32,15 @@ import io.spine.base.CommandMessage
 import io.spine.base.EntityState
 import io.spine.base.EventMessage
 import io.spine.client.Client
+import io.spine.client.ClientRequest
 import io.spine.core.UserId
 import io.spine.examples.shareaware.WalletId
+import io.spine.util.Exceptions
 
 /**
  * Interacts with the app server via gRPC.
  */
 public class DesktopClient private constructor(
-    private val user: UserId,
     host: String,
     port: Int
 ) {
@@ -49,14 +50,15 @@ public class DesktopClient private constructor(
         @Volatile
         private var instance: DesktopClient? = null
 
-        public fun init(userId: UserId, host: String, port: Int): DesktopClient =
+        public fun init(host: String, port: Int): DesktopClient =
             instance ?: synchronized(this) {
-                instance ?: DesktopClient(userId, host, port).also { instance = it }
+                instance ?: DesktopClient(host, port).also { instance = it }
             }
     }
 
     private val client: Client
-    private val wallet: WalletId
+    private var user: UserId? = null
+    private var wallet: WalletId? = null
 
     init {
         val channel = ManagedChannelBuilder
@@ -66,18 +68,13 @@ public class DesktopClient private constructor(
         client = Client
             .usingChannel(channel)
             .build()
-        wallet = WalletId
-            .newBuilder()
-            .setOwner(user)
-            .vBuild()
     }
 
     /**
      * Sends a command to the server.
      */
     public fun command(message: CommandMessage) {
-        client
-            .onBehalfOf(user)
+        clientRequest()
             .command(message)
             .postAndForget()
     }
@@ -89,8 +86,7 @@ public class DesktopClient private constructor(
      * @param observer callback function that will be triggered when the entity state changes
      */
     public fun <S : EntityState> subscribeToEntity(type: Class<S>, observer: (S) -> Unit) {
-        client
-            .onBehalfOf(user)
+        clientRequest()
             .subscribeTo(type)
             .observe(observer)
             .post()
@@ -103,8 +99,7 @@ public class DesktopClient private constructor(
      * @param observer callback function that will be triggered when the event arrives
      */
     public fun <E : EventMessage> subscribeToEvent(type: Class<E>, observer: (E) -> Unit) {
-        client
-            .onBehalfOf(user)
+        clientRequest()
             .subscribeToEvent(type)
             .observe(observer)
             .post()
@@ -117,8 +112,7 @@ public class DesktopClient private constructor(
      * @param id entity ID by which the query result will be filtered
      */
     public fun <E : EntityState> readEntity(type: Class<E>, id: Message): E? {
-        val entities = client
-            .onBehalfOf(user)
+        val entities = clientRequest()
             .select(type)
             .byId(id)
             .run()
@@ -129,16 +123,56 @@ public class DesktopClient private constructor(
     }
 
     /**
-     * Returns the ID of the authenticated user.
+     * Returns the client request to the server
+     * on behalf of the authenticated user if it exists
+     * otherwise on behalf of the guest.
      */
-    public fun user(): UserId {
-        return user
+    private fun clientRequest(): ClientRequest {
+        if (user == null) {
+            return client.asGuest()
+        }
+        return client.onBehalfOf(user)
     }
 
     /**
-     * Returns the ID of the user's wallet.
+     * Configures the `DesktopClient` with authenticated user,
+     * after it set all actions will occur on behalf of the user.
      */
-    public fun wallet(): WalletId {
-        return wallet
+    public fun authenticatedUser(id: UserId) {
+        this.user = id
+        this.wallet = WalletId
+            .newBuilder()
+            .setOwner(id)
+            .vBuild()
+    }
+
+    /**
+     * Returns the ID of the authenticated user if it exists.
+     *
+     * @throws IllegalStateException when the authenticated user is not configured for the client.
+     */
+    public fun authenticatedUser(): UserId? {
+        if (user != null) {
+            return user
+        }
+        throw Exceptions.newIllegalStateException(
+            "There is no authenticated user configured for the client."
+        )
+    }
+
+    /**
+     * Returns the ID of the user's wallet if it exists.
+     *
+     * @throws IllegalStateException when the user's wallet does not exist
+     * because the authenticated user is not configured to the client.
+     */
+    public fun wallet(): WalletId? {
+        if (wallet != null) {
+            return wallet
+        }
+        throw Exceptions.newIllegalStateException(
+            "There is no user's wallet ID because of the " +
+                    "authenticated user is not configured for the client."
+        )
     }
 }
