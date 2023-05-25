@@ -27,7 +27,6 @@
 package io.spine.examples.shareaware.server;
 
 import io.spine.base.Production;
-import io.spine.server.BoundedContextBuilder;
 import io.spine.server.Server;
 import io.spine.server.ServerEnvironment;
 import io.spine.server.delivery.Delivery;
@@ -53,7 +52,7 @@ public class ShareAwareServer {
      * The entry point of the ShareAware application.
      */
     public static void main(String[] args) throws IOException {
-        Server server = create();
+        var server = create();
         server.start();
         server.awaitTermination();
     }
@@ -64,7 +63,7 @@ public class ShareAwareServer {
      */
     static Server create() {
         configureEnvironment();
-        BoundedContextBuilder context = TradingContext.newBuilder();
+        var context = TradingContext.newBuilder();
         return Server
                 .atPort(DEFAULT_CLIENT_SERVICE_PORT)
                 .add(context)

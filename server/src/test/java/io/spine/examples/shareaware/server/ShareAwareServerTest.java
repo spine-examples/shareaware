@@ -26,9 +26,7 @@
 
 package io.spine.examples.shareaware.server;
 
-import io.spine.client.QueryResponse;
 import io.spine.core.UserId;
-import io.spine.examples.shareaware.WalletId;
 import io.spine.examples.shareaware.wallet.WalletBalance;
 import io.spine.server.Server;
 import io.spine.testing.client.grpc.TestClient;
@@ -75,10 +73,10 @@ final class ShareAwareServerTest {
     @Test
     @DisplayName("accept command and create `WalletBalance` projection in response")
     void command() {
-        WalletId walletId = walletId(user);
+        var walletId = walletId(user);
         client.post(createWallet(walletId));
 
-        QueryResponse wallets = client.queryAll(WalletBalance.class);
+        var wallets = client.queryAll(WalletBalance.class);
         assertThat(wallets.getMessageCount()).isEqualTo(1);
     }
 }
