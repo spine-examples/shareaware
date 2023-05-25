@@ -36,7 +36,7 @@ import io.spine.server.transport.memory.InMemoryTransportFactory;
 
 import java.io.IOException;
 
-import static io.spine.client.ConnectionConstants.*;
+import static io.spine.client.ConnectionConstants.DEFAULT_CLIENT_SERVICE_PORT;
 
 /**
  * A {@code gRPC} server running a "Trading" bounded context.
@@ -59,7 +59,7 @@ public class ShareAwareServer {
      * Creates {@code Server} instance at the
      * {@linkplain io.spine.client.ConnectionConstants#DEFAULT_CLIENT_SERVICE_PORT default} port.
      */
-    private static Server create() {
+    static Server create() {
         configureEnvironment();
         BoundedContextBuilder context = TradingContext.newBuilder();
         return Server
