@@ -24,9 +24,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import io.spine.examples.shareaware.dependency.Material3
+
 plugins {
     kotlin("jvm") version "1.8.20"
     id("org.jetbrains.compose") version "1.4.0"
+}
+
+kotlin {
+    explicitApi()
 }
 
 repositories {
@@ -38,6 +44,7 @@ repositories {
 dependencies {
     implementation(compose.desktop.currentOs)
     implementation(project(":model"))
+    implementation(Material3.Desktop.lib)
     implementation(project(":server"))
 }
 

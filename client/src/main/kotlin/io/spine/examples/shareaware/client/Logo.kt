@@ -33,23 +33,22 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 /**
  * The component that represents the logo of the 'ShareAware' application.
  */
 @Composable
-fun Logo() = Column(
+public fun Logo(): Unit = Column(
     modifier = Modifier
         .height(60.dp)
         .fillMaxWidth()
-        .background(Colors.BLUE),
+        .background(MaterialTheme.colorScheme.primary),
 ) {
     Row(
         modifier = Modifier
@@ -59,9 +58,8 @@ fun Logo() = Column(
     ) {
         Text(
             "ShareAware",
-            color = Colors.WHITE,
-            fontFamily = FontFamily.Monospace,
-            fontSize = 17.sp,
+            color = MaterialTheme.colorScheme.onPrimary,
+            style = MaterialTheme.typography.labelSmall,
             modifier = Modifier
                 .align(Alignment.CenterVertically)
         )

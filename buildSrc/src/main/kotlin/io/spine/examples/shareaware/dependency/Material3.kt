@@ -24,7 +24,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
- * Provides client-side code of the application.
- */
-package io.spine.examples.shareaware.client;
+package io.spine.examples.shareaware.dependency
+
+// https://m3.material.io/
+object Material3 {
+
+    object Desktop {
+        const val version = "1.4.0"
+        const val lib = "org.jetbrains.compose.material3:material3-desktop:${version}"
+    }
+}

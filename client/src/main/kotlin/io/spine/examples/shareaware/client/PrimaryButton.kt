@@ -24,52 +24,56 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.client.components
+package io.spine.examples.shareaware.client
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import io.spine.examples.shareaware.client.Colors
 
 /**
  * The component that represents the default button of the application.
  */
 @Composable
-fun PrimaryButton(
+public fun PrimaryButton(
     onClick: () -> Unit,
     label: String,
     modifier: Modifier = Modifier
         .width(200.dp)
         .height(50.dp),
-    fontSize: TextUnit = 20.sp
+    labelStyle: TextStyle = MaterialTheme.typography.labelMedium
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isHovered by interactionSource.collectIsHoveredAsState()
-    Button(
+    val background = if (isHovered) MaterialTheme.colorScheme.primary else
+        MaterialTheme.colorScheme.surfaceVariant
+    OutlinedButton(
         onClick,
         modifier = modifier,
         interactionSource = interactionSource,
+        border = BorderStroke(width = 2.dp, MaterialTheme.colorScheme.primary),
+        shape = CircleShape,
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = if (isHovered) Colors.AQUABLUE else Colors.BLUE,
-            contentColor = Colors.WHITE
-        ),
-        shape = CircleShape
+            containerColor = background
+        )
     ) {
         Text(
             label,
-            fontSize = fontSize
+            style = labelStyle,
+            color = MaterialTheme.colorScheme.contentColorFor(background)
         )
     }
 }

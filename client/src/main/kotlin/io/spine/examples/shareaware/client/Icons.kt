@@ -29,11 +29,13 @@ package io.spine.examples.shareaware.client
 /**
  * Provides the paths to the icons images.
  */
-object Icons {
+public object Icons {
     private const val iconFolder = "icons"
-    const val HOME = "${iconFolder}/home.png"
-    const val WALLET = "${iconFolder}/wallet.png"
-    const val MARKET = "${iconFolder}/market.png"
-    const val INVESTMENT = "${iconFolder}/investment.png"
-    const val WATCHLIST = "${iconFolder}/watchlist.png"
+    public const val HOME: String = "${iconFolder}/home.png"
+    public const val WALLET: String = "${iconFolder}/wallet.png"
+    public const val MARKET: String = "${iconFolder}/market.png"
+    public const val INVESTMENT: String = "${iconFolder}/investment.png"
+    public const val WATCHLIST: String = "${iconFolder}/watchlist.png"
+    public const val CARD: String = "${iconFolder}/card.png"
+    public const val USD: String = "${iconFolder}/usd.png"
 }
