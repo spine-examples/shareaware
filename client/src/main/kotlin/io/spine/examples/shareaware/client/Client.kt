@@ -34,7 +34,6 @@ import io.spine.base.EventMessage
 import io.spine.client.Client
 import io.spine.core.UserId
 import io.spine.examples.shareaware.WalletId
-import java.util.function.Consumer
 
 /**
  * Facade above [Client] that provides API for interacting with the `gRPC` server.
@@ -86,7 +85,7 @@ public class ClientFacade private constructor(
     /**
      * Subscribes the `observer` to the entity with a provided `type`.
      */
-    public fun <S : EntityState> subscribeToEntity(type: Class<S>, observer: Consumer<S>) {
+    public fun <S : EntityState> subscribeToEntity(type: Class<S>, observer: (S) -> Unit) {
         client
             .onBehalfOf(user)
             .subscribeTo(type)
@@ -97,7 +96,7 @@ public class ClientFacade private constructor(
     /**
      * Subscribes the `observer` to the event with a provided `type`.
      */
-    public fun <E : EventMessage> subscribeToEvent(type: Class<E>, observer: Consumer<E>) {
+    public fun <E : EventMessage> subscribeToEvent(type: Class<E>, observer: (E) -> Unit) {
         client
             .onBehalfOf(user)
             .subscribeToEvent(type)
