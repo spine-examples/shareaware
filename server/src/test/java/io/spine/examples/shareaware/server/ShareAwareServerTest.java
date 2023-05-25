@@ -46,7 +46,7 @@ import static io.spine.examples.shareaware.server.given.GivenWallet.walletId;
 import static io.spine.testing.core.given.GivenUserId.newUuid;
 import static io.spine.util.Exceptions.illegalStateWithCauseOf;
 
-@DisplayName("'ShareAware' server should")
+@DisplayName("ShareAware server should")
 final class ShareAwareServerTest {
 
     private static final String HOST = "localhost";

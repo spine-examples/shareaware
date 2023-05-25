@@ -49,6 +49,9 @@ public class ShareAwareServer {
     private ShareAwareServer() {
     }
 
+    /**
+     * The entry point of the ShareAware application.
+     */
     public static void main(String[] args) throws IOException {
         Server server = create();
         server.start();
@@ -68,9 +71,6 @@ public class ShareAwareServer {
                 .build();
     }
 
-    /**
-     * The entry point of the server application.
-     */
     private static void configureEnvironment() {
         ServerEnvironment
                 .when(Production.class)
