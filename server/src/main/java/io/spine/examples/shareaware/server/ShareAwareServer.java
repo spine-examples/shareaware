@@ -38,7 +38,10 @@ import java.io.IOException;
 import static io.spine.client.ConnectionConstants.DEFAULT_CLIENT_SERVICE_PORT;
 
 /**
- * A {@code gRPC} server running a "Trading" bounded context.
+ * A "gRPC" server running a "Trading" bounded context.
+ *
+ * <p>ShareAware is an example application written on the `Spine` framework,
+ * so this server is not a production-ready, and it's configured to use in-memory storage.
  */
 public class ShareAwareServer {
 
