@@ -33,9 +33,13 @@ import io.spine.base.EntityState
 import io.spine.base.EventMessage
 import io.spine.client.Client
 import io.spine.client.ClientRequest
+import io.spine.client.EventFilter
 import io.spine.core.UserId
 import io.spine.examples.shareaware.WalletId
+import io.spine.examples.shareaware.wallet.command.CreateWallet
+import io.spine.examples.shareaware.wallet.event.WalletCreated
 import io.spine.util.Exceptions
+import java.util.*
 
 /**
  * Interacts with the app server via gRPC.
@@ -57,8 +61,8 @@ public class DesktopClient private constructor(
     }
 
     private val client: Client
-    private var user: UserId? = null
-    private var wallet: WalletId? = null
+    private lateinit var user: UserId
+    private lateinit var wallet: WalletId
 
     init {
         val channel = ManagedChannelBuilder
@@ -71,6 +75,29 @@ public class DesktopClient private constructor(
     }
 
     /**
+     * Sends command to authenticate user in the system.
+     *
+     * A command `CreateWallet` is used for user creation because in the ShareAware
+     * there is no functional to register or authenticate the user, yet.
+     */
+    public fun authenticateUser() {
+        val userId = UUID.randomUUID().toUserId()
+        val walletId = userId.toWalletId()
+        command(createWallet(walletId))
+        val walletField = WalletCreated.Field.wallet()
+        this.subscribeToEvent(
+            WalletCreated::class.java,
+            EventFilter.eq(walletField, walletId)
+        )
+        {
+            if (!user.isInitialized) {
+                user = it.wallet.owner
+                wallet = it.wallet
+            }
+        }
+    }
+
+    /**
      * Sends a command to the server.
      */
     public fun command(message: CommandMessage) {
@@ -80,14 +107,16 @@ public class DesktopClient private constructor(
     }
 
     /**
-     * Subscribes to the changes in entities of the given type.
+     * Subscribes to the changes in entity of the given type.
      *
      * @param type type of the entity on which changes subscription works
+     * @param id entity ID by which arrived entities will be filtered
      * @param observer callback function that will be triggered when the entity state changes
      */
-    public fun <S : EntityState> subscribeToEntity(type: Class<S>, observer: (S) -> Unit) {
+    public fun <S : EntityState> subscribeToEntity(type: Class<S>, id: Message, observer: (S) -> Unit) {
         clientRequest()
             .subscribeTo(type)
+            .byId(id)
             .observe(observer)
             .post()
     }
@@ -96,11 +125,17 @@ public class DesktopClient private constructor(
      * Subscribes to the events of the provided type.
      *
      * @param type type of the event to subscribe on
+     * @param filter filter by which arrived events of the provided type will be filtered
      * @param observer callback function that will be triggered when the event arrives
      */
-    public fun <E : EventMessage> subscribeToEvent(type: Class<E>, observer: (E) -> Unit) {
+    public fun <E : EventMessage> subscribeToEvent(
+        type: Class<E>,
+        filter: EventFilter,
+        observer: (E) -> Unit
+    ) {
         clientRequest()
             .subscribeToEvent(type)
+            .where(filter)
             .observe(observer)
             .post()
     }
@@ -123,40 +158,16 @@ public class DesktopClient private constructor(
     }
 
     /**
-     * Returns the client request to the server
-     * on behalf of the authenticated user if it exists
-     * otherwise on behalf of the guest.
-     */
-    private fun clientRequest(): ClientRequest {
-        if (user == null) {
-            return client.asGuest()
-        }
-        return client.onBehalfOf(user)
-    }
-
-    /**
-     * Configures the `DesktopClient` with authenticated user,
-     * after it set all actions will occur on behalf of the user.
-     */
-    public fun authenticatedUser(id: UserId) {
-        this.user = id
-        this.wallet = WalletId
-            .newBuilder()
-            .setOwner(id)
-            .vBuild()
-    }
-
-    /**
      * Returns the ID of the authenticated user if it exists.
      *
      * @throws IllegalStateException when the authenticated user is not configured for the client.
      */
-    public fun authenticatedUser(): UserId? {
-        if (user != null) {
+    public fun authenticatedUser(): UserId {
+        if (user.isInitialized) {
             return user
         }
         throw Exceptions.newIllegalStateException(
-            "There is no authenticated user configured for the client."
+            "User has not been authenticated in the system."
         )
     }
 
@@ -166,13 +177,57 @@ public class DesktopClient private constructor(
      * @throws IllegalStateException when the user's wallet does not exist
      * because the authenticated user is not configured to the client.
      */
-    public fun wallet(): WalletId? {
-        if (wallet != null) {
+    public fun wallet(): WalletId {
+        if (wallet.isInitialized) {
             return wallet
         }
         throw Exceptions.newIllegalStateException(
-            "There is no user's wallet ID because of the " +
-                    "authenticated user is not configured for the client."
+            "There is no user's wallet ID because " +
+                    "the user has not been authenticated in the system."
         )
+    }
+
+    /**
+     * Returns the `CreateWallet` command.
+     *
+     * @param wallet the ID of the wallet to create
+     */
+    private fun createWallet(wallet: WalletId): CreateWallet {
+        return CreateWallet
+            .newBuilder()
+            .setWallet(wallet)
+            .vBuild()
+    }
+
+    /**
+     * Converts the `UUID` to the `UserId`.
+     */
+    private fun UUID.toUserId(): UserId {
+        return UserId
+            .newBuilder()
+            .setValue(this.toString())
+            .vBuild()
+    }
+
+    /**
+     * Converts the `UserId` to the `WalletId`.
+     */
+    private fun UserId.toWalletId(): WalletId {
+        return WalletId
+            .newBuilder()
+            .setOwner(this)
+            .vBuild()
+    }
+
+    /**
+     * Returns the client request to the server
+     * on behalf of the authenticated user if it exists
+     * otherwise on behalf of the guest.
+     */
+    private fun clientRequest(): ClientRequest {
+        if (user.isInitialized) {
+            return client.onBehalfOf(user)
+        }
+        return client.asGuest()
     }
 }
