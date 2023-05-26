@@ -41,6 +41,8 @@ import io.spine.examples.shareaware.wallet.event.WalletCreated
 import io.spine.util.Exceptions
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Interacts with the app server via gRPC.
@@ -233,5 +235,37 @@ public class DesktopClient private constructor(
             return client.onBehalfOf(user)
         }
         return client.asGuest()
+    }
+}
+
+/**
+ * Subscription for the `EntityState` changes.
+ *
+ * @param entityType type of the entity on which changes subscription works
+ * @param client client with the help of which the entity will be subscribed
+ * @param id entity ID by which arrived entities will be filtered
+ */
+public class EntitySubscription<S : EntityState> internal constructor(
+    entityType: Class<S>,
+    client: DesktopClient,
+    id: Message
+) {
+    private var state: MutableStateFlow<S?>
+
+    init {
+        val entity = client.readEntity(entityType, id)
+        state = MutableStateFlow(entity)
+        client.subscribeToEntity(entityType, id) { value: S -> setState(value) }
+    }
+
+    private fun setState(value: S) {
+        state.value = value
+    }
+
+    /**
+     * Provides the current state of the subscribed entity.
+     */
+    public fun state(): StateFlow<S?> {
+        return state
     }
 }
