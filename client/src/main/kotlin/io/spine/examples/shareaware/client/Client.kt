@@ -40,6 +40,7 @@ import io.spine.examples.shareaware.wallet.command.CreateWallet
 import io.spine.examples.shareaware.wallet.event.WalletCreated
 import io.spine.util.Exceptions
 import java.util.*
+import java.util.concurrent.CompletableFuture
 
 /**
  * Interacts with the app server via gRPC.
@@ -62,7 +63,7 @@ public class DesktopClient private constructor(
 
     private val client: Client
     private lateinit var user: UserId
-    private lateinit var wallet: WalletId
+    private lateinit var walletId: WalletId
 
     init {
         val channel = ManagedChannelBuilder
@@ -83,17 +84,20 @@ public class DesktopClient private constructor(
     public fun authenticateUser() {
         val userId = UUID.randomUUID().toUserId()
         val walletId = userId.toWalletId()
-        command(createWallet(walletId))
         val walletField = WalletCreated.Field.wallet()
+        val walletCreated: CompletableFuture<WalletCreated> = CompletableFuture()
         this.subscribeToEvent(
             WalletCreated::class.java,
             EventFilter.eq(walletField, walletId)
         )
         {
-            if (!user.isInitialized) {
-                user = it.wallet.owner
-                wallet = it.wallet
-            }
+            walletCreated.complete(it)
+        }
+        command(createWallet(walletId))
+        if (!::user.isInitialized) {
+            val event = walletCreated.get()
+            user = event.wallet.owner
+            this.walletId = event.wallet
         }
     }
 
@@ -163,7 +167,7 @@ public class DesktopClient private constructor(
      * @throws IllegalStateException when the authenticated user is not configured for the client.
      */
     public fun authenticatedUser(): UserId {
-        if (user.isInitialized) {
+        if (::user.isInitialized) {
             return user
         }
         throw Exceptions.newIllegalStateException(
@@ -178,8 +182,8 @@ public class DesktopClient private constructor(
      * because the authenticated user is not configured to the client.
      */
     public fun wallet(): WalletId {
-        if (wallet.isInitialized) {
-            return wallet
+        if (::walletId.isInitialized) {
+            return walletId
         }
         throw Exceptions.newIllegalStateException(
             "There is no user's wallet ID because " +
@@ -225,7 +229,7 @@ public class DesktopClient private constructor(
      * otherwise on behalf of the guest.
      */
     private fun clientRequest(): ClientRequest {
-        if (user.isInitialized) {
+        if (::user.isInitialized) {
             return client.onBehalfOf(user)
         }
         return client.asGuest()
