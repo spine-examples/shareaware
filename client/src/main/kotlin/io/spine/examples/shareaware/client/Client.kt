@@ -104,10 +104,7 @@ public class DesktopClient private constructor(
             .newBuilder()
             .buildWithId(walletId)
         val walletCreated = subscribeToWalletCreated(walletId)
-        client
-            .asGuest()
-            .command(createWallet)
-            .postAndForget()
+        commandAsGuest(createWallet)
         return walletCreated.get()
     }
 
@@ -116,6 +113,16 @@ public class DesktopClient private constructor(
      */
     public fun command(message: CommandMessage) {
         clientRequest()
+            .command(message)
+            .postAndForget()
+    }
+
+    /**
+     * Sends a command to the server as a guest.
+     */
+    private fun commandAsGuest(message: CommandMessage) {
+        client
+            .asGuest()
             .command(message)
             .postAndForget()
     }
