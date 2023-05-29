@@ -38,7 +38,7 @@ import io.spine.core.UserId
 import io.spine.examples.shareaware.WalletId
 import io.spine.examples.shareaware.wallet.command.CreateWallet
 import io.spine.examples.shareaware.wallet.event.WalletCreated
-import io.spine.util.Exceptions
+import io.spine.util.Exceptions.*
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
@@ -78,8 +78,8 @@ public class DesktopClient private constructor(
     /**
      * Sends command to authenticate user in the system.
      *
-     * A command `CreateWallet` is used for user creation because in the ShareAware
-     * there is no functional to register or authenticate the user, yet.
+     * A command `CreateWallet` is used for user creation because ShareAware server
+     * does not provide neither user registration nor authorisation features at the moment.
      */
     public fun authenticateUser() {
         val userId = UUID.randomUUID().toUserId()
@@ -89,10 +89,7 @@ public class DesktopClient private constructor(
         this.subscribeToEvent(
             WalletCreated::class.java,
             EventFilter.eq(walletField, walletId)
-        )
-        {
-            walletCreated.complete(it)
-        }
+        ) { walletCreated.complete(it) }
         command(createWallet(walletId))
         if (!::user.isInitialized) {
             val event = walletCreated.get()
@@ -149,6 +146,7 @@ public class DesktopClient private constructor(
      *
      * @param type type of the entity to be retrieved
      * @param id entity ID by which the query result will be filtered
+     * @return the retrieved entity with provided ID and type if it exists otherwise null
      */
     public fun <E : EntityState> readEntity(type: Class<E>, id: Message): E? {
         val entities = clientRequest()
@@ -164,13 +162,14 @@ public class DesktopClient private constructor(
     /**
      * Returns the ID of the authenticated user if it exists.
      *
-     * @throws IllegalStateException when the authenticated user is not configured for the client.
+     * @return ID of the authenticated user
+     * @throws IllegalStateException when there is no authenticated user known to this client
      */
     public fun authenticatedUser(): UserId {
         if (::user.isInitialized) {
             return user
         }
-        throw Exceptions.newIllegalStateException(
+        throw newIllegalStateException(
             "User has not been authenticated in the system."
         )
     }
@@ -178,14 +177,15 @@ public class DesktopClient private constructor(
     /**
      * Returns the ID of the user's wallet if it exists.
      *
+     * @return ID of the authenticated user wallet
      * @throws IllegalStateException when the user's wallet does not exist
-     * because the authenticated user is not configured to the client.
+     * because there is no authenticated user known to this client
      */
     public fun wallet(): WalletId {
         if (::walletId.isInitialized) {
             return walletId
         }
-        throw Exceptions.newIllegalStateException(
+        throw newIllegalStateException(
             "There is no user's wallet ID because " +
                     "the user has not been authenticated in the system."
         )
@@ -204,7 +204,9 @@ public class DesktopClient private constructor(
     }
 
     /**
-     * Converts the `UUID` to the `UserId`.
+     * Creates a `UserId` taking a generated UUID value as a user identifier.
+     *
+     * @return the ID of a user with the value of generated UUID
      */
     private fun UUID.toUserId(): UserId {
         return UserId
@@ -214,7 +216,9 @@ public class DesktopClient private constructor(
     }
 
     /**
-     * Converts the `UserId` to the `WalletId`.
+     * Creates a `WalletId` taking a `UserId` as a value for a wallet identifier.
+     *
+     * @return the ID of the user's wallet
      */
     private fun UserId.toWalletId(): WalletId {
         return WalletId
