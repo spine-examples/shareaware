@@ -181,8 +181,6 @@ public class DesktopClient private constructor(
 
     /**
      * Returns the ID of the authenticated user.
-     *
-     * @throws IllegalStateException when there is no authenticated user known to this client
      */
     public fun authenticatedUser(): UserId {
         return user
@@ -190,9 +188,6 @@ public class DesktopClient private constructor(
 
     /**
      * Returns the ID of the user's wallet.
-     *
-     * @throws IllegalStateException when the user's wallet does not exist
-     * because there is no authenticated user known to this client
      */
     public fun wallet(): WalletId {
         return walletId
@@ -226,9 +221,7 @@ public class DesktopClient private constructor(
     }
 
     /**
-     * Creates a `UserId` taking a generated UUID value as a user identifier.
-     *
-     * @return the ID of a user with the value of generated UUID
+     * Returns a `UserId` taking a generated UUID value as a user identifier.
      */
     private fun UUID.toUserId(): UserId {
         return UserId
