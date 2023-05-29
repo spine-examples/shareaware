@@ -38,7 +38,6 @@ import io.spine.core.UserId
 import io.spine.examples.shareaware.WalletId
 import io.spine.examples.shareaware.wallet.command.CreateWallet
 import io.spine.examples.shareaware.wallet.event.WalletCreated
-import io.spine.util.Exceptions.*
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
@@ -73,6 +72,7 @@ public class DesktopClient private constructor(
         client = Client
             .usingChannel(channel)
             .build()
+        authenticateUser()
     }
 
     /**
@@ -81,9 +81,11 @@ public class DesktopClient private constructor(
      * A command `CreateWallet` is used for user creation because ShareAware server
      * does not provide neither user registration nor authorisation features at the moment.
      */
-    public fun authenticateUser() {
+    private fun authenticateUser() {
         val userId = UUID.randomUUID().toUserId()
-        val walletId = userId.toWalletId()
+        val walletId = WalletId
+            .newBuilder()
+            .buildWithOwner(userId)
         val walletField = WalletCreated.Field.wallet()
         val walletCreated: CompletableFuture<WalletCreated> = CompletableFuture()
         this.subscribeToEvent(
@@ -91,11 +93,9 @@ public class DesktopClient private constructor(
             EventFilter.eq(walletField, walletId)
         ) { walletCreated.complete(it) }
         command(createWallet(walletId))
-        if (!::user.isInitialized) {
-            val event = walletCreated.get()
-            user = event.wallet.owner
-            this.walletId = event.wallet
-        }
+        val event = walletCreated.get()
+        this.user = event.wallet.owner
+        this.walletId = event.wallet
     }
 
     /**
@@ -146,7 +146,7 @@ public class DesktopClient private constructor(
      *
      * @param type type of the entity to be retrieved
      * @param id entity ID by which the query result will be filtered
-     * @return the retrieved entity with provided ID and type if it exists otherwise null
+     * @return the retrieved entity with provided ID and type if it exists, `null` otherwise.
      */
     public fun <E : EntityState> readEntity(type: Class<E>, id: Message): E? {
         val entities = clientRequest()
@@ -165,12 +165,7 @@ public class DesktopClient private constructor(
      * @throws IllegalStateException when there is no authenticated user known to this client
      */
     public fun authenticatedUser(): UserId {
-        if (::user.isInitialized) {
-            return user
-        }
-        throw newIllegalStateException(
-            "User has not been authenticated in the system."
-        )
+        return user
     }
 
     /**
@@ -180,13 +175,7 @@ public class DesktopClient private constructor(
      * because there is no authenticated user known to this client
      */
     public fun wallet(): WalletId {
-        if (::walletId.isInitialized) {
-            return walletId
-        }
-        throw newIllegalStateException(
-            "There is no user's wallet ID because " +
-                    "the user has not been authenticated in the system."
-        )
+        return walletId
     }
 
     /**
@@ -214,14 +203,11 @@ public class DesktopClient private constructor(
     }
 
     /**
-     * Creates a `WalletId` taking a `UserId` as a value for a wallet identifier.
-     *
-     * @return the ID of the user's wallet
+     * Returns a `WalletId` taking a `UserId` as a value for a wallet identifier.
      */
-    private fun UserId.toWalletId(): WalletId {
-        return WalletId
-            .newBuilder()
-            .setOwner(this)
+    private fun WalletId.Builder.buildWithOwner(id: UserId): WalletId {
+        return this
+            .setOwner(id)
             .vBuild()
     }
 
