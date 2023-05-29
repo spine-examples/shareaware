@@ -49,6 +49,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,24 +58,36 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import io.spine.examples.shareaware.ReplenishmentId
+import io.spine.examples.shareaware.client.DesktopClient
+import io.spine.examples.shareaware.client.EntitySubscription
 import io.spine.examples.shareaware.client.Icons
 import io.spine.examples.shareaware.client.PrimaryButton
 import io.spine.examples.shareaware.client.payment.Dialog
 import io.spine.examples.shareaware.client.payment.WarningTooltip
+import io.spine.examples.shareaware.wallet.Iban
+import io.spine.examples.shareaware.wallet.WalletBalance
+import io.spine.examples.shareaware.wallet.command.ReplenishWallet
+import io.spine.money.Currency
+import io.spine.money.Money
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 /**
  * Provides the wallet page state.
  */
-private object WalletPageModel {
+public class WalletPageModel(private val client: DesktopClient) {
     private var replenishmentState: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private var withdrawalState: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val balanceSubscription: EntitySubscription<WalletBalance> =
+        EntitySubscription(WalletBalance::class.java, client, client.wallet())
 
     /**
      * Sets page to default state.
      */
-    fun toDefaultState() {
+    public fun toDefaultState() {
         replenishmentState.value = false
         withdrawalState.value = false
     }
@@ -84,7 +97,7 @@ private object WalletPageModel {
      *
      * Page state when the user wants to replenish the wallet.
      */
-    fun toReplenishmentState() {
+    public fun toReplenishmentState() {
         replenishmentState.value = true
         withdrawalState.value = false
     }
@@ -94,7 +107,7 @@ private object WalletPageModel {
      *
      * Page state when the user wants to withdraw money from the wallet.
      */
-    fun toWithdrawalState() {
+    public fun toWithdrawalState() {
         withdrawalState.value = true
         replenishmentState.value = false
     }
@@ -102,15 +115,53 @@ private object WalletPageModel {
     /**
      * Returns the "replenishment" state of the page.
      */
-    fun replenishmentState(): StateFlow<Boolean> {
+    public fun replenishmentState(): StateFlow<Boolean> {
         return replenishmentState
     }
 
     /**
      * Returns the "withdrawal" state of the page.
      */
-    fun withdrawalState(): StateFlow<Boolean> {
+    public fun withdrawalState(): StateFlow<Boolean> {
         return withdrawalState
+    }
+
+    public fun balance(): StateFlow<WalletBalance?> {
+        return balanceSubscription.state()
+    }
+
+    public fun replenishWallet(ibanValue: String, moneyAmount: String) {
+        val replenishWallet = replenishCommand(ibanValue, moneyAmount)
+        client.command(replenishWallet)
+    }
+
+    private fun replenishCommand(ibanValue: String, amount: String): ReplenishWallet {
+        return ReplenishWallet
+            .newBuilder()
+            .setReplenishment(ReplenishmentId.generate())
+            .setWallet(client.wallet())
+            .setIban(ibanValue.toIban())
+            .setMoneyAmount(amount.toMoney())
+            .vBuild()
+    }
+
+    private fun String.toMoney(): Money {
+        val parts = this.split('.')
+        val units = parts[0].toLong()
+        val nanos = if (parts.size == 2) parts[1].toInt() else 0
+        return Money
+            .newBuilder()
+            .setCurrency(Currency.USD)
+            .setUnits(units)
+            .setNanos(nanos)
+            .vBuild()
+    }
+
+    private fun String.toIban(): Iban {
+        return Iban
+            .newBuilder()
+            .setValue(this)
+            .vBuild()
     }
 }
 
@@ -119,7 +170,7 @@ private object WalletPageModel {
  * the user's current wallet balance and ways to interact with it.
  */
 @Composable
-public fun WalletPage(): Unit = Column {
+public fun WalletPage(model: WalletPageModel): Unit = Column {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -144,8 +195,9 @@ public fun WalletPage(): Unit = Column {
                     defaultElevation = 20.dp,
                 ),
             ) {
+                val balance by model.balance().collectAsState()
                 Text(
-                    "Balance: $200",
+                    "Balance: $${balance?.toLabel()}",
                     style = MaterialTheme.typography.labelLarge,
                     textAlign = TextAlign.Center,
                     textDecoration = TextDecoration.Underline,
@@ -155,6 +207,7 @@ public fun WalletPage(): Unit = Column {
                 )
             }
         }
+        val scope = rememberCoroutineScope { Dispatchers.Default }
         Row(
             modifier = Modifier
                 .weight(1f)
@@ -166,24 +219,36 @@ public fun WalletPage(): Unit = Column {
                 modifier = Modifier
                     .fillMaxHeight()
             ) {
-                PrimaryButton({ WalletPageModel.toReplenishmentState() }, "Replenish")
+                PrimaryButton({
+                    scope.launch {
+                        model.toReplenishmentState()
+                    }
+                }, "Replenish")
             }
             Column(
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxHeight()
             ) {
-                PrimaryButton({ WalletPageModel.toWithdrawalState() }, "Withdraw")
+                PrimaryButton({
+                    scope.launch {
+                        model.toWithdrawalState()
+                    }
+                }, "Withdraw")
             }
         }
-        val replenishmentState = WalletPageModel
+        val replenishmentState = model
             .replenishmentState()
             .collectAsState()
         var replenishmentIbanValue by remember { mutableStateOf("") }
         var replenishmentAmount by remember { mutableStateOf("") }
         MoneyOperationDialog(
-            onCancel = { WalletPageModel.toDefaultState() },
-            onConfirm = {},
+            onCancel = { model.toDefaultState() },
+            onConfirm = {
+                scope.launch {
+                    model.replenishWallet(replenishmentIbanValue, replenishmentAmount)
+                }
+            },
             isShown = replenishmentState.value,
             title = "Wallet Replenishment",
             ibanValue = replenishmentIbanValue,
@@ -191,13 +256,13 @@ public fun WalletPage(): Unit = Column {
             moneyValue = replenishmentAmount,
             onMoneyChange = { replenishmentAmount = it }
         )
-        val withdrawalState = WalletPageModel
+        val withdrawalState = model
             .withdrawalState()
             .collectAsState()
         var withdrawalIbanValue by remember { mutableStateOf("") }
         var withdrawalAmount by remember { mutableStateOf("") }
         MoneyOperationDialog(
-            onCancel = { WalletPageModel.toDefaultState() },
+            onCancel = { model.toDefaultState() },
             onConfirm = {},
             isShown = withdrawalState.value,
             title = "Wallet Withdrawal",
@@ -207,6 +272,10 @@ public fun WalletPage(): Unit = Column {
             onMoneyChange = { withdrawalAmount = it }
         )
     }
+}
+
+private fun WalletBalance.toLabel(): String {
+    return this.balance.units.toString() + "." + this.balance.nanos.toString()
 }
 
 /**
