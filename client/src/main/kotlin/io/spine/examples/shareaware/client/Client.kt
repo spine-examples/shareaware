@@ -160,9 +160,8 @@ public class DesktopClient private constructor(
     }
 
     /**
-     * Returns the ID of the authenticated user if it exists.
+     * Returns the ID of the authenticated user.
      *
-     * @return ID of the authenticated user
      * @throws IllegalStateException when there is no authenticated user known to this client
      */
     public fun authenticatedUser(): UserId {
@@ -175,9 +174,8 @@ public class DesktopClient private constructor(
     }
 
     /**
-     * Returns the ID of the user's wallet if it exists.
+     * Returns the ID of the user's wallet.
      *
-     * @return ID of the authenticated user wallet
      * @throws IllegalStateException when the user's wallet does not exist
      * because there is no authenticated user known to this client
      */
