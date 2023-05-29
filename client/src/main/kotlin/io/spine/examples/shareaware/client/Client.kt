@@ -82,20 +82,35 @@ public class DesktopClient private constructor(
      * does not provide neither user registration nor authorisation features at the moment.
      */
     private fun authenticateUser() {
-        val userId = UUID.randomUUID().toUserId()
+        val userId = UUID
+            .randomUUID()
+            .toUserId()
+        val walletCreated = createWallet(userId)
+        this.user = userId
+        this.walletId = walletCreated.wallet
+    }
+
+    /**
+     * Sends a command to create a wallet for the user.
+     *
+     * @param user the ID of the user for whom to create the wallet
+     * @return the resulting event of the `CreateWallet` command
+     */
+    private fun createWallet(user: UserId): WalletCreated {
         val walletId = WalletId
             .newBuilder()
-            .buildWithOwner(userId)
+            .buildWithOwner(user)
+        val createWallet = CreateWallet
+            .newBuilder()
+            .buildWithId(walletId)
         val walletField = WalletCreated.Field.wallet()
         val walletCreated: CompletableFuture<WalletCreated> = CompletableFuture()
         this.subscribeToEvent(
             WalletCreated::class.java,
             EventFilter.eq(walletField, walletId)
         ) { walletCreated.complete(it) }
-        command(createWallet(walletId))
-        val event = walletCreated.get()
-        this.user = event.wallet.owner
-        this.walletId = event.wallet
+        command(createWallet)
+        return walletCreated.get()
     }
 
     /**
@@ -181,12 +196,11 @@ public class DesktopClient private constructor(
     /**
      * Returns the `CreateWallet` command.
      *
-     * @param wallet the ID of the wallet to create
+     * @param id the ID of the wallet to create
      */
-    private fun createWallet(wallet: WalletId): CreateWallet {
-        return CreateWallet
-            .newBuilder()
-            .setWallet(wallet)
+    private fun CreateWallet.Builder.buildWithId(id: WalletId): CreateWallet {
+        return this
+            .setWallet(id)
             .vBuild()
     }
 
