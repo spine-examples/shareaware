@@ -103,18 +103,16 @@ public class DesktopClient private constructor(
         val createWallet = CreateWallet
             .newBuilder()
             .buildWithId(walletId)
-        val walletField = WalletCreated.Field.wallet()
-        val walletCreated: CompletableFuture<WalletCreated> = CompletableFuture()
-        this.subscribeToEvent(
-            WalletCreated::class.java,
-            EventFilter.eq(walletField, walletId)
-        ) { walletCreated.complete(it) }
-        command(createWallet)
+        val walletCreated = subscribeToWalletCreated(walletId)
+        client
+            .asGuest()
+            .command(createWallet)
+            .postAndForget()
         return walletCreated.get()
     }
 
     /**
-     * Sends a command to the server.
+     * Sends a command to the server on behalf of the authenticated user.
      */
     public fun command(message: CommandMessage) {
         clientRequest()
@@ -194,6 +192,22 @@ public class DesktopClient private constructor(
     }
 
     /**
+     * Subscribes to the `WalletCreated` event.
+     *
+     * @param id the ID of the wallet that needs to be created
+     * @return the result of the subscription with nested `WalletCreated` event
+     */
+    private fun subscribeToWalletCreated(id: WalletId): CompletableFuture<WalletCreated> {
+        val walletField = WalletCreated.Field.wallet()
+        val walletCreated: CompletableFuture<WalletCreated> = CompletableFuture()
+        this.subscribeToEvent(
+            WalletCreated::class.java,
+            EventFilter.eq(walletField, id)
+        ) { walletCreated.complete(it) }
+        return walletCreated
+    }
+
+    /**
      * Returns the `CreateWallet` command.
      *
      * @param id the ID of the wallet to create
@@ -227,13 +241,9 @@ public class DesktopClient private constructor(
 
     /**
      * Returns the client request to the server
-     * on behalf of the authenticated user if it exists
-     * otherwise on behalf of the guest.
+     * on behalf of the authenticated user.
      */
     private fun clientRequest(): ClientRequest {
-        if (::user.isInitialized) {
-            return client.onBehalfOf(user)
-        }
-        return client.asGuest()
+        return client.onBehalfOf(user)
     }
 }
