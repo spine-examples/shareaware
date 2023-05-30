@@ -76,7 +76,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 /**
- * Provides the wallet page state.
+ * UI model for the `WalletPage`.
  */
 public class WalletPageModel(private val client: DesktopClient) {
     private var replenishmentState: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -126,26 +126,47 @@ public class WalletPageModel(private val client: DesktopClient) {
         return withdrawalState
     }
 
+    /**
+     * Returns the current state of the wallet balance.
+     */
     public fun balance(): StateFlow<WalletBalance?> {
         return balanceSubscription.state()
     }
 
+    /**
+     * Sends the `ReplenishWallet` command to the server.
+     *
+     * @param ibanValue the IBAN of the user
+     * @param moneyAmount the amount of money to replenish the wallet
+     */
     public fun replenishWallet(ibanValue: String, moneyAmount: String) {
-        val replenishWallet = replenishCommand(ibanValue, moneyAmount)
+        val replenishWallet = ReplenishWallet
+            .newBuilder()
+            .buildWith(ibanValue, moneyAmount)
         client.command(replenishWallet)
     }
 
-    private fun replenishCommand(ibanValue: String, amount: String): ReplenishWallet {
-        return ReplenishWallet
-            .newBuilder()
+    /**
+     * Returns the command to replenish the wallet.
+     *
+     * @param ibanValue the IBAN of the user
+     * @param amount the amount of money to replenish the wallet
+     */
+    private fun ReplenishWallet.Builder.buildWith(ibanValue: String, amount: String): ReplenishWallet {
+        return this
             .setReplenishment(ReplenishmentId.generate())
             .setWallet(client.wallet())
-            .setIban(ibanValue.toIban())
-            .setMoneyAmount(amount.toMoney())
+            .setIban(ibanValue.asIban())
+            .setMoneyAmount(amount.asMoney())
             .vBuild()
     }
 
-    private fun String.toMoney(): Money {
+    /**
+     * Returns a new `Money` object using this `String` to construct it.
+     *
+     * This `String` must be written as a number with decimal point.
+     */
+    private fun String.asMoney(): Money {
         val parts = this.split('.')
         val units = parts[0].toLong()
         val nanos = if (parts.size == 2) parts[1].toInt() else 0
@@ -157,7 +178,12 @@ public class WalletPageModel(private val client: DesktopClient) {
             .vBuild()
     }
 
-    private fun String.toIban(): Iban {
+    /**
+     * Returns a new IBAN using this `String` as its value.
+     *
+     * [Rules for making up the IBAN](https://en.wikipedia.org/wiki/International_Bank_Account_Number#:~:text=of%20total%20payments-,Structure,-%5Bedit%5D)
+     */
+    private fun String.asIban(): Iban {
         return Iban
             .newBuilder()
             .setValue(this)
@@ -409,6 +435,6 @@ private fun String.validateIban(): Boolean {
 }
 
 private fun String.validateMoney(): Boolean {
-    val decimalRegex = """^\d+\.?\d*${'$'}""".toRegex()
+    val decimalRegex = """^\d+(\.\d{1,2})?${'$'}""".toRegex()
     return !decimalRegex.containsMatchIn(this)
 }

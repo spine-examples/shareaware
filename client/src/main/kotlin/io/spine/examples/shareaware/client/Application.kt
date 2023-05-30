@@ -53,7 +53,6 @@ public fun application(): Unit = application {
         "localhost",
         ConnectionConstants.DEFAULT_CLIENT_SERVICE_PORT
     )
-    client.authenticateUser()
     val walletPageModel = WalletPageModel(client)
     ShareAwareTheme {
         Window(
