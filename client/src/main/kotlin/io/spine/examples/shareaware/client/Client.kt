@@ -34,6 +34,7 @@ import io.spine.base.EventMessage
 import io.spine.client.Client
 import io.spine.client.ClientRequest
 import io.spine.client.EventFilter
+import io.spine.client.EventFilter.*
 import io.spine.core.UserId
 import io.spine.examples.shareaware.WalletId
 import io.spine.examples.shareaware.wallet.command.CreateWallet
@@ -204,10 +205,14 @@ public class DesktopClient private constructor(
     private fun subscribeToWalletCreated(id: WalletId): CompletableFuture<WalletCreated> {
         val walletField = WalletCreated.Field.wallet()
         val walletCreated: CompletableFuture<WalletCreated> = CompletableFuture()
-        this.subscribeToEvent(
-            WalletCreated::class.java,
-            EventFilter.eq(walletField, id)
-        ) { walletCreated.complete(it) }
+        client
+            .asGuest()
+            .subscribeToEvent(WalletCreated::class.java)
+            .where(eq(walletField, id))
+            .observe { event ->
+                walletCreated.complete(event)
+            }
+            .post()
         return walletCreated
     }
 
