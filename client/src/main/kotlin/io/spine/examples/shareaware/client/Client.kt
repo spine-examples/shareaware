@@ -177,7 +177,7 @@ public class DesktopClient private constructor(
      * @param filter filter by which arrived events of the provided type will be filtered
      * @param observer callback function that will be triggered when the event arrives
      */
-    public fun <E : EventMessage> oneTimeSubscription(
+    public fun <E : EventMessage> subscribeOnce(
         type: Class<E>,
         filter: EventFilter,
         observer: (E) -> Unit

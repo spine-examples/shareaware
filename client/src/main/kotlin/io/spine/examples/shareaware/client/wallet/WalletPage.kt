@@ -58,6 +58,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import io.spine.client.EventFilter.*
 import io.spine.examples.shareaware.ReplenishmentId
 import io.spine.examples.shareaware.client.DesktopClient
 import io.spine.examples.shareaware.client.EntitySubscription
@@ -65,9 +66,11 @@ import io.spine.examples.shareaware.client.Icons
 import io.spine.examples.shareaware.client.PrimaryButton
 import io.spine.examples.shareaware.client.payment.Dialog
 import io.spine.examples.shareaware.client.payment.WarningTooltip
+import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredFromUser
 import io.spine.examples.shareaware.wallet.Iban
 import io.spine.examples.shareaware.wallet.WalletBalance
 import io.spine.examples.shareaware.wallet.command.ReplenishWallet
+import io.spine.examples.shareaware.wallet.event.WalletReplenished
 import io.spine.money.Currency
 import io.spine.money.Money
 import kotlinx.coroutines.Dispatchers
@@ -83,6 +86,8 @@ public class WalletPageModel(private val client: DesktopClient) {
     private var withdrawalState: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val balanceSubscription: EntitySubscription<WalletBalance> =
         EntitySubscription(WalletBalance::class.java, client, client.wallet())
+    private var replenishmentError: MutableStateFlow<Boolean> =
+        MutableStateFlow(false)
 
     /**
      * Sets page to default state.
@@ -134,6 +139,13 @@ public class WalletPageModel(private val client: DesktopClient) {
     }
 
     /**
+     * Returns the current state of the payment error during the replenishment.
+     */
+    public fun replenishmentError(): StateFlow<Boolean> {
+        return replenishmentError
+    }
+
+    /**
      * Sends the `ReplenishWallet` command to the server.
      *
      * @param ibanValue the IBAN of the user
@@ -143,7 +155,41 @@ public class WalletPageModel(private val client: DesktopClient) {
         val replenishWallet = ReplenishWallet
             .newBuilder()
             .buildWith(ibanValue, moneyAmount)
+        subscribeToWalletReplenished(replenishWallet.replenishment)
+        subscribeToReplenishmentError(replenishWallet.replenishment)
         client.command(replenishWallet)
+    }
+
+    /**
+     * Subscribes to the `WalletReplenished` event that signals
+     * about the successful ending of the wallet replenishment process.
+     *
+     * @param id the ID of the replenishment process
+     */
+    private fun subscribeToWalletReplenished(id: ReplenishmentId) {
+        val replenishmentIdField = WalletReplenished.Field.replenishment()
+        client.subscribeOnce(
+            WalletReplenished::class.java,
+            eq(replenishmentIdField, id)
+        ) {
+            replenishmentError.value = false
+        }
+    }
+
+    /**
+     * Subscribes to the `MoneyCannotBeTransferredFromUser` event that signals about
+     * failure in the payment system, during the wallet replenishment process.
+     *
+     * @param id the ID of the replenishment process
+     */
+    private fun subscribeToReplenishmentError(id: ReplenishmentId) {
+        val replenishmentIdField = MoneyCannotBeTransferredFromUser.Field.replenishment()
+        client.subscribeOnce(
+            MoneyCannotBeTransferredFromUser::class.java,
+            eq(replenishmentIdField, id)
+        ) {
+            replenishmentError.value = true
+        }
     }
 
     /**
