@@ -35,12 +35,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -312,6 +314,9 @@ public fun WalletPage(model: WalletPageModel): Unit = Column {
         val replenishmentState = model
             .replenishmentState()
             .collectAsState()
+        val replenishmentError = model
+            .replenishmentError()
+            .collectAsState()
         var replenishmentIbanValue by remember { mutableStateOf("") }
         var replenishmentAmount by remember { mutableStateOf("") }
         MoneyOperationDialog(
@@ -343,6 +348,37 @@ public fun WalletPage(model: WalletPageModel): Unit = Column {
             moneyValue = withdrawalAmount,
             onMoneyChange = { withdrawalAmount = it }
         )
+        Row(
+            Modifier
+                .height(40.dp)
+                .padding(start = 1.dp)
+        ) {
+            PopUpMessage(
+                isShown = replenishmentError.value,
+                label = "An error occurred while the wallet was replenished."
+            )
+        }
+    }
+}
+
+@Composable
+private fun PopUpMessage(
+    isShown: Boolean,
+    label: String
+) {
+    if (isShown) {
+        Snackbar(
+            modifier = Modifier
+                .widthIn(200.dp, 500.dp),
+            containerColor = MaterialTheme.colorScheme.background,
+            contentColor = MaterialTheme.colorScheme.error
+        ) {
+            Text(
+                label,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+        }
     }
 }
 
