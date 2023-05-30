@@ -38,7 +38,6 @@ import io.spine.core.UserId
 import io.spine.examples.shareaware.WalletId
 import io.spine.examples.shareaware.wallet.command.CreateWallet
 import io.spine.examples.shareaware.wallet.event.WalletCreated
-import io.spine.util.Exceptions.*
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -75,6 +74,7 @@ public class DesktopClient private constructor(
         client = Client
             .usingChannel(channel)
             .build()
+        authenticateUser()
     }
 
     /**
@@ -83,28 +83,48 @@ public class DesktopClient private constructor(
      * A command `CreateWallet` is used for user creation because ShareAware server
      * does not provide neither user registration nor authorisation features at the moment.
      */
-    public fun authenticateUser() {
-        val userId = UUID.randomUUID().toUserId()
-        val walletId = userId.toWalletId()
-        val walletField = WalletCreated.Field.wallet()
-        val walletCreated: CompletableFuture<WalletCreated> = CompletableFuture()
-        this.subscribeToEvent(
-            WalletCreated::class.java,
-            EventFilter.eq(walletField, walletId)
-        ) { walletCreated.complete(it) }
-        command(createWallet(walletId))
-        if (!::user.isInitialized) {
-            val event = walletCreated.get()
-            user = event.wallet.owner
-            this.walletId = event.wallet
-        }
+    private fun authenticateUser() {
+        val userId = UUID
+            .randomUUID()
+            .toUserId()
+        val walletCreated = createWallet(userId)
+        this.user = userId
+        this.walletId = walletCreated.wallet
     }
 
     /**
-     * Sends a command to the server.
+     * Sends a command to create a wallet for the user.
+     *
+     * @param user the ID of the user for whom to create the wallet
+     * @return the resulting event of the `CreateWallet` command
+     */
+    private fun createWallet(user: UserId): WalletCreated {
+        val walletId = WalletId
+            .newBuilder()
+            .buildWithOwner(user)
+        val createWallet = CreateWallet
+            .newBuilder()
+            .buildWithId(walletId)
+        val walletCreated = subscribeToWalletCreated(walletId)
+        commandAsGuest(createWallet)
+        return walletCreated.get()
+    }
+
+    /**
+     * Sends a command to the server on behalf of the authenticated user.
      */
     public fun command(message: CommandMessage) {
         clientRequest()
+            .command(message)
+            .postAndForget()
+    }
+
+    /**
+     * Sends a command to the server as a guest.
+     */
+    private fun commandAsGuest(message: CommandMessage) {
+        client
+            .asGuest()
             .command(message)
             .postAndForget()
     }
@@ -148,7 +168,7 @@ public class DesktopClient private constructor(
      *
      * @param type type of the entity to be retrieved
      * @param id entity ID by which the query result will be filtered
-     * @return the retrieved entity with provided ID and type if it exists otherwise null
+     * @return the retrieved entity with provided ID and type if it exists, `null` otherwise.
      */
     public fun <E : EntityState> readEntity(type: Class<E>, id: Message): E? {
         val entities = clientRequest()
@@ -163,50 +183,47 @@ public class DesktopClient private constructor(
 
     /**
      * Returns the ID of the authenticated user.
-     *
-     * @throws IllegalStateException when there is no authenticated user known to this client
      */
     public fun authenticatedUser(): UserId {
-        if (::user.isInitialized) {
-            return user
-        }
-        throw newIllegalStateException(
-            "User has not been authenticated in the system."
-        )
+        return user
     }
 
     /**
      * Returns the ID of the user's wallet.
-     *
-     * @throws IllegalStateException when the user's wallet does not exist
-     * because there is no authenticated user known to this client
      */
     public fun wallet(): WalletId {
-        if (::walletId.isInitialized) {
-            return walletId
-        }
-        throw newIllegalStateException(
-            "There is no user's wallet ID because " +
-                    "the user has not been authenticated in the system."
-        )
+        return walletId
+    }
+
+    /**
+     * Subscribes to the `WalletCreated` event.
+     *
+     * @param id the ID of the wallet that needs to be created
+     * @return the result of the subscription with nested `WalletCreated` event
+     */
+    private fun subscribeToWalletCreated(id: WalletId): CompletableFuture<WalletCreated> {
+        val walletField = WalletCreated.Field.wallet()
+        val walletCreated: CompletableFuture<WalletCreated> = CompletableFuture()
+        this.subscribeToEvent(
+            WalletCreated::class.java,
+            EventFilter.eq(walletField, id)
+        ) { walletCreated.complete(it) }
+        return walletCreated
     }
 
     /**
      * Returns the `CreateWallet` command.
      *
-     * @param wallet the ID of the wallet to create
+     * @param id the ID of the wallet to create
      */
-    private fun createWallet(wallet: WalletId): CreateWallet {
-        return CreateWallet
-            .newBuilder()
-            .setWallet(wallet)
+    private fun CreateWallet.Builder.buildWithId(id: WalletId): CreateWallet {
+        return this
+            .setWallet(id)
             .vBuild()
     }
 
     /**
-     * Creates a `UserId` taking a generated UUID value as a user identifier.
-     *
-     * @return the ID of a user with the value of generated UUID
+     * Returns a `UserId` taking a generated UUID value as a user identifier.
      */
     private fun UUID.toUserId(): UserId {
         return UserId
@@ -216,27 +233,20 @@ public class DesktopClient private constructor(
     }
 
     /**
-     * Creates a `WalletId` taking a `UserId` as a value for a wallet identifier.
-     *
-     * @return the ID of the user's wallet
+     * Returns a `WalletId` taking a `UserId` as a value for a wallet identifier.
      */
-    private fun UserId.toWalletId(): WalletId {
-        return WalletId
-            .newBuilder()
-            .setOwner(this)
+    private fun WalletId.Builder.buildWithOwner(id: UserId): WalletId {
+        return this
+            .setOwner(id)
             .vBuild()
     }
 
     /**
      * Returns the client request to the server
-     * on behalf of the authenticated user if it exists
-     * otherwise on behalf of the guest.
+     * on behalf of the authenticated user.
      */
     private fun clientRequest(): ClientRequest {
-        if (::user.isInitialized) {
-            return client.onBehalfOf(user)
-        }
-        return client.asGuest()
+        return client.onBehalfOf(user)
     }
 }
 
