@@ -34,7 +34,8 @@ import io.spine.base.EventMessage
 import io.spine.client.Client
 import io.spine.client.ClientRequest
 import io.spine.client.EventFilter
-import io.spine.client.EventFilter.*
+import io.spine.client.EventFilter.eq
+import io.spine.client.Subscription
 import io.spine.core.UserId
 import io.spine.examples.shareaware.WalletId
 import io.spine.examples.shareaware.wallet.command.CreateWallet
@@ -151,17 +152,44 @@ public class DesktopClient private constructor(
      * @param type type of the event to subscribe on
      * @param filter filter by which arrived events of the provided type will be filtered
      * @param observer callback function that will be triggered when the event arrives
+     * @return the subscription on the event for a possibility to cancel it
      */
     public fun <E : EventMessage> subscribeToEvent(
         type: Class<E>,
         filter: EventFilter,
         observer: (E) -> Unit
-    ) {
-        clientRequest()
+    ): Subscription {
+        val subscription = clientRequest()
             .subscribeToEvent(type)
             .where(filter)
-            .observe(observer)
+            .observe { event ->
+                observer(event)
+            }
             .post()
+        return subscription
+    }
+
+    /**
+     * Subscribes to the event of the provided type
+     * and cancels itself after the observer has worked.
+     *
+     * @param type type of the event to subscribe on
+     * @param filter filter by which arrived events of the provided type will be filtered
+     * @param observer callback function that will be triggered when the event arrives
+     */
+    public fun <E : EventMessage> oneTimeSubscription(
+        type: Class<E>,
+        filter: EventFilter,
+        observer: (E) -> Unit
+    ) {
+        var subscription: Subscription? = null
+        subscription = subscribeToEvent(
+            type,
+            filter
+        ) {
+            observer(it)
+            client.subscriptions().cancel(subscription!!)
+        }
     }
 
     /**
