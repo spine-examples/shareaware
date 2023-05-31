@@ -149,7 +149,7 @@ public class WalletPageModel(private val client: DesktopClient) {
     }
 
     /**
-     * Cancels the state of the payment error during the replenishment.
+     * Cancels the state of the payment error occurred by the replenishment process.
      */
     public fun cancelReplenishmentError() {
         replenishmentError.value = false
