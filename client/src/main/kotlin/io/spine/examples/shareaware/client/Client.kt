@@ -188,7 +188,8 @@ public class DesktopClient private constructor(
             filter
         ) {
             observer(it)
-            client.subscriptions().cancel(subscription!!)
+            client.subscriptions()
+                .cancel(subscription!!)
         }
     }
 
@@ -233,12 +234,15 @@ public class DesktopClient private constructor(
     private fun subscribeToWalletCreated(id: WalletId): CompletableFuture<WalletCreated> {
         val walletField = WalletCreated.Field.wallet()
         val walletCreated: CompletableFuture<WalletCreated> = CompletableFuture()
-        client
+        var subscription: Subscription? = null
+        subscription = client
             .asGuest()
             .subscribeToEvent(WalletCreated::class.java)
             .where(eq(walletField, id))
             .observe { event ->
                 walletCreated.complete(event)
+                client.subscriptions()
+                    .cancel(subscription!!)
             }
             .post()
         return walletCreated
