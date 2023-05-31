@@ -261,117 +261,164 @@ public fun WalletPage(model: WalletPageModel): Unit = Column {
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            ElevatedCard (
-                modifier = Modifier
-                    .align(Alignment.Bottom)
-                    .width(350.dp)
-                    .height(100.dp)
-                    .padding(vertical = 15.dp, horizontal = 20.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                ),
-                shape = CircleShape,
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 20.dp,
-                ),
-            ) {
-                val balance by model.balance().collectAsState()
-                Text(
-                    "Balance: $${balance?.asReadableString()}",
-                    style = MaterialTheme.typography.labelLarge,
-                    textAlign = TextAlign.Center,
-                    textDecoration = TextDecoration.Underline,
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .fillMaxWidth()
-                )
-            }
-        }
-        val scope = rememberCoroutineScope { Dispatchers.Default }
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.Bottom
+        ) { BalanceCard(model) }
         Row(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxHeight()
-            ) {
-                PrimaryButton({
-                    scope.launch {
-                        model.toReplenishmentState()
-                    }
-                }, "Replenish")
-            }
-            Column(
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxHeight()
-            ) {
-                PrimaryButton({
-                    scope.launch {
-                        model.toWithdrawalState()
-                    }
-                }, "Withdraw")
-            }
+            ReplenishmentButton(model)
+            WithdrawalButton(model)
         }
-        val replenishmentState = model
-            .replenishmentState()
-            .collectAsState()
-        val replenishmentError = model
-            .replenishmentError()
-            .collectAsState()
-        var replenishmentIbanValue by remember { mutableStateOf("") }
-        var replenishmentAmount by remember { mutableStateOf("") }
-        MoneyOperationDialog(
-            onCancel = { model.toDefaultState() },
-            onConfirm = {
-                scope.launch {
-                    model.replenishWallet(replenishmentIbanValue, replenishmentAmount)
-                }
-            },
-            isShown = replenishmentState.value,
-            title = "Wallet Replenishment",
-            ibanValue = replenishmentIbanValue,
-            onIbanChange = { replenishmentIbanValue = it },
-            moneyValue = replenishmentAmount,
-            onMoneyChange = { replenishmentAmount = it }
-        )
-        val withdrawalState = model
-            .withdrawalState()
-            .collectAsState()
-        var withdrawalIbanValue by remember { mutableStateOf("") }
-        var withdrawalAmount by remember { mutableStateOf("") }
-        MoneyOperationDialog(
-            onCancel = { model.toDefaultState() },
-            onConfirm = {},
-            isShown = withdrawalState.value,
-            title = "Wallet Withdrawal",
-            ibanValue = withdrawalIbanValue,
-            onIbanChange = { withdrawalIbanValue = it },
-            moneyValue = withdrawalAmount,
-            onMoneyChange = { withdrawalAmount = it }
-        )
         Row(
             Modifier
                 .height(40.dp)
                 .padding(start = 1.dp)
-        ) {
-            PopUpMessage(
-                isShown = replenishmentError.value,
-                dismissAction = {
-                    scope.launch {
-                        model.cancelReplenishmentError()
-                    }
-                },
-                label = "An error occurred while the wallet was replenished."
-            )
-        }
+        ) { WalletReplenishmentError(model) }
+        WalletReplenishmentWindow(model)
+        WalletWithdrawalWindow(model)
     }
+}
+
+/**
+ * The `Card` component, which contains the wallet balance.
+ */
+@Composable
+private fun BalanceCard(model: WalletPageModel) {
+    ElevatedCard (
+        modifier = Modifier
+            .width(350.dp)
+            .height(100.dp)
+            .padding(vertical = 15.dp, horizontal = 20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+        ),
+        shape = CircleShape,
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 20.dp,
+        ),
+    ) {
+        val balance by model.balance().collectAsState()
+        Text(
+            "Balance: $${balance?.asReadableString()}",
+            style = MaterialTheme.typography.labelLarge,
+            textAlign = TextAlign.Center,
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxWidth()
+        )
+    }
+}
+
+/**
+ * The `Button` component that calls the wallet replenishment process
+ */
+@Composable
+private fun ReplenishmentButton(model: WalletPageModel) {
+    val scope = rememberCoroutineScope { Dispatchers.Default }
+    Column(
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxHeight()
+    ) {
+        PrimaryButton({
+            scope.launch {
+                model.toReplenishmentState()
+            }
+        }, "Replenish")
+    }
+}
+
+/**
+ * The `Button` component that calls the money withdrawal process.
+ */
+@Composable
+private fun WithdrawalButton(model: WalletPageModel) {
+    val scope = rememberCoroutineScope { Dispatchers.Default }
+    Column(
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxHeight()
+    ) {
+        PrimaryButton({
+            scope.launch {
+                model.toWithdrawalState()
+            }
+        }, "Withdraw")
+    }
+}
+
+/**
+ * Dialog window for wallet replenishment process.
+ */
+@Composable
+private fun WalletReplenishmentWindow(model: WalletPageModel) {
+    val scope = rememberCoroutineScope { Dispatchers.Default }
+    val replenishmentState = model
+        .replenishmentState()
+        .collectAsState()
+    var replenishmentIbanValue by remember { mutableStateOf("") }
+    var replenishmentAmount by remember { mutableStateOf("") }
+    MoneyOperationDialog(
+        onCancel = { model.toDefaultState() },
+        onConfirm = {
+            scope.launch {
+                model.replenishWallet(replenishmentIbanValue, replenishmentAmount)
+            }
+        },
+        isShown = replenishmentState.value,
+        title = "Wallet Replenishment",
+        ibanValue = replenishmentIbanValue,
+        onIbanChange = { replenishmentIbanValue = it },
+        moneyValue = replenishmentAmount,
+        onMoneyChange = { replenishmentAmount = it }
+    )
+}
+
+/**
+ * Dialog window for money withdrawal process.
+ */
+@Composable
+public fun WalletWithdrawalWindow(model: WalletPageModel) {
+    val withdrawalState = model
+        .withdrawalState()
+        .collectAsState()
+    var withdrawalIbanValue by remember { mutableStateOf("") }
+    var withdrawalAmount by remember { mutableStateOf("") }
+    MoneyOperationDialog(
+        onCancel = { model.toDefaultState() },
+        onConfirm = {},
+        isShown = withdrawalState.value,
+        title = "Wallet Withdrawal",
+        ibanValue = withdrawalIbanValue,
+        onIbanChange = { withdrawalIbanValue = it },
+        moneyValue = withdrawalAmount,
+        onMoneyChange = { withdrawalAmount = it }
+    )
+}
+
+/**
+ * Pop-up message with error occurred by the replenishment process.
+ */
+@Composable
+public fun WalletReplenishmentError(model: WalletPageModel) {
+    val scope = rememberCoroutineScope { Dispatchers.Default }
+    val replenishmentError = model
+        .replenishmentError()
+        .collectAsState()
+    PopUpMessage(
+        isShown = replenishmentError.value,
+        dismissAction = {
+            scope.launch {
+                model.cancelReplenishmentError()
+            }
+        },
+        label = "An error occurred while the wallet was replenished."
+    )
 }
 
 /**
