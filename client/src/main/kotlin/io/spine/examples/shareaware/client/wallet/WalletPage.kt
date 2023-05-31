@@ -279,7 +279,7 @@ public fun WalletPage(model: WalletPageModel): Unit = Column {
             ) {
                 val balance by model.balance().collectAsState()
                 Text(
-                    "Balance: $${balance?.toLabel()}",
+                    "Balance: $${balance?.asReadableString()}",
                     style = MaterialTheme.typography.labelLarge,
                     textAlign = TextAlign.Center,
                     textDecoration = TextDecoration.Underline,
@@ -409,15 +409,14 @@ private fun PopUpMessage(
                     )
                 }
             }
-        ) {
-            Text(
-                label
-            )
-        }
+        ) { Text(label) }
     }
 }
 
-private fun WalletBalance.toLabel(): String {
+/**
+ * Returns the readable `String` constructed from the `WalletBalance` projection.
+ */
+private fun WalletBalance.asReadableString(): String {
     return this.balance.units.toString() + "." + this.balance.nanos.toString()
 }
 
