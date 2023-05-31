@@ -315,7 +315,7 @@ private fun BalanceCard(model: WalletPageModel) {
 }
 
 /**
- * The `Button` component that calls the wallet replenishment process
+ * The `Button` component that calls the wallet replenishment process.
  */
 @Composable
 private fun ReplenishmentButton(model: WalletPageModel) {
@@ -383,7 +383,7 @@ private fun WalletReplenishmentWindow(model: WalletPageModel) {
  * Dialog window for money withdrawal process.
  */
 @Composable
-public fun WalletWithdrawalWindow(model: WalletPageModel) {
+private fun WalletWithdrawalWindow(model: WalletPageModel) {
     val withdrawalState = model
         .withdrawalState()
         .collectAsState()
@@ -405,7 +405,7 @@ public fun WalletWithdrawalWindow(model: WalletPageModel) {
  * Pop-up message with error occurred by the replenishment process.
  */
 @Composable
-public fun WalletReplenishmentError(model: WalletPageModel) {
+private fun WalletReplenishmentError(model: WalletPageModel) {
     val scope = rememberCoroutineScope { Dispatchers.Default }
     val replenishmentError = model
         .replenishmentError()
