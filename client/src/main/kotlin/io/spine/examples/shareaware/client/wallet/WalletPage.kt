@@ -36,6 +36,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -145,6 +146,13 @@ public class WalletPageModel(private val client: DesktopClient) {
      */
     public fun replenishmentError(): StateFlow<Boolean> {
         return replenishmentError
+    }
+
+    /**
+     * Cancels the state of the payment error during the replenishment.
+     */
+    public fun cancelReplenishmentError() {
+        replenishmentError.value = false
     }
 
     /**
@@ -355,28 +363,55 @@ public fun WalletPage(model: WalletPageModel): Unit = Column {
         ) {
             PopUpMessage(
                 isShown = replenishmentError.value,
+                dismissAction = {
+                    scope.launch {
+                        model.cancelReplenishmentError()
+                    }
+                },
                 label = "An error occurred while the wallet was replenished."
             )
         }
     }
 }
 
+/**
+ * Pop-up message component.
+ *
+ * @param isShown is a component shown to the user
+ * @param dismissAction callback that will be triggered when the user clicks on `Cancel` button
+ * @param label the message to be shown to the user
+ */
 @Composable
 private fun PopUpMessage(
     isShown: Boolean,
+    dismissAction: () -> Unit,
     label: String
 ) {
     if (isShown) {
         Snackbar(
             modifier = Modifier
-                .widthIn(200.dp, 500.dp),
+                .widthIn(200.dp, 550.dp)
+                .wrapContentWidth(),
             containerColor = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.error
+            contentColor = MaterialTheme.colorScheme.error,
+            dismissAction = {
+                Row (
+                    modifier = Modifier
+                        .padding(end = 10.dp)
+                ) {
+                    PrimaryButton(
+                        onClick = dismissAction,
+                        label = "Cancel",
+                        modifier = Modifier
+                            .width(110.dp)
+                            .height(30.dp),
+                        labelStyle = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
         ) {
             Text(
-                label,
-                modifier = Modifier
-                    .fillMaxWidth()
+                label
             )
         }
     }
