@@ -142,7 +142,7 @@ public class WalletPageModel(private val client: DesktopClient) {
     }
 
     /**
-     * Returns the current state of the payment error during the replenishment.
+     * Returns the current state of the payment error occurred by the replenishment process.
      */
     public fun replenishmentError(): StateFlow<Boolean> {
         return replenishmentError
