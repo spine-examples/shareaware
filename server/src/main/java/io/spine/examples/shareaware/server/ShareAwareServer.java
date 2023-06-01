@@ -26,7 +26,7 @@
 
 package io.spine.examples.shareaware.server;
 
-import io.spine.base.Production;
+import io.spine.environment.DefaultMode;
 import io.spine.server.Server;
 import io.spine.server.ServerEnvironment;
 import io.spine.server.delivery.Delivery;
@@ -76,7 +76,7 @@ public class ShareAwareServer {
 
     private static void configureEnvironment() {
         ServerEnvironment
-                .when(Production.class)
+                .when(DefaultMode.class)
                 .use(InMemoryStorageFactory.newInstance())
                 .use(Delivery.localAsync())
                 .use(InMemoryTransportFactory.newInstance());
