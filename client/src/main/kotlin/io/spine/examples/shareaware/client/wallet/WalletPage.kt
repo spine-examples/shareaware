@@ -63,6 +63,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import io.spine.client.EventFilter.*
 import io.spine.examples.shareaware.ReplenishmentId
+import io.spine.examples.shareaware.WithdrawalId
 import io.spine.examples.shareaware.client.DesktopClient
 import io.spine.examples.shareaware.client.EntitySubscription
 import io.spine.examples.shareaware.client.Icons
@@ -73,6 +74,7 @@ import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCan
 import io.spine.examples.shareaware.wallet.Iban
 import io.spine.examples.shareaware.wallet.WalletBalance
 import io.spine.examples.shareaware.wallet.command.ReplenishWallet
+import io.spine.examples.shareaware.wallet.command.WithdrawMoney
 import io.spine.examples.shareaware.wallet.event.WalletReplenished
 import io.spine.money.Currency
 import io.spine.money.Money
@@ -171,6 +173,19 @@ public class WalletPageModel(private val client: DesktopClient) {
     }
 
     /**
+     * Sends the `WithdrawMoney` command to the server.
+     *
+     * @param ibanValue the IBAN of the user
+     * @param moneyAmount how much to withdraw from the wallet
+     */
+    public fun withdrawMoney(ibanValue: String, moneyAmount: String) {
+        val withdrawMoney = WithdrawMoney
+            .newBuilder()
+            .buildWith(ibanValue, moneyAmount)
+        client.command(withdrawMoney)
+    }
+
+    /**
      * Subscribes to the `WalletReplenished` event that signals
      * about the successful ending of the wallet replenishment process.
      *
@@ -214,6 +229,21 @@ public class WalletPageModel(private val client: DesktopClient) {
             .setWallet(client.wallet())
             .setIban(ibanValue.asIban())
             .setMoneyAmount(amount.asMoney())
+            .vBuild()
+    }
+
+    /**
+     * Returns the command to withdraw money from the wallet.
+     *
+     * @param ibanValue the IBAN of the user
+     * @param amount how much to withdraw from the wallet
+     */
+    private fun WithdrawMoney.Builder.buildWith(ibanValue: String, amount: String): WithdrawMoney {
+        return this
+            .setWithdrawalProcess(WithdrawalId.generate())
+            .setWallet(client.wallet())
+            .setRecipient(ibanValue.asIban())
+            .setAmount(amount.asMoney())
             .vBuild()
     }
 
@@ -384,6 +414,7 @@ private fun WalletReplenishmentWindow(model: WalletPageModel) {
  */
 @Composable
 private fun WalletWithdrawalWindow(model: WalletPageModel) {
+    val scope = rememberCoroutineScope { Dispatchers.Default }
     val withdrawalState = model
         .withdrawalState()
         .collectAsState()
@@ -391,7 +422,11 @@ private fun WalletWithdrawalWindow(model: WalletPageModel) {
     var withdrawalAmount by remember { mutableStateOf("") }
     MoneyOperationDialog(
         onCancel = { model.toDefaultState() },
-        onConfirm = {},
+        onConfirm = {
+            scope.launch {
+                model.withdrawMoney(withdrawalIbanValue, withdrawalAmount)
+            }
+        },
         isShown = withdrawalState.value,
         title = "Wallet Withdrawal",
         ibanValue = withdrawalIbanValue,
