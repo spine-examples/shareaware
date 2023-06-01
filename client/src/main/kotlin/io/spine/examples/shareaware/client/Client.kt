@@ -304,11 +304,9 @@ public class EntitySubscription<S : EntityState> internal constructor(
     init {
         val entity = client.readEntity(entityType, id)
         state = MutableStateFlow(entity)
-        client.subscribeToEntity(entityType, id) { value: S -> setState(value) }
-    }
-
-    private fun setState(value: S) {
-        state.value = value
+        client.subscribeToEntity(entityType, id) { value ->
+            state.value = value
+        }
     }
 
     /**
