@@ -237,7 +237,7 @@ public class WalletPageModel(private val client: DesktopClient) {
     /**
      * Returns a new IBAN using this `String` as its value.
      *
-     * [Rules for making up the IBAN](https://en.wikipedia.org/wiki/International_Bank_Account_Number#:~:text=of%20total%20payments-,Structure,-%5Bedit%5D)
+     * [Rules for making up the IBAN](https://en.wikipedia.org/wiki/International_Bank_Account_Number#:~:text=of%20total%20payments-,Structure,-%5Bedit%5D).
      */
     private fun String.asIban(): Iban {
         return Iban
