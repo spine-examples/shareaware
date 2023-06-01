@@ -171,8 +171,7 @@ public class WalletPageModel(private val client: DesktopClient) {
     }
 
     /**
-     * Subscribes to the `WalletReplenished` event that signals
-     * about the successful ending of the wallet replenishment process.
+     * Subscribes to the `WalletReplenished` event.
      *
      * @param id the ID of the replenishment process
      */
