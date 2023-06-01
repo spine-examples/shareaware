@@ -36,7 +36,7 @@ repositories {
 
 val errorProneVersion = "2.0.2"
 
-val spineVersion = "1.8.2"
+val spineVersion = "1.9.0"
 
 dependencies {
     implementation("net.ltgt.gradle:gradle-errorprone-plugin:${errorProneVersion}")

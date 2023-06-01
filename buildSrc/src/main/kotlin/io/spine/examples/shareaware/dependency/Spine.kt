@@ -31,7 +31,7 @@ import io.spine.examples.shareaware.dependency.ErrorProne.GradlePlugin.id
 object Spine {
 
     // Keep in sync with in sync with `buildSrc/build.gradle.kts`.
-    const val version = "1.8.2"
+    const val version = "1.9.0"
 
     // https://github.com/SpineEventEngine/core-java
     object Server {
