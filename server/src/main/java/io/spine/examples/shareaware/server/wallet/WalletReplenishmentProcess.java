@@ -85,7 +85,7 @@ final class WalletReplenishmentProcess
     RechargeBalance on(MoneyTransferredFromUser e) {
         return RechargeBalance
                 .newBuilder()
-                .setWallet(state().getWallet())
+                .setWallet(builder().getWallet())
                 .setOperation(operationId())
                 .setMoneyAmount(e.getAmount())
                 .vBuild();
@@ -99,9 +99,9 @@ final class WalletReplenishmentProcess
         setArchived(true);
         return WalletReplenished
                 .newBuilder()
-                .setReplenishment(state().getId())
+                .setReplenishment(builder().getId())
                 .setWallet(e.getWallet())
-                .setMoneyAmount(state().getAmount())
+                .setMoneyAmount(builder().getAmount())
                 .vBuild();
     }
 
@@ -121,7 +121,7 @@ final class WalletReplenishmentProcess
     private ReplenishmentOperationId operationId() {
         return ReplenishmentOperationId
                 .newBuilder()
-                .setReplenishment(state().getId())
+                .setReplenishment(builder().getId())
                 .vBuild();
     }
 }

@@ -85,7 +85,7 @@ public final class InvestmentAggregate
 
     @Apply
     private void event(SharesReserved e) {
-        var newAvailableShares = state().getSharesAvailable() - e.getQuantity();
+        var newAvailableShares = builder().getSharesAvailable() - e.getQuantity();
         var saleId = e.getProcess()
                       .getUuid();
         builder()
@@ -122,8 +122,8 @@ public final class InvestmentAggregate
     private void event(SharesReservationCanceled e) {
         var saleId = e.getProcess()
                       .getUuid();
-        var reservedSharesAmount = state().getSharesReservedOrThrow(saleId);
-        var restoredAvailableShares = state().getSharesAvailable() + reservedSharesAmount;
+        var reservedSharesAmount = builder().getSharesReservedOrThrow(saleId);
+        var restoredAvailableShares = builder().getSharesAvailable() + reservedSharesAmount;
         builder()
                 .setSharesAvailable(restoredAvailableShares)
                 .removeSharesReserved(saleId);

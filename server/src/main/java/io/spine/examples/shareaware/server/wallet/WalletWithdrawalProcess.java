@@ -85,7 +85,7 @@ final class WalletWithdrawalProcess
                 .setGateway(PaymentGatewayProcess.ID)
                 .setWithdrawalProcess(e.withdrawalProcess())
                 .setSender(WalletReplenishmentProcess.shareAwareIban)
-                .setRecipient(state().getRecipient())
+                .setRecipient(builder().getRecipient())
                 .setAmount(e.getAmount())
                 .vBuild();
     }
@@ -98,7 +98,7 @@ final class WalletWithdrawalProcess
     DebitReservedMoney on(MoneyTransferredToUser e) {
         return DebitReservedMoney
                 .newBuilder()
-                .setWallet(state().getWallet())
+                .setWallet(builder().getWallet())
                 .setOperation(operationId(e.getWithdrawalProcess()))
                 .vBuild();
     }
@@ -112,7 +112,7 @@ final class WalletWithdrawalProcess
         return CancelMoneyReservation
                 .newBuilder()
                 .setOperation(operationId(e.getWithdrawalProcess()))
-                .setWallet(state().getWallet())
+                .setWallet(builder().getWallet())
                 .vBuild();
     }
 

@@ -90,7 +90,7 @@ final class SharesPurchaseProcess
         return SharesPurchaseFailed
                 .newBuilder()
                 .setPurchaseProcess(r.purchaseProcess())
-                .setPurchaser(state().getPurchaser())
+                .setPurchaser(builder().getPurchaser())
                 .vBuild();
     }
 
@@ -103,8 +103,8 @@ final class SharesPurchaseProcess
         return ObtainShares
                 .newBuilder()
                 .setPurchase(e.purchaseProcess())
-                .setShare(state().getShare())
-                .setQuantity(state().getQuantity())
+                .setShare(builder().getShare())
+                .setQuantity(builder().getQuantity())
                 .setMarket(MarketProcess.ID)
                 .vBuild();
     }
@@ -144,8 +144,8 @@ final class SharesPurchaseProcess
         setArchived(true);
         return SharesPurchaseFailed
                 .newBuilder()
-                .setPurchaseProcess(state().getId())
-                .setPurchaser(state().getPurchaser())
+                .setPurchaseProcess(builder().getId())
+                .setPurchaser(builder().getPurchaser())
                 .vBuild();
     }
 
@@ -171,25 +171,25 @@ final class SharesPurchaseProcess
         setArchived(true);
         return SharesPurchased
                 .newBuilder()
-                .setPurchaseProcess(state().getId())
-                .setPurchaser(state().getPurchaser())
-                .setShare(state().getShare())
-                .setSharesAvailable(state().getSharesAvailable())
+                .setPurchaseProcess(builder().getId())
+                .setPurchaser(builder().getPurchaser())
+                .setShare(builder().getShare())
+                .setSharesAvailable(builder().getSharesAvailable())
                 .vBuild();
     }
 
     private InvestmentId investmentId() {
         return InvestmentId
                 .newBuilder()
-                .setShare(state().getShare())
-                .setOwner(state().getPurchaser())
+                .setShare(builder().getShare())
+                .setOwner(builder().getPurchaser())
                 .vBuild();
     }
 
     private WalletId walletId() {
         return WalletId
                 .newBuilder()
-                .setOwner(state().getPurchaser())
+                .setOwner(builder().getPurchaser())
                 .vBuild();
     }
 
@@ -203,7 +203,7 @@ final class SharesPurchaseProcess
     private WithdrawalOperationId operationId() {
         return WithdrawalOperationId
                 .newBuilder()
-                .setPurchase(state().getId())
+                .setPurchase(builder().getId())
                 .vBuild();
     }
 
