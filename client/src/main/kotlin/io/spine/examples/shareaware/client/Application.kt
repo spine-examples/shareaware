@@ -39,7 +39,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
+import io.spine.client.ConnectionConstants.*
 import io.spine.examples.shareaware.client.wallet.WalletPage
+import io.spine.examples.shareaware.client.wallet.WalletPageModel
 
 /**
  * The root component of the application.
@@ -47,34 +49,37 @@ import io.spine.examples.shareaware.client.wallet.WalletPage
  * Responsible for navigation and composition of pages.
  */
 public fun application(): Unit = application {
-    ShareAwareTheme(
-        content = {
-            Window(
-                onCloseRequest = ::exitApplication,
-                state = WindowState(width = 1200.dp, height = 600.dp),
-                title = "ShareAware"
+    val client = DesktopClient.init(
+        "localhost",
+        DEFAULT_CLIENT_SERVICE_PORT
+    )
+    val walletPageModel = WalletPageModel(client)
+    ShareAwareTheme {
+        Window(
+            onCloseRequest = ::exitApplication,
+            state = WindowState(width = 1200.dp, height = 600.dp),
+            title = "ShareAware"
+        ) {
+            val currentPage = Page.current.collectAsState()
+            Row(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surface)
+                    .fillMaxSize()
             ) {
-                val currentPage = Page.current.collectAsState()
-                Row(
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.surface)
-                        .fillMaxSize()
+                Column(
+                    modifier = Modifier.width(150.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.width(150.dp)
-                    ) {
-                        Logo()
-                        MenuLayout()
-                    }
-                    when (currentPage.value) {
-                        Page.HOME -> Text("HOME")
-                        Page.WALLET -> WalletPage()
-                        Page.MARKET -> Text("MARKET")
-                        Page.INVESTMENTS -> Text("INVESTMENTS")
-                        Page.WATCHLISTS -> Text("WATCHLISTS")
-                    }
+                    Logo()
+                    MenuLayout()
+                }
+                when (currentPage.value) {
+                    Page.HOME -> Text("HOME")
+                    Page.WALLET -> WalletPage(walletPageModel)
+                    Page.MARKET -> Text("MARKET")
+                    Page.INVESTMENTS -> Text("INVESTMENTS")
+                    Page.WATCHLISTS -> Text("WATCHLISTS")
                 }
             }
         }
-    )
+    }
 }

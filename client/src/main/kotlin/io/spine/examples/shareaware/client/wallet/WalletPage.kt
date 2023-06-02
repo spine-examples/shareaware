@@ -35,12 +35,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -49,6 +52,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,24 +61,45 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import io.spine.client.EventFilter.*
+import io.spine.examples.shareaware.ReplenishmentId
+import io.spine.examples.shareaware.client.DesktopClient
+import io.spine.examples.shareaware.client.EntitySubscription
 import io.spine.examples.shareaware.client.Icons
 import io.spine.examples.shareaware.client.PrimaryButton
 import io.spine.examples.shareaware.client.payment.Dialog
 import io.spine.examples.shareaware.client.payment.WarningTooltip
+import io.spine.examples.shareaware.client.wallet.StringExtensions.asIban
+import io.spine.examples.shareaware.client.wallet.StringExtensions.asUsd
+import io.spine.examples.shareaware.client.wallet.StringExtensions.validateIban
+import io.spine.examples.shareaware.client.wallet.StringExtensions.validateMoney
+import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredFromUser
+import io.spine.examples.shareaware.wallet.Iban
+import io.spine.examples.shareaware.wallet.WalletBalance
+import io.spine.examples.shareaware.wallet.command.ReplenishWallet
+import io.spine.examples.shareaware.wallet.event.WalletReplenished
+import io.spine.money.Currency
+import io.spine.money.Money
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 /**
- * Provides the wallet page state.
+ * UI model for the `WalletPage`.
  */
-private object WalletPageModel {
+public class WalletPageModel(private val client: DesktopClient) {
     private var replenishmentState: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private var withdrawalState: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val balanceSubscription: EntitySubscription<WalletBalance> =
+        EntitySubscription(WalletBalance::class.java, client, client.wallet())
+    private var replenishmentError: MutableStateFlow<Boolean> =
+        MutableStateFlow(false)
 
     /**
      * Sets page to default state.
      */
-    fun toDefaultState() {
+    public fun toDefaultState() {
         replenishmentState.value = false
         withdrawalState.value = false
     }
@@ -84,7 +109,7 @@ private object WalletPageModel {
      *
      * Page state when the user wants to replenish the wallet.
      */
-    fun toReplenishmentState() {
+    public fun toReplenishmentState() {
         replenishmentState.value = true
         withdrawalState.value = false
     }
@@ -94,7 +119,7 @@ private object WalletPageModel {
      *
      * Page state when the user wants to withdraw money from the wallet.
      */
-    fun toWithdrawalState() {
+    public fun toWithdrawalState() {
         withdrawalState.value = true
         replenishmentState.value = false
     }
@@ -102,15 +127,97 @@ private object WalletPageModel {
     /**
      * Returns the "replenishment" state of the page.
      */
-    fun replenishmentState(): StateFlow<Boolean> {
+    public fun replenishmentState(): StateFlow<Boolean> {
         return replenishmentState
     }
 
     /**
      * Returns the "withdrawal" state of the page.
      */
-    fun withdrawalState(): StateFlow<Boolean> {
+    public fun withdrawalState(): StateFlow<Boolean> {
         return withdrawalState
+    }
+
+    /**
+     * Returns the current state of the wallet balance.
+     */
+    public fun balance(): StateFlow<WalletBalance?> {
+        return balanceSubscription.state()
+    }
+
+    /**
+     * Returns the current state of the payment error occurred by the replenishment process.
+     */
+    public fun replenishmentError(): StateFlow<Boolean> {
+        return replenishmentError
+    }
+
+    /**
+     * Cancels the state of the payment error occurred by the replenishment process.
+     */
+    public fun cancelReplenishmentError() {
+        replenishmentError.value = false
+    }
+
+    /**
+     * Sends the `ReplenishWallet` command to the server.
+     *
+     * @param ibanValue the IBAN of the user
+     * @param moneyAmount the amount of money to replenish the wallet
+     */
+    public fun replenishWallet(ibanValue: String, moneyAmount: String) {
+        val replenishWallet = ReplenishWallet
+            .newBuilder()
+            .buildWith(ibanValue, moneyAmount)
+        subscribeToWalletReplenished(replenishWallet.replenishment)
+        subscribeToReplenishmentError(replenishWallet.replenishment)
+        client.command(replenishWallet)
+    }
+
+    /**
+     * Subscribes to the `WalletReplenished` event.
+     *
+     * @param id the ID of the replenishment process
+     */
+    private fun subscribeToWalletReplenished(id: ReplenishmentId) {
+        val replenishmentIdField = WalletReplenished.Field.replenishment()
+        client.subscribeOnce(
+            WalletReplenished::class.java,
+            eq(replenishmentIdField, id)
+        ) {
+            replenishmentError.value = false
+        }
+    }
+
+    /**
+     * Subscribes to the `MoneyCannotBeTransferredFromUser` event that signals about
+     * failure in the payment system, during the wallet replenishment process.
+     *
+     * @param id the ID of the replenishment process
+     */
+    private fun subscribeToReplenishmentError(id: ReplenishmentId) {
+        val replenishmentIdField = MoneyCannotBeTransferredFromUser.Field.replenishment()
+        client.subscribeOnce(
+            MoneyCannotBeTransferredFromUser::class.java,
+            eq(replenishmentIdField, id)
+        ) {
+            replenishmentError.value = true
+        }
+    }
+
+    /**
+     * Returns the command to replenish the wallet.
+     *
+     * @param ibanValue the IBAN of the user
+     * @param amount the amount of money to replenish the wallet
+     */
+    private fun ReplenishWallet.Builder.buildWith(ibanValue: String, amount: String): ReplenishWallet {
+        return this
+            .setReplenishment(ReplenishmentId.generate())
+            .setWallet(client.wallet())
+            .setIban(ibanValue.asIban())
+            .setMoneyAmount(amount.asUsd())
+            .vBuild()
     }
 }
 
@@ -119,7 +226,7 @@ private object WalletPageModel {
  * the user's current wallet balance and ways to interact with it.
  */
 @Composable
-public fun WalletPage(): Unit = Column {
+public fun WalletPage(model: WalletPageModel): Unit = Column {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -128,85 +235,210 @@ public fun WalletPage(): Unit = Column {
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            ElevatedCard (
-                modifier = Modifier
-                    .align(Alignment.Bottom)
-                    .width(350.dp)
-                    .height(100.dp)
-                    .padding(vertical = 15.dp, horizontal = 20.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                ),
-                shape = CircleShape,
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 20.dp,
-                ),
-            ) {
-                Text(
-                    "Balance: $200",
-                    style = MaterialTheme.typography.labelLarge,
-                    textAlign = TextAlign.Center,
-                    textDecoration = TextDecoration.Underline,
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .fillMaxWidth()
-                )
-            }
-        }
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.Bottom
+        ) { BalanceCard(model) }
         Row(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxHeight()
-            ) {
-                PrimaryButton({ WalletPageModel.toReplenishmentState() }, "Replenish")
-            }
-            Column(
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxHeight()
-            ) {
-                PrimaryButton({ WalletPageModel.toWithdrawalState() }, "Withdraw")
-            }
+            ReplenishmentButton(model)
+            WithdrawalButton(model)
         }
-        val replenishmentState = WalletPageModel
-            .replenishmentState()
-            .collectAsState()
-        var replenishmentIbanValue by remember { mutableStateOf("") }
-        var replenishmentAmount by remember { mutableStateOf("") }
-        MoneyOperationDialog(
-            onCancel = { WalletPageModel.toDefaultState() },
-            onConfirm = {},
-            isShown = replenishmentState.value,
-            title = "Wallet Replenishment",
-            ibanValue = replenishmentIbanValue,
-            onIbanChange = { replenishmentIbanValue = it },
-            moneyValue = replenishmentAmount,
-            onMoneyChange = { replenishmentAmount = it }
-        )
-        val withdrawalState = WalletPageModel
-            .withdrawalState()
-            .collectAsState()
-        var withdrawalIbanValue by remember { mutableStateOf("") }
-        var withdrawalAmount by remember { mutableStateOf("") }
-        MoneyOperationDialog(
-            onCancel = { WalletPageModel.toDefaultState() },
-            onConfirm = {},
-            isShown = withdrawalState.value,
-            title = "Wallet Withdrawal",
-            ibanValue = withdrawalIbanValue,
-            onIbanChange = { withdrawalIbanValue = it },
-            moneyValue = withdrawalAmount,
-            onMoneyChange = { withdrawalAmount = it }
+        Row(
+            Modifier
+                .height(40.dp)
+                .padding(start = 1.dp)
+        ) { WalletReplenishmentError(model) }
+        WalletReplenishmentWindow(model)
+        WalletWithdrawalWindow(model)
+    }
+}
+
+/**
+ * The `Card` component, which contains the wallet balance.
+ */
+@Composable
+private fun BalanceCard(model: WalletPageModel) {
+    ElevatedCard (
+        modifier = Modifier
+            .width(350.dp)
+            .height(100.dp)
+            .padding(vertical = 15.dp, horizontal = 20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+        ),
+        shape = CircleShape,
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 20.dp,
+        ),
+    ) {
+        val balance by model.balance().collectAsState()
+        Text(
+            "Balance: $${balance?.asReadableString()}",
+            style = MaterialTheme.typography.labelLarge,
+            textAlign = TextAlign.Center,
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxWidth()
         )
     }
+}
+
+/**
+ * The `Button` component that calls the wallet replenishment process.
+ */
+@Composable
+private fun ReplenishmentButton(model: WalletPageModel) {
+    val scope = rememberCoroutineScope { Dispatchers.Default }
+    Column(
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxHeight()
+    ) {
+        PrimaryButton({
+            scope.launch {
+                model.toReplenishmentState()
+            }
+        }, "Replenish")
+    }
+}
+
+/**
+ * The `Button` component that calls the money withdrawal process.
+ */
+@Composable
+private fun WithdrawalButton(model: WalletPageModel) {
+    val scope = rememberCoroutineScope { Dispatchers.Default }
+    Column(
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxHeight()
+    ) {
+        PrimaryButton({
+            scope.launch {
+                model.toWithdrawalState()
+            }
+        }, "Withdraw")
+    }
+}
+
+/**
+ * Dialog window for wallet replenishment process.
+ */
+@Composable
+private fun WalletReplenishmentWindow(model: WalletPageModel) {
+    val scope = rememberCoroutineScope { Dispatchers.Default }
+    val replenishmentState = model
+        .replenishmentState()
+        .collectAsState()
+    var replenishmentIbanValue by remember { mutableStateOf("") }
+    var replenishmentAmount by remember { mutableStateOf("") }
+    MoneyOperationDialog(
+        onCancel = { model.toDefaultState() },
+        onConfirm = {
+            scope.launch {
+                model.replenishWallet(replenishmentIbanValue, replenishmentAmount)
+            }
+        },
+        isShown = replenishmentState.value,
+        title = "Wallet Replenishment",
+        ibanValue = replenishmentIbanValue,
+        onIbanChange = { replenishmentIbanValue = it },
+        moneyValue = replenishmentAmount,
+        onMoneyChange = { replenishmentAmount = it }
+    )
+}
+
+/**
+ * Dialog window for money withdrawal process.
+ */
+@Composable
+private fun WalletWithdrawalWindow(model: WalletPageModel) {
+    val withdrawalState = model
+        .withdrawalState()
+        .collectAsState()
+    var withdrawalIbanValue by remember { mutableStateOf("") }
+    var withdrawalAmount by remember { mutableStateOf("") }
+    MoneyOperationDialog(
+        onCancel = { model.toDefaultState() },
+        onConfirm = {},
+        isShown = withdrawalState.value,
+        title = "Wallet Withdrawal",
+        ibanValue = withdrawalIbanValue,
+        onIbanChange = { withdrawalIbanValue = it },
+        moneyValue = withdrawalAmount,
+        onMoneyChange = { withdrawalAmount = it }
+    )
+}
+
+/**
+ * Pop-up message with error occurred by the replenishment process.
+ */
+@Composable
+private fun WalletReplenishmentError(model: WalletPageModel) {
+    val scope = rememberCoroutineScope { Dispatchers.Default }
+    val replenishmentError = model
+        .replenishmentError()
+        .collectAsState()
+    PopUpMessage(
+        isShown = replenishmentError.value,
+        dismissAction = {
+            scope.launch {
+                model.cancelReplenishmentError()
+            }
+        },
+        label = "An error occurred while the wallet was replenished."
+    )
+}
+
+/**
+ * Pop-up message component.
+ *
+ * @param isShown is a component shown to the user
+ * @param dismissAction callback that will be triggered when the user clicks on `Cancel` button
+ * @param label the message to be shown to the user
+ */
+@Composable
+private fun PopUpMessage(
+    isShown: Boolean,
+    dismissAction: () -> Unit,
+    label: String
+) {
+    if (isShown) {
+        Snackbar(
+            modifier = Modifier
+                .widthIn(200.dp, 550.dp)
+                .wrapContentWidth(),
+            containerColor = MaterialTheme.colorScheme.background,
+            contentColor = MaterialTheme.colorScheme.error,
+            dismissAction = {
+                Row (
+                    modifier = Modifier
+                        .padding(end = 10.dp)
+                ) {
+                    PrimaryButton(
+                        onClick = dismissAction,
+                        label = "Cancel",
+                        modifier = Modifier
+                            .width(110.dp)
+                            .height(30.dp),
+                        labelStyle = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        ) { Text(label) }
+    }
+}
+
+/**
+ * Returns the readable `String` constructed from the `WalletBalance` projection.
+ */
+private fun WalletBalance.asReadableString(): String {
+    return this.balance.units.toString() + "." + this.balance.nanos.toString()
 }
 
 /**
@@ -333,13 +565,55 @@ public fun Input(
     )
 }
 
-private fun String.validateIban(): Boolean {
-    val ibanRegex =
-        """[A-Z]{2}[0-9]{2}(?:[ ]?[0-9]{4}){4}(?!(?:[ ]?[0-9]){3})(?:[ ]?[0-9]{1,2})?""".toRegex()
-    return !ibanRegex.containsMatchIn(this)
-}
+/**
+ * Provides extensions for the `String` type.
+ */
+private object StringExtensions {
 
-private fun String.validateMoney(): Boolean {
-    val decimalRegex = """^\d+\.?\d*${'$'}""".toRegex()
-    return !decimalRegex.containsMatchIn(this)
+    /**
+     * Returns a new `Money` object in USD currency using this `String` to construct it.
+     *
+     * This `String` must be written as a number with a decimal point.
+     */
+    fun String.asUsd(): Money {
+        val parts = this.split('.')
+        val units = parts[0].toLong()
+        val nanos = if (parts.size == 2) parts[1].toInt() else 0
+        return Money
+            .newBuilder()
+            .setCurrency(Currency.USD)
+            .setUnits(units)
+            .setNanos(nanos)
+            .vBuild()
+    }
+
+    /**
+     * Returns a new IBAN using this `String` as its value.
+     *
+     * The string must conform to the [formatting rules](https://en.wikipedia.org/wiki/International_Bank_Account_Number#:~:text=of%20total%20payments-,Structure,-%5Bedit%5D).
+     */
+    fun String.asIban(): Iban {
+        return Iban
+            .newBuilder()
+            .setValue(this)
+            .vBuild()
+    }
+
+    /**
+     * Returns true if this `String` is written as an IBAN, false otherwise.
+     */
+    fun String.validateIban(): Boolean {
+        val ibanRegex =
+            """[A-Z]{2}[0-9]{2}(?:[ ]?[0-9]{4}){4}(?!(?:[ ]?[0-9]){3})(?:[ ]?[0-9]{1,2})?""".toRegex()
+        return !ibanRegex.containsMatchIn(this)
+    }
+
+    /**
+     * Returns true if this `String` is written like a number with a decimal point,
+     * and it can be converted to a `Money` object, false otherwise.
+     */
+    fun String.validateMoney(): Boolean {
+        val decimalRegex = """^\d+(\.\d{1,2})?${'$'}""".toRegex()
+        return !decimalRegex.containsMatchIn(this)
+    }
 }

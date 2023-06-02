@@ -34,13 +34,16 @@ import io.spine.base.EventMessage
 import io.spine.client.Client
 import io.spine.client.ClientRequest
 import io.spine.client.EventFilter
-import io.spine.client.EventFilter.*
+import io.spine.client.EventFilter.eq
+import io.spine.client.Subscription
 import io.spine.core.UserId
 import io.spine.examples.shareaware.WalletId
 import io.spine.examples.shareaware.wallet.command.CreateWallet
 import io.spine.examples.shareaware.wallet.event.WalletCreated
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Interacts with the app server via gRPC.
@@ -149,17 +152,45 @@ public class DesktopClient private constructor(
      * @param type type of the event to subscribe on
      * @param filter filter by which arrived events of the provided type will be filtered
      * @param observer callback function that will be triggered when the event arrives
+     * @return the subscription on the event for a possibility to cancel it
      */
     public fun <E : EventMessage> subscribeToEvent(
         type: Class<E>,
         filter: EventFilter,
         observer: (E) -> Unit
-    ) {
-        clientRequest()
+    ): Subscription {
+        val subscription = clientRequest()
             .subscribeToEvent(type)
             .where(filter)
-            .observe(observer)
+            .observe { event ->
+                observer(event)
+            }
             .post()
+        return subscription
+    }
+
+    /**
+     * Subscribes to the event of the provided type
+     * and cancels itself after the observer has worked.
+     *
+     * @param type type of the event to subscribe on
+     * @param filter filter by which arrived events of the provided type will be filtered
+     * @param observer callback function that will be triggered when the event arrives
+     */
+    public fun <E : EventMessage> subscribeOnce(
+        type: Class<E>,
+        filter: EventFilter,
+        observer: (E) -> Unit
+    ) {
+        var subscription: Subscription? = null
+        subscription = subscribeToEvent(
+            type,
+            filter
+        ) {
+            observer(it)
+            client.subscriptions()
+                .cancel(subscription!!)
+        }
     }
 
     /**
@@ -203,12 +234,15 @@ public class DesktopClient private constructor(
     private fun subscribeToWalletCreated(id: WalletId): CompletableFuture<WalletCreated> {
         val walletField = WalletCreated.Field.wallet()
         val walletCreated: CompletableFuture<WalletCreated> = CompletableFuture()
-        client
+        var subscription: Subscription? = null
+        subscription = client
             .asGuest()
             .subscribeToEvent(WalletCreated::class.java)
             .where(eq(walletField, id))
             .observe { event ->
                 walletCreated.complete(event)
+                client.subscriptions()
+                    .cancel(subscription!!)
             }
             .post()
         return walletCreated
@@ -250,5 +284,35 @@ public class DesktopClient private constructor(
      */
     private fun clientRequest(): ClientRequest {
         return client.onBehalfOf(user)
+    }
+}
+
+/**
+ * Subscription for the `EntityState` changes.
+ *
+ * @param entityType type of the entity on which changes subscription works
+ * @param client client with the help of which the entity will be subscribed
+ * @param id entity ID by which arrived entities will be filtered
+ */
+public class EntitySubscription<S : EntityState> internal constructor(
+    entityType: Class<S>,
+    client: DesktopClient,
+    id: Message
+) {
+    private var state: MutableStateFlow<S?>
+
+    init {
+        val entity = client.readEntity(entityType, id)
+        state = MutableStateFlow(entity)
+        client.subscribeToEntity(entityType, id) { value ->
+            state.value = value
+        }
+    }
+
+    /**
+     * Provides the current state of the subscribed entity.
+     */
+    public fun state(): StateFlow<S?> {
+        return state
     }
 }
