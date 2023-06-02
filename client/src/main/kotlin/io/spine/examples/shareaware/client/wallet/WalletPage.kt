@@ -69,6 +69,10 @@ import io.spine.examples.shareaware.client.Icons
 import io.spine.examples.shareaware.client.PrimaryButton
 import io.spine.examples.shareaware.client.payment.Dialog
 import io.spine.examples.shareaware.client.payment.WarningTooltip
+import io.spine.examples.shareaware.client.wallet.StringExtensions.asIban
+import io.spine.examples.shareaware.client.wallet.StringExtensions.asUsd
+import io.spine.examples.shareaware.client.wallet.StringExtensions.validateIban
+import io.spine.examples.shareaware.client.wallet.StringExtensions.validateMoney
 import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredFromUser
 import io.spine.examples.shareaware.wallet.Iban
 import io.spine.examples.shareaware.wallet.WalletBalance
@@ -171,8 +175,7 @@ public class WalletPageModel(private val client: DesktopClient) {
     }
 
     /**
-     * Subscribes to the `WalletReplenished` event that signals
-     * about the successful ending of the wallet replenishment process.
+     * Subscribes to the `WalletReplenished` event.
      *
      * @param id the ID of the replenishment process
      */
@@ -213,36 +216,7 @@ public class WalletPageModel(private val client: DesktopClient) {
             .setReplenishment(ReplenishmentId.generate())
             .setWallet(client.wallet())
             .setIban(ibanValue.asIban())
-            .setMoneyAmount(amount.asMoney())
-            .vBuild()
-    }
-
-    /**
-     * Returns a new `Money` object using this `String` to construct it.
-     *
-     * This `String` must be written as a number with decimal point.
-     */
-    private fun String.asMoney(): Money {
-        val parts = this.split('.')
-        val units = parts[0].toLong()
-        val nanos = if (parts.size == 2) parts[1].toInt() else 0
-        return Money
-            .newBuilder()
-            .setCurrency(Currency.USD)
-            .setUnits(units)
-            .setNanos(nanos)
-            .vBuild()
-    }
-
-    /**
-     * Returns a new IBAN using this `String` as its value.
-     *
-     * [Rules for making up the IBAN](https://en.wikipedia.org/wiki/International_Bank_Account_Number#:~:text=of%20total%20payments-,Structure,-%5Bedit%5D)
-     */
-    private fun String.asIban(): Iban {
-        return Iban
-            .newBuilder()
-            .setValue(this)
+            .setMoneyAmount(amount.asUsd())
             .vBuild()
     }
 }
@@ -591,13 +565,55 @@ public fun Input(
     )
 }
 
-private fun String.validateIban(): Boolean {
-    val ibanRegex =
-        """[A-Z]{2}[0-9]{2}(?:[ ]?[0-9]{4}){4}(?!(?:[ ]?[0-9]){3})(?:[ ]?[0-9]{1,2})?""".toRegex()
-    return !ibanRegex.containsMatchIn(this)
-}
+/**
+ * Provides extensions for the `String` type.
+ */
+private object StringExtensions {
 
-private fun String.validateMoney(): Boolean {
-    val decimalRegex = """^\d+(\.\d{1,2})?${'$'}""".toRegex()
-    return !decimalRegex.containsMatchIn(this)
+    /**
+     * Returns a new `Money` object in USD currency using this `String` to construct it.
+     *
+     * This `String` must be written as a number with a decimal point.
+     */
+    fun String.asUsd(): Money {
+        val parts = this.split('.')
+        val units = parts[0].toLong()
+        val nanos = if (parts.size == 2) parts[1].toInt() else 0
+        return Money
+            .newBuilder()
+            .setCurrency(Currency.USD)
+            .setUnits(units)
+            .setNanos(nanos)
+            .vBuild()
+    }
+
+    /**
+     * Returns a new IBAN using this `String` as its value.
+     *
+     * The string must conform to the [formatting rules](https://en.wikipedia.org/wiki/International_Bank_Account_Number#:~:text=of%20total%20payments-,Structure,-%5Bedit%5D).
+     */
+    fun String.asIban(): Iban {
+        return Iban
+            .newBuilder()
+            .setValue(this)
+            .vBuild()
+    }
+
+    /**
+     * Returns true if this `String` is written as an IBAN, false otherwise.
+     */
+    fun String.validateIban(): Boolean {
+        val ibanRegex =
+            """[A-Z]{2}[0-9]{2}(?:[ ]?[0-9]{4}){4}(?!(?:[ ]?[0-9]){3})(?:[ ]?[0-9]{1,2})?""".toRegex()
+        return !ibanRegex.containsMatchIn(this)
+    }
+
+    /**
+     * Returns true if this `String` is written like a number with a decimal point,
+     * and it can be converted to a `Money` object, false otherwise.
+     */
+    fun String.validateMoney(): Boolean {
+        val decimalRegex = """^\d+(\.\d{1,2})?${'$'}""".toRegex()
+        return !decimalRegex.containsMatchIn(this)
+    }
 }
