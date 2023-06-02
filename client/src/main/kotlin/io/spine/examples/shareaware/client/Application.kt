@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
-import io.spine.client.ConnectionConstants
+import io.spine.client.ConnectionConstants.*
 import io.spine.examples.shareaware.client.wallet.WalletPage
 import io.spine.examples.shareaware.client.wallet.WalletPageModel
 
@@ -51,7 +51,7 @@ import io.spine.examples.shareaware.client.wallet.WalletPageModel
 public fun application(): Unit = application {
     val client = DesktopClient.init(
         "localhost",
-        ConnectionConstants.DEFAULT_CLIENT_SERVICE_PORT
+        DEFAULT_CLIENT_SERVICE_PORT
     )
     val walletPageModel = WalletPageModel(client)
     ShareAwareTheme {

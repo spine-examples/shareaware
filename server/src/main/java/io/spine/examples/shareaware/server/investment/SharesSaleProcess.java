@@ -93,8 +93,8 @@ final class SharesSaleProcess
                 .newBuilder()
                 .setMarket(MarketProcess.ID)
                 .setSaleProcess(e.getProcess())
-                .setShare(builder().getShare())
-                .setPrice(builder().getPrice())
+                .setShare(state().getShare())
+                .setPrice(state().getPrice())
                 .setQuantity(e.getQuantity())
                 .vBuild();
     }
@@ -109,7 +109,7 @@ final class SharesSaleProcess
         return SharesSaleFailed
                 .newBuilder()
                 .setSaleProcess(r.getProcess())
-                .setSeller(builder().getSeller())
+                .setSeller(state().getSeller())
                 .vBuild();
     }
 
@@ -149,7 +149,7 @@ final class SharesSaleProcess
         return SharesSaleFailed
                 .newBuilder()
                 .setSaleProcess(e.getProcess())
-                .setSeller(builder().getSeller())
+                .setSeller(state().getSeller())
                 .vBuild();
     }
 
@@ -177,9 +177,9 @@ final class SharesSaleProcess
         return SharesSold
                 .newBuilder()
                 .setSaleProcess(e.getProcess())
-                .setSeller(builder().getSeller())
-                .setShare(builder().getShare())
-                .setPrice(builder().getPrice())
+                .setSeller(state().getSeller())
+                .setShare(state().getShare())
+                .setPrice(state().getPrice())
                 .setSharesAvailable(e.getSharesAvailable())
                 .vBuild();
     }
@@ -195,22 +195,22 @@ final class SharesSaleProcess
     private InvestmentId investmentId() {
         return InvestmentId
                 .newBuilder()
-                .setShare(builder().getShare())
-                .setOwner(builder().getSeller())
+                .setShare(state().getShare())
+                .setOwner(state().getSeller())
                 .vBuild();
     }
 
     private WalletId walletId() {
         return WalletId
                 .newBuilder()
-                .setOwner(builder().getSeller())
+                .setOwner(state().getSeller())
                 .vBuild();
     }
 
     private ReplenishmentOperationId operationId() {
         return ReplenishmentOperationId
                 .newBuilder()
-                .setSale(builder().getId())
+                .setSale(state().getId())
                 .vBuild();
     }
 }
