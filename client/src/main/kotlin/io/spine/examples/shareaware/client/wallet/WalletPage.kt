@@ -153,18 +153,24 @@ public class WalletPageModel(private val client: DesktopClient) {
     }
 
     /**
-     * Cancels the state of the payment error occurred by the replenishment process.
+     * Returns the current state of the payment error, whether it is present or not.
      */
-    public fun cancelPaymentError() {
-        paymentError.value = false
-    }
-
     public fun paymentError(): StateFlow<Boolean> {
         return paymentError
     }
 
+    /**
+     * Returns the current state of payment error message.
+     */
     public fun paymentErrorMessage(): StateFlow<String> {
         return paymentErrorMessage
+    }
+
+    /**
+     * Cancels the state of the payment error.
+     */
+    public fun cancelPaymentError() {
+        paymentError.value = false
     }
 
     /**
@@ -231,6 +237,9 @@ public class WalletPageModel(private val client: DesktopClient) {
         }
     }
 
+    /**
+     * Subscribes to the `MoneyWithdrawn` event.
+     */
     private fun subscribeToMoneyWithdrawn(id: WithdrawalId) {
         val withdrawalIdField = MoneyWithdrawn.Field.withdrawalProcess()
         client
@@ -242,6 +251,10 @@ public class WalletPageModel(private val client: DesktopClient) {
             }
     }
 
+    /**
+     * Subscribes to the `InsufficientFunds` event that signals about
+     * insufficient of funds on the wallet for such withdrawal operation.
+     */
     private fun subscribeToInsufficientFunds(id: WithdrawalId) {
         val withdrawalIdField = InsufficientFunds.Field.operation().withdrawal()
         client
@@ -255,6 +268,10 @@ public class WalletPageModel(private val client: DesktopClient) {
             }
     }
 
+    /**
+     * Subscribes to the `MoneyCannotBeTransferredToUser` event that signals about
+     * failure in the payment system, during the money withdrawal process.
+     */
     private fun subscribeToWithdrawalError(id: WithdrawalId) {
         val withdrawalIdField = MoneyCannotBeTransferredToUser.Field.withdrawalProcess()
         client
@@ -441,6 +458,7 @@ private fun WalletReplenishmentWindow(model: WalletPageModel) {
  */
 @Composable
 private fun WalletWithdrawalWindow(model: WalletPageModel) {
+    val scope = rememberCoroutineScope { Dispatchers.Default }
     val withdrawalState = model
         .withdrawalState()
         .collectAsState()
@@ -448,7 +466,11 @@ private fun WalletWithdrawalWindow(model: WalletPageModel) {
     var withdrawalAmount by remember { mutableStateOf("") }
     MoneyOperationDialog(
         onCancel = { model.toDefaultState() },
-        onConfirm = {},
+        onConfirm = {
+            scope.launch {
+                model.withdrawMoney(withdrawalIbanValue, withdrawalAmount)
+            }
+        },
         isShown = withdrawalState.value,
         title = "Wallet Withdrawal",
         ibanValue = withdrawalIbanValue,
@@ -459,7 +481,7 @@ private fun WalletWithdrawalWindow(model: WalletPageModel) {
 }
 
 /**
- * Pop-up message with error occurred by the replenishment process.
+ * Pop-up message with error occurred by the payment process.
  */
 @Composable
 private fun PaymentError(model: WalletPageModel) {
