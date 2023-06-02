@@ -27,6 +27,7 @@
 package io.spine.examples.shareaware.server;
 
 import io.spine.environment.DefaultMode;
+import io.spine.environment.Tests;
 import io.spine.server.Server;
 import io.spine.server.ServerEnvironment;
 import io.spine.server.delivery.Delivery;
@@ -75,6 +76,10 @@ public class ShareAwareServer {
     }
 
     private static void configureEnvironment() {
+        ServerEnvironment
+                .when(Tests.class)
+                .use(InMemoryStorageFactory.newInstance())
+                .use(InMemoryTransportFactory.newInstance());
         ServerEnvironment
                 .when(DefaultMode.class)
                 .use(InMemoryStorageFactory.newInstance())
