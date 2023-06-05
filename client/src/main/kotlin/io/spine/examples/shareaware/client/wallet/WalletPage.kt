@@ -167,10 +167,20 @@ public class WalletPageModel(private val client: DesktopClient) {
     }
 
     /**
-     * Cancels the state of the payment error.
+     * Disables the payment error visibility and clears its message.
      */
-    public fun cancelPaymentError() {
+    public fun closePaymentError() {
         paymentError.value = false
+        paymentErrorMessage.value = ""
+    }
+
+    /**
+     * Enables the payment error visibility
+     * and sets the provided message as the payment error message.
+     */
+    private fun showPaymentError(message: String) {
+        paymentError.value = true
+        paymentErrorMessage.value = message
     }
 
     /**
@@ -216,7 +226,7 @@ public class WalletPageModel(private val client: DesktopClient) {
             WalletReplenished::class.java,
             eq(replenishmentIdField, id)
         ) {
-            paymentError.value = false
+            closePaymentError()
         }
     }
 
@@ -232,9 +242,9 @@ public class WalletPageModel(private val client: DesktopClient) {
             MoneyCannotBeTransferredFromUser::class.java,
             eq(replenishmentIdField, id)
         ) {
-            paymentError.value = true
-            paymentErrorMessage.value =
+            showPaymentError(
                 "An error occurred in payment system while the wallet was replenished."
+            )
         }
     }
 
@@ -248,7 +258,7 @@ public class WalletPageModel(private val client: DesktopClient) {
                 MoneyWithdrawn::class.java,
                 eq(withdrawalIdField, id)
             ) {
-                paymentError.value = false
+                closePaymentError()
             }
     }
 
@@ -263,9 +273,9 @@ public class WalletPageModel(private val client: DesktopClient) {
                 InsufficientFunds::class.java,
                 eq(withdrawalIdField, id)
             ) {
-                paymentError.value = true
-                paymentErrorMessage.value =
+                showPaymentError(
                     "There is insufficient funds on your balance for such operation."
+                )
             }
     }
 
@@ -280,9 +290,9 @@ public class WalletPageModel(private val client: DesktopClient) {
                 MoneyCannotBeTransferredToUser::class.java,
                 eq(withdrawalIdField, id)
             ) {
-                paymentError.value = true
-                paymentErrorMessage.value =
+                showPaymentError(
                     "An error occurred in payment system while the wallet was withdrawn."
+                )
             }
     }
 
@@ -497,7 +507,7 @@ private fun PaymentError(model: WalletPageModel) {
         isShown = paymentError.value,
         dismissAction = {
             scope.launch {
-                model.cancelPaymentError()
+                model.closePaymentError()
             }
         },
         label = errorMessage.value
