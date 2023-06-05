@@ -75,7 +75,7 @@ public fun application(): Unit = application {
                 when (currentPage.value) {
                     Page.HOME -> Text("HOME")
                     Page.WALLET -> WalletPage(walletPageModel)
-                    Page.MARKET -> Text("MARKET")
+                    Page.MARKET -> MarketPage()
                     Page.INVESTMENTS -> Text("INVESTMENTS")
                     Page.WATCHLISTS -> Text("WATCHLISTS")
                 }

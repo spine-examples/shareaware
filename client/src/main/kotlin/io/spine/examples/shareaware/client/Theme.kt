@@ -64,6 +64,7 @@ private val lightColors: ColorScheme = lightColorScheme(
     secondary = Colors.Blue90,
     onSecondary = Color.Black,
     onSecondaryContainer = Color.Black,
+    tertiary = Colors.Beige20,
     surface = Colors.Beige40,
     onSurface = Color.Black,
     surfaceVariant = Color.Transparent,
@@ -110,4 +111,5 @@ private object Colors {
     val White: Color = Color(0xfff8f5e4)
     val Beige90: Color = Color(0xfff9f5eb)
     val Beige40: Color = Color(0xffe3dccf)
+    val Beige20: Color = Color(0xffECE8DD)
 }
