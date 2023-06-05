@@ -198,9 +198,10 @@ public class WalletPageModel(private val client: DesktopClient) {
         val withdrawMoney = WithdrawMoney
             .newBuilder()
             .buildWith(ibanValue, moneyAmount)
-        subscribeToMoneyWithdrawn(withdrawMoney.withdrawalProcess)
-        subscribeToInsufficientFunds(withdrawMoney.withdrawalProcess)
-        subscribeToWithdrawalError(withdrawMoney.withdrawalProcess)
+        val withdrawalId = withdrawMoney.withdrawalProcess
+        subscribeToMoneyWithdrawn(withdrawalId)
+        subscribeToInsufficientFunds(withdrawalId)
+        subscribeToWithdrawalError(withdrawalId)
         client.command(withdrawMoney)
     }
 
