@@ -252,8 +252,8 @@ public class WalletPageModel(private val client: DesktopClient) {
     }
 
     /**
-     * Subscribes to the `InsufficientFunds` event that signals about
-     * insufficient of funds on the wallet for such withdrawal operation.
+     * Subscribes to the `InsufficientFunds` event, which signals that the amount of money
+     * requested for withdrawal exceeds the available amount of money in the balance.
      */
     private fun subscribeToInsufficientFunds(id: WithdrawalId) {
         val withdrawalIdField = InsufficientFunds.Field.operation().withdrawal()
