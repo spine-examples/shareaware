@@ -24,35 +24,32 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.dependency
+package io.spine.examples.shareaware.server;
 
-import io.spine.examples.shareaware.dependency.ErrorProne.GradlePlugin.id
+import io.spine.environment.CustomEnvironmentType;
+import io.spine.environment.Tests;
 
-object Spine {
+/**
+ * Production environment type.
+ *
+ * @implNote At the moment there is no special circumstances which determine production environment.
+ * Therefore, this environment is considered active if {@code Tests} is not.
+ */
+public class Production extends CustomEnvironmentType<Production> {
 
-    // Keep in sync with in sync with `buildSrc/build.gradle.kts`.
-    const val version = "1.9.0"
-
-    // https://github.com/SpineEventEngine/core-java
-    object Server {
-        const val lib = "io.spine:spine-server:${version}";
+    public Production() {
+        super();
     }
 
-    // https://github.com/SpineEventEngine/bootstraps
-    object GradlePlugin {
-        const val id = "io.spine.tools.gradle.bootstrap";
-
-        /**
-         * The version of this plugin is already specified in `buildSrc/build.gradle.kts` file.
-         * Thus, when applying the plugin in projects build files, only the [id] should be used.
-         */
-        const val lib = "io.spine.tools:spine-bootstrap:${version}";
+    @Override
+    protected boolean enabled() {
+        boolean tests = Tests.type()
+                             .enabled();
+        return !tests;
     }
 
-    // https://github.com/SpineEventEngine/money
-    object Money {
-        const val version = "1.5.0"
-
-        const val lib = "io.spine:spine-money:${version}";
+    @Override
+    protected Production self() {
+        return this;
     }
 }

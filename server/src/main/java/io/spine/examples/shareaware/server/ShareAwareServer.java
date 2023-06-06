@@ -26,10 +26,9 @@
 
 package io.spine.examples.shareaware.server;
 
-import io.spine.base.Production;
+import io.spine.environment.Environment;
 import io.spine.server.Server;
 import io.spine.server.ServerEnvironment;
-import io.spine.server.delivery.Delivery;
 import io.spine.server.storage.memory.InMemoryStorageFactory;
 import io.spine.server.transport.memory.InMemoryTransportFactory;
 
@@ -75,10 +74,11 @@ public class ShareAwareServer {
     }
 
     private static void configureEnvironment() {
+        Environment environment = Environment.instance();
+        environment.register(Production.class);
         ServerEnvironment
                 .when(Production.class)
                 .use(InMemoryStorageFactory.newInstance())
-                .use(Delivery.localAsync())
                 .use(InMemoryTransportFactory.newInstance());
     }
 }

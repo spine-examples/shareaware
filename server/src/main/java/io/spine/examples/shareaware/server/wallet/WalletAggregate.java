@@ -117,7 +117,7 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
 
     @Apply
     private void event(MoneyReserved e) {
-        var newBalance = subtract(state().getBalance(), e.getAmount());
+        var newBalance = subtract(builder().getBalance(), e.getAmount());
         var operationId = e.operationIdValue();
         builder()
                 .setBalance(newBalance)
@@ -152,8 +152,8 @@ public final class WalletAggregate extends Aggregate<WalletId, Wallet, Wallet.Bu
     @Apply
     private void event(MoneyReservationCanceled e) {
         var operationId = e.operationIdValue();
-        var reservedAmount = state().getReservedMoneyOrThrow(operationId);
-        var restoredBalance = sum(state().getBalance(), reservedAmount);
+        var reservedAmount = builder().getReservedMoneyOrThrow(operationId);
+        var restoredBalance = sum(builder().getBalance(), reservedAmount);
         builder()
                 .setBalance(restoredBalance)
                 .removeReservedMoney(operationId);
