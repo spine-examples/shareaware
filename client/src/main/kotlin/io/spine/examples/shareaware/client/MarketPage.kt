@@ -32,7 +32,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -73,24 +72,31 @@ public class MarketPageModel(client: DesktopClient) {
     private val sharesSubscriptions: EntitySubscription<AvailableMarketShares> =
         EntitySubscription(AvailableMarketShares::class.java, client, MarketProcess.ID)
 
+    /**
+     * Returns the current state of available shares on the market.
+     */
     public fun shares(): StateFlow<AvailableMarketShares?> {
         return sharesSubscriptions.state()
     }
 }
 
+/**
+ * The page component that provides data about currently available shares on the market
+ * and ways to interact with them.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 public fun MarketPage(model: MarketPageModel) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        val shares by model.shares().collectAsState()
-        shares?.shareList?.forEach { share ->
+        val marketShares by model.shares().collectAsState()
+        marketShares?.shareList?.forEach { share ->
             ListItem(
                 modifier = Modifier
-                    .height(70.dp),
+                    .height(100.dp),
                 headlineText = {
                     MainItemContent(share)
                 },
@@ -111,6 +117,9 @@ public fun MarketPage(model: MarketPageModel) {
     }
 }
 
+/**
+ * Represents the main `ListItem` content with data about the share.
+ */
 @Composable
 private fun MainItemContent(share: Share) {
     Row(
@@ -143,12 +152,15 @@ private fun MainItemContent(share: Share) {
     }
 }
 
+/**
+ * Represents the share icon.
+ */
 @Composable
 private fun ShareIcon(share: Share) {
     val density = LocalDensity.current
     Row(
         modifier = Modifier
-            .width(60.dp)
+            .width(100.dp)
             .fillMaxHeight(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
@@ -161,6 +173,9 @@ private fun ShareIcon(share: Share) {
     }
 }
 
+/**
+ * Represents the button section.
+ */
 @Composable
 private fun ButtonSection() {
     PrimaryButton(
@@ -172,6 +187,15 @@ private fun ButtonSection() {
     )
 }
 
+/**
+ * Asynchronously draws an image.
+ *
+ * @param load callback that loads the image
+ * @param painterFor painter for the image
+ * @param contentDescription what the image represents
+ * @param modifier modifier used to adjust layout
+ * @param contentScale scale parameter used to determine the aspect ratio scaling
+ */
 @Composable
 private fun <T> AsyncImage(
     load: suspend () -> T,
@@ -199,9 +223,19 @@ private fun <T> AsyncImage(
     }
 }
 
+/**
+ * Loads an image from the network by URL.
+ *
+ * @param url the URL of the image to load
+ * @param density density that will be used to set the intrinsic size of the image
+ * @return the decoded SVG image associated with the URL
+ */
 private fun loadImage(url: String, density: Density): Painter =
     URL(url).openStream().buffered().use { loadSvgPainter(it, density) }
 
+/**
+ * Returns the readable `String` constricted from the `Money` object.
+ */
 private fun Money.asReadableString(): String {
-    return this.units.toString() + "." + this.nanos.toString()
+    return "$" + this.units.toString() + "." + this.nanos.toString()
 }
