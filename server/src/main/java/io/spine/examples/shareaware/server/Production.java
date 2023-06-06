@@ -32,8 +32,8 @@ import io.spine.environment.Tests;
 /**
  * Production environment type.
  *
- * @implNote at the moment that environment type is just a copy of {@link io.spine.environment.DefaultMode}
- * because there is not enough functionality to determine in which mode the server is running.
+ * @implNote At the moment there is no special circumstances which determine production environment.
+ * Therefore, this environment is considered active if {@code Tests} is not.
  */
 public class Production extends CustomEnvironmentType<Production> {
 
