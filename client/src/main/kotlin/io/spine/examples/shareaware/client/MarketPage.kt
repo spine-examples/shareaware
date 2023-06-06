@@ -49,10 +49,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.spine.examples.shareaware.market.AvailableMarketShares
+import io.spine.examples.shareaware.server.market.MarketProcess
+import io.spine.money.Money
+import io.spine.util.Exceptions.*
+import java.io.IOException
+import java.net.URL
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.withContext
+
+/**
+ * UI model for the `MarketPage`.
+ */
+public class MarketPageModel(client: DesktopClient) {
+    private val sharesSubscriptions: EntitySubscription<AvailableMarketShares> =
+        EntitySubscription(AvailableMarketShares::class.java, client, MarketProcess.ID)
+
+    public fun shares(): StateFlow<AvailableMarketShares?> {
+        return sharesSubscriptions.state()
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-public fun MarketPage() {
+public fun MarketPage(model: MarketPageModel) {
     Column(
         modifier = Modifier
             .fillMaxWidth()

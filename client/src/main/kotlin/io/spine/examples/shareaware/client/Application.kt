@@ -54,6 +54,7 @@ public fun application(): Unit = application {
         DEFAULT_CLIENT_SERVICE_PORT
     )
     val walletPageModel = WalletPageModel(client)
+    val marketPageModel = MarketPageModel(client)
     ShareAwareTheme {
         Window(
             onCloseRequest = ::exitApplication,
@@ -75,7 +76,7 @@ public fun application(): Unit = application {
                 when (currentPage.value) {
                     Page.HOME -> Text("HOME")
                     Page.WALLET -> WalletPage(walletPageModel)
-                    Page.MARKET -> MarketPage()
+                    Page.MARKET -> MarketPage(marketPageModel)
                     Page.INVESTMENTS -> Text("INVESTMENTS")
                     Page.WATCHLISTS -> Text("WATCHLISTS")
                 }
