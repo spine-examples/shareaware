@@ -26,6 +26,7 @@
 
 package io.spine.examples.shareaware.client
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,18 +37,23 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.loadSvgPainter
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import io.spine.examples.shareaware.market.AvailableMarketShares
 import io.spine.examples.shareaware.server.market.MarketProcess
@@ -79,7 +85,9 @@ public fun MarketPage(model: MarketPageModel) {
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
     ) {
-        for (i: Int in 0..9) {
+        val shares by model.shares().collectAsState()
+        val density = LocalDensity.current
+        shares?.shareList?.forEach { share ->
             ListItem(
                 modifier = Modifier
                     .height(70.dp),
@@ -95,7 +103,7 @@ public fun MarketPage(model: MarketPageModel) {
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Text("APPLE INC.")
+                            Text(share.companyName)
                         }
                         Divider(
                             modifier = Modifier
@@ -109,7 +117,7 @@ public fun MarketPage(model: MarketPageModel) {
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Text("Price")
+                            Text(share.price.asReadableString())
                         }
                     }
                 },
@@ -121,9 +129,10 @@ public fun MarketPage(model: MarketPageModel) {
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            Icons.Default.Face,
-                            null
+                        AsyncImage(
+                            load = { loadImage(share.companyLogo, density) },
+                            painterFor = { it },
+                            contentDescription = share.companyName,
                         )
                     }
                 },
@@ -145,4 +154,38 @@ public fun MarketPage(model: MarketPageModel) {
             )
         }
     }
+}
+
+@Composable
+private fun <T> AsyncImage(
+    load: suspend () -> T,
+    painterFor: @Composable (T) -> Painter,
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+    contentScale: ContentScale = ContentScale.Fit,
+) {
+    val image: T? by produceState<T?>(null) {
+        value = withContext(Dispatchers.IO) {
+            try {
+                load()
+            } catch (e: IOException) {
+                throw illegalArgumentWithCauseOf(e)
+            }
+        }
+    }
+    if (image != null) {
+        Image(
+            painter = painterFor(image!!),
+            contentDescription = contentDescription,
+            contentScale = contentScale,
+            modifier = modifier
+        )
+    }
+}
+
+private fun loadImage(url: String, density: Density): Painter =
+    URL(url).openStream().buffered().use { loadSvgPainter(it, density) }
+
+private fun Money.asReadableString(): String {
+    return this.units.toString() + "." + this.nanos.toString()
 }
