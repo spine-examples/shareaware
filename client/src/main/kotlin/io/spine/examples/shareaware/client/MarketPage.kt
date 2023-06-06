@@ -234,7 +234,7 @@ private fun loadImage(url: String, density: Density): Painter =
     URL(url).openStream().buffered().use { loadSvgPainter(it, density) }
 
 /**
- * Returns the readable `String` constricted from the `Money` object.
+ * Returns the readable `String` constructed from the `Money` object.
  */
 private fun Money.asReadableString(): String {
     return "$" + this.units.toString() + "." + this.nanos.toString()
