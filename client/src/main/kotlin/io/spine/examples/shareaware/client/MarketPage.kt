@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import io.spine.examples.shareaware.market.AvailableMarketShares
 import io.spine.examples.shareaware.server.market.MarketProcess
+import io.spine.examples.shareaware.share.Share
 import io.spine.money.Money
 import io.spine.util.Exceptions.*
 import java.io.IOException
@@ -86,64 +87,18 @@ public fun MarketPage(model: MarketPageModel) {
             .verticalScroll(rememberScrollState())
     ) {
         val shares by model.shares().collectAsState()
-        val density = LocalDensity.current
         shares?.shareList?.forEach { share ->
             ListItem(
                 modifier = Modifier
                     .height(70.dp),
                 headlineText = {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxSize()
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .weight(1F)
-                                .fillMaxHeight(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(share.companyName)
-                        }
-                        Divider(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .width(1.dp)
-                        )
-                        Column(
-                            modifier = Modifier
-                                .weight(1F)
-                                .fillMaxHeight(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(share.price.asReadableString())
-                        }
-                    }
+                    MainItemContent(share)
                 },
                 leadingContent = {
-                    Row(
-                        modifier = Modifier
-                            .width(60.dp)
-                            .fillMaxHeight(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        AsyncImage(
-                            load = { loadImage(share.companyLogo, density) },
-                            painterFor = { it },
-                            contentDescription = share.companyName,
-                        )
-                    }
+                    ShareIcon(share)
                 },
                 trailingContent = {
-                    PrimaryButton(
-                        onClick = {},
-                        "Buy",
-                        modifier = Modifier
-                            .width(110.dp)
-                            .height(40.dp)
-                    )
+                    ButtonSection()
                 },
                 colors = ListItemDefaults.colors(
                     containerColor = MaterialTheme.colorScheme.tertiary
@@ -154,6 +109,67 @@ public fun MarketPage(model: MarketPageModel) {
             )
         }
     }
+}
+
+@Composable
+private fun MainItemContent(share: Share) {
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1F)
+                .fillMaxHeight(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(share.companyName)
+        }
+        Divider(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(1.dp)
+        )
+        Column(
+            modifier = Modifier
+                .weight(1F)
+                .fillMaxHeight(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(share.price.asReadableString())
+        }
+    }
+}
+
+@Composable
+private fun ShareIcon(share: Share) {
+    val density = LocalDensity.current
+    Row(
+        modifier = Modifier
+            .width(60.dp)
+            .fillMaxHeight(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        AsyncImage(
+            load = { loadImage(share.companyLogo, density) },
+            painterFor = { it },
+            contentDescription = share.companyName,
+        )
+    }
+}
+
+@Composable
+private fun ButtonSection() {
+    PrimaryButton(
+        onClick = {},
+        "Buy",
+        modifier = Modifier
+            .width(110.dp)
+            .height(40.dp)
+    )
 }
 
 @Composable
