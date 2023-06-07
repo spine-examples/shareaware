@@ -65,10 +65,14 @@ import io.spine.client.EventFilter.*
 import io.spine.examples.shareaware.MoneyCalculator
 import io.spine.examples.shareaware.PurchaseId
 import io.spine.examples.shareaware.client.payment.Dialog
+import io.spine.examples.shareaware.client.wallet.PopUpMessage
 import io.spine.examples.shareaware.investment.command.PurchaseShares
+import io.spine.examples.shareaware.investment.event.SharesPurchased
 import io.spine.examples.shareaware.market.AvailableMarketShares
+import io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeObtained
 import io.spine.examples.shareaware.server.market.MarketProcess
 import io.spine.examples.shareaware.share.Share
+import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds
 import io.spine.money.Money
 import io.spine.util.Exceptions.*
 import java.io.IOException
@@ -88,6 +92,9 @@ public class MarketPageModel(private val client: DesktopClient) {
     private val purchaseState: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val shareToPurchase: MutableStateFlow<Share?> = MutableStateFlow(null)
     private val quantityToPurchase: MutableStateFlow<Int> = MutableStateFlow(0)
+    private val popUpShown: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val popUpMessage: MutableStateFlow<String> = MutableStateFlow("")
+    private val purchaseFailed: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     /**
      * Returns the current state of available shares on the market.
@@ -122,13 +129,71 @@ public class MarketPageModel(private val client: DesktopClient) {
         return quantityToPurchase
     }
 
+    public fun popUpShown(): StateFlow<Boolean> {
+        return popUpShown
+    }
+
+    public fun popUpMessage(): StateFlow<String> {
+        return popUpMessage
+    }
+
+    public fun purchaseFailed(): StateFlow<Boolean> {
+        return purchaseFailed
+    }
+
+    public fun closePopUp() {
+        popUpShown.value = false
+        purchaseFailed.value = false
+        popUpMessage.value = ""
+    }
+
     public fun purchaseShares() {
         val share = shareToPurchase.value
         Preconditions.checkNotNull(share)
         val purchaseShares = PurchaseShares
             .newBuilder()
             .buildWith(share!!)
+        val purchaseProcess = purchaseShares.purchaseProcess
+        subscribeToSharesPurchased(purchaseProcess)
+        subscribeToInsufficientFunds(purchaseProcess)
+        subscribeToSharesCannotBeObtained(purchaseProcess)
         client.command(purchaseShares)
+    }
+
+    private fun subscribeToSharesPurchased(id: PurchaseId) {
+        val purchaseIdField = SharesPurchased.Field.purchaseProcess()
+        client.subscribeOnce(
+            SharesPurchased::class.java,
+            eq(purchaseIdField, id)
+        ) {
+            popUpShown.value = true
+            purchaseFailed.value = false
+            popUpMessage.value = "Shares have been purchased successfully."
+        }
+    }
+
+    private fun subscribeToInsufficientFunds(id: PurchaseId) {
+        val purchaseIdField = InsufficientFunds.Field.operation().purchase()
+        client.subscribeOnce(
+            InsufficientFunds::class.java,
+            eq(purchaseIdField, id)
+        ) {
+            popUpShown.value = true
+            purchaseFailed.value = true
+            popUpMessage.value = "There are insufficient funds on your balance to purchase those shares."
+        }
+    }
+
+    private fun subscribeToSharesCannotBeObtained(id: PurchaseId) {
+        val purchaseIdField = SharesCannotBeObtained.Field.purchaseProcess()
+        client.subscribeOnce(
+            SharesCannotBeObtained::class.java,
+            eq(purchaseIdField, id)
+        ) {
+            popUpShown.value = true
+            purchaseFailed.value = true
+            popUpMessage.value = "An error occurred in the market system while shares were purchasing."
+        }
     }
 
     private fun PurchaseShares.Builder.buildWith(share: Share): PurchaseShares {
@@ -254,7 +319,7 @@ private fun String.validateQuantity(): Boolean {
 
 private fun calculatePrice(pricePerOne: Money?, quantity: Int): String {
     Preconditions.checkArgument(null != pricePerOne)
-    val totalPrice = MoneyCalculator.multiply(pricePerOne, quantity)
+    val totalPrice = MoneyCalculator.multiply(pricePerOne!!, quantity)
     return totalPrice.asReadableString()
 }
 
