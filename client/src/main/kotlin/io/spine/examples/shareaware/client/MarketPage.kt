@@ -32,7 +32,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -42,10 +44,14 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -54,6 +60,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.loadSvgPainter
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import com.google.common.base.Preconditions
+import io.spine.examples.shareaware.MoneyCalculator
+import io.spine.examples.shareaware.client.payment.Dialog
 import io.spine.examples.shareaware.market.AvailableMarketShares
 import io.spine.examples.shareaware.server.market.MarketProcess
 import io.spine.examples.shareaware.share.Share
@@ -62,7 +71,9 @@ import io.spine.util.Exceptions.*
 import java.io.IOException
 import java.net.URL
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
@@ -71,12 +82,40 @@ import kotlinx.coroutines.withContext
 public class MarketPageModel(client: DesktopClient) {
     private val sharesSubscriptions: EntitySubscription<AvailableMarketShares> =
         EntitySubscription(AvailableMarketShares::class.java, client, MarketProcess.ID)
+    private val purchaseState: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val shareToPurchase: MutableStateFlow<Share?> = MutableStateFlow(null)
+    private val quantityToPurchase: MutableStateFlow<Int> = MutableStateFlow(0)
 
     /**
      * Returns the current state of available shares on the market.
      */
     public fun shares(): StateFlow<AvailableMarketShares?> {
         return sharesSubscriptions.state()
+    }
+
+    public fun toPurchaseState(share: Share) {
+        purchaseState.value = true
+        shareToPurchase.value = share
+    }
+
+    public fun toDefaultState() {
+        purchaseState.value = false
+    }
+
+    public fun purchaseState(): StateFlow<Boolean> {
+        return purchaseState
+    }
+
+    public fun shareToPurchase(): StateFlow<Share?> {
+        return shareToPurchase
+    }
+
+    public fun quantityToPurchase(quantity: Int) {
+        quantityToPurchase.value = quantity
+    }
+
+    public fun quantityToPurchase(): StateFlow<Int> {
+        return quantityToPurchase
     }
 }
 
@@ -104,7 +143,7 @@ public fun MarketPage(model: MarketPageModel) {
                     ShareIcon(share)
                 },
                 trailingContent = {
-                    ButtonSection()
+                    ButtonSection(model, share)
                 },
                 colors = ListItemDefaults.colors(
                     containerColor = MaterialTheme.colorScheme.tertiary
@@ -114,7 +153,81 @@ public fun MarketPage(model: MarketPageModel) {
                 thickness = 2.dp
             )
         }
+        val purchaseState = model.purchaseState().collectAsState()
+        PurchaseDialog(
+            model = model,
+            isShown = purchaseState.value
+        )
     }
+}
+
+@Composable
+private fun PurchaseDialog(
+    model: MarketPageModel,
+    isShown: Boolean
+) {
+    val scope = rememberCoroutineScope { Dispatchers.Default }
+    val shareToPurchase = model.shareToPurchase().collectAsState()
+    val quantity = model.quantityToPurchase().collectAsState()
+    if (isShown) {
+        Dialog(
+            onCancel = {
+                scope.launch {
+                    model.toDefaultState()
+                }
+            },
+            onConfirm = {},
+            title = "Purchase '${shareToPurchase.value?.companyName}' shares",
+            {
+                Column(
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(bottom = 20.dp, top = 10.dp)
+                ) {
+                    val price = calculatePrice(shareToPurchase.value?.price, quantity.value)
+                    Text(
+                        "Total Price - $price",
+                        modifier = Modifier
+                            .padding(start = 16.dp)
+                    )
+                    NumericInput(model)
+                }
+            },
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun NumericInput(model: MarketPageModel) {
+    val input = remember { mutableStateOf("") }
+    val change: (String) -> Unit = {
+        if (it.validateQuantity()) {
+            input.value = it
+            val quantity = if (it == "") 0 else it.toInt()
+            model.quantityToPurchase(quantity)
+        }
+    }
+    TextField(
+        value = input.value,
+        modifier = Modifier.fillMaxWidth(),
+        onValueChange = change,
+        label = {
+            Text("How much to purchase")
+        }
+    )
+}
+
+private fun String.validateQuantity(): Boolean {
+    val numericRegex = """^(?!0)[0-9]*${'$'}""".toRegex()
+    return numericRegex.containsMatchIn(this)
+}
+
+private fun calculatePrice(pricePerOne: Money?, quantity: Int): String {
+    Preconditions.checkArgument(null != pricePerOne)
+    val totalPrice = MoneyCalculator.multiply(pricePerOne, quantity)
+    return totalPrice.asReadableString()
 }
 
 /**
@@ -177,9 +290,14 @@ private fun ShareIcon(share: Share) {
  * Represents the button section.
  */
 @Composable
-private fun ButtonSection() {
+private fun ButtonSection(model: MarketPageModel, share: Share) {
+    val scope = rememberCoroutineScope { Dispatchers.Default }
     PrimaryButton(
-        onClick = {},
+        onClick = {
+            scope.launch {
+                model.toPurchaseState(share)
+            }
+        },
         "Buy",
         modifier = Modifier
             .width(110.dp)
