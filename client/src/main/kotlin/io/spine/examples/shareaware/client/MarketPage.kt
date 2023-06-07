@@ -61,8 +61,11 @@ import androidx.compose.ui.res.loadSvgPainter
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.google.common.base.Preconditions
+import io.spine.client.EventFilter.*
 import io.spine.examples.shareaware.MoneyCalculator
+import io.spine.examples.shareaware.PurchaseId
 import io.spine.examples.shareaware.client.payment.Dialog
+import io.spine.examples.shareaware.investment.command.PurchaseShares
 import io.spine.examples.shareaware.market.AvailableMarketShares
 import io.spine.examples.shareaware.server.market.MarketProcess
 import io.spine.examples.shareaware.share.Share
@@ -79,7 +82,7 @@ import kotlinx.coroutines.withContext
 /**
  * UI model for the `MarketPage`.
  */
-public class MarketPageModel(client: DesktopClient) {
+public class MarketPageModel(private val client: DesktopClient) {
     private val sharesSubscriptions: EntitySubscription<AvailableMarketShares> =
         EntitySubscription(AvailableMarketShares::class.java, client, MarketProcess.ID)
     private val purchaseState: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -100,6 +103,7 @@ public class MarketPageModel(client: DesktopClient) {
 
     public fun toDefaultState() {
         purchaseState.value = false
+        quantityToPurchase.value = 0
     }
 
     public fun purchaseState(): StateFlow<Boolean> {
@@ -116,6 +120,25 @@ public class MarketPageModel(client: DesktopClient) {
 
     public fun quantityToPurchase(): StateFlow<Int> {
         return quantityToPurchase
+    }
+
+    public fun purchaseShares() {
+        val share = shareToPurchase.value
+        Preconditions.checkNotNull(share)
+        val purchaseShares = PurchaseShares
+            .newBuilder()
+            .buildWith(share!!)
+        client.command(purchaseShares)
+    }
+
+    private fun PurchaseShares.Builder.buildWith(share: Share): PurchaseShares {
+        return this
+            .setPurchaseProcess(PurchaseId.generate())
+            .setPurchaser(client.authenticatedUser())
+            .setPrice(share.price)
+            .setQuantity(quantityToPurchase.value)
+            .setShare(share.id)
+            .vBuild()
     }
 }
 
@@ -176,7 +199,12 @@ private fun PurchaseDialog(
                     model.toDefaultState()
                 }
             },
-            onConfirm = {},
+            onConfirm = {
+                scope.launch {
+                    model.purchaseShares()
+                    model.toDefaultState()
+                }
+            },
             title = "Purchase '${shareToPurchase.value?.companyName}' shares",
             {
                 Column(
