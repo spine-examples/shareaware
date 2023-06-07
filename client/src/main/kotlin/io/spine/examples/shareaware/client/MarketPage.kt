@@ -35,7 +35,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidthIn
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
@@ -43,6 +45,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -60,6 +63,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.loadSvgPainter
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.google.common.base.Preconditions
 import io.spine.client.EventFilter.*
 import io.spine.examples.shareaware.MoneyCalculator
@@ -214,38 +218,59 @@ public class MarketPageModel(private val client: DesktopClient) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 public fun MarketPage(model: MarketPageModel) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
-        val marketShares by model.shares().collectAsState()
-        marketShares?.shareList?.forEach { share ->
-            ListItem(
+    val popUpShown = model.popUpShown().collectAsState()
+    val popUpMessage = model.popUpMessage().collectAsState()
+    val purchaseFailed = model.purchaseFailed().collectAsState()
+    val popUpContentColor = if (purchaseFailed.value) MaterialTheme.colorScheme.error
+    else MaterialTheme.colorScheme.primary
+    Scaffold(
+        bottomBar = {
+            PopUpMessage(
+                isShown = popUpShown.value,
+                dismissAction = { model.closePopUp() },
+                label = popUpMessage.value,
+                contentColor = popUpContentColor,
                 modifier = Modifier
-                    .height(100.dp),
-                headlineText = {
-                    MainItemContent(share)
-                },
-                leadingContent = {
-                    ShareIcon(share)
-                },
-                trailingContent = {
-                    ButtonSection(model, share)
-                },
-                colors = ListItemDefaults.colors(
-                    containerColor = MaterialTheme.colorScheme.tertiary
-                )
-            )
-            Divider(
-                thickness = 2.dp
+                    .requiredWidthIn(200.dp, 700.dp)
+                    .wrapContentWidth()
+                    .zIndex(1f)
             )
         }
-        val purchaseState = model.purchaseState().collectAsState()
-        PurchaseDialog(
-            model = model,
-            isShown = purchaseState.value
-        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .zIndex(0f)
+        ) {
+            val marketShares by model.shares().collectAsState()
+            marketShares?.shareList?.forEach { share ->
+                ListItem(
+                    modifier = Modifier
+                        .height(100.dp),
+                    headlineText = {
+                        MainItemContent(share)
+                    },
+                    leadingContent = {
+                        ShareIcon(share)
+                    },
+                    trailingContent = {
+                        ButtonSection(model, share)
+                    },
+                    colors = ListItemDefaults.colors(
+                        containerColor = MaterialTheme.colorScheme.tertiary
+                    )
+                )
+                Divider(
+                    thickness = 2.dp
+                )
+            }
+            val purchaseState = model.purchaseState().collectAsState()
+            PurchaseDialog(
+                model = model,
+                isShown = purchaseState.value
+            )
+        }
     }
 }
 

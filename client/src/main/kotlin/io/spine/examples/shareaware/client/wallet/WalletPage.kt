@@ -56,6 +56,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -522,18 +523,20 @@ private fun PaymentError(model: WalletPageModel) {
  * @param label the message to be shown to the user
  */
 @Composable
-private fun PopUpMessage(
+public fun PopUpMessage(
     isShown: Boolean,
     dismissAction: () -> Unit,
-    label: String
+    label: String,
+    contentColor: Color = MaterialTheme.colorScheme.error,
+    modifier: Modifier = Modifier
+        .requiredWidthIn(200.dp, 700.dp)
+        .wrapContentWidth()
 ) {
     if (isShown) {
         Snackbar(
-            modifier = Modifier
-                .requiredWidthIn(200.dp, 700.dp)
-                .wrapContentWidth(),
+            modifier = modifier,
             containerColor = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.error,
+            contentColor = contentColor,
             dismissAction = {
                 Row(
                     modifier = Modifier
