@@ -159,17 +159,14 @@ public class MarketPageModel(private val client: DesktopClient) {
     }
 
     /**
-     * Returns the state of the message about the purchase operation result,
-     * whether it is present or not.
+     * Returns the state of the message about the purchase operation result visibility.
      */
-    public fun purchaseResultMessageShown(): StateFlow<Boolean> {
+    public fun isPurchaseResultMessageShown(): StateFlow<Boolean> {
         return purchaseResultMessageShown
     }
 
     /**
      * Returns the current state of the message that signals about the purchase operation result.
-     *
-     * It needs to be shown to the user to inform about the result of the purchase operation.
      */
     public fun purchaseResultMessage(): StateFlow<String> {
         return purchaseResultMessage
@@ -178,7 +175,7 @@ public class MarketPageModel(private val client: DesktopClient) {
     /**
      * Returns the current state of the purchase operation, whether it failed or not.
      */
-    public fun purchaseFailed(): StateFlow<Boolean> {
+    public fun isPurchaseFailed(): StateFlow<Boolean> {
         return purchaseFailed
     }
 
@@ -296,9 +293,9 @@ public class MarketPageModel(private val client: DesktopClient) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 public fun MarketPage(model: MarketPageModel) {
-    val popUpShown = model.purchaseResultMessageShown().collectAsState()
+    val popUpShown = model.isPurchaseResultMessageShown().collectAsState()
     val popUpMessage = model.purchaseResultMessage().collectAsState()
-    val popUpInErrorState = model.purchaseFailed().collectAsState()
+    val popUpInErrorState = model.isPurchaseFailed().collectAsState()
     val popUpContentColor = if (popUpInErrorState.value) MaterialTheme.colorScheme.error
     else MaterialTheme.colorScheme.primary
     Scaffold(
