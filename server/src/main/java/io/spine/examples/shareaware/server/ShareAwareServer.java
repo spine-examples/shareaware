@@ -27,12 +27,14 @@
 package io.spine.examples.shareaware.server;
 
 import io.spine.environment.Environment;
+import io.spine.examples.shareaware.server.market.MarketDataProvider;
 import io.spine.server.Server;
 import io.spine.server.ServerEnvironment;
 import io.spine.server.storage.memory.InMemoryStorageFactory;
 import io.spine.server.transport.memory.InMemoryTransportFactory;
 
 import java.io.IOException;
+import java.time.Duration;
 
 import static io.spine.client.ConnectionConstants.DEFAULT_CLIENT_SERVICE_PORT;
 
@@ -57,6 +59,8 @@ public class ShareAwareServer {
     public static void main(String[] args) throws IOException {
         var server = create();
         server.start();
+        MarketDataProvider provider = MarketDataProvider.instance();
+        provider.runWith(Duration.ofSeconds(10));
         server.awaitTermination();
     }
 

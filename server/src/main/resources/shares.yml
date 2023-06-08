@@ -10,7 +10,7 @@
     priceUnits: 200
     priceNanos: 89
     companyName: Apple
-    companyLogo: https://upload.wikimedia.org/wikipedia/commons/8/8a/Apple_Logo.svg
+    companyLogo: https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg
 
   -
     id: 6e6456b3-eccb-48db-10f5-af2746f77e59
@@ -24,7 +24,7 @@
     priceUnits: 280
     priceNanos: 50
     companyName: Microsoft Corp.
-    companyLogo: https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg
+    companyLogo: https://upload.wikimedia.org/wikipedia/commons/2/25/Microsoft_icon.svg
 
   -
     id: 5d7356b3-eccb-23db-19e7-af7465f12f98
@@ -38,7 +38,7 @@
     priceUnits: 135
     priceNanos: 14
     companyName: Toyota Motor Corp
-    companyLogo: https://upload.wikimedia.org/wikipedia/commons/e/e7/Toyota.svg
+    companyLogo: https://upload.wikimedia.org/wikipedia/commons/c/c8/Toyota_logo.svg
 
   -
     id: 4f6286e2-eccb-25cd-49b4-cd4627d28e24
