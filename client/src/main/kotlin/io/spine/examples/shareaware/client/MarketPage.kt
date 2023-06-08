@@ -159,8 +159,8 @@ public class MarketPageModel(private val client: DesktopClient) {
     }
 
     /**
-     * Returns the state of the purchase operation
-     * whether it ended or not.
+     * Returns the state of the message about the purchase operation result,
+     * whether it is present or not.
      */
     public fun purchaseResultMessageShown(): StateFlow<Boolean> {
         return purchaseResultMessageShown
@@ -298,8 +298,8 @@ public class MarketPageModel(private val client: DesktopClient) {
 public fun MarketPage(model: MarketPageModel) {
     val popUpShown = model.purchaseResultMessageShown().collectAsState()
     val popUpMessage = model.purchaseResultMessage().collectAsState()
-    val purchaseFailed = model.purchaseFailed().collectAsState()
-    val popUpContentColor = if (purchaseFailed.value) MaterialTheme.colorScheme.error
+    val popUpInErrorState = model.purchaseFailed().collectAsState()
+    val popUpContentColor = if (popUpInErrorState.value) MaterialTheme.colorScheme.error
     else MaterialTheme.colorScheme.primary
     Scaffold(
         bottomBar = {

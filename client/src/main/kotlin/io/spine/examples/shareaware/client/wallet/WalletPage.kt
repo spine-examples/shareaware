@@ -521,6 +521,8 @@ private fun PaymentError(model: WalletPageModel) {
  * @param isShown is a component shown to the user
  * @param dismissAction callback that will be triggered when the user clicks on `Cancel` button
  * @param label the message to be shown to the user
+ * @param contentColor the preferred color for content inside this pop-up
+ * @param modifier the modifier to be applied to this pop-up
  */
 @Composable
 public fun PopUpMessage(
