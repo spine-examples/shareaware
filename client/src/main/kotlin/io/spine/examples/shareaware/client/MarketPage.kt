@@ -64,7 +64,7 @@ import androidx.compose.ui.res.loadSvgPainter
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.google.common.base.Preconditions
+import com.google.common.base.Preconditions.*
 import io.spine.client.EventFilter.*
 import io.spine.examples.shareaware.MoneyCalculator
 import io.spine.examples.shareaware.PurchaseId
@@ -214,7 +214,7 @@ public class MarketPageModel(private val client: DesktopClient) {
      */
     public fun purchaseShares() {
         val share = shareToPurchase.value
-        Preconditions.checkNotNull(share)
+        checkNotNull(share)
         val purchaseShares = PurchaseShares
             .newBuilder()
             .buildWith(share!!)
@@ -433,7 +433,7 @@ private fun String.validateNumber(): Boolean {
  * @return the readable string that represents the total price of the purchase.
  */
 private fun calculatePrice(pricePerOne: Money?, quantity: Int): String {
-    Preconditions.checkArgument(null != pricePerOne)
+    checkArgument(null != pricePerOne)
     val totalPrice = MoneyCalculator.multiply(pricePerOne!!, quantity)
     return totalPrice.asReadableString()
 }
