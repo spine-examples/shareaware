@@ -115,7 +115,7 @@ public class MarketPageModel(private val client: DesktopClient) {
      *
      * Page state when the user wants to purchase shares.
      *
-     * @param share share to purchase
+     * @param share the share to purchase
      */
     public fun toPurchaseState(share: Share) {
         purchaseState.value = true
@@ -169,7 +169,7 @@ public class MarketPageModel(private val client: DesktopClient) {
     /**
      * Returns the current state of the message that signals about the purchase operation result.
      *
-     * It needs to be shown to user to inform about result of the purchase operation.
+     * It needs to be shown to the user to inform about the result of the purchase operation.
      */
     public fun purchaseResultMessage(): StateFlow<String> {
         return purchaseResultMessage
