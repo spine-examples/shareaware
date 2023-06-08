@@ -74,6 +74,9 @@ public class MarketPageModel(client: DesktopClient) {
 
     /**
      * Returns the current state of available shares on the market.
+     *
+     * The returnable value may contain null when the market closed or
+     * when an error occurred in the market system.
      */
     public fun shares(): StateFlow<AvailableMarketShares?> {
         return sharesSubscriptions.state()
