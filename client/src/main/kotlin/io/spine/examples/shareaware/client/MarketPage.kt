@@ -96,8 +96,8 @@ public class MarketPageModel(private val client: DesktopClient) {
     private val purchaseState: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val shareToPurchase: MutableStateFlow<Share?> = MutableStateFlow(null)
     private val quantityToPurchase: MutableStateFlow<Int> = MutableStateFlow(0)
-    private val popUpShown: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    private val popUpMessage: MutableStateFlow<String> = MutableStateFlow("")
+    private val purchaseResultMessageShown: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val purchaseResultMessage: MutableStateFlow<String> = MutableStateFlow("")
     private val purchaseFailed: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     /**
@@ -110,50 +110,111 @@ public class MarketPageModel(private val client: DesktopClient) {
         return sharesSubscriptions.state()
     }
 
+    /**
+     * Sets the page to "purchase" state.
+     *
+     * Page state when the user wants to purchase shares.
+     *
+     * @param share share to purchase
+     */
     public fun toPurchaseState(share: Share) {
         purchaseState.value = true
         shareToPurchase.value = share
     }
 
+    /**
+     * Sets page to default state.
+     */
     public fun toDefaultState() {
         purchaseState.value = false
         quantityToPurchase.value = 0
     }
 
+    /**
+     * Returns the "purchase" state of the page.
+     */
     public fun purchaseState(): StateFlow<Boolean> {
         return purchaseState
     }
 
+    /**
+     * Returns the share user wants to purchase.
+     */
     public fun shareToPurchase(): StateFlow<Share?> {
         return shareToPurchase
     }
 
+    /**
+     * Sets the quantity of shares user wants to purchase.
+     */
     public fun quantityToPurchase(quantity: Int) {
         quantityToPurchase.value = quantity
     }
 
+    /**
+     * Returns the quantity of shares user wants to purchase.
+     */
     public fun quantityToPurchase(): StateFlow<Int> {
         return quantityToPurchase
     }
 
-    public fun popUpShown(): StateFlow<Boolean> {
-        return popUpShown
+    /**
+     * Returns the state of the purchase operation
+     * whether it ended or not.
+     */
+    public fun purchaseResultMessageShown(): StateFlow<Boolean> {
+        return purchaseResultMessageShown
     }
 
-    public fun popUpMessage(): StateFlow<String> {
-        return popUpMessage
+    /**
+     * Returns the current state of the message that signals about the purchase operation result.
+     *
+     * It needs to be shown to user to inform about result of the purchase operation.
+     */
+    public fun purchaseResultMessage(): StateFlow<String> {
+        return purchaseResultMessage
     }
 
+    /**
+     * Returns the current state of the purchase operation, whether it failed or not.
+     */
     public fun purchaseFailed(): StateFlow<Boolean> {
         return purchaseFailed
     }
 
-    public fun closePopUp() {
-        popUpShown.value = false
+    /**
+     * Enables the visibility of the message about successful purchase operation
+     * and sets the provided message to it.
+     */
+    private fun showSuccessfulPurchaseMessage(message: String) {
+        purchaseResultMessageShown.value = true
         purchaseFailed.value = false
-        popUpMessage.value = ""
+        purchaseResultMessage.value = message
     }
 
+    /**
+     * Enables the visibility of the message about failed purchase operation
+     * and sets the provided message to it.
+     */
+    private fun showFailedPurchasedMessage(message: String) {
+        purchaseResultMessageShown.value = true
+        purchaseFailed.value = true
+        purchaseResultMessage.value = message
+    }
+
+    /**
+     * Disables the visibility of the message about purchase operation result
+     * and clears its message.
+     */
+    public fun closePurchaseResultMessage() {
+        purchaseResultMessageShown.value = false
+        purchaseFailed.value = false
+        purchaseResultMessage.value = ""
+    }
+
+    /**
+     * Sends the `PurchaseShares` command to the server.
+     */
     public fun purchaseShares() {
         val share = shareToPurchase.value
         Preconditions.checkNotNull(share)
@@ -167,42 +228,56 @@ public class MarketPageModel(private val client: DesktopClient) {
         client.command(purchaseShares)
     }
 
+    /**
+     * Subscribes to the `SharesPurchased` event.
+     */
     private fun subscribeToSharesPurchased(id: PurchaseId) {
         val purchaseIdField = SharesPurchased.Field.purchaseProcess()
         client.subscribeOnce(
             SharesPurchased::class.java,
             eq(purchaseIdField, id)
         ) {
-            popUpShown.value = true
-            purchaseFailed.value = false
-            popUpMessage.value = "Shares have been purchased successfully."
+            showSuccessfulPurchaseMessage("Shares have been purchased successfully.")
         }
     }
 
+    /**
+     * Subscribes to the `InsufficientFunds` event, which signals that the price of purchase
+     * exceeds the amount of available funds on the balance.
+     */
     private fun subscribeToInsufficientFunds(id: PurchaseId) {
         val purchaseIdField = InsufficientFunds.Field.operation().purchase()
         client.subscribeOnce(
             InsufficientFunds::class.java,
             eq(purchaseIdField, id)
         ) {
-            popUpShown.value = true
-            purchaseFailed.value = true
-            popUpMessage.value = "There are insufficient funds on your balance to purchase those shares."
+            showFailedPurchasedMessage(
+                "There are insufficient funds on your balance to purchase those shares."
+            )
         }
     }
 
+    /**
+     * Subscribes to the `SharesCannotBeObtained` event that signals about error in the market,
+     * when trying to purchase shares.
+     */
     private fun subscribeToSharesCannotBeObtained(id: PurchaseId) {
         val purchaseIdField = SharesCannotBeObtained.Field.purchaseProcess()
         client.subscribeOnce(
             SharesCannotBeObtained::class.java,
             eq(purchaseIdField, id)
         ) {
-            popUpShown.value = true
-            purchaseFailed.value = true
-            popUpMessage.value = "An error occurred in the market system while shares were purchasing."
+            showFailedPurchasedMessage(
+                "An error occurred in the market system while shares were purchasing."
+            )
         }
     }
 
+    /**
+     * Returns the command to purchase shares.
+     *
+     * @param share the share to purchase
+     */
     private fun PurchaseShares.Builder.buildWith(share: Share): PurchaseShares {
         return this
             .setPurchaseProcess(PurchaseId.generate())
@@ -221,8 +296,8 @@ public class MarketPageModel(private val client: DesktopClient) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 public fun MarketPage(model: MarketPageModel) {
-    val popUpShown = model.popUpShown().collectAsState()
-    val popUpMessage = model.popUpMessage().collectAsState()
+    val popUpShown = model.purchaseResultMessageShown().collectAsState()
+    val popUpMessage = model.purchaseResultMessage().collectAsState()
     val purchaseFailed = model.purchaseFailed().collectAsState()
     val popUpContentColor = if (purchaseFailed.value) MaterialTheme.colorScheme.error
     else MaterialTheme.colorScheme.primary
@@ -230,7 +305,7 @@ public fun MarketPage(model: MarketPageModel) {
         bottomBar = {
             PopUpMessage(
                 isShown = popUpShown.value,
-                dismissAction = { model.closePopUp() },
+                dismissAction = { model.closePurchaseResultMessage() },
                 label = popUpMessage.value,
                 contentColor = popUpContentColor,
                 modifier = Modifier
@@ -277,6 +352,9 @@ public fun MarketPage(model: MarketPageModel) {
     }
 }
 
+/**
+ * Represents the dialog window for the shares purchase purposes.
+ */
 @Composable
 private fun PurchaseDialog(
     model: MarketPageModel,
@@ -319,12 +397,15 @@ private fun PurchaseDialog(
     }
 }
 
+/**
+ * Represents the input component accepting only the numeric values.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NumericInput(model: MarketPageModel) {
     val input = remember { mutableStateOf("") }
     val change: (String) -> Unit = {
-        if (it.validateQuantity()) {
+        if (it.validateNumber()) {
             input.value = it
             val quantity = if (it == "") 0 else it.toInt()
             model.quantityToPurchase(quantity)
@@ -340,11 +421,20 @@ private fun NumericInput(model: MarketPageModel) {
     )
 }
 
-private fun String.validateQuantity(): Boolean {
+/**
+ * Returns true if this `String` is written like a number, false otherwise.
+ */
+private fun String.validateNumber(): Boolean {
     val numericRegex = """^(?!0)[0-9]*${'$'}""".toRegex()
     return numericRegex.containsMatchIn(this)
 }
 
+/**
+ * Calculates the price of the purchase operation taking
+ * the quantity of shares and price per one share.
+ *
+ * @return the readable string that represents the total price of the purchase.
+ */
 private fun calculatePrice(pricePerOne: Money?, quantity: Int): String {
     Preconditions.checkArgument(null != pricePerOne)
     val totalPrice = MoneyCalculator.multiply(pricePerOne!!, quantity)
