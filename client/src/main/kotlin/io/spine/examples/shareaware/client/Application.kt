@@ -32,7 +32,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -74,11 +73,11 @@ public fun application(): Unit = application {
                     MenuLayout()
                 }
                 when (currentPage.value) {
-                    Page.HOME -> Text("HOME")
+                    Page.HOME -> HomePage()
                     Page.WALLET -> WalletPage(walletPageModel)
                     Page.MARKET -> MarketPage(marketPageModel)
-                    Page.INVESTMENTS -> Text("INVESTMENTS")
-                    Page.WATCHLISTS -> Text("WATCHLISTS")
+                    Page.INVESTMENTS -> InvestmentsPage()
+                    Page.WATCHLISTS -> WatchlistsPage()
                 }
             }
         }
