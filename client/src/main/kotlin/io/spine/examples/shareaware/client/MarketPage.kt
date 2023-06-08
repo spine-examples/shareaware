@@ -98,7 +98,7 @@ public class MarketPageModel(private val client: DesktopClient) {
     private val quantityToPurchase: MutableStateFlow<Int> = MutableStateFlow(0)
     private val purchaseResultMessageShown: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val purchaseResultMessage: MutableStateFlow<String> = MutableStateFlow("")
-    private val purchaseFailed: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val isPurchaseFailed: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     /**
      * Returns the current state of available shares on the market.
@@ -176,7 +176,7 @@ public class MarketPageModel(private val client: DesktopClient) {
      * Returns the current state of the purchase operation, whether it failed or not.
      */
     public fun isPurchaseFailed(): StateFlow<Boolean> {
-        return purchaseFailed
+        return isPurchaseFailed
     }
 
     /**
@@ -185,7 +185,7 @@ public class MarketPageModel(private val client: DesktopClient) {
      */
     private fun showSuccessfulPurchaseMessage(message: String) {
         purchaseResultMessageShown.value = true
-        purchaseFailed.value = false
+        isPurchaseFailed.value = false
         purchaseResultMessage.value = message
     }
 
@@ -195,7 +195,7 @@ public class MarketPageModel(private val client: DesktopClient) {
      */
     private fun showFailedPurchasedMessage(message: String) {
         purchaseResultMessageShown.value = true
-        purchaseFailed.value = true
+        isPurchaseFailed.value = true
         purchaseResultMessage.value = message
     }
 
@@ -205,7 +205,7 @@ public class MarketPageModel(private val client: DesktopClient) {
      */
     public fun closePurchaseResultMessage() {
         purchaseResultMessageShown.value = false
-        purchaseFailed.value = false
+        isPurchaseFailed.value = false
         purchaseResultMessage.value = ""
     }
 
