@@ -37,6 +37,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static java.util.concurrent.TimeUnit.*;
 
 /**
  * Provides data about currently available shares on the market to the ShareAware context.
@@ -82,6 +83,11 @@ public final class MarketDataProvider {
     private final AtomicBoolean active = new AtomicBoolean();
 
     /**
+     * The period with which the market data is emitted.
+     */
+    private Duration period;
+
+    /**
      * Prevents instantiation of this class.
      */
     private MarketDataProvider() {
@@ -104,6 +110,7 @@ public final class MarketDataProvider {
      */
     public synchronized void runWith(Duration period) {
         active.set(true);
+        this.period = period;
         marketThread.execute(() -> {
             while (active.get()) {
                 sleepUninterruptibly(period);
@@ -119,15 +126,16 @@ public final class MarketDataProvider {
      */
     public synchronized void stopEmission() {
         active.set(false);
+        sleepUninterruptibly(period);
     }
 
     /**
      * Stops the event emission and terminates the thread
      * in which the provider is running.
      */
-    public synchronized void terminate() {
+    public synchronized void terminate() throws InterruptedException {
         active.set(false);
-        marketThread.shutdownNow();
+        marketThread.awaitTermination(period.toMillis(), MILLISECONDS);
     }
 
     private void emitEvent() {
