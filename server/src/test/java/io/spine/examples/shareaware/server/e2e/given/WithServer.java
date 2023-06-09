@@ -31,9 +31,7 @@ import io.spine.examples.shareaware.server.TradingContext;
 import io.spine.examples.shareaware.server.market.MarketDataProvider;
 import io.spine.server.Server;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -52,42 +50,27 @@ public abstract class WithServer {
 
     private static final String ADDRESS = "localhost";
     private static final int PORT = 4242;
-    private Server server;
-    private final Collection<ManagedChannel> channels = new ArrayList<>();
+    private static final Server server = atPort(PORT)
+            .add(TradingContext.newBuilder())
+            .build();
+    private static final Collection<ManagedChannel> channels = new ArrayList<>();
     private static final MarketDataProvider provider = MarketDataProvider.instance();
 
     /**
-     * Runs the {@link MarketDataProvider} to provide data about available shares on the market.
+     * Starts the server and runs the {@link MarketDataProvider}.
      */
     @BeforeAll
-    static void startProvider() {
+    static void startProvider() throws IOException {
+        server.start();
         provider.runWith(Duration.ofSeconds(1));
     }
 
     /**
-     * Stops the {@link MarketDataProvider}.
+     * Shuts the server, all channels, and {@link MarketDataProvider} down.
      */
     @AfterAll
     static void stopProvider() {
         provider.stopEmission();
-    }
-
-    /**
-     * Starts the server.
-     */
-    @BeforeEach
-    void startAndConnect() throws IOException {
-        server = atPort(PORT)
-                .add(TradingContext.newBuilder())
-                .build();
-        server.start();
-    }
-
-    /**
-     * Shuts the server and all channels down.
-     */
-    @AfterEach
-    void stopAndDisconnect() {
         server.shutdown();
         channels.forEach(WithServer::closeChannel);
     }
