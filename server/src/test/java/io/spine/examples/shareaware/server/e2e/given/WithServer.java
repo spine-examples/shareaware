@@ -51,7 +51,7 @@ public abstract class WithServer {
     private static final String ADDRESS = "localhost";
     private static final int PORT = 4242;
     private Server server;
-    private static final Collection<ManagedChannel> channels = new ArrayList<>();
+    private final Collection<ManagedChannel> channels = new ArrayList<>();
     private static final MarketDataProvider provider = MarketDataProvider.instance();
 
     /**
