@@ -30,9 +30,7 @@ import io.grpc.ManagedChannel;
 import io.spine.examples.shareaware.server.TradingContext;
 import io.spine.examples.shareaware.server.market.MarketDataProvider;
 import io.spine.server.Server;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
@@ -57,23 +55,7 @@ public abstract class WithServer {
     private static final MarketDataProvider provider = MarketDataProvider.instance();
 
     /**
-     * Runs the {@link MarketDataProvider} to provide data about available shares on the market.
-     */
-    @BeforeAll
-    static void startProvider() {
-        provider.runWith(Duration.ofSeconds(1));
-    }
-
-    /**
-     * Stops the {@link MarketDataProvider}.
-     */
-    @AfterAll
-    static void stopProvider() {
-        provider.stopEmission();
-    }
-
-    /**
-     * Starts the server.
+     * Starts the server and runs the {@link MarketDataProvider}.
      */
     @BeforeEach
     void startAndConnect() throws IOException {
@@ -81,13 +63,15 @@ public abstract class WithServer {
                 .add(TradingContext.newBuilder())
                 .build();
         server.start();
+        provider.runWith(Duration.ofSeconds(1));
     }
 
     /**
-     * Shuts the server and all channels down.
+     * Shuts the server, all channels, and {@link MarketDataProvider} down.
      */
     @AfterEach
     void stopAndDisconnect() {
+        provider.stopEmission();
         server.shutdown();
         channels.forEach(WithServer::closeChannel);
     }

@@ -26,10 +26,13 @@
 
 package io.spine.examples.shareaware.server;
 
+import io.spine.environment.Tests;
+import io.spine.server.ServerEnvironment;
+import io.spine.server.delivery.Delivery;
 import io.spine.testing.server.blackbox.ContextAwareTest;
 import io.spine.testing.server.model.ModelTests;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * An abstract base for {@link io.spine.testing.server.blackbox.BlackBoxContext
@@ -37,19 +40,37 @@ import org.junit.jupiter.api.BeforeAll;
  * with different entities, and therefore require to clear the cached knowledge
  * about {@linkplain io.spine.server.model.Model Bounded Context models}.
  *
- * <p>This implementation clears all models before and after all tests.
- *
- * @see ModelTests#dropAllModels()
+ * @implNote This implementation {@linkplain ModelTests#dropAllModels() clears all models}
+ * before and after each test. Also, test-scope {@code Delivery} is reset
+ * to bound the delivery operations to the scope of their respective test method.
  */
 public abstract class FreshContextTest extends ContextAwareTest {
 
-    @BeforeAll
-    static void beforeAll() {
+    @Override
+    @BeforeEach
+    protected void createContext() {
         ModelTests.dropAllModels();
+        resetDelivery();
+        super.createContext();
     }
 
-    @AfterAll
-    static void afterAll() {
+    /**
+     * Explicitly configures a new local {@code Delivery} to use.
+     *
+     * <p>This is a required step, since many test actions happen asynchronously,
+     * leading to a number of signals to be delivered out of scope
+     * of their designated test. If the {@code Delivery} is not reset,
+     * signals emitted by tests may remain in the delivery pipeline,
+     * causing various side effects for the tests which follow.
+     */
+    private static void resetDelivery() {
+        ServerEnvironment.when(Tests.class).use(Delivery.local());
+    }
+
+    @Override
+    @AfterEach
+    protected void closeContext() {
+        super.closeContext();
         ModelTests.dropAllModels();
     }
 }

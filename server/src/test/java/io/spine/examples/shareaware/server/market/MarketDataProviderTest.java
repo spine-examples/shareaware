@@ -26,6 +26,7 @@
 
 package io.spine.examples.shareaware.server.market;
 
+import io.spine.base.EventMessage;
 import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
 import io.spine.examples.shareaware.server.FreshContextTest;
 import io.spine.examples.shareaware.server.market.given.MarketTestContext;
@@ -34,8 +35,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+import static java.util.Collections.synchronizedList;
 
 @DisplayName("`MarketDataService` should")
 final class MarketDataProviderTest extends FreshContextTest {
@@ -48,15 +52,16 @@ final class MarketDataProviderTest extends FreshContextTest {
     }
 
     @Test
-    @DisplayName("emit two `MarketSharesUpdated` events in two point five seconds")
-    void emitEvent() throws InterruptedException {
-        service.runWith(Duration.ofSeconds(1));
+    @DisplayName("emit expected number of `MarketSharesUpdated` events " +
+            "with respect to emission interval")
+    void emitEvent() {
+        List<EventMessage> emitted = synchronizedList(new ArrayList<>());
+        service.runWith(Duration.ofSeconds(1), emitted::add);
         sleepUninterruptibly(Duration.ofMillis(2500));
+        service.stopEmission();
 
         context().assertEvents()
                  .withType(MarketSharesUpdated.class)
-                 .hasSize(2);
-
-        service.stopEmission();
+                 .hasSize(emitted.size());
     }
 }

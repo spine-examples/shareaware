@@ -26,6 +26,8 @@
 
 package io.spine.examples.shareaware.server.market;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import io.spine.base.EventMessage;
 import io.spine.core.UserId;
 import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
 import io.spine.server.integration.ThirdPartyContext;
@@ -34,9 +36,11 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 /**
  * Provides data about currently available shares on the market to the ShareAware context.
@@ -82,6 +86,11 @@ public final class MarketDataProvider {
     private final AtomicBoolean active = new AtomicBoolean();
 
     /**
+     * The period with which the market data is emitted.
+     */
+    private Duration period;
+
+    /**
      * Prevents instantiation of this class.
      */
     private MarketDataProvider() {
@@ -103,11 +112,23 @@ public final class MarketDataProvider {
      * on behalf of the {@value contextName} Bounded Context.
      */
     public synchronized void runWith(Duration period) {
+        runWith(period, (msg) -> {});
+    }
+
+    /**
+     * Emits the {@code MarketSharesUpdated} event with a specified periodicity
+     * on behalf of the {@value contextName} Bounded Context.
+     *
+     * <p>Notifies the specified listener about each event emitted.
+     */
+    public synchronized void runWith(Duration period, Consumer<EventMessage> listener) {
         active.set(true);
+        this.period = period;
         marketThread.execute(() -> {
             while (active.get()) {
                 sleepUninterruptibly(period);
-                emitEvent();
+                var msg = emitEvent();
+                listener.accept(msg);
             }
         });
     }
@@ -119,18 +140,20 @@ public final class MarketDataProvider {
      */
     public synchronized void stopEmission() {
         active.set(false);
+        sleepUninterruptibly(period);
     }
 
     /**
      * Stops the event emission and terminates the thread
      * in which the provider is running.
      */
-    public synchronized void terminate() {
+    public synchronized void terminate() throws InterruptedException {
         active.set(false);
-        marketThread.shutdownNow();
+        marketThread.awaitTermination(period.toMillis(), MILLISECONDS);
     }
 
-    private void emitEvent() {
+    @CanIgnoreReturnValue
+    private MarketSharesUpdated emitEvent() {
         var updatedShares = MarketData.actualShares();
         var event = MarketSharesUpdated
                 .newBuilder()
@@ -138,5 +161,6 @@ public final class MarketDataProvider {
                 .addAllShare(updatedShares)
                 .vBuild();
         marketContext.emittedEvent(event, actor);
+        return event;
     }
 }
