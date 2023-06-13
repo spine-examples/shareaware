@@ -90,15 +90,10 @@ import kotlinx.coroutines.withContext
 /**
  * UI model for the `MarketPage`.
  */
-public class MarketPageModel(private val client: DesktopClient) {
+public class MarketPageModel(client: DesktopClient) {
     private val sharesSubscriptions: EntitySubscription<AvailableMarketShares> =
         EntitySubscription(AvailableMarketShares::class.java, client, MarketProcess.ID)
-    private val purchaseState: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    private val shareToPurchase: MutableStateFlow<Share?> = MutableStateFlow(null)
-    private val quantityToPurchase: MutableStateFlow<Int> = MutableStateFlow(0)
-    private val purchaseResultMessageShown: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    private val purchaseResultMessage: MutableStateFlow<String> = MutableStateFlow("")
-    private val isPurchaseFailed: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    public val purchaseOperation: PurchaseOperation = PurchaseOperation(client)
 
     /**
      * Returns the current state of available shares on the market.
@@ -111,178 +106,188 @@ public class MarketPageModel(private val client: DesktopClient) {
     }
 
     /**
-     * Sets the page to "purchase" state.
-     *
-     * Page state when the user wants to purchase shares.
-     *
-     * @param share the share to purchase
+     * Controls the state of the shares purchase operation.
      */
-    public fun toPurchaseState(share: Share) {
-        purchaseState.value = true
-        shareToPurchase.value = share
-    }
+    public class PurchaseOperation(private val client: DesktopClient) {
+        private val inProgressState: MutableStateFlow<Boolean> = MutableStateFlow(false)
+        private val shareState: MutableStateFlow<Share?> = MutableStateFlow(null)
+        private val quantityState: MutableStateFlow<Int> = MutableStateFlow(0)
+        private val resultMessageShownState: MutableStateFlow<Boolean> = MutableStateFlow(false)
+        private val resultMessageState: MutableStateFlow<String> = MutableStateFlow("")
+        private val isFailedState: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
-    /**
-     * Sets page to default state.
-     */
-    public fun toDefaultState() {
-        purchaseState.value = false
-        quantityToPurchase.value = 0
-    }
-
-    /**
-     * Returns the "purchase" state of the page.
-     */
-    public fun purchaseState(): StateFlow<Boolean> {
-        return purchaseState
-    }
-
-    /**
-     * Returns the share user wants to purchase.
-     */
-    public fun shareToPurchase(): StateFlow<Share?> {
-        return shareToPurchase
-    }
-
-    /**
-     * Sets the quantity of shares user wants to purchase.
-     */
-    public fun quantityToPurchase(quantity: Int) {
-        quantityToPurchase.value = quantity
-    }
-
-    /**
-     * Returns the quantity of shares user wants to purchase.
-     */
-    public fun quantityToPurchase(): StateFlow<Int> {
-        return quantityToPurchase
-    }
-
-    /**
-     * Returns the state of the message about the purchase operation result visibility.
-     */
-    public fun isPurchaseResultMessageShown(): StateFlow<Boolean> {
-        return purchaseResultMessageShown
-    }
-
-    /**
-     * Returns the current state of the message that signals about the purchase operation result.
-     */
-    public fun purchaseResultMessage(): StateFlow<String> {
-        return purchaseResultMessage
-    }
-
-    /**
-     * Returns the current state of the purchase operation, whether it failed or not.
-     */
-    public fun isPurchaseFailed(): StateFlow<Boolean> {
-        return isPurchaseFailed
-    }
-
-    /**
-     * Enables the visibility of the message about successful purchase operation
-     * and sets the provided message to it.
-     */
-    private fun showSuccessfulPurchaseMessage(message: String) {
-        purchaseResultMessageShown.value = true
-        isPurchaseFailed.value = false
-        purchaseResultMessage.value = message
-    }
-
-    /**
-     * Enables the visibility of the message about failed purchase operation
-     * and sets the provided message to it.
-     */
-    private fun showFailedPurchasedMessage(message: String) {
-        purchaseResultMessageShown.value = true
-        isPurchaseFailed.value = true
-        purchaseResultMessage.value = message
-    }
-
-    /**
-     * Disables the visibility of the message about purchase operation result
-     * and clears its message.
-     */
-    public fun closePurchaseResultMessage() {
-        purchaseResultMessageShown.value = false
-        isPurchaseFailed.value = false
-        purchaseResultMessage.value = ""
-    }
-
-    /**
-     * Sends the `PurchaseShares` command to the server.
-     */
-    public fun purchaseShares() {
-        val share = shareToPurchase.value
-        checkNotNull(share)
-        val purchaseShares = PurchaseShares
-            .newBuilder()
-            .buildWith(share!!)
-        val purchaseProcess = purchaseShares.purchaseProcess
-        subscribeToSharesPurchased(purchaseProcess)
-        subscribeToInsufficientFunds(purchaseProcess)
-        subscribeToSharesCannotBeObtained(purchaseProcess)
-        client.command(purchaseShares)
-    }
-
-    /**
-     * Subscribes to the `SharesPurchased` event.
-     */
-    private fun subscribeToSharesPurchased(id: PurchaseId) {
-        val purchaseIdField = SharesPurchased.Field.purchaseProcess()
-        client.subscribeOnce(
-            SharesPurchased::class.java,
-            eq(purchaseIdField, id)
-        ) {
-            showSuccessfulPurchaseMessage("Shares have been purchased successfully.")
+        /**
+         * Initiates the purchase.
+         *
+         * @param share the share to purchase
+         */
+        public fun initiate(share: Share) {
+            inProgressState.value = true
+            shareState.value = share
         }
-    }
 
-    /**
-     * Subscribes to the `InsufficientFunds` event, which signals that the price of purchase
-     * exceeds the amount of available funds on the balance.
-     */
-    private fun subscribeToInsufficientFunds(id: PurchaseId) {
-        val purchaseIdField = InsufficientFunds.Field.operation().purchase()
-        client.subscribeOnce(
-            InsufficientFunds::class.java,
-            eq(purchaseIdField, id)
-        ) {
-            showFailedPurchasedMessage(
-                "There are insufficient funds on your balance to purchase those shares."
-            )
+        /**
+         * Returns the state of the purchase operation is it in progress or not.
+         */
+        public fun isInProgress(): StateFlow<Boolean> {
+            return inProgressState
         }
-    }
 
-    /**
-     * Subscribes to the `SharesCannotBeObtained` event that signals about error in the market,
-     * when trying to purchase shares.
-     */
-    private fun subscribeToSharesCannotBeObtained(id: PurchaseId) {
-        val purchaseIdField = SharesCannotBeObtained.Field.purchaseProcess()
-        client.subscribeOnce(
-            SharesCannotBeObtained::class.java,
-            eq(purchaseIdField, id)
-        ) {
-            showFailedPurchasedMessage(
-                "An error occurred in the market system while shares were purchasing."
-            )
+        /**
+         * Sends the `PurchaseShares` command to the server.
+         */
+        public fun complete() {
+            val share = shareState.value
+            checkNotNull(share)
+            val purchaseShares = PurchaseShares
+                .newBuilder()
+                .buildWith(share!!)
+            val purchaseProcess = purchaseShares.purchaseProcess
+            subscribeToSharesPurchased(purchaseProcess)
+            subscribeToInsufficientFunds(purchaseProcess)
+            subscribeToSharesCannotBeObtained(purchaseProcess)
+            client.command(purchaseShares)
         }
-    }
 
-    /**
-     * Returns the command to purchase shares.
-     *
-     * @param share the share to purchase
-     */
-    private fun PurchaseShares.Builder.buildWith(share: Share): PurchaseShares {
-        return this
-            .setPurchaseProcess(PurchaseId.generate())
-            .setPurchaser(client.authenticatedUser())
-            .setPrice(share.price)
-            .setQuantity(quantityToPurchase.value)
-            .setShare(share.id)
-            .vBuild()
+        /**
+         * Cancels the purchase operation.
+         */
+        public fun cancel() {
+            inProgressState.value = false
+            quantityState.value = 0
+        }
+
+        /**
+         * Returns the share user wants to purchase.
+         */
+        public fun share(): StateFlow<Share?> {
+            return shareState
+        }
+
+        /**
+         * Sets the quantity of shares user wants to purchase.
+         */
+        public fun quantityOfShares(): StateFlow<Int> {
+            return quantityState
+        }
+
+        /**
+         * Returns the quantity of shares user wants to purchase.
+         */
+        public fun quantityOfShares(quantity: Int) {
+            quantityState.value = quantity
+        }
+
+        /**
+         * Returns the state of the message about the purchase operation result visibility.
+         */
+        public fun isResultMessageShown(): StateFlow<Boolean> {
+            return resultMessageShownState
+        }
+
+        /**
+         * Returns the current state of the message that signals about the purchase operation result.
+         */
+        public fun resultMessage(): StateFlow<String> {
+            return resultMessageState
+        }
+
+        /**
+         * Returns the current state of the purchase operation, whether it failed or not.
+         */
+        public fun isFailed(): StateFlow<Boolean> {
+            return isFailedState
+        }
+
+        /**
+         * Enables the visibility of the message about successful purchase operation
+         * and sets the provided message to it.
+         */
+        private fun showSuccessfulOperationMessage(message: String) {
+            resultMessageShownState.value = true
+            isFailedState.value = false
+            resultMessageState.value = message
+        }
+
+        /**
+         * Enables the visibility of the message about failed purchase operation
+         * and sets the provided message to it.
+         */
+        private fun showFailedOperationMessage(message: String) {
+            resultMessageShownState.value = true
+            isFailedState.value = true
+            resultMessageState.value = message
+        }
+
+        /**
+         * Disables the visibility of the message about purchase operation result
+         * and clears its message.
+         */
+        public fun closeOperationResultMessage() {
+            resultMessageShownState.value = false
+            isFailedState.value = false
+            resultMessageState.value = ""
+        }
+
+        /**
+         * Subscribes to the `SharesPurchased` event.
+         */
+        private fun subscribeToSharesPurchased(id: PurchaseId) {
+            val purchaseIdField = SharesPurchased.Field.purchaseProcess()
+            client.subscribeOnce(
+                SharesPurchased::class.java,
+                eq(purchaseIdField, id)
+            ) {
+                showSuccessfulOperationMessage("Shares have been purchased successfully.")
+            }
+        }
+
+        /**
+         * Subscribes to the `InsufficientFunds` event, which signals that the price of purchase
+         * exceeds the amount of available funds on the balance.
+         */
+        private fun subscribeToInsufficientFunds(id: PurchaseId) {
+            val purchaseIdField = InsufficientFunds.Field.operation().purchase()
+            client.subscribeOnce(
+                InsufficientFunds::class.java,
+                eq(purchaseIdField, id)
+            ) {
+                showFailedOperationMessage(
+                    "There are insufficient funds on your balance to purchase those shares."
+                )
+            }
+        }
+
+        /**
+         * Subscribes to the `SharesCannotBeObtained` event that signals about error in the market,
+         * when trying to purchase shares.
+         */
+        private fun subscribeToSharesCannotBeObtained(id: PurchaseId) {
+            val purchaseIdField = SharesCannotBeObtained.Field.purchaseProcess()
+            client.subscribeOnce(
+                SharesCannotBeObtained::class.java,
+                eq(purchaseIdField, id)
+            ) {
+                showFailedOperationMessage(
+                    "An error occurred in the market system while shares were purchasing."
+                )
+            }
+        }
+
+        /**
+         * Returns the command to purchase shares.
+         *
+         * @param share the share to purchase
+         */
+        private fun PurchaseShares.Builder.buildWith(share: Share): PurchaseShares {
+            return this
+                .setPurchaseProcess(PurchaseId.generate())
+                .setPurchaser(client.authenticatedUser())
+                .setPrice(share.price)
+                .setQuantity(quantityState.value)
+                .setShare(share.id)
+                .vBuild()
+        }
     }
 }
 
@@ -293,16 +298,16 @@ public class MarketPageModel(private val client: DesktopClient) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 public fun MarketPage(model: MarketPageModel) {
-    val popUpShown = model.isPurchaseResultMessageShown().collectAsState()
-    val popUpMessage = model.purchaseResultMessage().collectAsState()
-    val popUpInErrorState = model.isPurchaseFailed().collectAsState()
+    val popUpShown = model.purchaseOperation.isResultMessageShown().collectAsState()
+    val popUpMessage = model.purchaseOperation.resultMessage().collectAsState()
+    val popUpInErrorState = model.purchaseOperation.isFailed().collectAsState()
     val popUpContentColor = if (popUpInErrorState.value) MaterialTheme.colorScheme.error
     else MaterialTheme.colorScheme.primary
     Scaffold(
         bottomBar = {
             PopUpMessage(
                 isShown = popUpShown.value,
-                dismissAction = { model.closePurchaseResultMessage() },
+                dismissAction = { model.purchaseOperation.closeOperationResultMessage() },
                 label = popUpMessage.value,
                 contentColor = popUpContentColor,
                 modifier = Modifier
@@ -340,10 +345,10 @@ public fun MarketPage(model: MarketPageModel) {
                     thickness = 2.dp
                 )
             }
-            val purchaseState = model.purchaseState().collectAsState()
+            val purchaseInProgress = model.purchaseOperation.isInProgress().collectAsState()
             PurchaseDialog(
                 model = model,
-                isShown = purchaseState.value
+                isShown = purchaseInProgress.value
             )
         }
     }
@@ -358,19 +363,19 @@ private fun PurchaseDialog(
     isShown: Boolean
 ) {
     val scope = rememberCoroutineScope { Dispatchers.Default }
-    val shareToPurchase = model.shareToPurchase().collectAsState()
-    val quantity = model.quantityToPurchase().collectAsState()
+    val shareToPurchase = model.purchaseOperation.share().collectAsState()
+    val quantity = model.purchaseOperation.quantityOfShares().collectAsState()
     if (isShown) {
         Dialog(
             onCancel = {
                 scope.launch {
-                    model.toDefaultState()
+                    model.purchaseOperation.cancel()
                 }
             },
             onConfirm = {
                 scope.launch {
-                    model.purchaseShares()
-                    model.toDefaultState()
+                    model.purchaseOperation.complete()
+                    model.purchaseOperation.cancel()
                 }
             },
             title = "Purchase '${shareToPurchase.value?.companyName}' shares",
@@ -405,7 +410,7 @@ private fun NumericInput(model: MarketPageModel) {
         if (it.validateNumber()) {
             input.value = it
             val quantity = if (it == "") 0 else it.toInt()
-            model.quantityToPurchase(quantity)
+            model.purchaseOperation.quantityOfShares(quantity)
         }
     }
     TextField(
@@ -503,7 +508,7 @@ private fun ButtonSection(model: MarketPageModel, share: Share) {
     PrimaryButton(
         onClick = {
             scope.launch {
-                model.toPurchaseState(share)
+                model.purchaseOperation.initiate(share)
             }
         },
         "Buy",
