@@ -34,7 +34,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.platform.Font
 import androidx.compose.ui.unit.sp
 
 /**
@@ -78,31 +80,67 @@ private val lightColors: ColorScheme = lightColorScheme(
 )
 
 /**
+ * [San Francisco font](https://developer.apple.com/fonts/#:~:text=across%20multiple%20interfaces.-,San%20Francisco,-San%20Francisco%20is)
+ */
+private val sanFrancisco = FontFamily(
+    Font(
+        "font/SFUIDisplay-Bold.ttf",
+        FontWeight.Bold,
+        FontStyle.Normal
+    ),
+    Font(
+        "font/SFUIDisplay-Semibold.ttf",
+        FontWeight.Medium,
+        FontStyle.Normal
+    ),
+    Font(
+        "font/SFUIText-Regular.ttf",
+        FontWeight.Normal,
+        FontStyle.Normal
+    )
+)
+
+/**
  * Text styles of the application.
  */
 private val typography: Typography = Typography(
     bodySmall = TextStyle(
-        fontSize = 12.sp
+        fontSize = 12.sp,
+        fontFamily = sanFrancisco
+    ),
+    headlineSmall = TextStyle(
+        fontSize = 12.sp,
+        fontFamily = sanFrancisco
+    ),
+    headlineMedium = TextStyle(
+        fontSize = 14.sp,
+        fontWeight = FontWeight.W400,
+        fontFamily = sanFrancisco
     ),
     bodyMedium = TextStyle(
         fontSize = 14.sp,
         fontWeight = FontWeight.W500,
-        letterSpacing = 0.5.sp
+        letterSpacing = 0.5.sp,
+        fontFamily = sanFrancisco
     ),
     bodyLarge = TextStyle(
-        fontSize = 16.sp
+        fontSize = 16.sp,
+        fontFamily = sanFrancisco
     ),
     labelSmall = TextStyle(
-        fontFamily = FontFamily.Monospace,
-        fontSize = 17.sp
+        fontFamily = sanFrancisco,
+        fontSize = 17.sp,
+        fontWeight = FontWeight.W500
     ),
     labelMedium = TextStyle(
         fontSize = 20.sp,
         fontWeight = FontWeight.W500,
-        letterSpacing = 0.5.sp
+        letterSpacing = 0.5.sp,
+        fontFamily = sanFrancisco
     ),
     labelLarge = TextStyle(
-        fontSize = 30.sp
+        fontSize = 47.sp,
+        fontFamily = sanFrancisco,
     )
 )
 
