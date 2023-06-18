@@ -67,9 +67,8 @@ public fun application(): Unit = application {
                     .fillMaxSize()
             ) {
                 Column(
-                    modifier = Modifier.width(150.dp)
+                    modifier = Modifier.width(160.dp)
                 ) {
-                    Logo()
                     MenuLayout()
                 }
                 when (currentPage.value) {
