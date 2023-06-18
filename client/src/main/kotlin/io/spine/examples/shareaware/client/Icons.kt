@@ -38,4 +38,5 @@ public object Icons {
     public const val WATCHLIST: String = "${iconFolder}/watchlist.png"
     public const val CARD: String = "${iconFolder}/card.png"
     public const val USD: String = "${iconFolder}/usd.png"
+    public const val INFO: String = "${iconFolder}/info.png"
 }
