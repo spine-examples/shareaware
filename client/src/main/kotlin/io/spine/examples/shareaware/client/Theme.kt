@@ -61,18 +61,20 @@ public fun ShareAwareTheme(content: @Composable () -> Unit) {
 private val lightColors: ColorScheme = lightColorScheme(
     primary = Colors.Blue30,
     onPrimary = Colors.White,
-    secondary = Colors.Blue90,
-    onSecondary = Color.Black,
+    secondary = Colors.Grey,
+    onSecondary = Colors.DarkGrey,
     onSecondaryContainer = Color.Black,
-    tertiary = Colors.Beige20,
-    surface = Colors.Beige40,
+    tertiary = Colors.White10,
+    surface = Colors.White30,
     onSurface = Color.Black,
     surfaceVariant = Color.Transparent,
     onSurfaceVariant = Color.Black,
     surfaceTint = Colors.Blue80,
-    background = Colors.Beige90,
+    background = Colors.White,
     onBackground = Color.Black,
-    outline = Colors.Blue30
+    outline = Colors.Blue30,
+    error = Colors.Red,
+    scrim = Colors.Scrim
 )
 
 /**
@@ -105,11 +107,13 @@ private val typography: Typography = Typography(
 )
 
 private object Colors {
-    val Blue90: Color = Color(0xffb0daff)
-    val Blue30: Color = Color(0xff1d267d)
-    val Blue80: Color = Color(0xffacb3ec)
-    val White: Color = Color(0xfff8f5e4)
-    val Beige90: Color = Color(0xfff9f5eb)
-    val Beige40: Color = Color(0xffe3dccf)
-    val Beige20: Color = Color(0xffECE8DD)
+    val Blue30 = Color(0xff2094fa)
+    val Blue80 = Color(0xffacb3ec)
+    val White = Color(0xfff5f5f5)
+    val White10 = Color(0xffdad8de)
+    val White30 = Color(0xe6e6e6)
+    val Grey = Color(0xffc6c4c9)
+    val DarkGrey = Color(0xff5b595f)
+    val Red = Color(0xffff3b30)
+    val Scrim = Color.Black.copy(alpha = 0.5f)
 }
