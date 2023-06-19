@@ -64,7 +64,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import io.spine.client.EventFilter.*
 import io.spine.examples.shareaware.ReplenishmentId
 import io.spine.examples.shareaware.WithdrawalId
@@ -347,8 +346,7 @@ public fun WalletPage(model: WalletPageModel): Unit = Column {
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .zIndex(0f),
+                .fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -507,9 +505,7 @@ private fun PaymentError(model: WalletPageModel) {
                 }
             },
             label = errorMessage.value,
-            modifier = Modifier
-                .wrapContentWidth()
-                .zIndex(1f)
+            modifier = Modifier.wrapContentWidth()
         )
     }
 }
