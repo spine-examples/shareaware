@@ -344,11 +344,9 @@ public fun WalletPage(model: WalletPageModel): Unit = Column {
         containerColor = MaterialTheme.colorScheme.surface,
         bottomBar = { PaymentError(model) }
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
             Column(
                 modifier = Modifier
