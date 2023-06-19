@@ -61,8 +61,7 @@ public fun Tooltip(
     tip: String,
     modifier: Modifier = Modifier,
     iconColor: Color = MaterialTheme.colorScheme.error,
-    iconModifier: Modifier = Modifier
-        .size(13.dp),
+    iconModifier: Modifier = Modifier.size(13.dp),
     offset: DpOffset = DpOffset(0.dp, 0.dp)
 ) {
     TooltipArea(

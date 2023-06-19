@@ -104,8 +104,7 @@ public fun MenuLayout() {
                             Icon(
                                 painterResource(page.iconPath),
                                 contentDescription = page.label,
-                                modifier = Modifier
-                                    .size(20.dp),
+                                modifier = Modifier.size(20.dp),
                                 tint = MaterialTheme.colorScheme.onSecondary
                             )
                             Spacer(Modifier.width(5.dp))

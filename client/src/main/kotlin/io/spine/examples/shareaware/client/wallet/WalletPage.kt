@@ -341,8 +341,7 @@ public class WalletPageModel(private val client: DesktopClient) {
 @Composable
 public fun WalletPage(model: WalletPageModel): Unit = Column {
     Scaffold(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.surface,
         bottomBar = { PaymentError(model) }
     ) {
@@ -530,8 +529,7 @@ public fun PopUpMessage(
     dismissAction: () -> Unit,
     label: String,
     contentColor: Color = MaterialTheme.colorScheme.error,
-    modifier: Modifier = Modifier
-        .wrapContentWidth()
+    modifier: Modifier = Modifier.wrapContentWidth()
 ) {
     if (isShown) {
         Card(
@@ -551,9 +549,7 @@ public fun PopUpMessage(
                     style = MaterialTheme.typography.bodySmall,
                     color = contentColor
                 )
-                Spacer(
-                    modifier = Modifier.width(15.dp)
-                )
+                Spacer(modifier = Modifier.width(15.dp))
                 PrimaryButton(
                     onClick = dismissAction,
                     "Close",
@@ -693,8 +689,7 @@ private fun Input(
                 }
                 Tooltip(
                     tip = tipMessage,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd),
+                    modifier = Modifier.align(Alignment.CenterEnd),
                     iconColor = toolTipIconColor,
                     offset = DpOffset(130.dp, 0.dp)
                 )
