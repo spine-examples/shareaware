@@ -90,7 +90,7 @@ private val sanFrancisco = FontFamily(
     ),
     Font(
         "font/SFUIDisplay-Semibold.ttf",
-        FontWeight.Medium,
+        FontWeight.SemiBold,
         FontStyle.Normal
     ),
     Font(
@@ -110,12 +110,12 @@ private val typography: Typography = Typography(
     ),
     headlineMedium = TextStyle(
         fontSize = 14.sp,
-        fontWeight = FontWeight.W400,
+        fontWeight = FontWeight.Normal,
         fontFamily = sanFrancisco
     ),
     bodyMedium = TextStyle(
         fontSize = 14.sp,
-        fontWeight = FontWeight.W500,
+        fontWeight = FontWeight.SemiBold,
         letterSpacing = 0.5.sp,
         fontFamily = sanFrancisco
     ),
@@ -126,11 +126,11 @@ private val typography: Typography = Typography(
     labelSmall = TextStyle(
         fontFamily = sanFrancisco,
         fontSize = 17.sp,
-        fontWeight = FontWeight.W500
+        fontWeight = FontWeight.SemiBold
     ),
     labelMedium = TextStyle(
         fontSize = 20.sp,
-        fontWeight = FontWeight.W500,
+        fontWeight = FontWeight.SemiBold,
         letterSpacing = 0.5.sp,
         fontFamily = sanFrancisco
     ),
