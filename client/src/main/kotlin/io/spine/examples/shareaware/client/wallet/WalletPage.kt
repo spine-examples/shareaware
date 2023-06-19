@@ -662,7 +662,7 @@ private fun Input(
     BasicTextField(
         value = value,
         onValueChange = onChange,
-        textStyle = MaterialTheme.typography.headlineSmall,
+        textStyle = MaterialTheme.typography.bodySmall,
         interactionSource = interactionSource,
         decorationBox = { innerTextField ->
             Box(
@@ -683,7 +683,7 @@ private fun Input(
                 if (value.isEmpty()) {
                     Text(
                         text = placeholder,
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSecondary
                     )
                 }

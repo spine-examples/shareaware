@@ -108,10 +108,6 @@ private val typography: Typography = Typography(
         fontSize = 12.sp,
         fontFamily = sanFrancisco
     ),
-    headlineSmall = TextStyle(
-        fontSize = 12.sp,
-        fontFamily = sanFrancisco
-    ),
     headlineMedium = TextStyle(
         fontSize = 14.sp,
         fontWeight = FontWeight.W400,
