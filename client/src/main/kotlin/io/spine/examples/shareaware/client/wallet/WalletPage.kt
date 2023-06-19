@@ -601,15 +601,16 @@ private fun MoneyOperationDialog(
                 }
             },
             title = title,
+            modifier = Modifier
+                .wrapContentHeight()
+                .width(245.dp),
             {
                 Input(
                     value = ibanValue,
-                    onValueChange = onIbanChange,
-                    label = "IBAN",
-                    icon = painterResource(Icons.CARD),
-                    iconDescription = "IBAN",
+                    onChange = onIbanChange,
+                    placeholder = "IBAN",
                     isError = mistakeInIbanField,
-                    errorMessage = "Ensure your IBAN " +
+                    tipMessage = "Ensure your IBAN " +
                             "contains 2 letters and 2 digits in the beginning and " +
                             "up to 26 alphanumeric characters after. " +
                             "Example: FI211234569876543210"
@@ -618,72 +619,74 @@ private fun MoneyOperationDialog(
             {
                 Input(
                     value = moneyValue,
-                    onValueChange = onMoneyChange,
-                    label = "How much",
-                    icon = painterResource(Icons.USD),
-                    iconDescription = "USD Currency",
+                    onChange = onMoneyChange,
+                    placeholder = "How much",
                     isError = mistakeInMoneyField,
-                    errorMessage = "This field must contain only digits. Example: 500.50"
+                    tipMessage = "This field must contain only digits. Example: 500.50"
                 )
             }
         )
     }
 }
 
-
 /**
- * The input component that supports displaying an error related to its state.
+ * The input component that supports displaying a tip.
  *
  * @param value the input text to be shown in the text field
- * @param onValueChange the callback that is triggered when the input's value change
- * @param label the label to be displayed inside the input container
- * @param icon leading icon to be displayed at the beginning of the input container
- * @param iconDescription what is icon represents
+ * @param onChange the callback that is triggered when the input's value change
+ * @param placeholder the label to be displayed inside the input container
  * @param isError indicates if the input's current value is in error
- * @param errorMessage error message to be displayed in the tooltip when [isError] set to `true`
+ * @param tipMessage message to be displayed in the tooltip
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-public fun Input(
+private fun Input(
     value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    icon: Painter,
-    iconDescription: String,
+    onChange: (String) -> Unit,
+    placeholder: String,
     isError: Boolean,
-    errorMessage: String
+    tipMessage: String
 ) {
-    TextField(
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+    val borderColor = if (isFocused) MaterialTheme.colorScheme.primary else Color.Unspecified
+    val toolTipIconColor = if (isError) MaterialTheme.colorScheme.error else
+        MaterialTheme.colorScheme.onSecondary
+    BasicTextField(
         value = value,
-        onValueChange = onValueChange,
-        label = {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-        },
-        modifier = Modifier
-            .fillMaxWidth(),
-        colors = TextFieldDefaults.textFieldColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            textColor = MaterialTheme.colorScheme.onSurface,
-            placeholderColor = MaterialTheme.colorScheme.onSurface,
-            cursorColor = MaterialTheme.colorScheme.onSurface
-        ),
-        textStyle = MaterialTheme.typography.bodyMedium,
-        isError = isError,
-        leadingIcon = {
-            Icon(
-                painter = icon,
-                contentDescription = iconDescription,
+        onValueChange = onChange,
+        textStyle = MaterialTheme.typography.headlineSmall,
+        interactionSource = interactionSource,
+        decorationBox = { innerTextField ->
+            Box(
                 modifier = Modifier
-                    .width(24.dp)
-                    .height(24.dp)
-            )
-        },
-        trailingIcon = {
-            if (isError) {
-                WarningTooltip(errorMessage)
+                    .fillMaxWidth()
+                    .border(
+                        width = 2.dp,
+                        color = borderColor,
+                        shape = MaterialTheme.shapes.small
+                    )
+                    .background(
+                        color = MaterialTheme.colorScheme.tertiary,
+                        shape = MaterialTheme.shapes.small
+                    )
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                contentAlignment = Alignment.CenterStart,
+            ) {
+                if (value.isEmpty()) {
+                    Text(
+                        text = placeholder,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onSecondary
+                    )
+                }
+                Tooltip(
+                    tip = tipMessage,
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd),
+                    iconColor = toolTipIconColor,
+                    offset = DpOffset(130.dp, 0.dp)
+                )
+                innerTextField()
             }
         }
     )
