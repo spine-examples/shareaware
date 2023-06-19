@@ -531,30 +531,42 @@ public fun PopUpMessage(
     label: String,
     contentColor: Color = MaterialTheme.colorScheme.error,
     modifier: Modifier = Modifier
-        .requiredWidthIn(200.dp, 700.dp)
         .wrapContentWidth()
 ) {
     if (isShown) {
-        Snackbar(
+        Card(
+            shape = MaterialTheme.shapes.small,
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.background,
+            ),
             modifier = modifier,
-            containerColor = MaterialTheme.colorScheme.background,
-            contentColor = contentColor,
-            dismissAction = {
-                Row(
+        ) {
+            Row(
+                modifier = Modifier.padding(5.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = contentColor
+                )
+                Spacer(
+                    modifier = Modifier.width(15.dp)
+                )
+                PrimaryButton(
+                    onClick = dismissAction,
+                    "Close",
                     modifier = Modifier
-                        .padding(end = 10.dp)
-                ) {
-                    PrimaryButton(
-                        onClick = dismissAction,
-                        label = "Cancel",
-                        modifier = Modifier
-                            .width(110.dp)
-                            .height(30.dp),
-                        labelStyle = MaterialTheme.typography.bodyMedium
-                    )
-                }
+                        .width(70.dp)
+                        .height(20.dp),
+                    labelStyle = MaterialTheme.typography.bodySmall,
+                    shape = MaterialTheme.shapes.small,
+                    contentPadding = PaddingValues(2.dp),
+                    color = MaterialTheme.colorScheme.secondary
+                )
             }
-        ) { Text(label) }
+        }
     }
 }
 
