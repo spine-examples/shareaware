@@ -32,7 +32,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationRail
@@ -92,15 +91,13 @@ public fun MenuLayout() {
                 modifier = Modifier
                     .width(150.dp)
                     .height(30.dp)
-                    .clip(RoundedCornerShape(size = 5.dp))
+                    .clip(MaterialTheme.shapes.extraSmall)
             ) {
                 NavigationRailItem(
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     icon = {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Spacer(Modifier.width(5.dp))
