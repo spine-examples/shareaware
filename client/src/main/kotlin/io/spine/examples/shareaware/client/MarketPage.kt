@@ -35,7 +35,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidthIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
@@ -311,7 +310,6 @@ public fun MarketPage(model: MarketPageModel) {
                 label = popUpMessage.value,
                 contentColor = popUpContentColor,
                 modifier = Modifier
-                    .requiredWidthIn(200.dp, 700.dp)
                     .wrapContentWidth()
                     .zIndex(1f)
             )
@@ -379,7 +377,7 @@ private fun PurchaseDialog(
                 }
             },
             title = "Purchase '${shareToPurchase.value?.companyName}' shares",
-            {
+            inputs = arrayOf({
                 Column(
                     verticalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
@@ -394,7 +392,7 @@ private fun PurchaseDialog(
                     )
                     NumericInput(model)
                 }
-            },
+            })
         )
     }
 }
