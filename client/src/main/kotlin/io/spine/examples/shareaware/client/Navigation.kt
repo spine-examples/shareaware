@@ -26,6 +26,7 @@
 
 package io.spine.examples.shareaware.client
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -87,7 +88,7 @@ public fun MenuLayout() {
         containerColor = MaterialTheme.colorScheme.secondary,
     ) {
         Page.values().forEachIndexed { index, page ->
-            Row(
+            Box(
                 modifier = Modifier
                     .width(150.dp)
                     .height(30.dp)
