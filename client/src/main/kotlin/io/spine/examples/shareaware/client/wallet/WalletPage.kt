@@ -26,27 +26,31 @@
 
 package io.spine.examples.shareaware.client.wallet
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidthIn
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -57,20 +61,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import io.spine.client.EventFilter.*
 import io.spine.examples.shareaware.ReplenishmentId
 import io.spine.examples.shareaware.WithdrawalId
 import io.spine.examples.shareaware.client.DesktopClient
 import io.spine.examples.shareaware.client.EntitySubscription
-import io.spine.examples.shareaware.client.Icons
 import io.spine.examples.shareaware.client.PrimaryButton
 import io.spine.examples.shareaware.client.payment.Dialog
-import io.spine.examples.shareaware.client.payment.WarningTooltip
+import io.spine.examples.shareaware.client.payment.Tooltip
 import io.spine.examples.shareaware.client.wallet.StringExtensions.asIban
 import io.spine.examples.shareaware.client.wallet.StringExtensions.asUsd
 import io.spine.examples.shareaware.client.wallet.StringExtensions.validateIban
@@ -335,35 +337,39 @@ public class WalletPageModel(private val client: DesktopClient) {
  * The page component that provides data about
  * the user's current wallet balance and ways to interact with it.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 public fun WalletPage(model: WalletPageModel): Unit = Column {
-    Column(
+    Scaffold(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.surface,
+        bottomBar = { PaymentError(model) }
     ) {
-        Row(
+        Column(
             modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.Bottom
-        ) { BalanceCard(model) }
-        Row(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround
+                .fillMaxSize()
+                .zIndex(0f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            ReplenishmentButton(model)
-            WithdrawalButton(model)
+            Column(
+                modifier = Modifier
+                    .width(IntrinsicSize.Max)
+                    .wrapContentWidth()
+            ) {
+                BalanceCard(model)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    ReplenishmentButton(model)
+                    WithdrawalButton(model)
+                }
+            }
         }
-        Row(
-            Modifier
-                .height(70.dp)
-                .fillMaxWidth()
-                .padding(start = 1.dp),
-            verticalAlignment = Alignment.Bottom
-        ) { PaymentError(model) }
         WalletReplenishmentWindow(model)
         WalletWithdrawalWindow(model)
     }
@@ -374,28 +380,17 @@ public fun WalletPage(model: WalletPageModel): Unit = Column {
  */
 @Composable
 private fun BalanceCard(model: WalletPageModel) {
-    ElevatedCard (
-        modifier = Modifier
-            .width(350.dp)
-            .height(100.dp)
-            .padding(vertical = 15.dp, horizontal = 20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-        ),
-        shape = CircleShape,
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 20.dp,
-        ),
-    ) {
-        val balance by model.balance().collectAsState()
+    val balance by model.balance().collectAsState()
+    Row {
         Text(
-            "Balance: $${balance?.asReadableString()}",
+            "Balance: ",
             style = MaterialTheme.typography.labelLarge,
-            textAlign = TextAlign.Center,
-            textDecoration = TextDecoration.Underline,
-            modifier = Modifier
-                .padding(10.dp)
-                .fillMaxWidth()
+            textAlign = TextAlign.Start,
+        )
+        Text(
+            "$${balance?.asReadableString()}",
+            style = MaterialTheme.typography.labelLarge,
+            textAlign = TextAlign.End,
         )
     }
 }
@@ -406,17 +401,14 @@ private fun BalanceCard(model: WalletPageModel) {
 @Composable
 private fun ReplenishmentButton(model: WalletPageModel) {
     val scope = rememberCoroutineScope { Dispatchers.Default }
-    Column(
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .fillMaxHeight()
-    ) {
-        PrimaryButton({
+    PrimaryButton(
+        onClick = {
             scope.launch {
                 model.toReplenishmentState()
             }
-        }, "Replenish")
-    }
+        },
+        label = "Replenish"
+    )
 }
 
 /**
@@ -425,17 +417,14 @@ private fun ReplenishmentButton(model: WalletPageModel) {
 @Composable
 private fun WithdrawalButton(model: WalletPageModel) {
     val scope = rememberCoroutineScope { Dispatchers.Default }
-    Column(
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .fillMaxHeight()
-    ) {
-        PrimaryButton({
+    PrimaryButton(
+        onClick = {
             scope.launch {
                 model.toWithdrawalState()
             }
-        }, "Withdraw")
-    }
+        },
+        label = "Withdraw"
+    )
 }
 
 /**
@@ -504,15 +493,26 @@ private fun PaymentError(model: WalletPageModel) {
     val errorMessage = model
         .paymentErrorMessage()
         .collectAsState()
-    PopUpMessage(
-        isShown = paymentError.value,
-        dismissAction = {
-            scope.launch {
-                model.closePaymentError()
-            }
-        },
-        label = errorMessage.value
-    )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(40.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        PopUpMessage(
+            isShown = paymentError.value,
+            dismissAction = {
+                scope.launch {
+                    model.closePaymentError()
+                }
+            },
+            label = errorMessage.value,
+            modifier = Modifier
+                .wrapContentWidth()
+                .zIndex(1f)
+        )
+    }
 }
 
 /**
