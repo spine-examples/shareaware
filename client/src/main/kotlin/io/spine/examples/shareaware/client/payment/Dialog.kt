@@ -26,8 +26,12 @@
 
 package io.spine.examples.shareaware.client.payment
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,15 +39,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.awt.awtEventOrNull
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntRect
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupPositionProvider
 import io.spine.examples.shareaware.client.PrimaryButton
+import java.awt.event.KeyEvent
 
 /**
  * Dialog window component.
@@ -51,33 +65,64 @@ import io.spine.examples.shareaware.client.PrimaryButton
  * @param onCancel callback that will be called when the user clicks on `Cancel` button
  * @param onConfirm callback that will be called when the user clicks on `Confirm` button
  * @param title the title of the dialog which should specify the purpose of the dialog
+ * @param modifier the `Modifier` to be applied to this dialog
  * @param inputs the list of composable that should represent the list of input fields
  */
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 public fun Dialog(
     onCancel: () -> Unit,
     onConfirm: () -> Unit,
     title: String,
+    modifier: Modifier = Modifier,
     vararg inputs: @Composable () -> Unit
 ) {
-    AlertDialog(
-        title = {
-            MainSection(
-                title = title,
-                inputs = inputs
-            )
-        },
-        buttons = {
-            ControlSection(onCancel, onConfirm)
-        },
+    Popup(
         onDismissRequest = onCancel,
-        modifier = Modifier
-            .width(400.dp)
-            .height(250.dp),
-        shape = MaterialTheme.shapes.large,
-        backgroundColor = MaterialTheme.colorScheme.background
-    )
+        popupPositionProvider = object : PopupPositionProvider {
+            override fun calculatePosition(
+                anchorBounds: IntRect,
+                windowSize: IntSize,
+                layoutDirection: LayoutDirection,
+                popupContentSize: IntSize
+            ): IntOffset = IntOffset.Zero
+        },
+        focusable = true,
+        onKeyEvent = {
+            if (it.type == KeyEventType.KeyDown && it.awtEventOrNull?.keyCode == KeyEvent.VK_ESCAPE) {
+                onCancel()
+                true
+            } else {
+                false
+            }
+        },
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.scrim)
+                .pointerInput(onCancel) {
+                    detectTapGestures(onPress = { onCancel() })
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                modifier = modifier
+                    .shadow(elevation = 24.dp, shape = MaterialTheme.shapes.large)
+                    .pointerInput(onCancel) {
+                        detectTapGestures(onPress = {})
+                    }
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                MainSection(
+                    title = title,
+                    inputs = inputs
+                )
+                ControlSection(onCancel, onConfirm)
+            }
+        }
+    }
 }
 
 /**
@@ -91,33 +136,30 @@ private fun MainSection(
     title: String,
     vararg inputs: @Composable () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            title,
-            style = MaterialTheme.typography.labelMedium,
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        inputs.forEachIndexed { index, input ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                input()
-            }
-            if (index != inputs.size - 1) {
-                Spacer(modifier = Modifier.height(10.dp))
-            }
+    Text(
+        title,
+        style = MaterialTheme.typography.headlineMedium,
+    )
+    Spacer(modifier = Modifier.height(20.dp))
+    inputs.forEachIndexed { index, input ->
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            input()
+        }
+        if (index != inputs.size - 1) {
+            Spacer(modifier = Modifier.height(10.dp))
         }
     }
+    Spacer(modifier = Modifier.height(20.dp))
 }
 
 /**
  * The control section of the dialog window.
+ *
+ * @param onCancel the callback function that will be triggered when the "Cancel" button pressed
+ * @param onConfirm the callback function that will be triggered when the "Confirm" button pressed
  */
 @Composable
 private fun ControlSection(
@@ -125,20 +167,19 @@ private fun ControlSection(
     onConfirm: () -> Unit
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(60.dp)
-            .padding(end = 20.dp),
-        horizontalArrangement = Arrangement.End,
-        verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
     ) {
         PrimaryButton(
             onCancel,
             "Cancel",
             modifier = Modifier
                 .width(110.dp)
-                .height(40.dp),
-            labelStyle = MaterialTheme.typography.bodyMedium
+                .height(30.dp),
+            labelStyle = MaterialTheme.typography.bodySmall,
+            shape = MaterialTheme.shapes.small,
+            contentPadding = PaddingValues(2.dp),
+            color = MaterialTheme.colorScheme.secondary
         )
         Spacer(modifier = Modifier.width(5.dp))
         PrimaryButton(
@@ -146,8 +187,10 @@ private fun ControlSection(
             "Confirm",
             modifier = Modifier
                 .width(110.dp)
-                .height(40.dp),
-            labelStyle = MaterialTheme.typography.bodyMedium
+                .height(30.dp),
+            labelStyle = MaterialTheme.typography.bodySmall,
+            shape = MaterialTheme.shapes.small,
+            contentPadding = PaddingValues(2.dp)
         )
     }
 }

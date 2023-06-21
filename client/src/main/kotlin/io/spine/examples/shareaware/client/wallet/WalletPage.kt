@@ -26,27 +26,31 @@
 
 package io.spine.examples.shareaware.client.wallet
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidthIn
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -57,20 +61,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import io.spine.client.EventFilter.*
 import io.spine.examples.shareaware.ReplenishmentId
 import io.spine.examples.shareaware.WithdrawalId
 import io.spine.examples.shareaware.client.DesktopClient
 import io.spine.examples.shareaware.client.EntitySubscription
-import io.spine.examples.shareaware.client.Icons
 import io.spine.examples.shareaware.client.PrimaryButton
 import io.spine.examples.shareaware.client.payment.Dialog
-import io.spine.examples.shareaware.client.payment.WarningTooltip
+import io.spine.examples.shareaware.client.payment.Tooltip
 import io.spine.examples.shareaware.client.wallet.StringExtensions.asIban
 import io.spine.examples.shareaware.client.wallet.StringExtensions.asUsd
 import io.spine.examples.shareaware.client.wallet.StringExtensions.validateIban
@@ -335,35 +336,35 @@ public class WalletPageModel(private val client: DesktopClient) {
  * The page component that provides data about
  * the user's current wallet balance and ways to interact with it.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 public fun WalletPage(model: WalletPageModel): Unit = Column {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.surface,
+        bottomBar = { PaymentError(model) }
     ) {
-        Row(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.Bottom
-        ) { BalanceCard(model) }
-        Row(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            ReplenishmentButton(model)
-            WithdrawalButton(model)
+            Column(
+                modifier = Modifier
+                    .width(IntrinsicSize.Max)
+                    .wrapContentWidth()
+            ) {
+                BalanceCard(model)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    ReplenishmentButton(model)
+                    WithdrawalButton(model)
+                }
+            }
         }
-        Row(
-            Modifier
-                .height(70.dp)
-                .fillMaxWidth()
-                .padding(start = 1.dp),
-            verticalAlignment = Alignment.Bottom
-        ) { PaymentError(model) }
         WalletReplenishmentWindow(model)
         WalletWithdrawalWindow(model)
     }
@@ -374,28 +375,17 @@ public fun WalletPage(model: WalletPageModel): Unit = Column {
  */
 @Composable
 private fun BalanceCard(model: WalletPageModel) {
-    ElevatedCard (
-        modifier = Modifier
-            .width(350.dp)
-            .height(100.dp)
-            .padding(vertical = 15.dp, horizontal = 20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-        ),
-        shape = CircleShape,
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 20.dp,
-        ),
-    ) {
-        val balance by model.balance().collectAsState()
+    val balance by model.balance().collectAsState()
+    Row {
         Text(
-            "Balance: $${balance?.asReadableString()}",
+            "Balance: ",
             style = MaterialTheme.typography.labelLarge,
-            textAlign = TextAlign.Center,
-            textDecoration = TextDecoration.Underline,
-            modifier = Modifier
-                .padding(10.dp)
-                .fillMaxWidth()
+            textAlign = TextAlign.Start,
+        )
+        Text(
+            "$${balance?.asReadableString()}",
+            style = MaterialTheme.typography.labelLarge,
+            textAlign = TextAlign.End,
         )
     }
 }
@@ -406,17 +396,14 @@ private fun BalanceCard(model: WalletPageModel) {
 @Composable
 private fun ReplenishmentButton(model: WalletPageModel) {
     val scope = rememberCoroutineScope { Dispatchers.Default }
-    Column(
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .fillMaxHeight()
-    ) {
-        PrimaryButton({
+    PrimaryButton(
+        onClick = {
             scope.launch {
                 model.toReplenishmentState()
             }
-        }, "Replenish")
-    }
+        },
+        label = "Replenish"
+    )
 }
 
 /**
@@ -425,17 +412,14 @@ private fun ReplenishmentButton(model: WalletPageModel) {
 @Composable
 private fun WithdrawalButton(model: WalletPageModel) {
     val scope = rememberCoroutineScope { Dispatchers.Default }
-    Column(
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .fillMaxHeight()
-    ) {
-        PrimaryButton({
+    PrimaryButton(
+        onClick = {
             scope.launch {
                 model.toWithdrawalState()
             }
-        }, "Withdraw")
-    }
+        },
+        label = "Withdraw"
+    )
 }
 
 /**
@@ -504,15 +488,24 @@ private fun PaymentError(model: WalletPageModel) {
     val errorMessage = model
         .paymentErrorMessage()
         .collectAsState()
-    PopUpMessage(
-        isShown = paymentError.value,
-        dismissAction = {
-            scope.launch {
-                model.closePaymentError()
-            }
-        },
-        label = errorMessage.value
-    )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(40.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        PopUpMessage(
+            isShown = paymentError.value,
+            dismissAction = {
+                scope.launch {
+                    model.closePaymentError()
+                }
+            },
+            label = errorMessage.value,
+            modifier = Modifier.wrapContentWidth()
+        )
+    }
 }
 
 /**
@@ -530,31 +523,40 @@ public fun PopUpMessage(
     dismissAction: () -> Unit,
     label: String,
     contentColor: Color = MaterialTheme.colorScheme.error,
-    modifier: Modifier = Modifier
-        .requiredWidthIn(200.dp, 700.dp)
-        .wrapContentWidth()
+    modifier: Modifier = Modifier.wrapContentWidth()
 ) {
     if (isShown) {
-        Snackbar(
+        Card(
+            shape = MaterialTheme.shapes.small,
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.background,
+            ),
             modifier = modifier,
-            containerColor = MaterialTheme.colorScheme.background,
-            contentColor = contentColor,
-            dismissAction = {
-                Row(
+        ) {
+            Row(
+                modifier = Modifier.padding(5.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = contentColor
+                )
+                Spacer(modifier = Modifier.width(15.dp))
+                PrimaryButton(
+                    onClick = dismissAction,
+                    "Close",
                     modifier = Modifier
-                        .padding(end = 10.dp)
-                ) {
-                    PrimaryButton(
-                        onClick = dismissAction,
-                        label = "Cancel",
-                        modifier = Modifier
-                            .width(110.dp)
-                            .height(30.dp),
-                        labelStyle = MaterialTheme.typography.bodyMedium
-                    )
-                }
+                        .width(70.dp)
+                        .height(20.dp),
+                    labelStyle = MaterialTheme.typography.bodySmall,
+                    shape = MaterialTheme.shapes.small,
+                    contentPadding = PaddingValues(2.dp),
+                    color = MaterialTheme.colorScheme.secondary
+                )
             }
-        ) { Text(label) }
+        }
     }
 }
 
@@ -601,15 +603,16 @@ private fun MoneyOperationDialog(
                 }
             },
             title = title,
+            modifier = Modifier
+                .wrapContentHeight()
+                .width(245.dp),
             {
                 Input(
                     value = ibanValue,
-                    onValueChange = onIbanChange,
-                    label = "IBAN",
-                    icon = painterResource(Icons.CARD),
-                    iconDescription = "IBAN",
+                    onChange = onIbanChange,
+                    placeholder = "IBAN",
                     isError = mistakeInIbanField,
-                    errorMessage = "Ensure your IBAN " +
+                    tipMessage = "Ensure your IBAN " +
                             "contains 2 letters and 2 digits in the beginning and " +
                             "up to 26 alphanumeric characters after. " +
                             "Example: FI211234569876543210"
@@ -618,72 +621,73 @@ private fun MoneyOperationDialog(
             {
                 Input(
                     value = moneyValue,
-                    onValueChange = onMoneyChange,
-                    label = "How much",
-                    icon = painterResource(Icons.USD),
-                    iconDescription = "USD Currency",
+                    onChange = onMoneyChange,
+                    placeholder = "How much",
                     isError = mistakeInMoneyField,
-                    errorMessage = "This field must contain only digits. Example: 500.50"
+                    tipMessage = "This field must contain only digits. Example: 500.50"
                 )
             }
         )
     }
 }
 
-
 /**
- * The input component that supports displaying an error related to its state.
+ * The input component that supports displaying a tip.
  *
  * @param value the input text to be shown in the text field
- * @param onValueChange the callback that is triggered when the input's value change
- * @param label the label to be displayed inside the input container
- * @param icon leading icon to be displayed at the beginning of the input container
- * @param iconDescription what is icon represents
+ * @param onChange the callback that is triggered when the input's value change
+ * @param placeholder the label to be displayed inside the input container
  * @param isError indicates if the input's current value is in error
- * @param errorMessage error message to be displayed in the tooltip when [isError] set to `true`
+ * @param tipMessage message to be displayed in the tooltip
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-public fun Input(
+private fun Input(
     value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    icon: Painter,
-    iconDescription: String,
+    onChange: (String) -> Unit,
+    placeholder: String,
     isError: Boolean,
-    errorMessage: String
+    tipMessage: String
 ) {
-    TextField(
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+    val borderColor = if (isFocused) MaterialTheme.colorScheme.primary else Color.Unspecified
+    val toolTipIconColor = if (isError) MaterialTheme.colorScheme.error else
+        MaterialTheme.colorScheme.onSecondary
+    BasicTextField(
         value = value,
-        onValueChange = onValueChange,
-        label = {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-        },
-        modifier = Modifier
-            .fillMaxWidth(),
-        colors = TextFieldDefaults.textFieldColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            textColor = MaterialTheme.colorScheme.onSurface,
-            placeholderColor = MaterialTheme.colorScheme.onSurface,
-            cursorColor = MaterialTheme.colorScheme.onSurface
-        ),
-        textStyle = MaterialTheme.typography.bodyMedium,
-        isError = isError,
-        leadingIcon = {
-            Icon(
-                painter = icon,
-                contentDescription = iconDescription,
+        onValueChange = onChange,
+        textStyle = MaterialTheme.typography.bodySmall,
+        interactionSource = interactionSource,
+        decorationBox = { innerTextField ->
+            Box(
                 modifier = Modifier
-                    .width(24.dp)
-                    .height(24.dp)
-            )
-        },
-        trailingIcon = {
-            if (isError) {
-                WarningTooltip(errorMessage)
+                    .fillMaxWidth()
+                    .border(
+                        width = 2.dp,
+                        color = borderColor,
+                        shape = MaterialTheme.shapes.small
+                    )
+                    .background(
+                        color = MaterialTheme.colorScheme.tertiary,
+                        shape = MaterialTheme.shapes.small
+                    )
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                contentAlignment = Alignment.CenterStart,
+            ) {
+                if (value.isEmpty()) {
+                    Text(
+                        text = placeholder,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondary
+                    )
+                }
+                Tooltip(
+                    tip = tipMessage,
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                    iconColor = toolTipIconColor,
+                    offset = DpOffset(130.dp, 0.dp)
+                )
+                innerTextField()
             }
         }
     )

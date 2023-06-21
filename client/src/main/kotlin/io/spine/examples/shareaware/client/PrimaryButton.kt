@@ -26,54 +26,57 @@
 
 package io.spine.examples.shareaware.client
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerBasedShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 
 /**
  * The component that represents the default button of the application.
+ *
+ * @param onClick the callback function that  will be triggered when button clicked
+ * @param label label to be displayed on the button
+ * @param modifier `Modifier` to be applied to this button
+ * @param labelStyle style of the button label
+ * @param shape the shape of the button's container
+ * @param contentPadding the spacing values to apply internally between the container and the content
+ * @param color the color of the button container
  */
 @Composable
 public fun PrimaryButton(
     onClick: () -> Unit,
     label: String,
     modifier: Modifier = Modifier
-        .width(200.dp)
+        .width(140.dp)
         .height(50.dp),
-    labelStyle: TextStyle = MaterialTheme.typography.labelMedium
+    labelStyle: TextStyle = MaterialTheme.typography.labelMedium,
+    shape: CornerBasedShape = MaterialTheme.shapes.large,
+    contentPadding: PaddingValues = PaddingValues(5.dp),
+    color: Color = MaterialTheme.colorScheme.primary
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isHovered by interactionSource.collectIsHoveredAsState()
-    val background = if (isHovered) MaterialTheme.colorScheme.primary else
-        MaterialTheme.colorScheme.surfaceVariant
-    OutlinedButton(
+    Button(
         onClick,
         modifier = modifier,
-        interactionSource = interactionSource,
-        border = BorderStroke(width = 2.dp, MaterialTheme.colorScheme.primary),
-        shape = CircleShape,
+        shape = shape,
         colors = ButtonDefaults.buttonColors(
-            containerColor = background
-        )
+            containerColor = color
+        ),
+        contentPadding = contentPadding
     ) {
         Text(
             label,
             style = labelStyle,
-            color = MaterialTheme.colorScheme.contentColorFor(background)
+            color = MaterialTheme.colorScheme.contentColorFor(color)
         )
     }
 }

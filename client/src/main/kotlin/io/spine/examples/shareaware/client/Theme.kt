@@ -34,7 +34,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.platform.Font
 import androidx.compose.ui.unit.sp
 
 /**
@@ -61,18 +63,41 @@ public fun ShareAwareTheme(content: @Composable () -> Unit) {
 private val lightColors: ColorScheme = lightColorScheme(
     primary = Colors.Blue30,
     onPrimary = Colors.White,
-    secondary = Colors.Blue90,
-    onSecondary = Color.Black,
+    secondary = Colors.Grey,
+    onSecondary = Colors.DarkGrey,
     onSecondaryContainer = Color.Black,
-    tertiary = Colors.Beige20,
-    surface = Colors.Beige40,
+    tertiary = Colors.White10,
+    surface = Colors.White30,
     onSurface = Color.Black,
     surfaceVariant = Color.Transparent,
     onSurfaceVariant = Color.Black,
     surfaceTint = Colors.Blue80,
-    background = Colors.Beige90,
+    background = Colors.White,
     onBackground = Color.Black,
-    outline = Colors.Blue30
+    outline = Colors.Blue30,
+    error = Colors.Red,
+    scrim = Colors.Scrim
+)
+
+/**
+ * [San Francisco font](https://developer.apple.com/fonts/#:~:text=across%20multiple%20interfaces.-,San%20Francisco,-San%20Francisco%20is)
+ */
+private val sanFrancisco = FontFamily(
+    Font(
+        "font/SFUIDisplay-Bold.ttf",
+        FontWeight.Bold,
+        FontStyle.Normal
+    ),
+    Font(
+        "font/SFUIDisplay-Semibold.ttf",
+        FontWeight.SemiBold,
+        FontStyle.Normal
+    ),
+    Font(
+        "font/SFUIText-Regular.ttf",
+        FontWeight.Normal,
+        FontStyle.Normal
+    )
 )
 
 /**
@@ -80,36 +105,49 @@ private val lightColors: ColorScheme = lightColorScheme(
  */
 private val typography: Typography = Typography(
     bodySmall = TextStyle(
-        fontSize = 12.sp
+        fontSize = 12.sp,
+        fontFamily = sanFrancisco
+    ),
+    headlineMedium = TextStyle(
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Normal,
+        fontFamily = sanFrancisco
     ),
     bodyMedium = TextStyle(
         fontSize = 14.sp,
-        fontWeight = FontWeight.W500,
-        letterSpacing = 0.5.sp
+        fontWeight = FontWeight.SemiBold,
+        letterSpacing = 0.5.sp,
+        fontFamily = sanFrancisco
     ),
     bodyLarge = TextStyle(
-        fontSize = 16.sp
+        fontSize = 16.sp,
+        fontFamily = sanFrancisco
     ),
     labelSmall = TextStyle(
-        fontFamily = FontFamily.Monospace,
-        fontSize = 17.sp
+        fontFamily = sanFrancisco,
+        fontSize = 17.sp,
+        fontWeight = FontWeight.SemiBold
     ),
     labelMedium = TextStyle(
         fontSize = 20.sp,
-        fontWeight = FontWeight.W500,
-        letterSpacing = 0.5.sp
+        fontWeight = FontWeight.SemiBold,
+        letterSpacing = 0.5.sp,
+        fontFamily = sanFrancisco
     ),
     labelLarge = TextStyle(
-        fontSize = 30.sp
+        fontSize = 47.sp,
+        fontFamily = sanFrancisco,
     )
 )
 
 private object Colors {
-    val Blue90: Color = Color(0xffb0daff)
-    val Blue30: Color = Color(0xff1d267d)
-    val Blue80: Color = Color(0xffacb3ec)
-    val White: Color = Color(0xfff8f5e4)
-    val Beige90: Color = Color(0xfff9f5eb)
-    val Beige40: Color = Color(0xffe3dccf)
-    val Beige20: Color = Color(0xffECE8DD)
+    val Blue30 = Color(0xff2094fa)
+    val Blue80 = Color(0xffacb3ec)
+    val White = Color(0xfff5f5f5)
+    val White10 = Color(0xffdad8de)
+    val White30 = Color(0xe6e6e6)
+    val Grey = Color(0xffc6c4c9)
+    val DarkGrey = Color(0xff5b595f)
+    val Red = Color(0xffff3b30)
+    val Scrim = Color.Black.copy(alpha = 0.5f)
 }
