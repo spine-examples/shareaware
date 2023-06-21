@@ -81,7 +81,7 @@ public enum class Page(
  * Component that represents the menu for navigating through the application.
  */
 @Composable
-public fun MenuLayout() {
+public fun Menu() {
     var selectedItem by remember { mutableStateOf(0) }
     NavigationRail(
         modifier = Modifier.fillMaxWidth(),
@@ -94,42 +94,61 @@ public fun MenuLayout() {
                     .height(30.dp)
                     .clip(MaterialTheme.shapes.extraSmall)
             ) {
-                NavigationRailItem(
-                    modifier = Modifier.fillMaxWidth(),
-                    icon = {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Spacer(Modifier.width(5.dp))
-                            Icon(
-                                painterResource(page.iconPath),
-                                contentDescription = page.label,
-                                modifier = Modifier.size(20.dp),
-                                tint = MaterialTheme.colorScheme.onSecondary
-                            )
-                            Spacer(Modifier.width(5.dp))
-                            Text(
-                                text = page.label,
-                                style = MaterialTheme.typography.headlineMedium,
-                                color = MaterialTheme.colorScheme.onSecondary
-                            )
-                        }
-                    },
-                    selected = selectedItem == index,
-                    onClick = {
-                        selectedItem = index
-                        CurrentPage.set(page)
-                    },
-                    colors = NavigationRailItemDefaults.colors(
-                        selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-                        indicatorColor = MaterialTheme.colorScheme.surface,
-                    )
-                )
+                MenuItem(
+                    page = page,
+                    isSelected = selectedItem == index
+                ) {
+                    selectedItem = index
+                    CurrentPage.set(page)
+                }
             }
             Spacer(Modifier.height(5.dp))
         }
     }
+}
+
+/**
+ * Represents the menu item.
+ *
+ * @param page the page to represent
+ * @param isSelected is an item selected
+ * @param onClick callback that will be triggered when the item clicked
+ */
+@Composable
+private fun MenuItem(
+    page: Page,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    NavigationRailItem(
+        modifier = Modifier.fillMaxWidth(),
+        icon = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Spacer(Modifier.width(5.dp))
+                Icon(
+                    painterResource(page.iconPath),
+                    contentDescription = page.label,
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.onSecondary
+                )
+                Spacer(Modifier.width(5.dp))
+                Text(
+                    text = page.label,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onSecondary
+                )
+            }
+        },
+        selected = isSelected,
+        onClick = onClick,
+        colors = NavigationRailItemDefaults.colors(
+            selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+            indicatorColor = MaterialTheme.colorScheme.surface,
+        )
+    )
 }
 
 /**
