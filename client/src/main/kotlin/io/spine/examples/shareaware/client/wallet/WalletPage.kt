@@ -26,10 +26,6 @@
 
 package io.spine.examples.shareaware.client.wallet
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,7 +40,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -62,16 +57,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import io.spine.client.EventFilter.*
 import io.spine.examples.shareaware.ReplenishmentId
 import io.spine.examples.shareaware.WithdrawalId
 import io.spine.examples.shareaware.client.DesktopClient
 import io.spine.examples.shareaware.client.EntitySubscription
+import io.spine.examples.shareaware.client.Input
 import io.spine.examples.shareaware.client.PrimaryButton
 import io.spine.examples.shareaware.client.payment.Dialog
-import io.spine.examples.shareaware.client.payment.Tooltip
 import io.spine.examples.shareaware.client.wallet.StringExtensions.asIban
 import io.spine.examples.shareaware.client.wallet.StringExtensions.asUsd
 import io.spine.examples.shareaware.client.wallet.StringExtensions.validateIban
@@ -628,89 +622,6 @@ private fun MoneyOperationDialog(
                 )
             }
         )
-    }
-}
-
-/**
- * The input component that supports displaying a tip.
- *
- * @param value the input text to be shown in the text field
- * @param onChange the callback that is triggered when the input's value change
- * @param placeholder the label to be displayed inside the input container
- * @param isError indicates if the input's current value is in error
- * @param tipMessage message to be displayed in the tooltip
- * @param containerColor the color used for the background of this input
- * @param leadingIcon the optional leading icon to be displayed at the beginning of the input field container
- */
-@Composable
-public fun Input(
-    value: String,
-    onChange: (String) -> Unit,
-    placeholder: String,
-    isError: Boolean,
-    tipMessage: String = "",
-    containerColor: Color = MaterialTheme.colorScheme.tertiary,
-    leadingIcon: @Composable (() -> Unit)? = null
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isFocused by interactionSource.collectIsFocusedAsState()
-    val borderColor = if (isFocused) MaterialTheme.colorScheme.primary else Color.Unspecified
-    val toolTipIconColor = if (isError) MaterialTheme.colorScheme.error else
-        MaterialTheme.colorScheme.onSecondary
-    BasicTextField(
-        value = value,
-        onValueChange = onChange,
-        textStyle = MaterialTheme.typography.bodySmall,
-        interactionSource = interactionSource,
-        maxLines = 1
-    ) { innerTextField ->
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(
-                    width = 2.dp,
-                    color = borderColor,
-                    shape = MaterialTheme.shapes.small
-                )
-                .background(
-                    color = containerColor,
-                    shape = MaterialTheme.shapes.small
-                )
-                .padding(
-                    start = if (leadingIcon == null) 16.dp else 5.dp,
-                    end = 16.dp,
-                    top = if (leadingIcon == null) 8.dp else 2.dp,
-                    bottom = if (leadingIcon == null) 8.dp else 2.dp,
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            if (leadingIcon != null) {
-                leadingIcon()
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentAlignment = Alignment.CenterStart,
-            ) {
-                if (value.isEmpty()) {
-                    Text(
-                        text = placeholder,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSecondary
-                    )
-                }
-                innerTextField()
-            }
-            if (tipMessage != "") {
-                Tooltip(
-                    tip = tipMessage,
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    iconColor = toolTipIconColor,
-                    offset = DpOffset(130.dp, 0.dp)
-                )
-            }
-        }
     }
 }
 

@@ -85,7 +85,6 @@ import io.spine.examples.shareaware.ShareId
 import io.spine.examples.shareaware.client.PriceDifference.PriceDifferenceCard
 import io.spine.examples.shareaware.client.PriceDifference.definePriceDifferenceConfig
 import io.spine.examples.shareaware.client.payment.Dialog
-import io.spine.examples.shareaware.client.wallet.Input
 import io.spine.examples.shareaware.client.wallet.PopUpMessage
 import io.spine.examples.shareaware.investment.command.PurchaseShares
 import io.spine.examples.shareaware.investment.event.SharesPurchased
