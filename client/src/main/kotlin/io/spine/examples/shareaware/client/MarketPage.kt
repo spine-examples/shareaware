@@ -122,16 +122,26 @@ public class MarketPageModel(client: DesktopClient) {
         return sharesSubscriptions.state()
     }
 
+    /**
+     * Returns the available shares on the market in the state
+     * they were before the previous market update.
+     */
+    public fun previousShares(): StateFlow<AvailableMarketShares?> {
+        return previousShares
+    }
+
+    /**
+     * Sets the share that the user wants to interact with.
+     */
     public fun selectedShare(share: ShareId) {
         selectedShareId.value = share
     }
 
+    /**
+     * Returns the share user selected for interaction.
+     */
     public fun selectedShare(): StateFlow<ShareId?> {
         return selectedShareId
-    }
-
-    public fun previousShares(): StateFlow<AvailableMarketShares?> {
-        return previousShares
     }
 
     /**
