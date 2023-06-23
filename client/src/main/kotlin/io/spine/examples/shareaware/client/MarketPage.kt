@@ -363,21 +363,12 @@ public fun MarketPage(model: MarketPageModel) {
         )
         Scaffold(
             bottomBar = {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(40.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    PopUpMessage(
-                        isShown = popUpShown.value,
-                        dismissAction = { model.purchaseOperation.closeOperationResultMessage() },
-                        label = popUpMessage.value,
-                        contentColor = popUpContentColor,
-                        modifier = Modifier
-                            .wrapContentWidth()
-                    )
-                }
+                PurchaseResultMessage(
+                    isShown = popUpShown.value,
+                    model = model,
+                    label = popUpMessage.value,
+                    contentColor = popUpContentColor
+                )
             },
             containerColor = MaterialTheme.colorScheme.surface
         ) {
@@ -649,6 +640,32 @@ private fun NumericInput(model: MarketPageModel) {
         placeholder = "How much to purchase",
         isError = false
     )
+}
+
+/**
+ * Represents the pop-up message component that contains the result of the purchase operation.
+ */
+@Composable
+private fun PurchaseResultMessage(
+    isShown: Boolean,
+    model: MarketPageModel,
+    label: String,
+    contentColor: Color
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(40.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        PopUpMessage(
+            isShown = isShown,
+            dismissAction = { model.purchaseOperation.closeOperationResultMessage() },
+            label = label,
+            contentColor = contentColor,
+            modifier = Modifier.wrapContentWidth()
+        )
+    }
 }
 
 /**
