@@ -454,6 +454,42 @@ private fun SharesTab(
     }
 }
 
+
+/**
+ * Represents the search field.
+ *
+ * @param value the text to be shown in the search field
+ * @param onChange the callback that is triggered when the search value change
+ */
+@Composable
+private fun SearchField(
+    value: String,
+    onChange: (String) -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .padding(top = 10.dp, bottom = 10.dp)
+    ) {
+        Input(
+            value = value,
+            onChange = onChange,
+            placeholder = "Search",
+            isError = false,
+            containerColor = MaterialTheme.colorScheme.secondary,
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search",
+                    tint = MaterialTheme.colorScheme.onSecondary,
+                    modifier = Modifier
+                        .size(22.dp)
+                        .padding(end = 5.dp)
+                )
+            }
+        )
+    }
+}
+
 /**
  * Represents the list of shares.
  *
@@ -501,6 +537,80 @@ private fun EmptySharesList() {
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSecondary
         )
+    }
+}
+
+
+/**
+ * Represents the `ShareItem` component.
+ *
+ * @param model the model of the "Market" page
+ * @param share the share to represent
+ * @param previousPrice the previous price of this share
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ShareItem(
+    model: MarketPageModel,
+    share: Share,
+    previousPrice: Money?
+) {
+    Box(
+        modifier = Modifier
+            .clip(MaterialTheme.shapes.small)
+            .bottomBorder()
+    ) {
+        ListItem(
+            modifier = Modifier
+                .height(60.dp)
+                .clickable(
+                    enabled = true,
+                    onClick = {
+                        model.selectedShare(share.id)
+                    }
+                ),
+            headlineText = {
+                MainItemContent(share, previousPrice)
+            },
+        )
+    }
+}
+
+/**
+ * Represents the main `ListItem` content with data about the share.
+ *
+ * @param share the share to show inside the item
+ * @param previousPrice the previous price of this share
+ */
+@Composable
+private fun MainItemContent(
+    share: Share,
+    previousPrice: Money?
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(2F)
+                .fillMaxHeight(),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(share.companyName, style = MaterialTheme.typography.bodySmall)
+        }
+        Column(
+            modifier = Modifier
+                .weight(1F)
+                .fillMaxHeight(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(share.price.asReadableString(), style = MaterialTheme.typography.headlineSmall)
+            val priceDifference = definePriceDifferenceConfig(share.price, previousPrice)
+            PriceDifferenceCard(priceDifference)
+        }
     }
 }
 
@@ -568,6 +678,130 @@ private fun SharePrice(
             style = MaterialTheme.typography.headlineSmall,
             color = color,
         )
+    }
+}
+
+/**
+ * Represents the share logo.
+ *
+ * @param share the share which logo to draw
+ */
+@Composable
+private fun ShareLogo(share: Share) {
+    val density = LocalDensity.current
+    Box(
+        modifier = Modifier
+            .size(150.dp)
+            .padding(10.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            load = { loadImage(share.companyLogo, density) },
+            painterFor = { it },
+            contentDescription = share.companyName,
+        )
+    }
+}
+
+/**
+ * Represents the button section.
+ *
+ * @param model the model of the "Market" page
+ * @param share the share with which to interact with buttons
+ */
+@Composable
+private fun ButtonSection(
+    model: MarketPageModel,
+    share: Share
+) {
+    val scope = rememberCoroutineScope { Dispatchers.Default }
+    Row(
+        modifier = Modifier
+            .padding(top = 10.dp)
+            .width(230.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        PrimaryButton(
+            onClick = {},
+            label = "Sell",
+            modifier = Modifier
+                .width(110.dp)
+                .height(35.dp),
+            labelStyle = MaterialTheme.typography.bodyMedium,
+            shape = MaterialTheme.shapes.small,
+            color = MaterialTheme.colorScheme.secondary
+        )
+        PrimaryButton(
+            onClick = {
+                scope.launch {
+                    model.purchaseOperation.initiate(share)
+                }
+            },
+            label = "Buy",
+            modifier = Modifier
+                .width(110.dp)
+                .height(35.dp),
+            labelStyle = MaterialTheme.typography.bodyMedium,
+            shape = MaterialTheme.shapes.small
+        )
+    }
+}
+
+/**
+ * Provides API to define and show the difference between two `Money` objects.
+ */
+private object PriceDifference {
+
+    /**
+     * Configuration for the `PriceDifferenceCard` component.
+     */
+    data class PriceDifferenceConfig(val color: Color, val price: String)
+
+    /**
+     * Defines the `PriceDifferenceConfig` taking two provided `Money` objects.
+     */
+    @Composable
+    fun definePriceDifferenceConfig(actualPrice: Money, previousPrice: Money?): PriceDifferenceConfig {
+        val color: Color
+        val price: String
+        if (null == previousPrice) {
+            color = definePriceDifferenceColor(actualPrice, actualPrice)
+            price = actualPrice.subtract(actualPrice)
+        } else {
+            color = definePriceDifferenceColor(actualPrice, previousPrice)
+            price = previousPrice.subtract(actualPrice)
+        }
+        return PriceDifferenceConfig(color, price)
+    }
+
+    /**
+     * Defines the color to use as a background for the `PriceDifferenceCard` component.
+     */
+    @Composable
+    private fun definePriceDifferenceColor(actualPrice: Money, previousPrice: Money): Color {
+        return if (isGreater(actualPrice, previousPrice))
+            MaterialTheme.colorScheme.surfaceVariant
+        else
+            MaterialTheme.colorScheme.error
+    }
+
+    /**
+     * Represents the card that shows difference between two `Money` objects.
+     */
+    @Composable
+    fun PriceDifferenceCard(priceDifferenceConfig: PriceDifferenceConfig) {
+        val (color, price) = priceDifferenceConfig
+        Box(
+            modifier = Modifier
+                .background(color, MaterialTheme.shapes.extraSmall)
+                .padding(2.dp),
+        ) {
+            Text(
+                text = price,
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        }
     }
 }
 
@@ -689,172 +923,6 @@ private fun calculatePrice(pricePerOne: Money?, quantity: Int): String {
 }
 
 /**
- * Represents the `ShareItem` component.
- *
- * @param model the model of the "Market" page
- * @param share the share to represent
- * @param previousPrice the previous price of this share
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ShareItem(
-    model: MarketPageModel,
-    share: Share,
-    previousPrice: Money?
-) {
-    Box(
-        modifier = Modifier
-            .clip(MaterialTheme.shapes.small)
-            .bottomBorder()
-    ) {
-        ListItem(
-            modifier = Modifier
-                .height(60.dp)
-                .clickable(
-                    enabled = true,
-                    onClick = {
-                        model.selectedShare(share.id)
-                    }
-                ),
-            headlineText = {
-                MainItemContent(share, previousPrice)
-            },
-        )
-    }
-}
-
-/**
- * Represents the main `ListItem` content with data about the share.
- *
- * @param share the share to show inside the item
- * @param previousPrice the previous price of this share
- */
-@Composable
-private fun MainItemContent(
-    share: Share,
-    previousPrice: Money?
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(2F)
-                .fillMaxHeight(),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(share.companyName, style = MaterialTheme.typography.bodySmall)
-        }
-        Column(
-            modifier = Modifier
-                .weight(1F)
-                .fillMaxHeight(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(share.price.asReadableString(), style = MaterialTheme.typography.headlineSmall)
-            val priceDifference = definePriceDifferenceConfig(share.price, previousPrice)
-            PriceDifferenceCard(priceDifference)
-        }
-    }
-}
-
-/**
- * Provides API to define and show the difference between two `Money` objects.
- */
-private object PriceDifference {
-
-    /**
-     * Configuration for the `PriceDifferenceCard` component.
-     */
-    data class PriceDifferenceConfig(val color: Color, val price: String)
-
-    /**
-     * Defines the `PriceDifferenceConfig` taking two provided `Money` objects.
-     */
-    @Composable
-    fun definePriceDifferenceConfig(actualPrice: Money, previousPrice: Money?): PriceDifferenceConfig {
-        val color: Color
-        val price: String
-        if (null == previousPrice) {
-            color = definePriceDifferenceColor(actualPrice, actualPrice)
-            price = actualPrice.subtract(actualPrice)
-        } else {
-            color = definePriceDifferenceColor(actualPrice, previousPrice)
-            price = previousPrice.subtract(actualPrice)
-        }
-        return PriceDifferenceConfig(color, price)
-    }
-
-    /**
-     * Defines the color to use as a background for the `PriceDifferenceCard` component.
-     */
-    @Composable
-    private fun definePriceDifferenceColor(actualPrice: Money, previousPrice: Money): Color {
-        return if (isGreater(actualPrice, previousPrice))
-            MaterialTheme.colorScheme.surfaceVariant
-        else
-            MaterialTheme.colorScheme.error
-    }
-
-    /**
-     * Represents the card that shows difference between two `Money` objects.
-     */
-    @Composable
-    fun PriceDifferenceCard(priceDifferenceConfig: PriceDifferenceConfig) {
-        val (color, price) = priceDifferenceConfig
-        Box(
-            modifier = Modifier
-                .background(color, MaterialTheme.shapes.extraSmall)
-                .padding(2.dp),
-        ) {
-            Text(
-                text = price,
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-        }
-    }
-}
-
-/**
- * Represents the search field.
- *
- * @param value the text to be shown in the search field
- * @param onChange the callback that is triggered when the search value change
- */
-@Composable
-private fun SearchField(
-    value: String,
-    onChange: (String) -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .padding(top = 10.dp, bottom = 10.dp)
-    ) {
-        Input(
-            value = value,
-            onChange = onChange,
-            placeholder = "Search",
-            isError = false,
-            containerColor = MaterialTheme.colorScheme.secondary,
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search",
-                    tint = MaterialTheme.colorScheme.onSecondary,
-                    modifier = Modifier
-                        .size(22.dp)
-                        .padding(end = 5.dp)
-                )
-            }
-        )
-    }
-}
-
-/**
  * Extension for the `Modifier` that draws the bottom border of the component.
  */
 private fun Modifier.bottomBorder(): Modifier {
@@ -879,72 +947,6 @@ private fun Money.subtract(money: Money): String {
     } else {
         val result = subtract(money, this)
         "+${result.asReadableString()}"
-    }
-}
-
-/**
- * Represents the share logo.
- *
- * @param share the share which logo to draw
- */
-@Composable
-private fun ShareLogo(share: Share) {
-    val density = LocalDensity.current
-    Box(
-        modifier = Modifier
-            .size(150.dp)
-            .padding(10.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Image(
-            load = { loadImage(share.companyLogo, density) },
-            painterFor = { it },
-            contentDescription = share.companyName,
-        )
-    }
-}
-
-/**
- * Represents the button section.
- *
- * @param model the model of the "Market" page
- * @param share the share with which to interact with buttons
- */
-@Composable
-private fun ButtonSection(
-    model: MarketPageModel,
-    share: Share
-) {
-    val scope = rememberCoroutineScope { Dispatchers.Default }
-    Row(
-        modifier = Modifier
-            .padding(top = 10.dp)
-            .width(230.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        PrimaryButton(
-            onClick = {},
-            label = "Sell",
-            modifier = Modifier
-                .width(110.dp)
-                .height(35.dp),
-            labelStyle = MaterialTheme.typography.bodyMedium,
-            shape = MaterialTheme.shapes.small,
-            color = MaterialTheme.colorScheme.secondary
-        )
-        PrimaryButton(
-            onClick = {
-                scope.launch {
-                    model.purchaseOperation.initiate(share)
-                }
-            },
-            label = "Buy",
-            modifier = Modifier
-                .width(110.dp)
-                .height(35.dp),
-            labelStyle = MaterialTheme.typography.bodyMedium,
-            shape = MaterialTheme.shapes.small
-        )
     }
 }
 
