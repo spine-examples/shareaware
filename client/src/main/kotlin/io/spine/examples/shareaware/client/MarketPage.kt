@@ -332,53 +332,68 @@ public fun MarketPage(model: MarketPageModel) {
     val popUpInErrorState = model.purchaseOperation.isFailed().collectAsState()
     val popUpContentColor = if (popUpInErrorState.value) MaterialTheme.colorScheme.error
     else MaterialTheme.colorScheme.primary
-    Scaffold(
-        bottomBar = {
-            PopUpMessage(
-                isShown = popUpShown.value,
-                dismissAction = { model.purchaseOperation.closeOperationResultMessage() },
-                label = popUpMessage.value,
-                contentColor = popUpContentColor,
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .zIndex(1f)
-            )
-        }
+
+/**
+ * Represents the main information about the share and ways to interact with it.
+ *
+ * @param share the share to represent
+ * @param previousShare the previous state of this share
+ * @param model the model of the market page
+ */
+@Composable
+private fun ShareProfile(
+    share: Share,
+    previousShare: Share?,
+    model: MarketPageModel
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(15.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
+        ShareIcon(share.companyLogo, share.companyName)
+        Text(
+            text = share.companyName,
+            style = MaterialTheme.typography.labelMedium,
             modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .zIndex(0f)
-        ) {
-            val marketShares by model.shares().collectAsState()
-            marketShares?.shareList?.forEach { share ->
-                ListItem(
-                    modifier = Modifier
-                        .height(100.dp),
-                    headlineText = {
-                        MainItemContent(share)
-                    },
-                    leadingContent = {
-                        ShareIcon(share)
-                    },
-                    trailingContent = {
-                        ButtonSection(model, share)
-                    },
-                    colors = ListItemDefaults.colors(
-                        containerColor = MaterialTheme.colorScheme.tertiary
-                    )
-                )
-                Divider(
-                    thickness = 2.dp
-                )
-            }
-            val purchaseInProgress = model.purchaseOperation.isInProgress().collectAsState()
-            PurchaseDialog(
-                model = model,
-                isShown = purchaseInProgress.value
-            )
-        }
+                .padding(top = 10.dp)
+        )
+        SharePrice(share, previousShare)
+        ButtonSection(
+            model = model,
+            share = share
+        )
+    }
+}
+
+/**
+ * Show information about the share price.
+ *
+ * @param share the share which price to be shown
+ * @param previousShare the previous state of this share to show the price difference with
+ */
+@Composable
+private fun SharePrice(share: Share, previousShare: Share?) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .padding(top = 10.dp)
+            .wrapContentHeight()
+    ) {
+        Text(
+            text = share.price.asReadableString(),
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier
+                .padding(end = 10.dp)
+        )
+        val (color, price) = definePriceDifferenceConfig(share.price, previousShare?.price)
+        Text(
+            text = price,
+            style = MaterialTheme.typography.headlineSmall,
+            color = color,
+        )
     }
 }
 
