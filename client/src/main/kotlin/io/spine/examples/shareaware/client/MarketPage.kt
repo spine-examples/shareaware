@@ -68,6 +68,7 @@ import io.spine.client.EventFilter.*
 import io.spine.examples.shareaware.MoneyCalculator
 import io.spine.examples.shareaware.PurchaseId
 import io.spine.examples.shareaware.client.payment.Dialog
+import io.spine.examples.shareaware.client.wallet.Input
 import io.spine.examples.shareaware.client.wallet.PopUpMessage
 import io.spine.examples.shareaware.investment.command.PurchaseShares
 import io.spine.examples.shareaware.investment.event.SharesPurchased
@@ -416,24 +417,21 @@ private fun PurchaseDialog(
 /**
  * Represents the input component accepting only the numeric values.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NumericInput(model: MarketPageModel) {
     val input = remember { mutableStateOf("") }
-    val change: (String) -> Unit = {
+    val onChange: (String) -> Unit = {
         if (it.validateNumber()) {
             input.value = it
             val quantity = if (it == "") 0 else it.toInt()
             model.purchaseOperation.quantityOfShares(quantity)
         }
     }
-    TextField(
+    Input(
         value = input.value,
-        modifier = Modifier.fillMaxWidth(),
-        onValueChange = change,
-        label = {
-            Text("How much to purchase")
-        }
+        onChange = onChange,
+        placeholder = "How much to purchase",
+        isError = false
     )
 }
 
