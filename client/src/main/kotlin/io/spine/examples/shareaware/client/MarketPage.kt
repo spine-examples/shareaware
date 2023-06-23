@@ -407,22 +407,22 @@ private fun PurchaseDialog(
                 }
             },
             title = "Purchase '${shareToPurchase.value?.companyName}' shares",
-            inputs = arrayOf({
-                Column(
-                    verticalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .padding(bottom = 20.dp, top = 10.dp)
-                ) {
-                    val price = calculatePrice(shareToPurchase.value?.price, quantity.value)
+            modifier = Modifier
+                .wrapContentHeight()
+                .width(245.dp),
+            {
+                val price = calculatePrice(shareToPurchase.value?.price, quantity.value)
+                Column {
                     Text(
                         "Total Price - $price",
+                        style = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center,
                         modifier = Modifier
-                            .padding(start = 16.dp)
+                            .padding(start = 16.dp, bottom = 15.dp)
                     )
                     NumericInput(model)
                 }
-            })
+            }
         )
     }
 }
@@ -464,7 +464,7 @@ private fun String.validateNumber(): Boolean {
  */
 private fun calculatePrice(pricePerOne: Money?, quantity: Int): String {
     checkArgument(null != pricePerOne)
-    val totalPrice = MoneyCalculator.multiply(pricePerOne!!, quantity)
+    val totalPrice = multiply(pricePerOne!!, quantity)
     return totalPrice.asReadableString()
 }
 
