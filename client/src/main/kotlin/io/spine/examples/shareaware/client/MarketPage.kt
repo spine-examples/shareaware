@@ -380,7 +380,7 @@ public fun MarketPage(model: MarketPageModel) {
                     ?.find { share -> share.id == selectedShareId!! }
                 ShareProfile(
                     share = selectedShare!!,
-                    previousShare = previousShare,
+                    previousPrice = previousShare?.price,
                     model = model
                 )
             } else {
@@ -445,7 +445,7 @@ private fun SharesList(
                         ShareItem(
                             model = model,
                             share = share,
-                            previousShare = previousShares?.getShare(index)
+                            previousPrice = previousShares?.getShare(index)?.price
                         )
                     }
                 }
@@ -465,13 +465,13 @@ private fun SharesList(
  * Represents the main information about the share and ways to interact with it.
  *
  * @param share the share to represent
- * @param previousShare the previous state of this share
+ * @param previousPrice the previous price of this share
  * @param model the model of the market page
  */
 @Composable
 private fun ShareProfile(
     share: Share,
-    previousShare: Share?,
+    previousPrice: Money?,
     model: MarketPageModel
 ) {
     Column(
@@ -481,14 +481,14 @@ private fun ShareProfile(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ShareIcon(share.companyLogo, share.companyName)
+        ShareLogo(share)
         Text(
             text = share.companyName,
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier
                 .padding(top = 10.dp)
         )
-        SharePrice(share, previousShare)
+        SharePrice(share.price, previousPrice)
         ButtonSection(
             model = model,
             share = share
@@ -499,11 +499,14 @@ private fun ShareProfile(
 /**
  * Show information about the share price.
  *
- * @param share the share which price to be shown
- * @param previousShare the previous state of this share to show the price difference with
+ * @param actualPrice the actual share price to be shown
+ * @param previousPrice the previous price of this share to show difference with
  */
 @Composable
-private fun SharePrice(share: Share, previousShare: Share?) {
+private fun SharePrice(
+    actualPrice: Money,
+    previousPrice: Money?
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -511,12 +514,12 @@ private fun SharePrice(share: Share, previousShare: Share?) {
             .wrapContentHeight()
     ) {
         Text(
-            text = share.price.asReadableString(),
+            text = actualPrice.asReadableString(),
             style = MaterialTheme.typography.labelSmall,
             modifier = Modifier
                 .padding(end = 10.dp)
         )
-        val (color, price) = definePriceDifferenceConfig(share.price, previousShare?.price)
+        val (color, price) = definePriceDifferenceConfig(actualPrice, previousPrice)
         Text(
             text = price,
             style = MaterialTheme.typography.headlineSmall,
@@ -527,6 +530,9 @@ private fun SharePrice(share: Share, previousShare: Share?) {
 
 /**
  * Represents the dialog window for the shares purchase purposes.
+ *
+ * @param model the model of the "Market" page
+ * @param isShown is a dialog window shown to the user
  */
 @Composable
 private fun PurchaseDialog(
@@ -572,6 +578,8 @@ private fun PurchaseDialog(
 
 /**
  * Represents the input component accepting only the numeric values.
+ *
+ * @param model the model of the "Market" page
  */
 @Composable
 private fun NumericInput(model: MarketPageModel) {
@@ -613,13 +621,17 @@ private fun calculatePrice(pricePerOne: Money?, quantity: Int): String {
 
 /**
  * Represents the `ShareItem` component.
+ *
+ * @param model the model of the "Market" page
+ * @param share the share to represent
+ * @param previousPrice the previous price of this share
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ShareItem(
     model: MarketPageModel,
     share: Share,
-    previousShare: Share?
+    previousPrice: Money?
 ) {
     Box(
         modifier = Modifier
@@ -636,7 +648,7 @@ private fun ShareItem(
                     }
                 ),
             headlineText = {
-                MainItemContent(share, previousShare)
+                MainItemContent(share, previousPrice)
             },
         )
     }
@@ -644,9 +656,15 @@ private fun ShareItem(
 
 /**
  * Represents the main `ListItem` content with data about the share.
+ *
+ * @param share the share to show inside the item
+ * @param previousPrice the previous price of this share
  */
 @Composable
-private fun MainItemContent(share: Share, previousShare: Share?) {
+private fun MainItemContent(
+    share: Share,
+    previousPrice: Money?
+) {
     Row(
         modifier = Modifier
             .fillMaxSize()
@@ -668,7 +686,7 @@ private fun MainItemContent(share: Share, previousShare: Share?) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(share.price.asReadableString(), style = MaterialTheme.typography.headlineSmall)
-            val priceDifference = definePriceDifferenceConfig(share.price, previousShare?.price)
+            val priceDifference = definePriceDifferenceConfig(share.price, previousPrice)
             PriceDifferenceCard(priceDifference)
         }
     }
@@ -734,6 +752,9 @@ private object PriceDifference {
 
 /**
  * Represents the search field.
+ *
+ * @param value the text to be shown in the search field
+ * @param onChange the callback that is triggered when the search value change
  */
 @Composable
 private fun SearchField(
@@ -779,6 +800,9 @@ private fun Modifier.bottomBorder(): Modifier {
     }
 }
 
+/**
+ * Returns the difference between this `Money` object and provided as a readable string.
+ */
 private fun Money.subtract(money: Money): String {
     return if (isGreater(this, money)) {
         val result = subtract(this, money)
@@ -790,10 +814,12 @@ private fun Money.subtract(money: Money): String {
 }
 
 /**
- * Represents the share icon.
+ * Represents the share logo.
+ *
+ * @param share the share which logo to draw
  */
 @Composable
-private fun ShareIcon(companyLogo: String, companyName: String) {
+private fun ShareLogo(share: Share) {
     val density = LocalDensity.current
     Box(
         modifier = Modifier
@@ -802,18 +828,24 @@ private fun ShareIcon(companyLogo: String, companyName: String) {
         contentAlignment = Alignment.Center
     ) {
         Image(
-            load = { loadImage(companyLogo, density) },
+            load = { loadImage(share.companyLogo, density) },
             painterFor = { it },
-            contentDescription = companyName,
+            contentDescription = share.companyName,
         )
     }
 }
 
 /**
  * Represents the button section.
+ *
+ * @param model the model of the "Market" page
+ * @param share the share with which to interact with buttons
  */
 @Composable
-private fun ButtonSection(model: MarketPageModel, share: Share) {
+private fun ButtonSection(
+    model: MarketPageModel,
+    share: Share
+) {
     val scope = rememberCoroutineScope { Dispatchers.Default }
     Row(
         modifier = Modifier
