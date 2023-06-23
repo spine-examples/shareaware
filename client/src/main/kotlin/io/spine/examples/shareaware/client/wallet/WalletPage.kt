@@ -639,14 +639,18 @@ private fun MoneyOperationDialog(
  * @param placeholder the label to be displayed inside the input container
  * @param isError indicates if the input's current value is in error
  * @param tipMessage message to be displayed in the tooltip
+ * @param containerColor the color used for the background of this input
+ * @param leadingIcon the optional leading icon to be displayed at the beginning of the input field container
  */
 @Composable
-private fun Input(
+public fun Input(
     value: String,
     onChange: (String) -> Unit,
     placeholder: String,
     isError: Boolean,
-    tipMessage: String
+    tipMessage: String = "",
+    containerColor: Color = MaterialTheme.colorScheme.tertiary,
+    leadingIcon: @Composable (() -> Unit)? = null
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
@@ -658,20 +662,35 @@ private fun Input(
         onValueChange = onChange,
         textStyle = MaterialTheme.typography.bodySmall,
         interactionSource = interactionSource,
-        decorationBox = { innerTextField ->
+        maxLines = 1
+    ) { innerTextField ->
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(
+                    width = 2.dp,
+                    color = borderColor,
+                    shape = MaterialTheme.shapes.small
+                )
+                .background(
+                    color = containerColor,
+                    shape = MaterialTheme.shapes.small
+                )
+                .padding(
+                    start = if (leadingIcon == null) 16.dp else 5.dp,
+                    end = 16.dp,
+                    top = if (leadingIcon == null) 8.dp else 2.dp,
+                    bottom = if (leadingIcon == null) 8.dp else 2.dp,
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (leadingIcon != null) {
+                leadingIcon()
+            }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(
-                        width = 2.dp,
-                        color = borderColor,
-                        shape = MaterialTheme.shapes.small
-                    )
-                    .background(
-                        color = MaterialTheme.colorScheme.tertiary,
-                        shape = MaterialTheme.shapes.small
-                    )
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                    .weight(1f),
                 contentAlignment = Alignment.CenterStart,
             ) {
                 if (value.isEmpty()) {
@@ -681,16 +700,18 @@ private fun Input(
                         color = MaterialTheme.colorScheme.onSecondary
                     )
                 }
+                innerTextField()
+            }
+            if (tipMessage != "") {
                 Tooltip(
                     tip = tipMessage,
-                    modifier = Modifier.align(Alignment.CenterEnd),
+                    modifier = Modifier.align(Alignment.CenterVertically),
                     iconColor = toolTipIconColor,
                     offset = DpOffset(130.dp, 0.dp)
                 )
-                innerTextField()
             }
         }
-    )
+    }
 }
 
 /**
