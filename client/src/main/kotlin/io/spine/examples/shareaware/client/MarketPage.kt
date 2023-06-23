@@ -454,7 +454,6 @@ private fun SharesTab(
     }
 }
 
-
 /**
  * Represents the search field.
  *
@@ -542,7 +541,7 @@ private fun EmptySharesList() {
 
 
 /**
- * Represents the `ShareItem` component.
+ * Represents the list item with information about the share.
  *
  * @param model the model of the "Market" page
  * @param share the share to represent
