@@ -49,6 +49,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
@@ -139,6 +140,7 @@ private fun MainSection(
     Text(
         title,
         style = MaterialTheme.typography.headlineMedium,
+        textAlign = TextAlign.Center
     )
     Spacer(modifier = Modifier.height(20.dp))
     inputs.forEachIndexed { index, input ->
