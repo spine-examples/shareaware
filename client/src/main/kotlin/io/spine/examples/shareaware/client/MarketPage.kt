@@ -26,7 +26,6 @@
 
 package io.spine.examples.shareaware.client
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
@@ -34,7 +33,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -343,7 +341,7 @@ public fun MarketPage(model: MarketPageModel) {
         modifier = Modifier
             .fillMaxSize()
     ) {
-        SharesList(
+        SharesTab(
             listState = listState,
             marketShares = marketShares,
             previousShares = previousShares,
@@ -401,16 +399,15 @@ public fun MarketPage(model: MarketPageModel) {
 }
 
 /**
- * Represents the list with shares.
+ * Represents the shares tab in the left part of the page.
  *
  * @param listState the state object to be used to control or observe the list's state
- * @param marketShares the list of the actual market shares
- * @param previousShares the list of the previous market shares
+ * @param marketShares actual market shares
+ * @param previousShares previous market shares
  * @param model the model of the market page
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun SharesList(
+private fun SharesTab(
     listState: LazyListState,
     marketShares: AvailableMarketShares?,
     previousShares: AvailableMarketShares?,
@@ -421,34 +418,29 @@ private fun SharesList(
         modifier = Modifier
             .width(250.dp)
             .fillMaxHeight()
+            .background(MaterialTheme.colorScheme.tertiary)
     ) {
-        LazyColumn(
+        Column (
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.tertiary),
-            contentPadding = PaddingValues(start = 10.dp, end = 10.dp),
-            state = listState
+                .padding(horizontal = 10.dp),
         ) {
-            this.stickyHeader {
-                SearchField(
-                    value = searchRequest,
-                    onChange = { searchRequest = it }
+            SearchField(
+                value = searchRequest,
+                onChange = { searchRequest = it }
+            )
+            val filteredShares = marketShares?.shareList
+                ?.filter { share -> share.companyName.contains(searchRequest.trim(), true) }
+            if (filteredShares.isNullOrEmpty()) {
+                EmptySharesList()
+            } else {
+                SharesList(
+                    listState = listState,
+                    shares = filteredShares,
+                    previousShares = previousShares?.shareList,
+                    model = model
                 )
             }
-            if (null == marketShares) {
-                return@LazyColumn
-            }
-            marketShares.shareList
-                .filter { share -> share.companyName.contains(searchRequest.trim(), true) }
-                .forEachIndexed { index, share ->
-                    item {
-                        ShareItem(
-                            model = model,
-                            share = share,
-                            previousPrice = previousShares?.getShare(index)?.price
-                        )
-                    }
-                }
         }
         VerticalScrollbar(
             modifier = Modifier
@@ -457,6 +449,56 @@ private fun SharesList(
             adapter = rememberScrollbarAdapter(
                 scrollState = listState
             )
+        )
+    }
+}
+
+/**
+ * Represents the list of shares.
+ *
+ * @param listState the state object to be used to control or observe the list's state
+ * @param shares the list of the actual market shares
+ * @param previousShares the list of the previous market shares
+ * @param model the model of the market page
+ */
+@Composable
+private fun SharesList(
+    listState: LazyListState,
+    shares: List<Share>,
+    previousShares: List<Share>?,
+    model: MarketPageModel
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        state = listState
+    ) {
+        shares.forEachIndexed { index, share ->
+            item {
+                ShareItem(
+                    model = model,
+                    share = share,
+                    previousPrice = previousShares?.get(index)?.price
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Represents an empty shares list.
+ */
+@Composable
+private fun EmptySharesList() {
+    Column (
+        modifier = Modifier
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Nothing to show",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSecondary
         )
     }
 }
