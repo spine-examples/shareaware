@@ -37,9 +37,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Divider
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollbarAdapter
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -66,7 +69,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.google.common.base.Preconditions.*
 import io.spine.client.EventFilter.*
-import io.spine.examples.shareaware.MoneyCalculator
+import io.spine.examples.shareaware.MoneyCalculator.*
 import io.spine.examples.shareaware.PurchaseId
 import io.spine.examples.shareaware.ShareId
 import io.spine.examples.shareaware.client.PriceDifference.PriceDifferenceCard
@@ -546,6 +549,38 @@ private object PriceDifference {
                 color = MaterialTheme.colorScheme.onPrimary
             )
         }
+    }
+}
+
+/**
+ * Represents the search field.
+ */
+@Composable
+private fun SearchField(
+    value: String,
+    onChange: (String) -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .padding(top = 10.dp, bottom = 10.dp)
+    ) {
+        Input(
+            value = value,
+            onChange = onChange,
+            placeholder = "Search",
+            isError = false,
+            containerColor = MaterialTheme.colorScheme.secondary,
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search",
+                    tint = MaterialTheme.colorScheme.onSecondary,
+                    modifier = Modifier
+                        .size(22.dp)
+                        .padding(end = 5.dp)
+                )
+            }
+        )
     }
 }
 
