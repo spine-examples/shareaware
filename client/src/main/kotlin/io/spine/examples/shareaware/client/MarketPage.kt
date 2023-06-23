@@ -598,19 +598,18 @@ private fun Money.subtract(money: Money): String {
  * Represents the share icon.
  */
 @Composable
-private fun ShareIcon(share: Share) {
+private fun ShareIcon(companyLogo: String, companyName: String) {
     val density = LocalDensity.current
-    Row(
+    Box(
         modifier = Modifier
-            .width(100.dp)
-            .fillMaxHeight(),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
+            .size(150.dp)
+            .padding(10.dp),
+        contentAlignment = Alignment.Center
     ) {
-        AsyncImage(
-            load = { loadImage(share.companyLogo, density) },
+        Image(
+            load = { loadImage(companyLogo, density) },
             painterFor = { it },
-            contentDescription = share.companyName,
+            contentDescription = companyName,
         )
     }
 }
@@ -635,7 +634,7 @@ private fun ButtonSection(model: MarketPageModel, share: Share) {
 }
 
 /**
- * Asynchronously draws an image.
+ * Draws an image.
  *
  * @param load callback that loads the image
  * @param painterFor painter for the image
@@ -644,25 +643,21 @@ private fun ButtonSection(model: MarketPageModel, share: Share) {
  * @param contentScale scale parameter used to determine the aspect ratio scaling
  */
 @Composable
-private fun <T> AsyncImage(
-    load: suspend () -> T,
+private fun <T> Image(
+    load: () -> T,
     painterFor: @Composable (T) -> Painter,
     contentDescription: String,
     modifier: Modifier = Modifier,
-    contentScale: ContentScale = ContentScale.Fit,
+    contentScale: ContentScale = ContentScale.Inside,
 ) {
-    val image: T? by produceState<T?>(null) {
-        value = withContext(Dispatchers.IO) {
-            try {
-                load()
-            } catch (e: IOException) {
-                throw illegalArgumentWithCauseOf(e)
-            }
-        }
+    val image: T? = try {
+        load()
+    } catch (e: IOException) {
+        throw illegalArgumentWithCauseOf(e)
     }
     if (image != null) {
         Image(
-            painter = painterFor(image!!),
+            painter = painterFor(image),
             contentDescription = contentDescription,
             contentScale = contentScale,
             modifier = modifier
