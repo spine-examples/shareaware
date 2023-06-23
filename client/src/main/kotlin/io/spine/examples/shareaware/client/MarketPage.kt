@@ -28,6 +28,9 @@ package io.spine.examples.shareaware.client
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.VerticalScrollbar
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -324,14 +327,68 @@ public class MarketPageModel(client: DesktopClient) {
  * The page component that provides data about currently available shares on the market
  * and ways to interact with them.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+
+
+/**
+ * Represents the list with shares.
+ *
+ * @param listState the state object to be used to control or observe the list's state
+ * @param marketShares the list of the actual market shares
+ * @param previousShares the list of the previous market shares
+ * @param model the model of the market page
+ */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-public fun MarketPage(model: MarketPageModel) {
-    val popUpShown = model.purchaseOperation.isResultMessageShown().collectAsState()
-    val popUpMessage = model.purchaseOperation.resultMessage().collectAsState()
-    val popUpInErrorState = model.purchaseOperation.isFailed().collectAsState()
-    val popUpContentColor = if (popUpInErrorState.value) MaterialTheme.colorScheme.error
-    else MaterialTheme.colorScheme.primary
+private fun SharesList(
+    listState: LazyListState,
+    marketShares: AvailableMarketShares?,
+    previousShares: AvailableMarketShares?,
+    model: MarketPageModel
+) {
+    var searchRequest by remember { mutableStateOf("") }
+    Box(
+        modifier = Modifier
+            .width(250.dp)
+            .fillMaxHeight()
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.tertiary),
+            contentPadding = PaddingValues(start = 10.dp, end = 10.dp),
+            state = listState
+        ) {
+            this.stickyHeader {
+                SearchField(
+                    value = searchRequest,
+                    onChange = { searchRequest = it }
+                )
+            }
+            if (null == marketShares) {
+                return@LazyColumn
+            }
+            marketShares.shareList
+                .filter { share -> share.companyName.contains(searchRequest.trim(), true) }
+                .forEachIndexed { index, share ->
+                    item {
+                        ShareItem(
+                            model = model,
+                            share = share,
+                            previousShare = previousShares?.getShare(index)
+                        )
+                    }
+                }
+        }
+        VerticalScrollbar(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .fillMaxHeight(),
+            adapter = rememberScrollbarAdapter(
+                scrollState = listState
+            )
+        )
+    }
+}
 
 /**
  * Represents the main information about the share and ways to interact with it.
