@@ -293,11 +293,14 @@ public class DesktopClient private constructor(
  * @param entityType type of the entity on which changes subscription works
  * @param client client with the help of which the entity will be subscribed
  * @param id entity ID by which arrived entities will be filtered
+ * @param stateAccessor the callback function that provides access to the state of the entity
+ * before the updated one has arrived
  */
 public class EntitySubscription<S : EntityState> internal constructor(
     entityType: Class<S>,
     client: DesktopClient,
-    id: Message
+    id: Message,
+    stateAccessor: (S?) -> Unit = {}
 ) {
     private var state: MutableStateFlow<S?>
 
@@ -305,6 +308,7 @@ public class EntitySubscription<S : EntityState> internal constructor(
         val entity = client.readEntity(entityType, id)
         state = MutableStateFlow(entity)
         client.subscribeToEntity(entityType, id) { value ->
+            stateAccessor(state.value)
             state.value = value
         }
     }
