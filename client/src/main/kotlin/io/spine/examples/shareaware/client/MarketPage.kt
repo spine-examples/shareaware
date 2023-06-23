@@ -90,8 +90,12 @@ import kotlinx.coroutines.withContext
  * UI model for the `MarketPage`.
  */
 public class MarketPageModel(client: DesktopClient) {
+    private val previousShares: MutableStateFlow<AvailableMarketShares?> = MutableStateFlow(null)
     private val sharesSubscriptions: EntitySubscription<AvailableMarketShares> =
-        EntitySubscription(AvailableMarketShares::class.java, client, MarketProcess.ID)
+        EntitySubscription(
+            AvailableMarketShares::class.java, client, MarketProcess.ID
+        ) { state -> previousShares.value = state }
+    private val selectedShareId: MutableStateFlow<ShareId?> = MutableStateFlow(null)
     public val purchaseOperation: PurchaseOperation = PurchaseOperation(client)
 
     /**
@@ -102,6 +106,18 @@ public class MarketPageModel(client: DesktopClient) {
      */
     public fun shares(): StateFlow<AvailableMarketShares?> {
         return sharesSubscriptions.state()
+    }
+
+    public fun selectedShare(share: ShareId) {
+        selectedShareId.value = share
+    }
+
+    public fun selectedShare(): StateFlow<ShareId?> {
+        return selectedShareId
+    }
+
+    public fun previousShares(): StateFlow<AvailableMarketShares?> {
+        return previousShares
     }
 
     /**
