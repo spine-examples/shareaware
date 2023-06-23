@@ -60,6 +60,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.loadSvgPainter
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -67,6 +68,9 @@ import com.google.common.base.Preconditions.*
 import io.spine.client.EventFilter.*
 import io.spine.examples.shareaware.MoneyCalculator
 import io.spine.examples.shareaware.PurchaseId
+import io.spine.examples.shareaware.ShareId
+import io.spine.examples.shareaware.client.PriceDifference.PriceDifferenceCard
+import io.spine.examples.shareaware.client.PriceDifference.definePriceDifferenceConfig
 import io.spine.examples.shareaware.client.payment.Dialog
 import io.spine.examples.shareaware.client.wallet.Input
 import io.spine.examples.shareaware.client.wallet.PopUpMessage
@@ -459,25 +463,20 @@ private fun calculatePrice(pricePerOne: Money?, quantity: Int): String {
  * Represents the main `ListItem` content with data about the share.
  */
 @Composable
-private fun MainItemContent(share: Share) {
+private fun MainItemContent(share: Share, previousShare: Share?) {
     Row(
         modifier = Modifier
             .fillMaxSize()
     ) {
         Column(
             modifier = Modifier
-                .weight(1F)
+                .weight(2F)
                 .fillMaxHeight(),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(share.companyName)
+            Text(share.companyName, style = MaterialTheme.typography.bodySmall)
         }
-        Divider(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(1.dp)
-        )
         Column(
             modifier = Modifier
                 .weight(1F)
@@ -485,8 +484,78 @@ private fun MainItemContent(share: Share) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(share.price.asReadableString())
+            Text(share.price.asReadableString(), style = MaterialTheme.typography.headlineSmall)
+            val priceDifference = definePriceDifferenceConfig(share.price, previousShare?.price)
+            PriceDifferenceCard(priceDifference)
         }
+    }
+}
+
+/**
+ * Provides API to define and show the difference between two `Money` objects.
+ */
+private object PriceDifference {
+
+    /**
+     * Configuration for the `PriceDifferenceCard` component.
+     */
+    data class PriceDifferenceConfig(val color: Color, val price: String)
+
+    /**
+     * Defines the `PriceDifferenceConfig` taking two provided `Money` objects.
+     */
+    @Composable
+    fun definePriceDifferenceConfig(actualPrice: Money, previousPrice: Money?): PriceDifferenceConfig {
+        val color: Color
+        val price: String
+        if (null == previousPrice) {
+            color = definePriceDifferenceColor(actualPrice, actualPrice)
+            price = actualPrice.subtract(actualPrice)
+        } else {
+            color = definePriceDifferenceColor(actualPrice, previousPrice)
+            price = previousPrice.subtract(actualPrice)
+        }
+        return PriceDifferenceConfig(color, price)
+    }
+
+    /**
+     * Defines the color to use as a background for the `PriceDifferenceCard` component.
+     */
+    @Composable
+    private fun definePriceDifferenceColor(actualPrice: Money, previousPrice: Money): Color {
+        return if (isGreater(actualPrice, previousPrice))
+            MaterialTheme.colorScheme.surfaceVariant
+        else
+            MaterialTheme.colorScheme.error
+    }
+
+    /**
+     * Represents the card that shows difference between two `Money` objects.
+     */
+    @Composable
+    fun PriceDifferenceCard(priceDifferenceConfig: PriceDifferenceConfig) {
+        val (color, price) = priceDifferenceConfig
+        Box(
+            modifier = Modifier
+                .background(color, MaterialTheme.shapes.extraSmall)
+                .padding(2.dp),
+        ) {
+            Text(
+                text = price,
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        }
+    }
+}
+
+private fun Money.subtract(money: Money): String {
+    return if (isGreater(this, money)) {
+        val result = subtract(this, money)
+        "-${result.asReadableString()}"
+    } else {
+        val result = subtract(money, this)
+        "+${result.asReadableString()}"
     }
 }
 
