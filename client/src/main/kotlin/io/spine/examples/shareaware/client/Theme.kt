@@ -69,8 +69,8 @@ private val lightColors: ColorScheme = lightColorScheme(
     tertiary = Colors.White10,
     surface = Colors.White30,
     onSurface = Color.Black,
-    surfaceVariant = Color.Transparent,
-    onSurfaceVariant = Color.Black,
+    surfaceVariant = Colors.Green,
+    onSurfaceVariant = Colors.White,
     surfaceTint = Colors.Blue80,
     background = Colors.White,
     onBackground = Color.Black,
@@ -155,4 +155,5 @@ private object Colors {
     val DarkGrey = Color(0xff5b595f)
     val Red = Color(0xffff3b30)
     val Scrim = Color.Black.copy(alpha = 0.5f)
+    val Green = Color(52, 199, 89)
 }
