@@ -327,7 +327,79 @@ public class MarketPageModel(client: DesktopClient) {
  * The page component that provides data about currently available shares on the market
  * and ways to interact with them.
  */
-
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+public fun MarketPage(model: MarketPageModel) {
+    val marketShares by model.shares().collectAsState()
+    val previousShares by model.previousShares().collectAsState()
+    val selectedShareId by model.selectedShare().collectAsState()
+    val popUpShown = model.purchaseOperation.isResultMessageShown().collectAsState()
+    val popUpMessage = model.purchaseOperation.resultMessage().collectAsState()
+    val popUpInErrorState = model.purchaseOperation.isFailed().collectAsState()
+    val popUpContentColor = if (popUpInErrorState.value) MaterialTheme.colorScheme.error
+    else MaterialTheme.colorScheme.primary
+    val purchaseInProgress = model.purchaseOperation.isInProgress().collectAsState()
+    val listState = rememberLazyListState()
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        SharesList(
+            listState = listState,
+            marketShares = marketShares,
+            previousShares = previousShares,
+            model = model
+        )
+        PurchaseDialog(
+            model = model,
+            isShown = purchaseInProgress.value
+        )
+        Scaffold(
+            bottomBar = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    PopUpMessage(
+                        isShown = popUpShown.value,
+                        dismissAction = { model.purchaseOperation.closeOperationResultMessage() },
+                        label = popUpMessage.value,
+                        contentColor = popUpContentColor,
+                        modifier = Modifier
+                            .wrapContentWidth()
+                    )
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.surface
+        ) {
+            if (selectedShareId != null) {
+                val selectedShare = marketShares?.shareList
+                    ?.find { share -> share.id == selectedShareId!! }
+                val previousShare = previousShares?.shareList
+                    ?.find { share -> share.id == selectedShareId!! }
+                ShareProfile(
+                    share = selectedShare!!,
+                    previousShare = previousShare,
+                    model = model
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Select the share",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondary
+                    )
+                }
+            }
+        }
+    }
+}
 
 /**
  * Represents the list with shares.
