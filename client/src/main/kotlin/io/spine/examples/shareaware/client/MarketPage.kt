@@ -26,8 +26,10 @@
 
 package io.spine.examples.shareaware.client
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -35,7 +37,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -44,6 +48,7 @@ import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -463,6 +468,37 @@ private fun calculatePrice(pricePerOne: Money?, quantity: Int): String {
 }
 
 /**
+ * Represents the `ShareItem` component.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ShareItem(
+    model: MarketPageModel,
+    share: Share,
+    previousShare: Share?
+) {
+    Box(
+        modifier = Modifier
+            .clip(MaterialTheme.shapes.small)
+            .bottomBorder()
+    ) {
+        ListItem(
+            modifier = Modifier
+                .height(60.dp)
+                .clickable(
+                    enabled = true,
+                    onClick = {
+                        model.selectedShare(share.id)
+                    }
+                ),
+            headlineText = {
+                MainItemContent(share, previousShare)
+            },
+        )
+    }
+}
+
+/**
  * Represents the main `ListItem` content with data about the share.
  */
 @Composable
@@ -580,6 +616,21 @@ private fun SearchField(
                         .padding(end = 5.dp)
                 )
             }
+        )
+    }
+}
+
+/**
+ * Extension for the `Modifier` that draws the bottom border of the component.
+ */
+private fun Modifier.bottomBorder(): Modifier {
+    return this.drawBehind {
+        drawLine(
+            color = Color(0xff5b595f),
+            start = Offset(0f, size.height),
+            end = Offset(size.width, size.height),
+            strokeWidth = 1.dp.toPx(),
+            alpha = 0.5f
         )
     }
 }
