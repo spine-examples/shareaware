@@ -155,5 +155,5 @@ private object Colors {
     val DarkGrey = Color(0xff5b595f)
     val Red = Color(0xffff3b30)
     val Scrim = Color.Black.copy(alpha = 0.5f)
-    val Green = Color(52, 199, 89)
+    val Green = Color(0xff34c759)
 }
