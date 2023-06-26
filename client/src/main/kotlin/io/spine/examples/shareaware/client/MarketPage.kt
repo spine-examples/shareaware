@@ -422,7 +422,7 @@ private fun SharesTab(
             .fillMaxHeight()
             .background(MaterialTheme.colorScheme.tertiary)
     ) {
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 10.dp),
@@ -459,7 +459,7 @@ private fun SharesTab(
  * Represents the search field.
  *
  * @param value the text to be shown in the search field
- * @param onChange the callback that is triggered when the search value change
+ * @param onChange the callback that is triggered when the search value changes
  */
 @Composable
 private fun SearchField(
@@ -578,7 +578,7 @@ private fun ShareItem(
                     }
                 ),
             headlineText = {
-                MainItemContent(share, previousPrice)
+                ShareItemContent(share, previousPrice)
             },
         )
     }
@@ -591,7 +591,7 @@ private fun ShareItem(
  * @param previousPrice the previous price of this share
  */
 @Composable
-private fun MainItemContent(
+private fun ShareItemContent(
     share: Share,
     previousPrice: Money?
 ) {
