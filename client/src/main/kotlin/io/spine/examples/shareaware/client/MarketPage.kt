@@ -335,25 +335,15 @@ public class MarketPageModel(client: DesktopClient) {
  * The page component that provides data about currently available shares on the market
  * and ways to interact with them.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 public fun MarketPage(model: MarketPageModel) {
     val marketShares by model.shares().collectAsState()
     val previousShares by model.previousShares().collectAsState()
-    val selectedShareId by model.selectedShare().collectAsState()
-    val popUpShown = model.purchaseOperation.isResultMessageShown().collectAsState()
-    val popUpMessage = model.purchaseOperation.resultMessage().collectAsState()
-    val popUpInErrorState = model.purchaseOperation.isFailed().collectAsState()
-    val popUpContentColor = if (popUpInErrorState.value) MaterialTheme.colorScheme.error
-    else MaterialTheme.colorScheme.primary
     val purchaseInProgress = model.purchaseOperation.isInProgress().collectAsState()
-    val listState = rememberLazyListState()
     Row(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         SharesTab(
-            listState = listState,
             marketShares = marketShares,
             previousShares = previousShares,
             model = model
@@ -362,60 +352,29 @@ public fun MarketPage(model: MarketPageModel) {
             model = model,
             isShown = purchaseInProgress.value
         )
-        Scaffold(
-            bottomBar = {
-                PurchaseResultMessage(
-                    isShown = popUpShown.value,
-                    model = model,
-                    label = popUpMessage.value,
-                    contentColor = popUpContentColor
-                )
-            },
-            containerColor = MaterialTheme.colorScheme.surface
-        ) {
-            if (selectedShareId != null) {
-                val selectedShare = marketShares?.shareList
-                    ?.find { share -> share.id == selectedShareId!! }
-                val previousShare = previousShares?.shareList
-                    ?.find { share -> share.id == selectedShareId!! }
-                ShareProfile(
-                    share = selectedShare!!,
-                    previousPrice = previousShare?.price,
-                    model = model
-                )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Select the share",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSecondary
-                    )
-                }
-            }
-        }
+        ShareProfileTab(
+            marketShares = marketShares,
+            previousShares = previousShares,
+            model = model
+        )
     }
 }
 
 /**
  * Represents the shares tab in the left part of the page.
  *
- * @param listState the state object to be used to control or observe the list's state
  * @param marketShares actual market shares
  * @param previousShares previous market shares
  * @param model the model of the market page
  */
 @Composable
 private fun SharesTab(
-    listState: LazyListState,
     marketShares: AvailableMarketShares?,
     previousShares: AvailableMarketShares?,
     model: MarketPageModel
 ) {
     var searchRequest by remember { mutableStateOf("") }
+    val listState = rememberLazyListState()
     Box(
         modifier = Modifier
             .width(250.dp)
@@ -452,6 +411,49 @@ private fun SharesTab(
                 scrollState = listState
             )
         )
+    }
+}
+
+/**
+ * Represents a tab for interacting with the selected share.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ShareProfileTab(
+    marketShares: AvailableMarketShares?,
+    previousShares: AvailableMarketShares?,
+    model: MarketPageModel
+) {
+    val selectedShareId by model.selectedShare().collectAsState()
+    val popUpShown = model.purchaseOperation.isResultMessageShown().collectAsState()
+    val popUpMessage = model.purchaseOperation.resultMessage().collectAsState()
+    val popUpInErrorState = model.purchaseOperation.isFailed().collectAsState()
+    val popUpContentColor = if (popUpInErrorState.value) MaterialTheme.colorScheme.error
+    else MaterialTheme.colorScheme.primary
+    Scaffold(
+        bottomBar = {
+            PurchaseResultMessage(
+                isShown = popUpShown.value,
+                model = model,
+                label = popUpMessage.value,
+                contentColor = popUpContentColor
+            )
+        },
+        containerColor = MaterialTheme.colorScheme.surface
+    ) {
+        if (selectedShareId != null) {
+            val selectedShare = marketShares?.shareList
+                ?.find { share -> share.id == selectedShareId }
+            val previousShare = previousShares?.shareList
+                ?.find { share -> share.id == selectedShareId }
+            ShareProfile(
+                share = selectedShare!!,
+                previousPrice = previousShare?.price,
+                model = model
+            )
+        } else {
+            EmptyShareProfile()
+        }
     }
 }
 
@@ -653,6 +655,24 @@ private fun ShareProfile(
         ButtonSection(
             model = model,
             share = share
+        )
+    }
+}
+
+/**
+ * Represents an empty share profile.
+ */
+@Composable
+private fun EmptyShareProfile() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "Select the share",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSecondary
         )
     }
 }
