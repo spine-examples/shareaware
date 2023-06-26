@@ -33,6 +33,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -484,7 +485,13 @@ private fun SearchField(
                         .size(22.dp)
                         .padding(end = 5.dp)
                 )
-            }
+            },
+            contentPadding = PaddingValues(
+                start = 5.dp,
+                end = 16.dp,
+                top = 2.dp,
+                bottom = 2.dp,
+            )
         )
     }
 }

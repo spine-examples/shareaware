@@ -31,6 +31,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -51,12 +52,13 @@ import io.spine.examples.shareaware.client.payment.Tooltip
  * The input component that supports displaying a tip.
  *
  * @param value the input text to be shown in the text field
- * @param onChange the callback that is triggered when the input's value change
+ * @param onChange the callback that is triggered when the input's value changes
  * @param placeholder the label to be displayed inside the input container
  * @param isError indicates if the input's current value is in error
  * @param tipMessage message to be displayed in the tooltip
  * @param containerColor the color used for the background of this input
  * @param leadingIcon the optional leading icon to be displayed at the beginning of the input field container
+ * @param contentPadding the spacing values to apply internally between the input container and the content
  */
 @Composable
 public fun Input(
@@ -66,7 +68,11 @@ public fun Input(
     isError: Boolean,
     tipMessage: String = "",
     containerColor: Color = MaterialTheme.colorScheme.tertiary,
-    leadingIcon: @Composable (() -> Unit)? = null
+    leadingIcon: @Composable (() -> Unit)? = null,
+    contentPadding: PaddingValues = PaddingValues(
+        horizontal = 16.dp,
+        vertical = 8.dp
+    )
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
@@ -93,10 +99,7 @@ public fun Input(
                     shape = MaterialTheme.shapes.small
                 )
                 .padding(
-                    start = if (leadingIcon == null) 16.dp else 5.dp,
-                    end = 16.dp,
-                    top = if (leadingIcon == null) 8.dp else 2.dp,
-                    bottom = if (leadingIcon == null) 8.dp else 2.dp,
+                    paddingValues = contentPadding
                 ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
