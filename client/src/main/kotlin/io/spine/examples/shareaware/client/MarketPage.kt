@@ -508,12 +508,14 @@ private fun SharesList(
         modifier = Modifier.fillMaxSize(),
         state = listState
     ) {
-        shares.forEachIndexed { index, share ->
+        shares.forEach { share ->
             item {
                 ShareItem(
                     model = model,
                     share = share,
-                    previousPrice = previousShares?.get(index)?.price
+                    previousPrice = previousShares?.find { previousShare ->
+                        previousShare.id == share.id
+                    }?.price
                 )
             }
         }
