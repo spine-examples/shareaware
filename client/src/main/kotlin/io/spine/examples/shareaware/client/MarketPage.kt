@@ -81,8 +81,6 @@ import io.spine.client.EventFilter.*
 import io.spine.examples.shareaware.MoneyCalculator.*
 import io.spine.examples.shareaware.PurchaseId
 import io.spine.examples.shareaware.ShareId
-import io.spine.examples.shareaware.client.PriceDifference.PriceDifferenceCard
-import io.spine.examples.shareaware.client.PriceDifference.definePriceDifferenceConfig
 import io.spine.examples.shareaware.client.payment.Dialog
 import io.spine.examples.shareaware.client.wallet.PopUpMessage
 import io.spine.examples.shareaware.investment.command.PurchaseShares
@@ -555,7 +553,7 @@ private fun EmptySharesList() {
  * Represents the list item with information about the share.
  *
  * @param model the model of the "Market" page
- * @param share the share to represent
+ * @param share the share to display
  * @param previousPrice the previous price of this share
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -618,8 +616,7 @@ private fun ShareItemContent(
             verticalArrangement = Arrangement.Center
         ) {
             Text(share.price.asReadableString(), style = MaterialTheme.typography.headlineSmall)
-            val priceDifference = definePriceDifferenceConfig(share.price, previousPrice)
-            PriceDifferenceCard(priceDifference)
+            PriceDifferenceCard(share.price, previousPrice)
         }
     }
 }
@@ -678,7 +675,7 @@ private fun EmptyShareProfile() {
 }
 
 /**
- * Show information about the share price.
+ * Displays information about the share price.
  *
  * @param actualPrice the actual share price to be shown
  * @param previousPrice the previous price of this share to show difference with
@@ -700,12 +697,7 @@ private fun SharePrice(
             modifier = Modifier
                 .padding(end = 10.dp)
         )
-        val (color, price) = definePriceDifferenceConfig(actualPrice, previousPrice)
-        Text(
-            text = price,
-            style = MaterialTheme.typography.headlineSmall,
-            color = color,
-        )
+        PriceDifferenceCard(actualPrice, previousPrice)
     }
 }
 
@@ -776,60 +768,32 @@ private fun ButtonSection(
 }
 
 /**
- * Provides API to define and show the difference between two `Money` objects.
+ * Represents the card that shows difference between two `Money` objects.
  */
-private object PriceDifference {
-
-    /**
-     * Configuration for the `PriceDifferenceCard` component.
-     */
-    data class PriceDifferenceConfig(val color: Color, val price: String)
-
-    /**
-     * Defines the `PriceDifferenceConfig` taking two provided `Money` objects.
-     */
-    @Composable
-    fun definePriceDifferenceConfig(actualPrice: Money, previousPrice: Money?): PriceDifferenceConfig {
-        val color: Color
-        val price: String
-        if (null == previousPrice) {
-            color = definePriceDifferenceColor(actualPrice, actualPrice)
-            price = actualPrice.subtract(actualPrice)
-        } else {
-            color = definePriceDifferenceColor(actualPrice, previousPrice)
-            price = previousPrice.subtract(actualPrice)
-        }
-        return PriceDifferenceConfig(color, price)
+@Composable
+private fun PriceDifferenceCard(actualPrice: Money, previousPrice: Money?) {
+    val color: Color
+    val price: String
+    if (null == previousPrice) {
+        color = MaterialTheme.colorScheme.surfaceVariant
+        price = "~0.0"
+    } else if (isGreater(actualPrice, previousPrice)) {
+        color = MaterialTheme.colorScheme.surfaceVariant
+        price = "+${subtract(actualPrice, previousPrice).asReadableString()}"
+    } else {
+        color = MaterialTheme.colorScheme.error
+        price = "-${subtract(previousPrice, actualPrice).asReadableString()}"
     }
-
-    /**
-     * Defines the color to use as a background for the `PriceDifferenceCard` component.
-     */
-    @Composable
-    private fun definePriceDifferenceColor(actualPrice: Money, previousPrice: Money): Color {
-        return if (isGreater(actualPrice, previousPrice))
-            MaterialTheme.colorScheme.surfaceVariant
-        else
-            MaterialTheme.colorScheme.error
-    }
-
-    /**
-     * Represents the card that shows difference between two `Money` objects.
-     */
-    @Composable
-    fun PriceDifferenceCard(priceDifferenceConfig: PriceDifferenceConfig) {
-        val (color, price) = priceDifferenceConfig
-        Box(
-            modifier = Modifier
-                .background(color, MaterialTheme.shapes.extraSmall)
-                .padding(2.dp),
-        ) {
-            Text(
-                text = price,
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-        }
+    Box(
+        modifier = Modifier
+            .background(color, MaterialTheme.shapes.extraSmall)
+            .padding(2.dp),
+    ) {
+        Text(
+            text = price,
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onPrimary
+        )
     }
 }
 
@@ -962,19 +926,6 @@ private fun Modifier.bottomBorder(): Modifier {
             strokeWidth = 1.dp.toPx(),
             alpha = 0.5f
         )
-    }
-}
-
-/**
- * Returns the difference between this `Money` object and provided as a readable string.
- */
-private fun Money.subtract(money: Money): String {
-    return if (isGreater(this, money)) {
-        val result = subtract(this, money)
-        "-${result.asReadableString()}"
-    } else {
-        val result = subtract(money, this)
-        "+${result.asReadableString()}"
     }
 }
 
