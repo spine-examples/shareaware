@@ -30,21 +30,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -55,7 +49,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.spine.client.EventFilter.*
@@ -65,22 +58,21 @@ import io.spine.examples.shareaware.client.DesktopClient
 import io.spine.examples.shareaware.client.EntitySubscription
 import io.spine.examples.shareaware.client.Input
 import io.spine.examples.shareaware.client.PrimaryButton
+import io.spine.examples.shareaware.client.Scaffold
+import io.spine.examples.shareaware.client.StringExtensions.asIban
+import io.spine.examples.shareaware.client.StringExtensions.asUsd
+import io.spine.examples.shareaware.client.StringExtensions.validateIban
+import io.spine.examples.shareaware.client.StringExtensions.validateMoney
 import io.spine.examples.shareaware.client.payment.Dialog
-import io.spine.examples.shareaware.client.wallet.StringExtensions.asIban
-import io.spine.examples.shareaware.client.wallet.StringExtensions.asUsd
-import io.spine.examples.shareaware.client.wallet.StringExtensions.validateIban
-import io.spine.examples.shareaware.client.wallet.StringExtensions.validateMoney
+import io.spine.examples.shareaware.client.payment.PopupConfig
 import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredFromUser
 import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredToUser
-import io.spine.examples.shareaware.wallet.Iban
 import io.spine.examples.shareaware.wallet.WalletBalance
 import io.spine.examples.shareaware.wallet.command.ReplenishWallet
 import io.spine.examples.shareaware.wallet.command.WithdrawMoney
 import io.spine.examples.shareaware.wallet.event.MoneyWithdrawn
 import io.spine.examples.shareaware.wallet.event.WalletReplenished
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds
-import io.spine.money.Currency
-import io.spine.money.Money
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -333,10 +325,17 @@ public class WalletPageModel(private val client: DesktopClient) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 public fun WalletPage(model: WalletPageModel): Unit = Column {
+    val paymentError = model.paymentError().collectAsState()
+    val errorMessage = model.paymentErrorMessage().collectAsState()
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.surface,
-        bottomBar = { PaymentError(model) }
+        modifier = Modifier.fillMaxSize(),
+        popupConfig = PopupConfig(
+            isShown = paymentError.value,
+            dismissAction = { model.closePaymentError() },
+            label = errorMessage.value,
+            contentColor = MaterialTheme.colorScheme.error
+        )
     ) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -471,90 +470,6 @@ private fun WalletWithdrawalWindow(model: WalletPageModel) {
 }
 
 /**
- * Pop-up message with error occurred by the payment process.
- */
-@Composable
-private fun PaymentError(model: WalletPageModel) {
-    val scope = rememberCoroutineScope { Dispatchers.Default }
-    val paymentError = model
-        .paymentError()
-        .collectAsState()
-    val errorMessage = model
-        .paymentErrorMessage()
-        .collectAsState()
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(40.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        PopUpMessage(
-            isShown = paymentError.value,
-            dismissAction = {
-                scope.launch {
-                    model.closePaymentError()
-                }
-            },
-            label = errorMessage.value,
-            modifier = Modifier.wrapContentWidth()
-        )
-    }
-}
-
-/**
- * Pop-up message component.
- *
- * @param isShown is a component shown to the user
- * @param dismissAction callback that will be triggered when the user clicks on `Cancel` button
- * @param label the message to be shown to the user
- * @param contentColor the preferred color for content inside this pop-up
- * @param modifier the modifier to be applied to this pop-up
- */
-@Composable
-public fun PopUpMessage(
-    isShown: Boolean,
-    dismissAction: () -> Unit,
-    label: String,
-    contentColor: Color = MaterialTheme.colorScheme.error,
-    modifier: Modifier = Modifier.wrapContentWidth()
-) {
-    if (isShown) {
-        Card(
-            shape = MaterialTheme.shapes.small,
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.background,
-            ),
-            modifier = modifier,
-        ) {
-            Row(
-                modifier = Modifier.padding(5.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = contentColor
-                )
-                Spacer(modifier = Modifier.width(15.dp))
-                PrimaryButton(
-                    onClick = dismissAction,
-                    "Close",
-                    modifier = Modifier
-                        .width(70.dp)
-                        .height(20.dp),
-                    labelStyle = MaterialTheme.typography.bodySmall,
-                    shape = MaterialTheme.shapes.small,
-                    contentPadding = PaddingValues(2.dp),
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
-        }
-    }
-}
-
-/**
  * Returns the readable `String` constructed from the `WalletBalance` projection.
  */
 private fun WalletBalance.asReadableString(): String {
@@ -622,58 +537,5 @@ private fun MoneyOperationDialog(
                 )
             }
         )
-    }
-}
-
-/**
- * Provides extensions for the `String` type.
- */
-private object StringExtensions {
-
-    /**
-     * Returns a new `Money` object in USD currency using this `String` to construct it.
-     *
-     * This `String` must be written as a number with a decimal point.
-     */
-    fun String.asUsd(): Money {
-        val parts = this.split('.')
-        val units = parts[0].toLong()
-        val nanos = if (parts.size == 2) parts[1].toInt() else 0
-        return Money
-            .newBuilder()
-            .setCurrency(Currency.USD)
-            .setUnits(units)
-            .setNanos(nanos)
-            .vBuild()
-    }
-
-    /**
-     * Returns a new IBAN using this `String` as its value.
-     *
-     * The string must conform to the [formatting rules](https://en.wikipedia.org/wiki/International_Bank_Account_Number#:~:text=of%20total%20payments-,Structure,-%5Bedit%5D).
-     */
-    fun String.asIban(): Iban {
-        return Iban
-            .newBuilder()
-            .setValue(this)
-            .vBuild()
-    }
-
-    /**
-     * Returns true if this `String` is written as an IBAN, false otherwise.
-     */
-    fun String.validateIban(): Boolean {
-        val ibanRegex =
-            """[A-Z]{2}[0-9]{2}(?:[ ]?[0-9]{4}){4}(?!(?:[ ]?[0-9]){3})(?:[ ]?[0-9]{1,2})?""".toRegex()
-        return !ibanRegex.containsMatchIn(this)
-    }
-
-    /**
-     * Returns true if this `String` is written like a number with a decimal point,
-     * and it can be converted to a `Money` object, false otherwise.
-     */
-    fun String.validateMoney(): Boolean {
-        val decimalRegex = """^\d+(\.\d{1,2})?${'$'}""".toRegex()
-        return !decimalRegex.containsMatchIn(this)
     }
 }

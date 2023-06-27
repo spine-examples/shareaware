@@ -26,7 +26,6 @@
 
 package io.spine.examples.shareaware.client
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,13 +36,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -54,7 +51,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -69,20 +65,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.loadSvgPainter
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.google.common.base.Preconditions.*
 import io.spine.client.EventFilter.*
 import io.spine.examples.shareaware.MoneyCalculator.*
 import io.spine.examples.shareaware.PurchaseId
 import io.spine.examples.shareaware.ShareId
+import io.spine.examples.shareaware.client.MoneyExtensions.asReadableString
 import io.spine.examples.shareaware.client.payment.Dialog
-import io.spine.examples.shareaware.client.wallet.PopUpMessage
+import io.spine.examples.shareaware.client.payment.PopupConfig
 import io.spine.examples.shareaware.investment.command.PurchaseShares
 import io.spine.examples.shareaware.investment.event.SharesPurchased
 import io.spine.examples.shareaware.market.AvailableMarketShares
@@ -92,8 +85,6 @@ import io.spine.examples.shareaware.share.Share
 import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds
 import io.spine.money.Money
 import io.spine.util.Exceptions.*
-import java.io.IOException
-import java.net.URL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -415,7 +406,6 @@ private fun SharesTab(
 /**
  * Represents a tab for interacting with the selected share.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ShareProfileTab(
     marketShares: AvailableMarketShares?,
@@ -429,15 +419,13 @@ private fun ShareProfileTab(
     val popUpContentColor = if (popUpInErrorState.value) MaterialTheme.colorScheme.error
     else MaterialTheme.colorScheme.primary
     Scaffold(
-        bottomBar = {
-            PurchaseResultMessage(
-                isShown = popUpShown.value,
-                model = model,
-                label = popUpMessage.value,
-                contentColor = popUpContentColor
-            )
-        },
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surface,
+        popupConfig = PopupConfig(
+            isShown = popUpShown.value,
+            dismissAction = { model.purchaseOperation.closeOperationResultMessage() },
+            label = popUpMessage.value,
+            contentColor = popUpContentColor
+        )
     ) {
         if (selectedShareId != null) {
             val selectedShare = marketShares?.shareList
@@ -716,8 +704,8 @@ private fun ShareLogo(share: Share) {
         contentAlignment = Alignment.Center
     ) {
         Image(
-            load = { loadImage(share.companyLogo, density) },
-            painterFor = { it },
+            url = share.companyLogo,
+            density = density,
             contentDescription = share.companyName,
         )
     }
@@ -768,36 +756,6 @@ private fun ButtonSection(
 }
 
 /**
- * Represents the card that shows difference between two `Money` objects.
- */
-@Composable
-private fun PriceDifferenceCard(actualPrice: Money, previousPrice: Money?) {
-    val color: Color
-    val price: String
-    if (null == previousPrice) {
-        color = MaterialTheme.colorScheme.surfaceVariant
-        price = "~0.0"
-    } else if (isGreater(actualPrice, previousPrice)) {
-        color = MaterialTheme.colorScheme.surfaceVariant
-        price = "+${subtract(actualPrice, previousPrice).asReadableString()}"
-    } else {
-        color = MaterialTheme.colorScheme.error
-        price = "-${subtract(previousPrice, actualPrice).asReadableString()}"
-    }
-    Box(
-        modifier = Modifier
-            .background(color, MaterialTheme.shapes.extraSmall)
-            .padding(2.dp),
-    ) {
-        Text(
-            text = price,
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onPrimary
-        )
-    }
-}
-
-/**
  * Represents the dialog window for the shares purchase purposes.
  *
  * @param model the model of the "Market" page
@@ -809,8 +767,8 @@ private fun PurchaseDialog(
     isShown: Boolean
 ) {
     val scope = rememberCoroutineScope { Dispatchers.Default }
-    val shareToPurchase = model.purchaseOperation.share().collectAsState()
-    val quantity = model.purchaseOperation.quantityOfShares().collectAsState()
+    val shareToPurchase by model.purchaseOperation.share().collectAsState()
+    val quantity by model.purchaseOperation.quantityOfShares().collectAsState()
     if (isShown) {
         Dialog(
             onCancel = {
@@ -824,94 +782,47 @@ private fun PurchaseDialog(
                     model.purchaseOperation.cancel()
                 }
             },
-            title = "Purchase '${shareToPurchase.value?.companyName}' shares",
+            title = "Purchase '${shareToPurchase?.companyName}' shares",
             modifier = Modifier
                 .wrapContentHeight()
                 .width(245.dp),
             {
-                val price = calculatePrice(shareToPurchase.value?.price, quantity.value)
-                Column {
-                    Text(
-                        "Total Price - $price",
-                        style = MaterialTheme.typography.bodySmall,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .padding(start = 16.dp, bottom = 15.dp)
-                    )
-                    NumericInput(model)
-                }
+                val price = multiply(shareToPurchase!!.price, quantity).asReadableString()
+                PurchaseDialogInput(
+                    price = price,
+                    model = model
+                )
             }
         )
     }
 }
 
 /**
- * Represents the input component accepting only the numeric values.
+ * Displays the input inside the `PurchaseDialog`.
  *
+ * @param price total price of the purchase to be displayed
  * @param model the model of the "Market" page
  */
 @Composable
-private fun NumericInput(model: MarketPageModel) {
-    val input = remember { mutableStateOf("") }
-    val onChange: (String) -> Unit = {
-        if (it.validateNumber()) {
-            input.value = it
-            val quantity = if (it == "") 0 else it.toInt()
-            model.purchaseOperation.quantityOfShares(quantity)
-        }
-    }
-    Input(
-        value = input.value,
-        onChange = onChange,
-        placeholder = "How much to purchase",
-        isError = false
-    )
-}
-
-/**
- * Represents the pop-up message component that contains the result of the purchase operation.
- */
-@Composable
-private fun PurchaseResultMessage(
-    isShown: Boolean,
-    model: MarketPageModel,
-    label: String,
-    contentColor: Color
+private fun PurchaseDialogInput(
+    price: String,
+    model: MarketPageModel
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(40.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        PopUpMessage(
-            isShown = isShown,
-            dismissAction = { model.purchaseOperation.closeOperationResultMessage() },
-            label = label,
-            contentColor = contentColor,
-            modifier = Modifier.wrapContentWidth()
+    Column {
+        Text(
+            "Total Price - $price",
+            style = MaterialTheme.typography.bodySmall,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(start = 16.dp, bottom = 15.dp)
+        )
+        NumericInput(
+            placeholder = "How much to purchase",
+            onChange = {
+                val quantity = if (it == "") 0 else it.toInt()
+                model.purchaseOperation.quantityOfShares(quantity)
+            }
         )
     }
-}
-
-/**
- * Returns true if this `String` is written like a number, false otherwise.
- */
-private fun String.validateNumber(): Boolean {
-    val numericRegex = """^(?!0)[0-9]*${'$'}""".toRegex()
-    return numericRegex.containsMatchIn(this)
-}
-
-/**
- * Calculates the price of the purchase operation taking
- * the quantity of shares and price per one share.
- *
- * @return the readable string that represents the total price of the purchase.
- */
-private fun calculatePrice(pricePerOne: Money?, quantity: Int): String {
-    checkArgument(null != pricePerOne)
-    val totalPrice = multiply(pricePerOne!!, quantity)
-    return totalPrice.asReadableString()
 }
 
 /**
@@ -927,53 +838,4 @@ private fun Modifier.bottomBorder(): Modifier {
             alpha = 0.5f
         )
     }
-}
-
-/**
- * Draws an image.
- *
- * @param load callback that loads the image
- * @param painterFor painter for the image
- * @param contentDescription what the image represents
- * @param modifier modifier used to adjust layout
- * @param contentScale scale parameter used to determine the aspect ratio scaling
- */
-@Composable
-private fun <T> Image(
-    load: () -> T,
-    painterFor: @Composable (T) -> Painter,
-    contentDescription: String,
-    modifier: Modifier = Modifier,
-    contentScale: ContentScale = ContentScale.Inside,
-) {
-    val image: T? = try {
-        load()
-    } catch (e: IOException) {
-        throw illegalArgumentWithCauseOf(e)
-    }
-    if (image != null) {
-        Image(
-            painter = painterFor(image),
-            contentDescription = contentDescription,
-            contentScale = contentScale,
-            modifier = modifier
-        )
-    }
-}
-
-/**
- * Loads an image from the network by URL.
- *
- * @param url the URL of the image to load
- * @param density density that will be used to set the intrinsic size of the image
- * @return the decoded SVG image associated with the URL
- */
-private fun loadImage(url: String, density: Density): Painter =
-    URL(url).openStream().buffered().use { loadSvgPainter(it, density) }
-
-/**
- * Returns the readable `String` constructed from the `Money` object.
- */
-private fun Money.asReadableString(): String {
-    return "$" + this.units.toString() + "." + this.nanos.toString()
 }
