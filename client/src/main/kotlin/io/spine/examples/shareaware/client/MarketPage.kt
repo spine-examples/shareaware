@@ -62,9 +62,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -73,6 +70,7 @@ import io.spine.client.EventFilter.*
 import io.spine.examples.shareaware.MoneyCalculator.*
 import io.spine.examples.shareaware.PurchaseId
 import io.spine.examples.shareaware.ShareId
+import io.spine.examples.shareaware.client.ModifierExtensions.bottomBorder
 import io.spine.examples.shareaware.client.MoneyExtensions.asReadableString
 import io.spine.examples.shareaware.client.payment.Dialog
 import io.spine.examples.shareaware.client.payment.PopupConfig
@@ -522,9 +520,8 @@ private fun SharesList(
  */
 @Composable
 private fun EmptySharesList() {
-    Column (
-        modifier = Modifier
-            .fillMaxSize(),
+    Column(
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -535,7 +532,6 @@ private fun EmptySharesList() {
         )
     }
 }
-
 
 /**
  * Represents the list item with information about the share.
@@ -584,8 +580,7 @@ private fun ShareItemContent(
     previousPrice: Money?
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         Column(
             modifier = Modifier
@@ -633,8 +628,7 @@ private fun ShareProfile(
         Text(
             text = share.companyName,
             style = MaterialTheme.typography.labelMedium,
-            modifier = Modifier
-                .padding(top = 10.dp)
+            modifier = Modifier.padding(top = 10.dp)
         )
         SharePrice(share.price, previousPrice)
         ButtonSection(
@@ -650,8 +644,7 @@ private fun ShareProfile(
 @Composable
 private fun EmptyShareProfile() {
     Box(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -682,8 +675,7 @@ private fun SharePrice(
         Text(
             text = actualPrice.asReadableString(),
             style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier
-                .padding(end = 10.dp)
+            modifier = Modifier.padding(end = 10.dp)
         )
         PriceDifferenceCard(actualPrice, previousPrice)
     }
@@ -821,21 +813,6 @@ private fun PurchaseDialogInput(
                 val quantity = if (it == "") 0 else it.toInt()
                 model.purchaseOperation.quantityOfShares(quantity)
             }
-        )
-    }
-}
-
-/**
- * Extension for the `Modifier` that draws the bottom border of the component.
- */
-private fun Modifier.bottomBorder(): Modifier {
-    return this.drawBehind {
-        drawLine(
-            color = Color(0xff5b595f),
-            start = Offset(0f, size.height),
-            end = Offset(size.width, size.height),
-            strokeWidth = 1.dp.toPx(),
-            alpha = 0.5f
         )
     }
 }

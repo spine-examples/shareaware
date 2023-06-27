@@ -26,6 +26,11 @@
 
 package io.spine.examples.shareaware.client
 
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import io.spine.examples.shareaware.wallet.Iban
 import io.spine.money.Currency
 import io.spine.money.Money
@@ -93,5 +98,26 @@ public object MoneyExtensions {
      */
     public fun Money.asReadableString(): String {
         return "$" + this.units.toString() + "." + this.nanos.toString()
+    }
+}
+
+/**
+ * Provides extensions for the `Modifier` type.
+ */
+public object ModifierExtensions {
+
+    /**
+     * Extension for the `Modifier` that draws the bottom border of the component.
+     */
+    public fun Modifier.bottomBorder(): Modifier {
+        return this.drawBehind {
+            drawLine(
+                color = Color(0xff5b595f),
+                start = Offset(0f, size.height),
+                end = Offset(size.width, size.height),
+                strokeWidth = 1.dp.toPx(),
+                alpha = 0.5f
+            )
+        }
     }
 }
