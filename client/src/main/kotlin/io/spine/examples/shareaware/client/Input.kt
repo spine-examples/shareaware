@@ -33,6 +33,7 @@ import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
@@ -69,16 +70,11 @@ public fun Input(
     tipMessage: String = "",
     containerColor: Color = MaterialTheme.colorScheme.tertiary,
     leadingIcon: @Composable (() -> Unit)? = null,
-    contentPadding: PaddingValues = PaddingValues(
-        horizontal = 16.dp,
-        vertical = 8.dp
-    )
+    contentPadding: PaddingValues = PaddingValues(16.dp, 8.dp)
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
     val borderColor = if (isFocused) MaterialTheme.colorScheme.primary else Color.Unspecified
-    val toolTipIconColor = if (isError) MaterialTheme.colorScheme.error else
-        MaterialTheme.colorScheme.onSecondary
     BasicTextField(
         value = value,
         onValueChange = onChange,
@@ -86,49 +82,122 @@ public fun Input(
         interactionSource = interactionSource,
         maxLines = 1
     ) { innerTextField ->
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(
-                    width = 2.dp,
-                    color = borderColor,
-                    shape = MaterialTheme.shapes.small
-                )
-                .background(
-                    color = containerColor,
-                    shape = MaterialTheme.shapes.small
-                )
-                .padding(
-                    paddingValues = contentPadding
-                ),
-            verticalAlignment = Alignment.CenterVertically,
+        InnerBox(
+            borderColor = borderColor,
+            containerColor = containerColor,
+            contentPadding = contentPadding,
         ) {
-            if (leadingIcon != null) {
-                leadingIcon()
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentAlignment = Alignment.CenterStart,
-            ) {
-                if (value.isEmpty()) {
-                    Text(
-                        text = placeholder,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSecondary
-                    )
-                }
-                innerTextField()
-            }
-            if (tipMessage != "") {
-                Tooltip(
-                    tip = tipMessage,
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    iconColor = toolTipIconColor,
-                    offset = DpOffset(130.dp, 0.dp)
-                )
-            }
+            showLeadingIcon(leadingIcon != null) { leadingIcon!!() }
+            InputContainer(
+                value = value,
+                placeholder = placeholder,
+                textField = { innerTextField() },
+                modifier = { this.weight(1f) }
+            )
+            showTooltip(tipMessage, isError, Modifier.align(Alignment.CenterVertically))
         }
+    }
+}
+
+/**
+ * Inner box for all content of the `Input`.
+ */
+@Composable
+private fun InnerBox(
+    borderColor: Color,
+    containerColor: Color,
+    contentPadding: PaddingValues,
+    content: @Composable RowScope.() -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(
+                width = 2.dp,
+                color = borderColor,
+                shape = MaterialTheme.shapes.small
+            )
+            .background(
+                color = containerColor,
+                shape = MaterialTheme.shapes.small
+            )
+            .padding(
+                paddingValues = contentPadding
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        content()
+    }
+}
+
+/**
+ * Container for the text field.
+ */
+@Composable
+private fun InputContainer(
+    value: String,
+    placeholder: String,
+    textField: @Composable () -> Unit,
+    modifier: Modifier.() -> Modifier
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .modifier(),
+        contentAlignment = Alignment.CenterStart,
+    ) {
+        Placeholder(
+            isShown = value.isEmpty(),
+            value = placeholder
+        )
+        textField()
+    }
+}
+
+/**
+ * Displays the leading icon of the `Input`.
+ */
+@Composable
+private fun showLeadingIcon(isShown: Boolean, icon: @Composable () -> Unit) {
+    if (isShown) {
+        icon()
+    }
+}
+
+/**
+ * Displays the tooltip of the `Input`.
+ */
+@Composable
+private fun showTooltip(
+    message: String,
+    isError: Boolean,
+    modifier: Modifier
+) {
+    val toolTipIconColor = if (isError) MaterialTheme.colorScheme.error else
+        MaterialTheme.colorScheme.onSecondary
+    if (message != "") {
+        Tooltip(
+            tip = message,
+            modifier = modifier,
+            iconColor = toolTipIconColor,
+            offset = DpOffset(130.dp, 0.dp)
+        )
+    }
+}
+
+/**
+ * The placeholder to be shown inside the text field.
+ */
+@Composable
+private fun Placeholder(
+    isShown: Boolean,
+    value: String
+) {
+    if (isShown) {
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSecondary
+        )
     }
 }
