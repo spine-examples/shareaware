@@ -43,5 +43,5 @@ val kotlinVersion = "1.8.10"
 dependencies {
     implementation("net.ltgt.gradle:gradle-errorprone-plugin:${errorProneVersion}")
     implementation("io.spine.tools:spine-bootstrap:${spineVersion}")
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
 }
