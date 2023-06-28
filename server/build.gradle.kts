@@ -31,6 +31,7 @@
 plugins {
     id("io.spine.tools.gradle.bootstrap")
     application
+    `kotlin-common`
 }
 
 spine {

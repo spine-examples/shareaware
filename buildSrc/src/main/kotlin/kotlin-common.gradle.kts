@@ -24,30 +24,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Material3
-import io.spine.examples.shareaware.dependency.Spine
+import org.gradle.kotlin.dsl.repositories
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    `kotlin-common`
-    id("org.jetbrains.compose") version "1.4.0"
+    kotlin("jvm")
 }
 
 repositories {
-    google()
     mavenCentral()
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
 
-dependencies {
-    implementation(compose.desktop.currentOs)
-    implementation(project(":model"))
-    implementation(Material3.Desktop.lib)
-    implementation(Spine.Server.lib)
-    implementation(project(":server"))
+tasks.withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = BuildSettings.javaVersion.toString()
 }
 
-compose.desktop {
-    application {
-        mainClass = "io.spine.examples.shareaware.client.Main"
-    }
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
+kotlin {
+    explicitApi()
 }
