@@ -28,5 +28,5 @@ package io.spine.examples.shareaware.dependency
 
 // https://github.com/jacoco/jacoco
 public object Jacoco {
-    public const val version = "0.8.8"
+    public const val version = "0.8.10"
 }
