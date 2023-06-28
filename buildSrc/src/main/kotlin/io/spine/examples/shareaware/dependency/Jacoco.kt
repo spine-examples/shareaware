@@ -24,37 +24,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Jacoco
+package io.spine.examples.shareaware.dependency
 
-/**
- * Configures test-running tasks and code coverage in a project.
- *
- * Explicitly instructs to discover and execute JUnit tests.
- */
-
-plugins {
-    java
-    jacoco
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform {
-        includeEngines("junit-jupiter")
-    }
-}
-
-tasks.test {
-    finalizedBy(tasks.jacocoTestReport)
-}
-
-jacoco {
-    toolVersion = Jacoco.version
-}
-
-tasks.jacocoTestReport {
-    dependsOn(tasks.test)
-    reports {
-        xml.required.set(true)
-        xml.outputLocation.set(layout.buildDirectory.file("jacocoCoverage.xml"))
-    }
+// https://github.com/jacoco/jacoco
+public object Jacoco {
+    public const val version = "0.8.8"
 }
