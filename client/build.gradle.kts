@@ -28,7 +28,7 @@ import io.spine.examples.shareaware.dependency.Material3
 import io.spine.examples.shareaware.dependency.Spine
 
 plugins {
-    `kotlin-common`
+    `kotlin-settings`
     id("org.jetbrains.compose") version "1.4.0"
 }
 
