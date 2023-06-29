@@ -36,11 +36,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,46 +47,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-
-/**
- * Displays the search field.
- *
- * @param value the text to be shown in the search field
- * @param onChange the callback that is triggered when the search value changes
- */
-@Composable
-public fun SearchField(
-    value: String,
-    onChange: (String) -> Unit
-) {
-    Box(
-        modifier = Modifier.padding(top = 10.dp, bottom = 10.dp)
-    ) {
-        Input(
-            value = value,
-            onChange = onChange,
-            placeholder = "Search",
-            isError = false,
-            containerColor = MaterialTheme.colorScheme.secondary,
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search",
-                    tint = MaterialTheme.colorScheme.onSecondary,
-                    modifier = Modifier
-                        .size(22.dp)
-                        .padding(end = 5.dp)
-                )
-            },
-            contentPadding = PaddingValues(
-                start = 5.dp,
-                end = 16.dp,
-                top = 2.dp,
-                bottom = 2.dp,
-            )
-        )
-    }
-}
 
 /**
  * The input component that supports displaying a tip.
