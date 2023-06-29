@@ -90,7 +90,7 @@ public fun ShareProfileTab(
 }
 
 /**
- * Displays an empty share profile.
+ * Displays an empty share profile tab.
  */
 @Composable
 public fun EmptyShareProfileTab() {
