@@ -24,26 +24,29 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import org.gradle.kotlin.dsl.repositories
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import io.gitlab.arturbosch.detekt.Detekt
+
+/**
+ * This script-plugin sets up Kotlin code analyzing with Detekt.
+ */
 
 plugins {
-    kotlin("jvm")
-    id("detekt-code-analysis")
+    id("io.gitlab.arturbosch.detekt")
 }
 
-repositories {
-    mavenCentral()
+detekt {
+    buildUponDefaultConfig = true
+    config.setFrom("${rootDir}/quality/detekt-config.yml")
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = BuildSettings.javaVersion.toString()
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
-
-kotlin {
-    explicitApi()
+tasks {
+    withType<Detekt>().configureEach {
+        reports {
+            html.required.set(true) // Only HTML report is generated.
+            xml.required.set(false)
+            txt.required.set(false)
+            sarif.required.set(false)
+            md.required.set(false)
+        }
+    }
 }
