@@ -26,6 +26,7 @@
 
 plugins {
     `kotlin-dsl`
+    kotlin("jvm") version "1.8.0" apply false
 }
 
 repositories {
@@ -41,16 +42,6 @@ val spineVersion = "1.9.0"
 val kotlinVersion = "1.8.10"
 
 val detektVersion = "1.23.0"
-
-configurations.all {
-    resolutionStrategy {
-        force(
-            "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion",
-            "org.jetbrains.kotlin:kotlin-stdlib-common:$kotlinVersion",
-            "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
-        )
-    }
-}
 
 dependencies {
     implementation("net.ltgt.gradle:gradle-errorprone-plugin:${errorProneVersion}")
