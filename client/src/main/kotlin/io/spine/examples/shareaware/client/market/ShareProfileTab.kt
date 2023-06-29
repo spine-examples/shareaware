@@ -50,7 +50,6 @@ import io.spine.examples.shareaware.client.component.Image
 import io.spine.examples.shareaware.client.component.PriceDifferenceCard
 import io.spine.examples.shareaware.client.PrimaryButton
 import io.spine.examples.shareaware.client.component.Scaffold
-import io.spine.examples.shareaware.client.market.MarketPageModel.PurchaseOperationModel
 import io.spine.examples.shareaware.client.component.PopupConfig
 import io.spine.examples.shareaware.client.extension.asReadableString
 import io.spine.examples.shareaware.share.Share
