@@ -40,8 +40,22 @@ val spineVersion = "1.9.0"
 
 val kotlinVersion = "1.8.10"
 
+val detektVersion = "1.23.0"
+
+configurations.all {
+    resolutionStrategy {
+        force(
+            "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion",
+            "org.jetbrains.kotlin:kotlin-stdlib-common:$kotlinVersion",
+            "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+        )
+    }
+}
+
 dependencies {
     implementation("net.ltgt.gradle:gradle-errorprone-plugin:${errorProneVersion}")
     implementation("io.spine.tools:spine-bootstrap:${spineVersion}")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
+    implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:$detektVersion")
 }
