@@ -45,14 +45,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import io.spine.examples.shareaware.client.extension.validateNumber
 
 /**
  * Displays the search field.
@@ -92,32 +90,6 @@ public fun SearchField(
             )
         )
     }
-}
-
-/**
- * Displays the input component accepting only the numeric values.
- *
- * @param placeholder the label to be displayed inside the input container
- * @param onChange the callback that is triggered when the input's value changes
- */
-@Composable
-public fun NumericInput(
-    placeholder: String,
-    onChange: (String) -> Unit
-) {
-    val input = remember { mutableStateOf("") }
-    val onChange: (String) -> Unit = {
-        if (it.validateNumber()) {
-            input.value = it
-            onChange(it)
-        }
-    }
-    Input(
-        value = input.value,
-        onChange = onChange,
-        placeholder = placeholder,
-        isError = false
-    )
 }
 
 /**
