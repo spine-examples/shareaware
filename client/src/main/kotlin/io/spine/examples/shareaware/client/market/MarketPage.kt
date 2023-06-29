@@ -45,7 +45,7 @@ public fun MarketPage(model: MarketPageModel) {
     Row(
         modifier = Modifier.fillMaxSize()
     ) {
-        SharesTab(
+        SharesListTab(
             marketShares = marketShares?.shareList,
             previousShares = previousShares?.shareList,
             onShareSelect = {
