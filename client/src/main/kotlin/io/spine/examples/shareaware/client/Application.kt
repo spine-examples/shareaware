@@ -39,6 +39,8 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import io.spine.client.ConnectionConstants.*
+import io.spine.examples.shareaware.client.market.MarketPage
+import io.spine.examples.shareaware.client.market.MarketPageModel
 import io.spine.examples.shareaware.client.wallet.WalletPage
 import io.spine.examples.shareaware.client.wallet.WalletPageModel
 

@@ -24,35 +24,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.client
+package io.spine.examples.shareaware.client.component
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.loadSvgPainter
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import io.spine.examples.shareaware.MoneyCalculator
-import io.spine.examples.shareaware.client.MoneyExtensions.asReadableString
-import io.spine.examples.shareaware.client.payment.Popup
-import io.spine.examples.shareaware.client.payment.PopupConfig
+import io.spine.examples.shareaware.client.extension.asReadableString
 import io.spine.money.Money
-import io.spine.util.Exceptions
-import java.io.IOException
-import java.net.URL
 
 /**
  * Displays the card that shows difference between two `Money` objects.
@@ -80,72 +65,6 @@ public fun PriceDifferenceCard(actualPrice: Money, previousPrice: Money?) {
             text = price,
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onPrimary
-        )
-    }
-}
-
-/**
- * [Scaffold] component that supports displaying the popup at the bottom of it.
- *
- * @param containerColor the color used for the background of this scaffold
- * @param modifier the `Modifier` to be applied to this scaffold
- * @param popupConfig configuration of the popup
- * @param content the content of the scaffold
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-public fun Scaffold(
-    containerColor: Color = MaterialTheme.colorScheme.surface,
-    modifier: Modifier = Modifier,
-    popupConfig: PopupConfig,
-    content: @Composable () -> Unit
-) {
-    Scaffold(
-        modifier = modifier,
-        containerColor = containerColor,
-        bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(40.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Popup(popupConfig)
-            }
-        }
-    ) {
-        content()
-    }
-}
-
-/**
- * Draws an image from the network by URL.
- *
- * @param url the URL of the image to load
- * @param density density that will be used to set the intrinsic size of the image
- * @param contentDescription what the image represents
- * @param modifier modifier used to adjust layout
- * @param contentScale scale parameter used to determine the aspect ratio scaling
- */
-@Composable
-public fun Image(
-    url: String,
-    density: Density,
-    contentDescription: String,
-    modifier: Modifier = Modifier,
-    contentScale: ContentScale = ContentScale.Inside,
-) {
-    val image: Painter? = try {
-        URL(url).openStream().buffered().use { loadSvgPainter(it, density) }
-    } catch (e: IOException) {
-        throw Exceptions.illegalArgumentWithCauseOf(e)
-    }
-    if (image != null) {
-        Image(
-            painter = image,
-            contentDescription = contentDescription,
-            contentScale = contentScale,
-            modifier = modifier
         )
     }
 }

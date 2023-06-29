@@ -24,7 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.client.payment
+package io.spine.examples.shareaware.client.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -44,12 +44,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import io.spine.examples.shareaware.client.PrimaryButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
- * Configures the `PopupComponent`
+ * Configures the `PopupComponent`.
  *
  * @param isShown is a component shown to the user
  * @param dismissAction callback that will be triggered when the user clicks on `Cancel` button
