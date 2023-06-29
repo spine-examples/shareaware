@@ -49,7 +49,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
- * Configures the `PopupComponent`
+ * Configures the `PopupComponent`.
  *
  * @param isShown is a component shown to the user
  * @param dismissAction callback that will be triggered when the user clicks on `Cancel` button
