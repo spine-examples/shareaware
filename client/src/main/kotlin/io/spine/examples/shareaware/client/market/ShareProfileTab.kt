@@ -167,7 +167,7 @@ private fun SharePrice(
 }
 
 /**
- * Displays the share logo.
+ * Draws the share logo.
  *
  * @param share the share which logo to draw
  */

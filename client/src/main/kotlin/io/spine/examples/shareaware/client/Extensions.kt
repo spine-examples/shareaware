@@ -86,6 +86,14 @@ public object StringExtensions {
         val decimalRegex = """^\d+(\.\d{1,2})?${'$'}""".toRegex()
         return !decimalRegex.containsMatchIn(this)
     }
+
+    /**
+     * Returns true if this `String` is written like a number, false otherwise.
+     */
+    public fun String.validateNumber(): Boolean {
+        val numericRegex = """^(?!0)[0-9]*${'$'}""".toRegex()
+        return numericRegex.containsMatchIn(this)
+    }
 }
 
 /**
