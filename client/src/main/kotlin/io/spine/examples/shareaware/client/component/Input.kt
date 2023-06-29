@@ -24,7 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.client
+package io.spine.examples.shareaware.client.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -36,18 +36,89 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import io.spine.examples.shareaware.client.payment.Tooltip
+import io.spine.examples.shareaware.client.StringExtensions.validateNumber
+
+/**
+ * Displays the search field.
+ *
+ * @param value the text to be shown in the search field
+ * @param onChange the callback that is triggered when the search value changes
+ */
+@Composable
+public fun SearchField(
+    value: String,
+    onChange: (String) -> Unit
+) {
+    Box(
+        modifier = Modifier.padding(top = 10.dp, bottom = 10.dp)
+    ) {
+        Input(
+            value = value,
+            onChange = onChange,
+            placeholder = "Search",
+            isError = false,
+            containerColor = MaterialTheme.colorScheme.secondary,
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search",
+                    tint = MaterialTheme.colorScheme.onSecondary,
+                    modifier = Modifier
+                        .size(22.dp)
+                        .padding(end = 5.dp)
+                )
+            },
+            contentPadding = PaddingValues(
+                start = 5.dp,
+                end = 16.dp,
+                top = 2.dp,
+                bottom = 2.dp,
+            )
+        )
+    }
+}
+
+/**
+ * Displays the input component accepting only the numeric values.
+ *
+ * @param placeholder the label to be displayed inside the input container
+ * @param onChange the callback that is triggered when the input's value changes
+ */
+@Composable
+public fun NumericInput(
+    placeholder: String,
+    onChange: (String) -> Unit
+) {
+    val input = remember { mutableStateOf("") }
+    val onChange: (String) -> Unit = {
+        if (it.validateNumber()) {
+            input.value = it
+            onChange(it)
+        }
+    }
+    Input(
+        value = input.value,
+        onChange = onChange,
+        placeholder = placeholder,
+        isError = false
+    )
+}
 
 /**
  * The input component that supports displaying a tip.
