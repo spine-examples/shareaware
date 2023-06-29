@@ -48,7 +48,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import io.spine.examples.shareaware.client.component.Image
 import io.spine.examples.shareaware.client.component.PriceDifferenceCard
-import io.spine.examples.shareaware.client.PrimaryButton
+import io.spine.examples.shareaware.client.component.PrimaryButton
 import io.spine.examples.shareaware.client.component.Scaffold
 import io.spine.examples.shareaware.client.component.PopupConfig
 import io.spine.examples.shareaware.client.extension.asReadableString

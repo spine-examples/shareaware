@@ -57,7 +57,7 @@ import io.spine.examples.shareaware.WithdrawalId
 import io.spine.examples.shareaware.client.DesktopClient
 import io.spine.examples.shareaware.client.EntitySubscription
 import io.spine.examples.shareaware.client.component.Input
-import io.spine.examples.shareaware.client.PrimaryButton
+import io.spine.examples.shareaware.client.component.PrimaryButton
 import io.spine.examples.shareaware.client.component.Scaffold
 import io.spine.examples.shareaware.client.component.Dialog
 import io.spine.examples.shareaware.client.component.PopupConfig

@@ -57,7 +57,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
-import io.spine.examples.shareaware.client.PrimaryButton
 import java.awt.event.KeyEvent
 
 /**
