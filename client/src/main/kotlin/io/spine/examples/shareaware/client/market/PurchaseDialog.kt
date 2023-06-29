@@ -40,10 +40,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.spine.examples.shareaware.MoneyCalculator
-import io.spine.examples.shareaware.client.MoneyExtensions.asReadableString
 import io.spine.examples.shareaware.client.component.NumericInput
 import io.spine.examples.shareaware.client.market.MarketPageModel.*
 import io.spine.examples.shareaware.client.component.Dialog
+import io.spine.examples.shareaware.client.extension.asReadableString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

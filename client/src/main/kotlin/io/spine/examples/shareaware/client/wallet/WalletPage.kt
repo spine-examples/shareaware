@@ -59,12 +59,12 @@ import io.spine.examples.shareaware.client.EntitySubscription
 import io.spine.examples.shareaware.client.component.Input
 import io.spine.examples.shareaware.client.PrimaryButton
 import io.spine.examples.shareaware.client.component.Scaffold
-import io.spine.examples.shareaware.client.StringExtensions.asIban
-import io.spine.examples.shareaware.client.StringExtensions.asUsd
-import io.spine.examples.shareaware.client.StringExtensions.validateIban
-import io.spine.examples.shareaware.client.StringExtensions.validateMoney
 import io.spine.examples.shareaware.client.component.Dialog
 import io.spine.examples.shareaware.client.component.PopupConfig
+import io.spine.examples.shareaware.client.extension.asIban
+import io.spine.examples.shareaware.client.extension.asUsd
+import io.spine.examples.shareaware.client.extension.validateIban
+import io.spine.examples.shareaware.client.extension.validateMoney
 import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredFromUser
 import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredToUser
 import io.spine.examples.shareaware.wallet.WalletBalance

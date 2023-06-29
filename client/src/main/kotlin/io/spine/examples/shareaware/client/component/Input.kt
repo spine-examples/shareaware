@@ -52,7 +52,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import io.spine.examples.shareaware.client.StringExtensions.validateNumber
+import io.spine.examples.shareaware.client.extension.validateNumber
 
 /**
  * Displays the search field.

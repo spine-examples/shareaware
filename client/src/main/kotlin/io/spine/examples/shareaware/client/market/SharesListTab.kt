@@ -56,10 +56,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import io.spine.examples.shareaware.ShareId
-import io.spine.examples.shareaware.client.ModifierExtensions.bottomBorder
-import io.spine.examples.shareaware.client.MoneyExtensions.asReadableString
 import io.spine.examples.shareaware.client.component.PriceDifferenceCard
 import io.spine.examples.shareaware.client.component.SearchField
+import io.spine.examples.shareaware.client.extension.asReadableString
+import io.spine.examples.shareaware.client.extension.bottomBorder
 import io.spine.examples.shareaware.share.Share
 import io.spine.money.Money
 
