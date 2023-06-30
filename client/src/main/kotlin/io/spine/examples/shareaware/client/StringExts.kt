@@ -24,7 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.client.extension
+package io.spine.examples.shareaware.client
 
 import io.spine.examples.shareaware.wallet.Iban
 import io.spine.money.Currency

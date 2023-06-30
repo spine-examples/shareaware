@@ -36,7 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.spine.examples.shareaware.MoneyCalculator
-import io.spine.examples.shareaware.client.extension.asReadableString
+import io.spine.examples.shareaware.client.asReadableString
 import io.spine.money.Money
 
 /**

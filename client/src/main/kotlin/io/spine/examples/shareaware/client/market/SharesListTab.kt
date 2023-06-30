@@ -54,12 +54,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.spine.examples.shareaware.ShareId
 import io.spine.examples.shareaware.client.component.SearchField
 import io.spine.examples.shareaware.client.component.PriceDifferenceCard
-import io.spine.examples.shareaware.client.extension.asReadableString
-import io.spine.examples.shareaware.client.extension.bottomBorder
+import io.spine.examples.shareaware.client.asReadableString
 import io.spine.examples.shareaware.share.Share
 import io.spine.money.Money
 
@@ -236,5 +238,20 @@ private fun ShareItemContent(
             Text(share.price.asReadableString(), style = MaterialTheme.typography.headlineSmall)
             PriceDifferenceCard(share.price, previousPrice)
         }
+    }
+}
+
+/**
+ * Extension for the `Modifier` that draws the bottom border of the component.
+ */
+private fun Modifier.bottomBorder(): Modifier {
+    return this.drawBehind {
+        drawLine(
+            color = Color(0xff5b595f),
+            start = Offset(0f, size.height),
+            end = Offset(size.width, size.height),
+            strokeWidth = 1.dp.toPx(),
+            alpha = 0.5f
+        )
     }
 }

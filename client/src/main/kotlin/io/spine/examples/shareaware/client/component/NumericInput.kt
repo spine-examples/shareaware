@@ -29,7 +29,7 @@ package io.spine.examples.shareaware.client.component
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import io.spine.examples.shareaware.client.extension.validateNumber
+import io.spine.examples.shareaware.client.validateNumber
 
 /**
  * Displays the input component accepting only the numeric values.

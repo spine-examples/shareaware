@@ -51,7 +51,7 @@ import io.spine.examples.shareaware.client.component.PriceDifferenceCard
 import io.spine.examples.shareaware.client.component.PrimaryButton
 import io.spine.examples.shareaware.client.component.Scaffold
 import io.spine.examples.shareaware.client.component.PopupConfig
-import io.spine.examples.shareaware.client.extension.asReadableString
+import io.spine.examples.shareaware.client.asReadableString
 import io.spine.examples.shareaware.share.Share
 import io.spine.money.Money
 import kotlinx.coroutines.Dispatchers
