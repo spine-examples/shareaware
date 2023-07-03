@@ -32,6 +32,11 @@ plugins {
     id("org.jetbrains.compose") version "1.4.0"
 }
 
+detekt {
+    buildUponDefaultConfig = true
+    config.setFrom("${rootDir}/quality/detekt-config-compose.yml")
+}
+
 repositories {
     google()
     mavenCentral()
