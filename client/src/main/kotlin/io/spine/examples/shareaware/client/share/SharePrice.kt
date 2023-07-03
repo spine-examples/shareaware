@@ -24,51 +24,43 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.client.component
+package io.spine.examples.shareaware.client.share
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-
+import io.spine.examples.shareaware.client.asReadableString
+import io.spine.examples.shareaware.client.component.PriceDifferenceCard
+import io.spine.money.Money
 
 /**
- * [Scaffold] component that supports displaying the popup at the bottom of it.
+ * Displays information about the share price.
  *
- * @param containerColor the color used for the background of this scaffold
- * @param modifier the `Modifier` to be applied to this scaffold
- * @param popupConfig configuration of the popup
- * @param content the content of the scaffold
+ * @param actualPrice the actual share price to be shown
+ * @param previousPrice the previous price of this share to show difference with
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-public fun Scaffold(
-    containerColor: Color = MaterialTheme.colorScheme.surface,
-    modifier: Modifier = Modifier,
-    popupConfig: PopupConfig,
-    content: @Composable () -> Unit
+public fun SharePrice(
+    actualPrice: Money,
+    previousPrice: Money?
 ) {
-    Scaffold(
-        modifier = modifier,
-        containerColor = containerColor,
-        bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(40.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Popup(popupConfig)
-            }
-        }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .padding(top = 10.dp)
+            .wrapContentHeight()
     ) {
-        content()
+        Text(
+            text = actualPrice.asReadableString(),
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.padding(end = 10.dp)
+        )
+        PriceDifferenceCard(actualPrice, previousPrice)
     }
 }

@@ -24,13 +24,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.client.extension
+package io.spine.examples.shareaware.client.share
 
-import io.spine.money.Money
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
+import io.spine.examples.shareaware.client.component.Image
+import io.spine.examples.shareaware.share.Share
 
 /**
- * Returns the readable `String` constructed from the `Money` object.
+ * Draws the share logo.
+ *
+ * @param share the share which logo to draw
  */
-public fun Money.asReadableString(): String {
-    return "$" + this.units.toString() + "." + this.nanos.toString()
+@Composable
+public fun ShareLogo(share: Share) {
+    val density = LocalDensity.current
+    Box(
+        modifier = Modifier
+            .size(150.dp)
+            .padding(10.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            url = share.companyLogo,
+            density = density,
+            contentDescription = share.companyName,
+        )
+    }
 }

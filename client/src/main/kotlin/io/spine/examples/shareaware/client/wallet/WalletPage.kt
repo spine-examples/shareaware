@@ -58,13 +58,13 @@ import io.spine.examples.shareaware.client.DesktopClient
 import io.spine.examples.shareaware.client.EntitySubscription
 import io.spine.examples.shareaware.client.component.Input
 import io.spine.examples.shareaware.client.component.PrimaryButton
-import io.spine.examples.shareaware.client.component.Scaffold
+import io.spine.examples.shareaware.client.component.ContainerWithPopup
 import io.spine.examples.shareaware.client.component.Dialog
 import io.spine.examples.shareaware.client.component.PopupConfig
-import io.spine.examples.shareaware.client.extension.asIban
-import io.spine.examples.shareaware.client.extension.asUsd
-import io.spine.examples.shareaware.client.extension.validateIban
-import io.spine.examples.shareaware.client.extension.validateMoney
+import io.spine.examples.shareaware.client.asIban
+import io.spine.examples.shareaware.client.asUsd
+import io.spine.examples.shareaware.client.validateIban
+import io.spine.examples.shareaware.client.validateMoney
 import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredFromUser
 import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredToUser
 import io.spine.examples.shareaware.wallet.WalletBalance
@@ -327,8 +327,8 @@ public class WalletPageModel(private val client: DesktopClient) {
 public fun WalletPage(model: WalletPageModel): Unit = Column {
     val paymentError = model.paymentError().collectAsState()
     val errorMessage = model.paymentErrorMessage().collectAsState()
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.surface,
+    ContainerWithPopup(
+        color = MaterialTheme.colorScheme.surface,
         modifier = Modifier.fillMaxSize(),
         popupConfig = PopupConfig(
             isShown = paymentError.value,

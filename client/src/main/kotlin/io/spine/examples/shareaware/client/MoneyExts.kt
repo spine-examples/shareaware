@@ -24,25 +24,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.client.extension
+package io.spine.examples.shareaware.client
 
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import io.spine.money.Currency
+import io.spine.money.Money
 
 /**
- * Extension for the `Modifier` that draws the bottom border of the component.
+ * Returns the readable `String` constructed from the `Money` object.
  */
-public fun Modifier.bottomBorder(): Modifier {
-    return this.drawBehind {
-        drawLine(
-            color = Color(0xff5b595f),
-            start = Offset(0f, size.height),
-            end = Offset(size.width, size.height),
-            strokeWidth = 1.dp.toPx(),
-            alpha = 0.5f
-        )
-    }
+public fun Money.asReadableString(): String {
+    return "$" + this.units.toString() + "." + this.nanos.toString()
+}
+
+/**
+ * Returns a new `Money` object in USD currency using this `String` to construct it.
+ *
+ * This `String` must be written as a number with a decimal point.
+ */
+public fun String.asUsd(): Money {
+    val parts = this.split('.')
+    val units = parts[0].toLong()
+    val nanos = if (parts.size == 2) parts[1].toInt() else 0
+    return Money
+        .newBuilder()
+        .setCurrency(Currency.USD)
+        .setUnits(units)
+        .setNanos(nanos)
+        .vBuild()
+}
+
+/**
+ * Returns true if this `String` is written like a number with a decimal point,
+ * and it can be converted to a `Money` object, false otherwise.
+ */
+public fun String.validateMoney(): Boolean {
+    val decimalRegex = """^\d+(\.\d{1,2})?${'$'}""".toRegex()
+    return !decimalRegex.containsMatchIn(this)
 }

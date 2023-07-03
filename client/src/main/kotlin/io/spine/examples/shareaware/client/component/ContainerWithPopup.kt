@@ -26,33 +26,49 @@
 
 package io.spine.examples.shareaware.client.component
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import io.spine.examples.shareaware.client.validateNumber
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+
 
 /**
- * Displays the input component accepting only the numeric values.
+ * Container for components that supports displaying the popup at the bottom of it.
  *
- * @param placeholder the label to be displayed inside the input container
- * @param onChange the callback that is triggered when the input's value changes
+ * @param color the color used for the background of this container
+ * @param modifier the `Modifier` to be applied to this container
+ * @param popupConfig configuration of the popup
+ * @param content the content to be placed inside this container
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-public fun NumericInput(
-    placeholder: String,
-    onChange: (String) -> Unit
+public fun ContainerWithPopup(
+    color: Color = MaterialTheme.colorScheme.surface,
+    modifier: Modifier = Modifier,
+    popupConfig: PopupConfig,
+    content: @Composable () -> Unit
 ) {
-    val input = remember { mutableStateOf("") }
-    val onChange: (String) -> Unit = {
-        if (it.validateNumber()) {
-            input.value = it
-            onChange(it)
+    Scaffold(
+        modifier = modifier,
+        containerColor = color,
+        bottomBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Popup(popupConfig)
+            }
         }
+    ) {
+        content()
     }
-    Input(
-        value = input.value,
-        onChange = onChange,
-        placeholder = placeholder,
-        isError = false
-    )
 }
