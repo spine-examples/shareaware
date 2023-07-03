@@ -26,6 +26,7 @@
 
 package io.spine.examples.shareaware.client
 
+import io.spine.money.Currency
 import io.spine.money.Money
 
 /**
@@ -33,4 +34,30 @@ import io.spine.money.Money
  */
 public fun Money.asReadableString(): String {
     return "$" + this.units.toString() + "." + this.nanos.toString()
+}
+
+/**
+ * Returns a new `Money` object in USD currency using this `String` to construct it.
+ *
+ * This `String` must be written as a number with a decimal point.
+ */
+public fun String.asUsd(): Money {
+    val parts = this.split('.')
+    val units = parts[0].toLong()
+    val nanos = if (parts.size == 2) parts[1].toInt() else 0
+    return Money
+        .newBuilder()
+        .setCurrency(Currency.USD)
+        .setUnits(units)
+        .setNanos(nanos)
+        .vBuild()
+}
+
+/**
+ * Returns true if this `String` is written like a number with a decimal point,
+ * and it can be converted to a `Money` object, false otherwise.
+ */
+public fun String.validateMoney(): Boolean {
+    val decimalRegex = """^\d+(\.\d{1,2})?${'$'}""".toRegex()
+    return !decimalRegex.containsMatchIn(this)
 }
