@@ -58,7 +58,7 @@ import io.spine.examples.shareaware.client.DesktopClient
 import io.spine.examples.shareaware.client.EntitySubscription
 import io.spine.examples.shareaware.client.component.Input
 import io.spine.examples.shareaware.client.component.PrimaryButton
-import io.spine.examples.shareaware.client.component.Scaffold
+import io.spine.examples.shareaware.client.component.ContainerWithPopup
 import io.spine.examples.shareaware.client.component.Dialog
 import io.spine.examples.shareaware.client.component.PopupConfig
 import io.spine.examples.shareaware.client.asIban
@@ -327,8 +327,8 @@ public class WalletPageModel(private val client: DesktopClient) {
 public fun WalletPage(model: WalletPageModel): Unit = Column {
     val paymentError = model.paymentError().collectAsState()
     val errorMessage = model.paymentErrorMessage().collectAsState()
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.surface,
+    ContainerWithPopup(
+        color = MaterialTheme.colorScheme.surface,
         modifier = Modifier.fillMaxSize(),
         popupConfig = PopupConfig(
             isShown = paymentError.value,

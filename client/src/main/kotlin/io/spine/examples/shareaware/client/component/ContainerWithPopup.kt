@@ -40,24 +40,24 @@ import androidx.compose.ui.unit.dp
 
 
 /**
- * [Scaffold] component that supports displaying the popup at the bottom of it.
+ * Container for components that supports displaying the popup at the bottom of it.
  *
- * @param containerColor the color used for the background of this scaffold
- * @param modifier the `Modifier` to be applied to this scaffold
+ * @param color the color used for the background of this container
+ * @param modifier the `Modifier` to be applied to this container
  * @param popupConfig configuration of the popup
- * @param content the content of the scaffold
+ * @param content the content to be placed inside this container
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-public fun Scaffold(
-    containerColor: Color = MaterialTheme.colorScheme.surface,
+public fun ContainerWithPopup(
+    color: Color = MaterialTheme.colorScheme.surface,
     modifier: Modifier = Modifier,
     popupConfig: PopupConfig,
     content: @Composable () -> Unit
 ) {
     Scaffold(
         modifier = modifier,
-        containerColor = containerColor,
+        containerColor = color,
         bottomBar = {
             Box(
                 modifier = Modifier

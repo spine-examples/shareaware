@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import io.spine.examples.shareaware.client.component.Image
 import io.spine.examples.shareaware.client.component.PriceDifferenceCard
 import io.spine.examples.shareaware.client.component.PrimaryButton
-import io.spine.examples.shareaware.client.component.Scaffold
+import io.spine.examples.shareaware.client.component.ContainerWithPopup
 import io.spine.examples.shareaware.client.component.PopupConfig
 import io.spine.examples.shareaware.client.asReadableString
 import io.spine.examples.shareaware.share.Share
@@ -71,8 +71,8 @@ public fun ShareProfileTab(
     val popUpInErrorState by purchaseModel.isFailed().collectAsState()
     val popUpContentColor = if (popUpInErrorState) MaterialTheme.colorScheme.error
     else MaterialTheme.colorScheme.primary
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.surface,
+    ContainerWithPopup(
+        color = MaterialTheme.colorScheme.surface,
         popupConfig = PopupConfig(
             isShown = popUpShown,
             dismissAction = { purchaseModel.closeOperationResultMessage() },
