@@ -28,22 +28,15 @@ package io.spine.examples.shareaware.client.market
 
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,17 +46,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.spine.examples.shareaware.ShareId
 import io.spine.examples.shareaware.client.component.SearchField
-import io.spine.examples.shareaware.client.component.PriceDifferenceCard
-import io.spine.examples.shareaware.client.asReadableString
+import io.spine.examples.shareaware.client.share.SharesList
 import io.spine.examples.shareaware.share.Share
-import io.spine.money.Money
 
 /**
  * Displays the tab with list of shares.
@@ -120,39 +107,6 @@ public fun SharesListTab(
 }
 
 /**
- * Displays the list of shares.
- *
- * @param listState the state object to be used to control or observe the list's state
- * @param shares the list of the actual market shares
- * @param previousShares the list of the previous market shares
- * @param onShareSelect the callback to be triggered when the share will be selected
- */
-@Composable
-private fun SharesList(
-    listState: LazyListState,
-    shares: List<Share>,
-    previousShares: List<Share>?,
-    onShareSelect: (ShareId) -> Unit
-) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        state = listState
-    ) {
-        shares.forEach { share ->
-            item {
-                ShareItem(
-                    share = share,
-                    previousPrice = previousShares?.find { previousShare ->
-                        previousShare.id == share.id
-                    }?.price,
-                    onShareSelect = onShareSelect
-                )
-            }
-        }
-    }
-}
-
-/**
  * Displays an empty shares list.
  */
 @Composable
@@ -166,92 +120,6 @@ private fun EmptySharesList() {
             text = "Nothing to show",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSecondary
-        )
-    }
-}
-
-/**
- * Displays the list item with information about the share.
- *
- * @param share the share to display
- * @param previousPrice the previous price of this share
- * @param onShareSelect the callback to be triggered when the share will be selected
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ShareItem(
-    share: Share,
-    previousPrice: Money?,
-    onShareSelect: (ShareId) -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .clip(MaterialTheme.shapes.small)
-            .bottomBorder()
-    ) {
-        ListItem(
-            modifier = Modifier
-                .height(60.dp)
-                .clickable(
-                    enabled = true,
-                    onClick = {
-                        onShareSelect(share.id)
-                    }
-                ),
-            headlineText = {
-                ShareItemContent(share, previousPrice)
-            },
-        )
-    }
-}
-
-/**
- * Displays the main `ListItem` content with data about the share.
- *
- * @param share the share to show inside the item
- * @param previousPrice the previous price of this share
- */
-@Composable
-private fun ShareItemContent(
-    share: Share,
-    previousPrice: Money?
-) {
-    Row(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(2F)
-                .fillMaxHeight(),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(share.companyName, style = MaterialTheme.typography.bodySmall)
-        }
-        Column(
-            modifier = Modifier
-                .weight(1F)
-                .fillMaxHeight(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(share.price.asReadableString(), style = MaterialTheme.typography.headlineSmall)
-            PriceDifferenceCard(share.price, previousPrice)
-        }
-    }
-}
-
-/**
- * Extension for the `Modifier` that draws the bottom border of the component.
- */
-private fun Modifier.bottomBorder(): Modifier {
-    return this.drawBehind {
-        drawLine(
-            color = Color(0xff5b595f),
-            start = Offset(0f, size.height),
-            end = Offset(size.width, size.height),
-            strokeWidth = 1.dp.toPx(),
-            alpha = 0.5f
         )
     }
 }

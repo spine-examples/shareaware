@@ -33,9 +33,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,14 +42,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import io.spine.examples.shareaware.client.component.Image
-import io.spine.examples.shareaware.client.component.PriceDifferenceCard
-import io.spine.examples.shareaware.client.component.PrimaryButton
 import io.spine.examples.shareaware.client.component.ContainerWithPopup
 import io.spine.examples.shareaware.client.component.PopupConfig
-import io.spine.examples.shareaware.client.asReadableString
+import io.spine.examples.shareaware.client.component.PrimaryButton
+import io.spine.examples.shareaware.client.share.ShareLogo
+import io.spine.examples.shareaware.client.share.SharePrice
 import io.spine.examples.shareaware.share.Share
 import io.spine.money.Money
 import kotlinx.coroutines.Dispatchers
@@ -135,54 +131,6 @@ private fun ShareProfile(
         ButtonSection(
             share = share,
             purchaseModel = purchaseModel
-        )
-    }
-}
-
-/**
- * Displays information about the share price.
- *
- * @param actualPrice the actual share price to be shown
- * @param previousPrice the previous price of this share to show difference with
- */
-@Composable
-private fun SharePrice(
-    actualPrice: Money,
-    previousPrice: Money?
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .padding(top = 10.dp)
-            .wrapContentHeight()
-    ) {
-        Text(
-            text = actualPrice.asReadableString(),
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(end = 10.dp)
-        )
-        PriceDifferenceCard(actualPrice, previousPrice)
-    }
-}
-
-/**
- * Draws the share logo.
- *
- * @param share the share which logo to draw
- */
-@Composable
-private fun ShareLogo(share: Share) {
-    val density = LocalDensity.current
-    Box(
-        modifier = Modifier
-            .size(150.dp)
-            .padding(10.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Image(
-            url = share.companyLogo,
-            density = density,
-            contentDescription = share.companyName,
         )
     }
 }
