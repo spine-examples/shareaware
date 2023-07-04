@@ -78,7 +78,9 @@ public fun PurchaseDialog(
                 .wrapContentHeight()
                 .width(245.dp),
             {
-                val price = MoneyCalculator.multiply(shareToPurchase!!.price, quantity).asReadableString()
+                val price = MoneyCalculator
+                    .multiply(shareToPurchase!!.price, quantity)
+                    .asReadableString()
                 PurchaseDialogInput(
                     price = price,
                     onChange = { purchaseModel.quantityOfShares(it) }
