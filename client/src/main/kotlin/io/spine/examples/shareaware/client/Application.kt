@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
-import io.spine.client.ConnectionConstants.*
+import io.spine.client.ConnectionConstants
 import io.spine.examples.shareaware.client.market.MarketPage
 import io.spine.examples.shareaware.client.market.MarketPageModel
 import io.spine.examples.shareaware.client.wallet.WalletPage
@@ -52,7 +52,7 @@ import io.spine.examples.shareaware.client.wallet.WalletPageModel
 public fun application(): Unit = application {
     val client = DesktopClient.init(
         "localhost",
-        DEFAULT_CLIENT_SERVICE_PORT
+        ConnectionConstants.DEFAULT_CLIENT_SERVICE_PORT
     )
     val walletPageModel = WalletPageModel(client)
     val marketPageModel = MarketPageModel(client)

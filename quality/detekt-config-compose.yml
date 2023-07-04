@@ -19,6 +19,13 @@ style:
     excludeCommentStatements: true
   ForbiddenComment:
     allowedPatterns: 'TODO:'
+  WildcardImport:
+    excludeImports:
+      - 'java.util.*'
+      - 'io.spine.examples.shareaware.wallet.rejection.Rejections.*'
+      - 'io.spine.examples.shareaware.market.rejection.Rejections.*'
+      - 'io.spine.examples.shareaware.investment.rejection.Rejections.*'
+      - 'io.spine.examples.shareaware.payment_gateway.rejection.Rejections.*'
 
 complexity:
   TooManyFunctions:

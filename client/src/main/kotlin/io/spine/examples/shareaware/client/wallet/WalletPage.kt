@@ -37,7 +37,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,18 +50,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import io.spine.client.EventFilter.*
+import io.spine.client.EventFilter
 import io.spine.examples.shareaware.ReplenishmentId
 import io.spine.examples.shareaware.WithdrawalId
 import io.spine.examples.shareaware.client.DesktopClient
 import io.spine.examples.shareaware.client.EntitySubscription
-import io.spine.examples.shareaware.client.component.Input
-import io.spine.examples.shareaware.client.component.PrimaryButton
-import io.spine.examples.shareaware.client.component.ContainerWithPopup
-import io.spine.examples.shareaware.client.component.Dialog
-import io.spine.examples.shareaware.client.component.PopupConfig
 import io.spine.examples.shareaware.client.asIban
 import io.spine.examples.shareaware.client.asUsd
+import io.spine.examples.shareaware.client.component.ContainerWithPopup
+import io.spine.examples.shareaware.client.component.Dialog
+import io.spine.examples.shareaware.client.component.Input
+import io.spine.examples.shareaware.client.component.PopupConfig
+import io.spine.examples.shareaware.client.component.PrimaryButton
 import io.spine.examples.shareaware.client.validateIban
 import io.spine.examples.shareaware.client.validateMoney
 import io.spine.examples.shareaware.paymentgateway.rejection.Rejections.MoneyCannotBeTransferredFromUser
@@ -79,250 +78,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 /**
- * UI model for the `WalletPage`.
- */
-public class WalletPageModel(private val client: DesktopClient) {
-    private var replenishmentState: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    private var withdrawalState: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    private val balanceSubscription: EntitySubscription<WalletBalance> =
-        EntitySubscription(WalletBalance::class.java, client, client.wallet())
-    private val paymentError: MutableStateFlow<Boolean> =
-        MutableStateFlow(false)
-    private val paymentErrorMessage: MutableStateFlow<String> =
-        MutableStateFlow("")
-
-    /**
-     * Sets page to default state.
-     */
-    public fun toDefaultState() {
-        replenishmentState.value = false
-        withdrawalState.value = false
-    }
-
-    /**
-     * Sets page to "replenishment" state.
-     *
-     * Page state when the user wants to replenish the wallet.
-     */
-    public fun toReplenishmentState() {
-        replenishmentState.value = true
-        withdrawalState.value = false
-    }
-
-    /**
-     * Sets page to "withdrawal" state.
-     *
-     * Page state when the user wants to withdraw money from the wallet.
-     */
-    public fun toWithdrawalState() {
-        withdrawalState.value = true
-        replenishmentState.value = false
-    }
-
-    /**
-     * Returns the "replenishment" state of the page.
-     */
-    public fun replenishmentState(): StateFlow<Boolean> {
-        return replenishmentState
-    }
-
-    /**
-     * Returns the "withdrawal" state of the page.
-     */
-    public fun withdrawalState(): StateFlow<Boolean> {
-        return withdrawalState
-    }
-
-    /**
-     * Returns the current state of the wallet balance.
-     */
-    public fun balance(): StateFlow<WalletBalance?> {
-        return balanceSubscription.state()
-    }
-
-    /**
-     * Returns the current state of the payment error, whether it is present or not.
-     */
-    public fun paymentError(): StateFlow<Boolean> {
-        return paymentError
-    }
-
-    /**
-     * Returns the current state of payment error message.
-     */
-    public fun paymentErrorMessage(): StateFlow<String> {
-        return paymentErrorMessage
-    }
-
-    /**
-     * Disables the payment error visibility and clears its message.
-     */
-    public fun closePaymentError() {
-        paymentError.value = false
-        paymentErrorMessage.value = ""
-    }
-
-    /**
-     * Enables the payment error visibility
-     * and sets the provided message as the payment error message.
-     */
-    private fun showPaymentError(message: String) {
-        paymentError.value = true
-        paymentErrorMessage.value = message
-    }
-
-    /**
-     * Sends the `ReplenishWallet` command to the server.
-     *
-     * @param ibanValue the IBAN of the user
-     * @param moneyAmount the amount of money to replenish the wallet
-     */
-    public fun replenishWallet(ibanValue: String, moneyAmount: String) {
-        val replenishWallet = ReplenishWallet
-            .newBuilder()
-            .buildWith(ibanValue, moneyAmount)
-        subscribeToWalletReplenished(replenishWallet.replenishment)
-        subscribeToReplenishmentError(replenishWallet.replenishment)
-        client.command(replenishWallet)
-    }
-
-    /**
-     * Sends the `WithdrawMoney` command to the server.
-     *
-     * @param ibanValue the IBAN of the user
-     * @param moneyAmount how much to withdraw from the wallet
-     */
-    public fun withdrawMoney(ibanValue: String, moneyAmount: String) {
-        val withdrawMoney = WithdrawMoney
-            .newBuilder()
-            .buildWith(ibanValue, moneyAmount)
-        val withdrawalId = withdrawMoney.withdrawalProcess
-        subscribeToMoneyWithdrawn(withdrawalId)
-        subscribeToInsufficientFunds(withdrawalId)
-        subscribeToWithdrawalError(withdrawalId)
-        client.command(withdrawMoney)
-    }
-
-    /**
-     * Subscribes to the `WalletReplenished` event.
-     *
-     * @param id the ID of the replenishment process
-     */
-    private fun subscribeToWalletReplenished(id: ReplenishmentId) {
-        val replenishmentIdField = WalletReplenished.Field.replenishment()
-        client.subscribeOnce(
-            WalletReplenished::class.java,
-            eq(replenishmentIdField, id)
-        ) {
-            closePaymentError()
-        }
-    }
-
-    /**
-     * Subscribes to the `MoneyCannotBeTransferredFromUser` event that signals about
-     * failure in the payment system, during the wallet replenishment process.
-     *
-     * @param id the ID of the replenishment process
-     */
-    private fun subscribeToReplenishmentError(id: ReplenishmentId) {
-        val replenishmentIdField = MoneyCannotBeTransferredFromUser.Field.replenishment()
-        client.subscribeOnce(
-            MoneyCannotBeTransferredFromUser::class.java,
-            eq(replenishmentIdField, id)
-        ) {
-            showPaymentError(
-                "An error occurred in payment system while the wallet was replenished."
-            )
-        }
-    }
-
-    /**
-     * Subscribes to the `MoneyWithdrawn` event.
-     */
-    private fun subscribeToMoneyWithdrawn(id: WithdrawalId) {
-        val withdrawalIdField = MoneyWithdrawn.Field.withdrawalProcess()
-        client
-            .subscribeOnce(
-                MoneyWithdrawn::class.java,
-                eq(withdrawalIdField, id)
-            ) {
-                closePaymentError()
-            }
-    }
-
-    /**
-     * Subscribes to the `InsufficientFunds` event, which signals that the amount of money
-     * requested for withdrawal exceeds the available amount of money in the balance.
-     */
-    private fun subscribeToInsufficientFunds(id: WithdrawalId) {
-        val withdrawalIdField = InsufficientFunds.Field.operation().withdrawal()
-        client
-            .subscribeOnce(
-                InsufficientFunds::class.java,
-                eq(withdrawalIdField, id)
-            ) {
-                showPaymentError(
-                    "There is insufficient funds on your balance for such operation."
-                )
-            }
-    }
-
-    /**
-     * Subscribes to the `MoneyCannotBeTransferredToUser` event that signals about
-     * failure in the payment system, during the money withdrawal process.
-     */
-    private fun subscribeToWithdrawalError(id: WithdrawalId) {
-        val withdrawalIdField = MoneyCannotBeTransferredToUser.Field.withdrawalProcess()
-        client
-            .subscribeOnce(
-                MoneyCannotBeTransferredToUser::class.java,
-                eq(withdrawalIdField, id)
-            ) {
-                showPaymentError(
-                    "An error occurred in payment system while the wallet was withdrawn."
-                )
-            }
-    }
-
-    /**
-     * Returns the command to replenish the wallet.
-     *
-     * @param ibanValue the IBAN of the user
-     * @param amount the amount of money to replenish the wallet
-     */
-    private fun ReplenishWallet.Builder.buildWith(
-        ibanValue: String,
-        amount: String
-    ): ReplenishWallet {
-        return this
-            .setReplenishment(ReplenishmentId.generate())
-            .setWallet(client.wallet())
-            .setIban(ibanValue.asIban())
-            .setMoneyAmount(amount.asUsd())
-            .vBuild()
-    }
-
-    /**
-     * Returns the command to withdraw money from the wallet.
-     *
-     * @param ibanValue the IBAN of the user
-     * @param amount how much to withdraw from the wallet
-     */
-    private fun WithdrawMoney.Builder.buildWith(ibanValue: String, amount: String): WithdrawMoney {
-        return this
-            .setWithdrawalProcess(WithdrawalId.generate())
-            .setWallet(client.wallet())
-            .setRecipient(ibanValue.asIban())
-            .setAmount(amount.asUsd())
-            .vBuild()
-    }
-}
-
-/**
  * The page component that provides data about
  * the user's current wallet balance and ways to interact with it.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 public fun WalletPage(model: WalletPageModel): Unit = Column {
     val paymentError = model.paymentError().collectAsState()
@@ -537,5 +295,245 @@ private fun MoneyOperationDialog(
                 )
             }
         )
+    }
+}
+
+/**
+ * UI model for the `WalletPage`.
+ */
+public class WalletPageModel(private val client: DesktopClient) {
+    private var replenishmentState: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private var withdrawalState: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val balanceSubscription: EntitySubscription<WalletBalance> =
+        EntitySubscription(WalletBalance::class.java, client, client.wallet())
+    private val paymentError: MutableStateFlow<Boolean> =
+        MutableStateFlow(false)
+    private val paymentErrorMessage: MutableStateFlow<String> =
+        MutableStateFlow("")
+
+    /**
+     * Sets page to default state.
+     */
+    public fun toDefaultState() {
+        replenishmentState.value = false
+        withdrawalState.value = false
+    }
+
+    /**
+     * Sets page to "replenishment" state.
+     *
+     * Page state when the user wants to replenish the wallet.
+     */
+    public fun toReplenishmentState() {
+        replenishmentState.value = true
+        withdrawalState.value = false
+    }
+
+    /**
+     * Sets page to "withdrawal" state.
+     *
+     * Page state when the user wants to withdraw money from the wallet.
+     */
+    public fun toWithdrawalState() {
+        withdrawalState.value = true
+        replenishmentState.value = false
+    }
+
+    /**
+     * Returns the "replenishment" state of the page.
+     */
+    public fun replenishmentState(): StateFlow<Boolean> {
+        return replenishmentState
+    }
+
+    /**
+     * Returns the "withdrawal" state of the page.
+     */
+    public fun withdrawalState(): StateFlow<Boolean> {
+        return withdrawalState
+    }
+
+    /**
+     * Returns the current state of the wallet balance.
+     */
+    public fun balance(): StateFlow<WalletBalance?> {
+        return balanceSubscription.state()
+    }
+
+    /**
+     * Returns the current state of the payment error, whether it is present or not.
+     */
+    public fun paymentError(): StateFlow<Boolean> {
+        return paymentError
+    }
+
+    /**
+     * Returns the current state of payment error message.
+     */
+    public fun paymentErrorMessage(): StateFlow<String> {
+        return paymentErrorMessage
+    }
+
+    /**
+     * Disables the payment error visibility and clears its message.
+     */
+    public fun closePaymentError() {
+        paymentError.value = false
+        paymentErrorMessage.value = ""
+    }
+
+    /**
+     * Enables the payment error visibility
+     * and sets the provided message as the payment error message.
+     */
+    private fun showPaymentError(message: String) {
+        paymentError.value = true
+        paymentErrorMessage.value = message
+    }
+
+    /**
+     * Sends the `ReplenishWallet` command to the server.
+     *
+     * @param ibanValue the IBAN of the user
+     * @param moneyAmount the amount of money to replenish the wallet
+     */
+    public fun replenishWallet(ibanValue: String, moneyAmount: String) {
+        val replenishWallet = ReplenishWallet
+            .newBuilder()
+            .buildWith(ibanValue, moneyAmount)
+        subscribeToWalletReplenished(replenishWallet.replenishment)
+        subscribeToReplenishmentError(replenishWallet.replenishment)
+        client.command(replenishWallet)
+    }
+
+    /**
+     * Sends the `WithdrawMoney` command to the server.
+     *
+     * @param ibanValue the IBAN of the user
+     * @param moneyAmount how much to withdraw from the wallet
+     */
+    public fun withdrawMoney(ibanValue: String, moneyAmount: String) {
+        val withdrawMoney = WithdrawMoney
+            .newBuilder()
+            .buildWith(ibanValue, moneyAmount)
+        val withdrawalId = withdrawMoney.withdrawalProcess
+        subscribeToMoneyWithdrawn(withdrawalId)
+        subscribeToInsufficientFunds(withdrawalId)
+        subscribeToWithdrawalError(withdrawalId)
+        client.command(withdrawMoney)
+    }
+
+    /**
+     * Subscribes to the `WalletReplenished` event.
+     *
+     * @param id the ID of the replenishment process
+     */
+    private fun subscribeToWalletReplenished(id: ReplenishmentId) {
+        val replenishmentIdField = WalletReplenished.Field.replenishment()
+        client.subscribeOnce(
+            WalletReplenished::class.java,
+            EventFilter.eq(replenishmentIdField, id)
+        ) {
+            closePaymentError()
+        }
+    }
+
+    /**
+     * Subscribes to the `MoneyCannotBeTransferredFromUser` event that signals about
+     * failure in the payment system, during the wallet replenishment process.
+     *
+     * @param id the ID of the replenishment process
+     */
+    private fun subscribeToReplenishmentError(id: ReplenishmentId) {
+        val replenishmentIdField = MoneyCannotBeTransferredFromUser.Field.replenishment()
+        client.subscribeOnce(
+            MoneyCannotBeTransferredFromUser::class.java,
+            EventFilter.eq(replenishmentIdField, id)
+        ) {
+            showPaymentError(
+                "An error occurred in payment system while the wallet was replenished."
+            )
+        }
+    }
+
+    /**
+     * Subscribes to the `MoneyWithdrawn` event.
+     */
+    private fun subscribeToMoneyWithdrawn(id: WithdrawalId) {
+        val withdrawalIdField = MoneyWithdrawn.Field.withdrawalProcess()
+        client
+            .subscribeOnce(
+                MoneyWithdrawn::class.java,
+                EventFilter.eq(withdrawalIdField, id)
+            ) {
+                closePaymentError()
+            }
+    }
+
+    /**
+     * Subscribes to the `InsufficientFunds` event, which signals that the amount of money
+     * requested for withdrawal exceeds the available amount of money in the balance.
+     */
+    private fun subscribeToInsufficientFunds(id: WithdrawalId) {
+        val withdrawalIdField = InsufficientFunds.Field.operation().withdrawal()
+        client
+            .subscribeOnce(
+                InsufficientFunds::class.java,
+                EventFilter.eq(withdrawalIdField, id)
+            ) {
+                showPaymentError(
+                    "There is insufficient funds on your balance for such operation."
+                )
+            }
+    }
+
+    /**
+     * Subscribes to the `MoneyCannotBeTransferredToUser` event that signals about
+     * failure in the payment system, during the money withdrawal process.
+     */
+    private fun subscribeToWithdrawalError(id: WithdrawalId) {
+        val withdrawalIdField = MoneyCannotBeTransferredToUser.Field.withdrawalProcess()
+        client
+            .subscribeOnce(
+                MoneyCannotBeTransferredToUser::class.java,
+                EventFilter.eq(withdrawalIdField, id)
+            ) {
+                showPaymentError(
+                    "An error occurred in payment system while the wallet was withdrawn."
+                )
+            }
+    }
+
+    /**
+     * Returns the command to replenish the wallet.
+     *
+     * @param ibanValue the IBAN of the user
+     * @param amount the amount of money to replenish the wallet
+     */
+    private fun ReplenishWallet.Builder.buildWith(
+        ibanValue: String,
+        amount: String
+    ): ReplenishWallet {
+        return this
+            .setReplenishment(ReplenishmentId.generate())
+            .setWallet(client.wallet())
+            .setIban(ibanValue.asIban())
+            .setMoneyAmount(amount.asUsd())
+            .vBuild()
+    }
+
+    /**
+     * Returns the command to withdraw money from the wallet.
+     *
+     * @param ibanValue the IBAN of the user
+     * @param amount how much to withdraw from the wallet
+     */
+    private fun WithdrawMoney.Builder.buildWith(ibanValue: String, amount: String): WithdrawMoney {
+        return this
+            .setWithdrawalProcess(WithdrawalId.generate())
+            .setWallet(client.wallet())
+            .setRecipient(ibanValue.asIban())
+            .setAmount(amount.asUsd())
+            .vBuild()
     }
 }

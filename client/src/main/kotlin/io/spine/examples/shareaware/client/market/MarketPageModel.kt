@@ -35,9 +35,10 @@ import io.spine.examples.shareaware.client.EntitySubscription
 import io.spine.examples.shareaware.investment.command.PurchaseShares
 import io.spine.examples.shareaware.investment.event.SharesPurchased
 import io.spine.examples.shareaware.market.AvailableMarketShares
+import io.spine.examples.shareaware.market.rejection.Rejections.*
 import io.spine.examples.shareaware.server.market.MarketProcess
 import io.spine.examples.shareaware.share.Share
-import io.spine.examples.shareaware.wallet.rejection.Rejections
+import io.spine.examples.shareaware.wallet.rejection.Rejections.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -228,9 +229,9 @@ public class PurchaseOperationModel(private val client: DesktopClient) {
      * exceeds the amount of available funds on the balance.
      */
     private fun subscribeToInsufficientFunds(id: PurchaseId) {
-        val purchaseIdField = Rejections.InsufficientFunds.Field.operation().purchase()
+        val purchaseIdField = InsufficientFunds.Field.operation().purchase()
         client.subscribeOnce(
-            Rejections.InsufficientFunds::class.java,
+            InsufficientFunds::class.java,
             EventFilter.eq(purchaseIdField, id)
         ) {
             showFailedOperationMessage(
@@ -244,9 +245,9 @@ public class PurchaseOperationModel(private val client: DesktopClient) {
      * when trying to purchase shares.
      */
     private fun subscribeToSharesCannotBeObtained(id: PurchaseId) {
-        val purchaseIdField = io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeObtained.Field.purchaseProcess()
+        val purchaseIdField = SharesCannotBeObtained.Field.purchaseProcess()
         client.subscribeOnce(
-            io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeObtained::class.java,
+            SharesCannotBeObtained::class.java,
             EventFilter.eq(purchaseIdField, id)
         ) {
             showFailedOperationMessage(
