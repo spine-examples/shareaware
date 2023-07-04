@@ -59,7 +59,7 @@ public fun PurchaseDialog(
     val scope = rememberCoroutineScope { Dispatchers.Default }
     val isShown by purchaseModel.isInProgress().collectAsState()
     val shareToPurchase by purchaseModel.share().collectAsState()
-    val quantity by purchaseModel.quantityOfShares().collectAsState()
+    val quantity by purchaseModel.quantityOfShares.collectAsState()
     if (isShown) {
         Dialog(
             onCancel = {
@@ -83,7 +83,7 @@ public fun PurchaseDialog(
                     .asReadableString()
                 PurchaseDialogInput(
                     price = price,
-                    onChange = { purchaseModel.quantityOfShares(it) }
+                    onChange = { purchaseModel.quantityOfShares.value = it }
                 )
             }
         )

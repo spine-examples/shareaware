@@ -62,8 +62,8 @@ public fun ShareProfileTab(
     previousPrice: Money?,
     purchaseModel: PurchaseOperationModel
 ) {
-    val popUpShown by purchaseModel.isResultMessageShown().collectAsState()
-    val popUpMessage by purchaseModel.resultMessage().collectAsState()
+    val popUpShown by purchaseModel.resultMessage.isShown().collectAsState()
+    val popUpMessage by purchaseModel.resultMessage.value().collectAsState()
     val popUpInErrorState by purchaseModel.isFailed().collectAsState()
     val popUpContentColor = if (popUpInErrorState) MaterialTheme.colorScheme.error
     else MaterialTheme.colorScheme.primary
@@ -71,7 +71,7 @@ public fun ShareProfileTab(
         color = MaterialTheme.colorScheme.surface,
         popupConfig = PopupConfig(
             isShown = popUpShown,
-            dismissAction = { purchaseModel.closeOperationResultMessage() },
+            dismissAction = { purchaseModel.resultMessage.close() },
             label = popUpMessage,
             contentColor = popUpContentColor
         )
