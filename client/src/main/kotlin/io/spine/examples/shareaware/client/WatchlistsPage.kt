@@ -33,5 +33,6 @@ import androidx.compose.runtime.Composable
  * and ways to interact with watchlists.
  */
 @Composable
+@Suppress("EmptyFunctionBlock") // Will be implemented in the nearest future.
 public fun WatchlistsPage() {
 }
