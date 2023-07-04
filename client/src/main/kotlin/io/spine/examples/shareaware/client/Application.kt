@@ -71,7 +71,7 @@ public fun application(): Unit = application {
                 Column(
                     modifier = Modifier.width(160.dp)
                 ) {
-                    Menu()
+                    Navigation()
                 }
                 when (currentPage.value) {
                     Page.HOME -> HomePage()
