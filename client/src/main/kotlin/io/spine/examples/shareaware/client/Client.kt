@@ -138,7 +138,11 @@ public class DesktopClient private constructor(
      * @param id entity ID by which arrived entities will be filtered
      * @param observer callback function that will be triggered when the entity state changes
      */
-    public fun <S : EntityState> subscribeToEntity(type: Class<S>, id: Message, observer: (S) -> Unit) {
+    public fun <S : EntityState> subscribeToEntity(
+        type: Class<S>,
+        id: Message,
+        observer: (S) -> Unit
+    ) {
         clientRequest()
             .subscribeTo(type)
             .byId(id)

@@ -88,7 +88,8 @@ public fun Dialog(
         },
         focusable = true,
         onKeyEvent = {
-            if (it.type == KeyEventType.KeyDown && it.awtEventOrNull?.keyCode == KeyEvent.VK_ESCAPE) {
+            if (it.type == KeyEventType.KeyDown &&
+                it.awtEventOrNull?.keyCode == KeyEvent.VK_ESCAPE) {
                 onCancel()
                 true
             } else {
