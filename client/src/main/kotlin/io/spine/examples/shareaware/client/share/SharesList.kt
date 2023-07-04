@@ -105,7 +105,7 @@ private fun ShareItem(
     Box(
         modifier = Modifier
             .clip(MaterialTheme.shapes.small)
-            .bottomBorder()
+            .bottomBorder(MaterialTheme.colorScheme.onSecondary)
     ) {
         ListItem(
             modifier = Modifier
@@ -162,10 +162,10 @@ private fun ShareItemContent(
 /**
  * Extension for the `Modifier` that draws the bottom border of the component.
  */
-private fun Modifier.bottomBorder(): Modifier {
+private fun Modifier.bottomBorder(color: Color): Modifier {
     return this.drawBehind {
         drawLine(
-            color = Color(0xff5b595f),
+            color = color,
             start = Offset(0f, size.height),
             end = Offset(size.width, size.height),
             strokeWidth = 1.dp.toPx(),
