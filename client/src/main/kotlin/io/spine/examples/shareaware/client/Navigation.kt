@@ -156,19 +156,19 @@ private fun MenuItem(
  */
 private object CurrentPage {
 
-    private val currentPage: MutableStateFlow<Page> = MutableStateFlow(Page.HOME)
+    private val current: MutableStateFlow<Page> = MutableStateFlow(Page.HOME)
 
     /**
      * Represents the current page as a read-only state flow.
      */
     fun state(): StateFlow<Page> {
-        return currentPage.asStateFlow()
+        return current.asStateFlow()
     }
 
     /**
      * Changes the current page to the provided.
      */
     fun set(page: Page) {
-        currentPage.value = page
+        this.current.value = page
     }
 }
