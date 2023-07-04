@@ -29,6 +29,7 @@ package io.spine.examples.shareaware.client
 public object Main {
 
     @JvmStatic
+    @Suppress("MemberNameEqualsClassName") // It is OK for `main` entry point.
     public fun main(args: Array<String>) {
         application()
     }
