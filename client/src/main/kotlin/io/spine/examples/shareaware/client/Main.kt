@@ -26,13 +26,10 @@
 
 package io.spine.examples.shareaware.client
 
-public class Main {
+public object Main {
 
-    public companion object {
-
-        @JvmStatic
-        public fun main(args: Array<String>) {
-            application()
-        }
+    @JvmStatic
+    public fun main(args: Array<String>) {
+        application()
     }
 }
