@@ -70,11 +70,10 @@ public fun String.validateMoney(): Boolean {
  * Returns the symbol of the provided currency.
  */
 private fun Currency.symbol(): String {
-    return CurrencyDescriptor
-        .findValueByName(this.name)
-        .options
-        .getExtension(MoneyProto.currency)
-        .symbol
+    val valueDescriptor = CurrencyDescriptor.findValueByName(this.name)
+    val rawOptions = valueDescriptor.options
+    val optionsValue = rawOptions.getExtension(MoneyProto.currency)
+    return optionsValue.symbol
 }
 
 /**
