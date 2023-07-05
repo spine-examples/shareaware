@@ -5,6 +5,10 @@ naming:
       - "**/*Spec.kt"
   MatchingDeclarationName:
     excludes: *testFiles # Allows ticks-named top-level test and spec suites.
+  FunctionNaming:
+    ignoreAnnotated: 'Composable'
+  TopLevelPropertyNaming:
+    constantPattern: '[A-Z][A-Za-z0-9]*'
 
 style:
   UnusedPrivateMember:
@@ -16,6 +20,8 @@ style:
       - '1'
       - '2'
       - '3'
+    ignorePropertyDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
   MaxLineLength:
     maxLineLength: 100
     excludeCommentStatements: true
@@ -33,3 +39,6 @@ complexity:
       - '**/*Spec.kt'
   LongMethod:
     excludes: *testFiles # Allows long names for test and spec methods.
+  LongParameterList:
+    functionThreshold: "10"
+    ignoreDefaultParameters: true
