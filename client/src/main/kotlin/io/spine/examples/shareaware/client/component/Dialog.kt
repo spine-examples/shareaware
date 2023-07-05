@@ -24,7 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.client.payment
+package io.spine.examples.shareaware.client.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -49,6 +49,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
@@ -56,7 +57,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
-import io.spine.examples.shareaware.client.PrimaryButton
 import java.awt.event.KeyEvent
 
 /**
@@ -88,7 +88,8 @@ public fun Dialog(
         },
         focusable = true,
         onKeyEvent = {
-            if (it.type == KeyEventType.KeyDown && it.awtEventOrNull?.keyCode == KeyEvent.VK_ESCAPE) {
+            if (it.type == KeyEventType.KeyDown &&
+                it.awtEventOrNull?.keyCode == KeyEvent.VK_ESCAPE) {
                 onCancel()
                 true
             } else {
@@ -139,6 +140,7 @@ private fun MainSection(
     Text(
         title,
         style = MaterialTheme.typography.headlineMedium,
+        textAlign = TextAlign.Center
     )
     Spacer(modifier = Modifier.height(20.dp))
     inputs.forEachIndexed { index, input ->

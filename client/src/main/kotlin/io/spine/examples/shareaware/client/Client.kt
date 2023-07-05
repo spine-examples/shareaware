@@ -38,6 +38,9 @@ import io.spine.client.EventFilter.eq
 import io.spine.client.Subscription
 import io.spine.core.UserId
 import io.spine.examples.shareaware.WalletId
+import io.spine.examples.shareaware.client.ProtoExtensions.buildWithId
+import io.spine.examples.shareaware.client.ProtoExtensions.buildWithOwner
+import io.spine.examples.shareaware.client.ProtoExtensions.toUserId
 import io.spine.examples.shareaware.wallet.command.CreateWallet
 import io.spine.examples.shareaware.wallet.event.WalletCreated
 import java.util.*
@@ -89,27 +92,9 @@ public class DesktopClient private constructor(
         val userId = UUID
             .randomUUID()
             .toUserId()
-        val walletCreated = createWallet(userId)
+        val createWalletOperation = CreateWalletOperation(client, userId)
         this.user = userId
-        this.walletId = walletCreated.wallet
-    }
-
-    /**
-     * Sends a command to create a wallet for the user.
-     *
-     * @param user the ID of the user for whom to create the wallet
-     * @return the resulting event of the `CreateWallet` command
-     */
-    private fun createWallet(user: UserId): WalletCreated {
-        val walletId = WalletId
-            .newBuilder()
-            .buildWithOwner(user)
-        val createWallet = CreateWallet
-            .newBuilder()
-            .buildWithId(walletId)
-        val walletCreated = subscribeToWalletCreated(walletId)
-        commandAsGuest(createWallet)
-        return walletCreated.get()
+        this.walletId = createWalletOperation.execute()
     }
 
     /**
@@ -122,23 +107,17 @@ public class DesktopClient private constructor(
     }
 
     /**
-     * Sends a command to the server as a guest.
-     */
-    private fun commandAsGuest(message: CommandMessage) {
-        client
-            .asGuest()
-            .command(message)
-            .postAndForget()
-    }
-
-    /**
      * Subscribes to the changes in entity of the given type.
      *
      * @param type type of the entity on which changes subscription works
      * @param id entity ID by which arrived entities will be filtered
      * @param observer callback function that will be triggered when the entity state changes
      */
-    public fun <S : EntityState> subscribeToEntity(type: Class<S>, id: Message, observer: (S) -> Unit) {
+    public fun <S : EntityState> subscribeToEntity(
+        type: Class<S>,
+        id: Message,
+        observer: (S) -> Unit
+    ) {
         clientRequest()
             .subscribeTo(type)
             .byId(id)
@@ -226,6 +205,43 @@ public class DesktopClient private constructor(
     }
 
     /**
+     * Returns the client request to the server
+     * on behalf of the authenticated user.
+     */
+    private fun clientRequest(): ClientRequest {
+        return client.onBehalfOf(user)
+    }
+}
+
+/**
+ * Operation that creates the wallet for the user.
+ */
+private class CreateWalletOperation(
+    private val client: Client,
+    private val user: UserId
+) {
+
+    /**
+     * Creates a wallet for the user.
+     *
+     * @return the ID of the created wallet
+     */
+    fun execute(): WalletId {
+        val walletId = WalletId
+            .newBuilder()
+            .buildWithOwner(user)
+        val createWallet = CreateWallet
+            .newBuilder()
+            .buildWithId(walletId)
+        val walletCreated = subscribeToWalletCreated(walletId)
+        client
+            .asGuest()
+            .command(createWallet)
+            .postAndForget()
+        return walletCreated.get().wallet
+    }
+
+    /**
      * Subscribes to the `WalletCreated` event.
      *
      * @param id the ID of the wallet that needs to be created
@@ -247,13 +263,19 @@ public class DesktopClient private constructor(
             .post()
         return walletCreated
     }
+}
+
+/**
+ * Extensions for the `Proto` types used in the `DesktopClient`.
+ */
+private object ProtoExtensions {
 
     /**
      * Returns the `CreateWallet` command.
      *
      * @param id the ID of the wallet to create
      */
-    private fun CreateWallet.Builder.buildWithId(id: WalletId): CreateWallet {
+    fun CreateWallet.Builder.buildWithId(id: WalletId): CreateWallet {
         return this
             .setWallet(id)
             .vBuild()
@@ -262,7 +284,7 @@ public class DesktopClient private constructor(
     /**
      * Returns a `UserId` taking a generated UUID value as a user identifier.
      */
-    private fun UUID.toUserId(): UserId {
+    fun UUID.toUserId(): UserId {
         return UserId
             .newBuilder()
             .setValue(this.toString())
@@ -272,32 +294,30 @@ public class DesktopClient private constructor(
     /**
      * Returns a `WalletId` taking a `UserId` as a value for a wallet identifier.
      */
-    private fun WalletId.Builder.buildWithOwner(id: UserId): WalletId {
+    fun WalletId.Builder.buildWithOwner(id: UserId): WalletId {
         return this
             .setOwner(id)
             .vBuild()
-    }
-
-    /**
-     * Returns the client request to the server
-     * on behalf of the authenticated user.
-     */
-    private fun clientRequest(): ClientRequest {
-        return client.onBehalfOf(user)
     }
 }
 
 /**
  * Subscription for the `EntityState` changes.
  *
+ * Provides an optional callback function that allows access
+ * to the previous state of the observed entity.
+ *
  * @param entityType type of the entity on which changes subscription works
  * @param client client with the help of which the entity will be subscribed
  * @param id entity ID by which arrived entities will be filtered
+ * @param previousStateAccessor the callback function that provides access to the state of the entity
+ * before the updated one has arrived
  */
 public class EntitySubscription<S : EntityState> internal constructor(
     entityType: Class<S>,
     client: DesktopClient,
-    id: Message
+    id: Message,
+    previousStateAccessor: (S?) -> Unit = {}
 ) {
     private var state: MutableStateFlow<S?>
 
@@ -305,6 +325,7 @@ public class EntitySubscription<S : EntityState> internal constructor(
         val entity = client.readEntity(entityType, id)
         state = MutableStateFlow(entity)
         client.subscribeToEntity(entityType, id) { value ->
+            previousStateAccessor(state.value)
             state.value = value
         }
     }

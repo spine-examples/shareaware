@@ -24,6 +24,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import io.spine.examples.shareaware.dependency.Jacoco
+
 /**
  * Configures test-running tasks and code coverage in a project.
  *
@@ -43,6 +45,10 @@ tasks.withType<Test> {
 
 tasks.test {
     finalizedBy(tasks.jacocoTestReport)
+}
+
+jacoco {
+    toolVersion = Jacoco.version
 }
 
 tasks.jacocoTestReport {

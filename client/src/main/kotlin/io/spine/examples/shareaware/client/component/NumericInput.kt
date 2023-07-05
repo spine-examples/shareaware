@@ -24,30 +24,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Material3
-import io.spine.examples.shareaware.dependency.Spine
+package io.spine.examples.shareaware.client.component
 
-plugins {
-    `kotlin-settings`
-    id("org.jetbrains.compose") version "1.4.0"
-}
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import io.spine.examples.shareaware.client.validateNumber
 
-repositories {
-    google()
-    mavenCentral()
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-}
-
-dependencies {
-    implementation(compose.desktop.currentOs)
-    implementation(project(":model"))
-    implementation(Material3.Desktop.lib)
-    implementation(Spine.Server.lib)
-    implementation(project(":server"))
-}
-
-compose.desktop {
-    application {
-        mainClass = "io.spine.examples.shareaware.client.Main"
+/**
+ * Displays the input component accepting only the numeric values.
+ *
+ * @param placeholder the label to be displayed inside the input container
+ * @param onChange the callback that is triggered when the input's value changes
+ */
+@Composable
+public fun NumericInput(
+    placeholder: String,
+    onChange: (String) -> Unit
+) {
+    val input = remember { mutableStateOf("") }
+    val onChange: (String) -> Unit = {
+        if (it.validateNumber()) {
+            input.value = it
+            onChange(it)
+        }
     }
+    Input(
+        value = input.value,
+        onChange = onChange,
+        placeholder = placeholder,
+        isError = false
+    )
 }

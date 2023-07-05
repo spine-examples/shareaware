@@ -24,15 +24,43 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.client
+package io.spine.examples.shareaware.client.share
 
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import io.spine.examples.shareaware.client.asReadableString
+import io.spine.examples.shareaware.client.component.PriceDifferenceCard
+import io.spine.money.Money
 
 /**
- * The page component that provides user's watchlists to observe shares user interested in
- * and ways to interact with watchlists.
+ * Displays information about the share price.
+ *
+ * @param actualPrice the actual share price to be shown
+ * @param previousPrice the previous price of this share to show difference with
  */
 @Composable
-@Suppress("EmptyFunctionBlock") // Will be implemented in the nearest future.
-public fun WatchlistsPage() {
+public fun SharePrice(
+    actualPrice: Money,
+    previousPrice: Money?
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .padding(top = 10.dp)
+            .wrapContentHeight()
+    ) {
+        Text(
+            text = actualPrice.asReadableString(),
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.padding(end = 10.dp)
+        )
+        PriceDifferenceCard(actualPrice, previousPrice)
+    }
 }

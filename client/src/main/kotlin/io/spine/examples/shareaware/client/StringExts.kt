@@ -24,30 +24,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Material3
-import io.spine.examples.shareaware.dependency.Spine
+package io.spine.examples.shareaware.client
 
-plugins {
-    `kotlin-settings`
-    id("org.jetbrains.compose") version "1.4.0"
+import io.spine.examples.shareaware.wallet.Iban
+
+/**
+ * Returns a new IBAN using this `String` as its value.
+ *
+ * The string must conform to the [formatting rules](https://en.wikipedia.org/wiki/International_Bank_Account_Number#:~:text=of%20total%20payments-,Structure,-%5Bedit%5D).
+ */
+public fun String.asIban(): Iban {
+    return Iban
+        .newBuilder()
+        .setValue(this)
+        .vBuild()
 }
 
-repositories {
-    google()
-    mavenCentral()
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+/**
+ * Returns true if this `String` is written as an IBAN, false otherwise.
+ */
+public fun String.validateIban(): Boolean {
+    val ibanRegex =
+        """[A-Z]{2}[0-9]{2}(?:[ ]?[0-9]{4}){4}(?!(?:[ ]?[0-9]){3})(?:[ ]?[0-9]{1,2})?""".toRegex()
+    return !ibanRegex.containsMatchIn(this)
 }
 
-dependencies {
-    implementation(compose.desktop.currentOs)
-    implementation(project(":model"))
-    implementation(Material3.Desktop.lib)
-    implementation(Spine.Server.lib)
-    implementation(project(":server"))
-}
-
-compose.desktop {
-    application {
-        mainClass = "io.spine.examples.shareaware.client.Main"
-    }
+/**
+ * Returns true if this `String` is written like a number, false otherwise.
+ */
+public fun String.validateNumber(): Boolean {
+    val numericRegex = """^(?!0)[0-9]*${'$'}""".toRegex()
+    return numericRegex.containsMatchIn(this)
 }

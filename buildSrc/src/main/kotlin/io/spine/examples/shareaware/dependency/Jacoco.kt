@@ -24,30 +24,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Material3
-import io.spine.examples.shareaware.dependency.Spine
+package io.spine.examples.shareaware.dependency
 
-plugins {
-    `kotlin-settings`
-    id("org.jetbrains.compose") version "1.4.0"
-}
-
-repositories {
-    google()
-    mavenCentral()
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-}
-
-dependencies {
-    implementation(compose.desktop.currentOs)
-    implementation(project(":model"))
-    implementation(Material3.Desktop.lib)
-    implementation(Spine.Server.lib)
-    implementation(project(":server"))
-}
-
-compose.desktop {
-    application {
-        mainClass = "io.spine.examples.shareaware.client.Main"
-    }
+// https://github.com/jacoco/jacoco
+public object Jacoco {
+    public const val version = "0.8.10"
 }

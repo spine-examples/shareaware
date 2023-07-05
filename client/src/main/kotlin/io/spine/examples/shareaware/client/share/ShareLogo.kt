@@ -24,30 +24,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Material3
-import io.spine.examples.shareaware.dependency.Spine
+package io.spine.examples.shareaware.client.share
 
-plugins {
-    `kotlin-settings`
-    id("org.jetbrains.compose") version "1.4.0"
-}
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
+import io.spine.examples.shareaware.client.component.Image
+import io.spine.examples.shareaware.share.Share
 
-repositories {
-    google()
-    mavenCentral()
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-}
-
-dependencies {
-    implementation(compose.desktop.currentOs)
-    implementation(project(":model"))
-    implementation(Material3.Desktop.lib)
-    implementation(Spine.Server.lib)
-    implementation(project(":server"))
-}
-
-compose.desktop {
-    application {
-        mainClass = "io.spine.examples.shareaware.client.Main"
+/**
+ * Draws the share logo.
+ *
+ * @param share the share which logo to draw
+ */
+@Composable
+public fun ShareLogo(share: Share) {
+    val density = LocalDensity.current
+    Box(
+        modifier = Modifier
+            .size(150.dp)
+            .padding(10.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            url = share.companyLogo,
+            density = density,
+            contentDescription = share.companyName,
+        )
     }
 }
