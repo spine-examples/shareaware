@@ -24,30 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Material3
-import io.spine.examples.shareaware.dependency.Spine
+import org.gradle.api.JavaVersion
 
-plugins {
-    `kotlin-settings`
-    id("org.jetbrains.compose") version "1.4.0"
-}
-
-repositories {
-    google()
-    mavenCentral()
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-}
-
-dependencies {
-    implementation(compose.desktop.currentOs)
-    implementation(project(":model"))
-    implementation(Material3.Desktop.lib)
-    implementation(Spine.Server.lib)
-    implementation(project(":server"))
-}
-
-compose.desktop {
-    application {
-        mainClass = "io.spine.examples.shareaware.client.Main"
-    }
+/**
+ * Provides high-level constants, like version of JVM, to be used
+ * throughout the project.
+ */
+object BuildSettings {
+    val javaVersion: JavaVersion = JavaVersion.VERSION_11
 }

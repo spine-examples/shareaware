@@ -24,30 +24,29 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.examples.shareaware.dependency.Material3
-import io.spine.examples.shareaware.dependency.Spine
+import io.gitlab.arturbosch.detekt.Detekt
+
+/**
+ * This script-plugin sets up Kotlin code analyzing with Detekt.
+ */
 
 plugins {
-    `kotlin-settings`
-    id("org.jetbrains.compose") version "1.4.0"
+    id("io.gitlab.arturbosch.detekt")
 }
 
-repositories {
-    google()
-    mavenCentral()
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+detekt {
+    buildUponDefaultConfig = true
+    config.setFrom("${rootDir}/quality/detekt-config.yml")
 }
 
-dependencies {
-    implementation(compose.desktop.currentOs)
-    implementation(project(":model"))
-    implementation(Material3.Desktop.lib)
-    implementation(Spine.Server.lib)
-    implementation(project(":server"))
-}
-
-compose.desktop {
-    application {
-        mainClass = "io.spine.examples.shareaware.client.Main"
+tasks {
+    withType<Detekt>().configureEach {
+        reports {
+            html.required.set(true) // Only HTML report is generated.
+            xml.required.set(false)
+            txt.required.set(false)
+            sarif.required.set(false)
+            md.required.set(false)
+        }
     }
 }

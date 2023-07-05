@@ -26,6 +26,7 @@
 
 plugins {
     `kotlin-dsl`
+    kotlin("jvm") version "1.8.10" apply false
 }
 
 repositories {
@@ -38,7 +39,14 @@ val errorProneVersion = "2.0.2"
 
 val spineVersion = "1.9.0"
 
+val kotlinVersion = "1.8.10"
+
+val detektVersion = "1.23.0"
+
 dependencies {
     implementation("net.ltgt.gradle:gradle-errorprone-plugin:${errorProneVersion}")
     implementation("io.spine.tools:spine-bootstrap:${spineVersion}")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
+    implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:$detektVersion")
 }

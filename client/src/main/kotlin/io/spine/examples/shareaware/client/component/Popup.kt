@@ -48,21 +48,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
- * Configures the `PopupComponent`.
- *
- * @param isShown is a component shown to the user
- * @param dismissAction callback that will be triggered when the user clicks on `Cancel` button
- * @param label the message to be shown to the user
- * @param contentColor the preferred color for content inside this pop-up
- */
-public data class PopupConfig(
-    val isShown: Boolean,
-    val dismissAction: () -> Unit,
-    val label: String,
-    val contentColor: Color
-)
-
-/**
  * Displays a popup.
  *
  * @param popupConfig configuration of the popup
@@ -71,8 +56,7 @@ public data class PopupConfig(
 public fun Popup(
     popupConfig: PopupConfig
 ) {
-    val (isShown, dismissAction, label, contentColor) = popupConfig
-    if (isShown) {
+    if (popupConfig.isShown) {
         Card(
             shape = MaterialTheme.shapes.small,
             colors = CardDefaults.cardColors(
@@ -86,16 +70,31 @@ public fun Popup(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = label,
+                    text = popupConfig.label,
                     style = MaterialTheme.typography.bodySmall,
-                    color = contentColor
+                    color = popupConfig.contentColor
                 )
                 Spacer(modifier = Modifier.width(15.dp))
-                CloseButton { dismissAction() }
+                CloseButton { popupConfig.dismissAction() }
             }
         }
     }
 }
+
+/**
+ * Configures the `PopupComponent`.
+ *
+ * @param isShown is a component shown to the user
+ * @param dismissAction callback that will be triggered when the user clicks on `Cancel` button
+ * @param label the message to be shown to the user
+ * @param contentColor the preferred color for content inside this pop-up
+ */
+public data class PopupConfig(
+    val isShown: Boolean,
+    val dismissAction: () -> Unit,
+    val label: String,
+    val contentColor: Color
+)
 
 /**
  * Displays a button that closes the `Popup` component.

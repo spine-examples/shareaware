@@ -54,34 +54,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
- * Provides pages of the application.
- *
- * @param label the name of the page
- * @param iconPath the path to the icon that should represent the page
- */
-public enum class Page(
-    public val label: String,
-    public val iconPath: String
-) {
-    HOME("Home", Icons.HOME),
-    WALLET("Wallet", Icons.WALLET),
-    MARKET("Market", Icons.MARKET),
-    INVESTMENTS("Investments", Icons.INVESTMENT),
-    WATCHLISTS("Watchlists", Icons.WATCHLIST);
-
-    /**
-     * Provides the current page of the application.
-     */
-    public companion object {
-        public val current: StateFlow<Page> = CurrentPage.state()
-    }
-}
-
-/**
  * Component that represents the menu for navigating through the application.
  */
 @Composable
-public fun Menu() {
+public fun Navigation() {
     var selectedItem by remember { mutableStateOf(0) }
     NavigationRail(
         modifier = Modifier.fillMaxWidth(),
@@ -94,7 +70,7 @@ public fun Menu() {
                     .height(30.dp)
                     .clip(MaterialTheme.shapes.extraSmall)
             ) {
-                MenuItem(
+                NavItem(
                     page = page,
                     isSelected = selectedItem == index
                 ) {
@@ -108,14 +84,14 @@ public fun Menu() {
 }
 
 /**
- * Represents the menu item.
+ * Represents the navigation menu item.
  *
  * @param page the page to represent
  * @param isSelected is an item selected
  * @param onClick callback that will be triggered when the item clicked
  */
 @Composable
-private fun MenuItem(
+private fun NavItem(
     page: Page,
     isSelected: Boolean,
     onClick: () -> Unit
@@ -152,23 +128,47 @@ private fun MenuItem(
 }
 
 /**
+ * Provides pages of the application.
+ *
+ * @param label the name of the page
+ * @param iconPath the path to the icon that should represent the page
+ */
+public enum class Page(
+    public val label: String,
+    public val iconPath: String
+) {
+    HOME("Home", Icons.HOME),
+    WALLET("Wallet", Icons.WALLET),
+    MARKET("Market", Icons.MARKET),
+    INVESTMENTS("Investments", Icons.INVESTMENT),
+    WATCHLISTS("Watchlists", Icons.WATCHLIST);
+
+    /**
+     * Provides the current page of the application.
+     */
+    public companion object {
+        public val current: StateFlow<Page> = CurrentPage.state()
+    }
+}
+
+/**
  * The current page of the application.
  */
 private object CurrentPage {
 
-    private val currentPage: MutableStateFlow<Page> = MutableStateFlow(Page.HOME)
+    private val current: MutableStateFlow<Page> = MutableStateFlow(Page.HOME)
 
     /**
      * Represents the current page as a read-only state flow.
      */
     fun state(): StateFlow<Page> {
-        return currentPage.asStateFlow()
+        return current.asStateFlow()
     }
 
     /**
      * Changes the current page to the provided.
      */
     fun set(page: Page) {
-        currentPage.value = page
+        this.current.value = page
     }
 }

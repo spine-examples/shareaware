@@ -37,10 +37,9 @@ plugins {
     java
 }
 
-val javaVersion = JavaVersion.VERSION_11
 java {
-    sourceCompatibility = javaVersion
-    targetCompatibility = javaVersion
+    sourceCompatibility = BuildSettings.javaVersion
+    targetCompatibility = BuildSettings.javaVersion
 }
 
 tasks.withType<JavaCompile> {

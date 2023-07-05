@@ -35,9 +35,10 @@ import io.spine.examples.shareaware.client.EntitySubscription
 import io.spine.examples.shareaware.investment.command.PurchaseShares
 import io.spine.examples.shareaware.investment.event.SharesPurchased
 import io.spine.examples.shareaware.market.AvailableMarketShares
+import io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeObtained
 import io.spine.examples.shareaware.server.market.MarketProcess
 import io.spine.examples.shareaware.share.Share
-import io.spine.examples.shareaware.wallet.rejection.Rejections
+import io.spine.examples.shareaware.wallet.rejection.Rejections.InsufficientFunds
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -92,10 +93,9 @@ public class MarketPageModel(client: DesktopClient) {
 public class PurchaseOperationModel(private val client: DesktopClient) {
     private val inProgressState: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val shareState: MutableStateFlow<Share?> = MutableStateFlow(null)
-    private val quantityState: MutableStateFlow<Int> = MutableStateFlow(0)
-    private val resultMessageShownState: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    private val resultMessageState: MutableStateFlow<String> = MutableStateFlow("")
+    public val quantityOfShares: MutableStateFlow<Int> = MutableStateFlow(0)
     private val isFailedState: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    public val resultMessage: PurchaseResultMessageModel = PurchaseResultMessageModel()
 
     /**
      * Initiates the purchase.
@@ -135,7 +135,7 @@ public class PurchaseOperationModel(private val client: DesktopClient) {
      */
     public fun cancel() {
         inProgressState.value = false
-        quantityState.value = 0
+        quantityOfShares.value = 0
     }
 
     /**
@@ -146,68 +146,10 @@ public class PurchaseOperationModel(private val client: DesktopClient) {
     }
 
     /**
-     * Returns the quantity of shares user wants to purchase.
-     */
-    public fun quantityOfShares(): StateFlow<Int> {
-        return quantityState
-    }
-
-    /**
-     * Sets the quantity of shares user wants to purchase.
-     */
-    public fun quantityOfShares(quantity: Int) {
-        quantityState.value = quantity
-    }
-
-    /**
-     * Returns the state of the message about the purchase operation result visibility.
-     */
-    public fun isResultMessageShown(): StateFlow<Boolean> {
-        return resultMessageShownState
-    }
-
-    /**
-     * Returns the current state of the message that signals about the purchase operation result.
-     */
-    public fun resultMessage(): StateFlow<String> {
-        return resultMessageState
-    }
-
-    /**
      * Returns the current state of the purchase operation, whether it failed or not.
      */
     public fun isFailed(): StateFlow<Boolean> {
         return isFailedState
-    }
-
-    /**
-     * Enables the visibility of the message about successful purchase operation
-     * and sets the provided message to it.
-     */
-    private fun showSuccessfulOperationMessage(message: String) {
-        resultMessageShownState.value = true
-        isFailedState.value = false
-        resultMessageState.value = message
-    }
-
-    /**
-     * Enables the visibility of the message about failed purchase operation
-     * and sets the provided message to it.
-     */
-    private fun showFailedOperationMessage(message: String) {
-        resultMessageShownState.value = true
-        isFailedState.value = true
-        resultMessageState.value = message
-    }
-
-    /**
-     * Disables the visibility of the message about purchase operation result
-     * and clears its message.
-     */
-    public fun closeOperationResultMessage() {
-        resultMessageShownState.value = false
-        isFailedState.value = false
-        resultMessageState.value = ""
     }
 
     /**
@@ -219,7 +161,8 @@ public class PurchaseOperationModel(private val client: DesktopClient) {
             SharesPurchased::class.java,
             EventFilter.eq(purchaseIdField, id)
         ) {
-            showSuccessfulOperationMessage("Shares have been purchased successfully.")
+            resultMessage.show("Shares have been purchased successfully.")
+            isFailedState.value = false
         }
     }
 
@@ -228,14 +171,15 @@ public class PurchaseOperationModel(private val client: DesktopClient) {
      * exceeds the amount of available funds on the balance.
      */
     private fun subscribeToInsufficientFunds(id: PurchaseId) {
-        val purchaseIdField = Rejections.InsufficientFunds.Field.operation().purchase()
+        val purchaseIdField = InsufficientFunds.Field.operation().purchase()
         client.subscribeOnce(
-            Rejections.InsufficientFunds::class.java,
+            InsufficientFunds::class.java,
             EventFilter.eq(purchaseIdField, id)
         ) {
-            showFailedOperationMessage(
+            resultMessage.show(
                 "There are insufficient funds on your balance to purchase those shares."
             )
+            isFailedState.value = true
         }
     }
 
@@ -244,14 +188,15 @@ public class PurchaseOperationModel(private val client: DesktopClient) {
      * when trying to purchase shares.
      */
     private fun subscribeToSharesCannotBeObtained(id: PurchaseId) {
-        val purchaseIdField = io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeObtained.Field.purchaseProcess()
+        val purchaseIdField = SharesCannotBeObtained.Field.purchaseProcess()
         client.subscribeOnce(
-            io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeObtained::class.java,
+            SharesCannotBeObtained::class.java,
             EventFilter.eq(purchaseIdField, id)
         ) {
-            showFailedOperationMessage(
+            resultMessage.show(
                 "An error occurred in the market system while shares were purchasing."
             )
+            isFailedState.value = true
         }
     }
 
@@ -265,8 +210,48 @@ public class PurchaseOperationModel(private val client: DesktopClient) {
             .setPurchaseProcess(PurchaseId.generate())
             .setPurchaser(client.authenticatedUser())
             .setPrice(share.price)
-            .setQuantity(quantityState.value)
+            .setQuantity(quantityOfShares.value)
             .setShare(share.id)
             .vBuild()
+    }
+}
+
+/**
+ * Controls the state of the purchase operation result message.
+ */
+public class PurchaseResultMessageModel {
+    private val resultMessageShownState: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val resultMessageState: MutableStateFlow<String> = MutableStateFlow("")
+
+    /**
+     * Returns the visibility state of the purchase operation result message.
+     */
+    public fun isShown(): StateFlow<Boolean> {
+        return resultMessageShownState
+    }
+
+    /**
+     * Returns the current state of purchase operation result message.
+     */
+    public fun value(): StateFlow<String> {
+        return resultMessageState
+    }
+
+    /**
+     * Enables the visibility of the purchase operation result message
+     * and sets the provided value to it.
+     */
+    public fun show(message: String) {
+        resultMessageShownState.value = true
+        resultMessageState.value = message
+    }
+
+    /**
+     * Disables the visibility of purchase operation result message
+     * and clears it.
+     */
+    public fun close() {
+        resultMessageShownState.value = false
+        resultMessageState.value = ""
     }
 }

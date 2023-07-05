@@ -32,5 +32,6 @@ import androidx.compose.runtime.Composable
  * The page component that provides all user's investments and ways to interact with them.
  */
 @Composable
+@Suppress("EmptyFunctionBlock") // Will be implemented in the nearest future.
 public fun InvestmentsPage() {
 }
