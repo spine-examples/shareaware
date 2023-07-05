@@ -26,14 +26,18 @@
 
 package io.spine.examples.shareaware.client
 
+import com.google.protobuf.Descriptors
+import com.google.protobuf.Descriptors.EnumValueDescriptor
 import io.spine.money.Currency
 import io.spine.money.Money
+import io.spine.money.MoneyProto
+import io.spine.util.Exceptions.newIllegalArgumentException
 
 /**
  * Returns the readable `String` constructed from the `Money` object.
  */
 public fun Money.asReadableString(): String {
-    return "$" + this.units.toString() + "." + this.nanos.toString()
+    return this.currency.symbol() + this.units.toString() + "." + this.nanos.toString()
 }
 
 /**
@@ -60,4 +64,48 @@ public fun String.asUsd(): Money {
 public fun String.validateMoney(): Boolean {
     val decimalRegex = """^\d+(\.\d{1,2})?${'$'}""".toRegex()
     return !decimalRegex.containsMatchIn(this)
+}
+
+/**
+ * Returns the symbol of the provided currency.
+ *
+ * @throws IllegalArgumentException if there is no `symbol` defined for this `Currency`
+ */
+private fun Currency.symbol(): String {
+    val valueDescriptor = CurrencyDescriptor.findValueByName(this.name)
+    val rawOptions = valueDescriptor.options
+    if (rawOptions.hasExtension(MoneyProto.currency)) {
+        val resolvedOptions = rawOptions!!.getExtension(MoneyProto.currency)
+        return resolvedOptions.symbol
+    }
+    throw newIllegalArgumentException(
+        "There is no required `symbol` defined " +
+                "for the passed `Currency` value `%s`.", this
+    )
+}
+
+
+/**
+ * Enum descriptor for the `Currency` proto type.
+ *
+ * @see [Descriptors.EnumDescriptor]
+ */
+private object CurrencyDescriptor {
+    private val defaultMoneyInstance = Money.getDefaultInstance()
+    private val currency = defaultMoneyInstance.currency
+    val descriptor: Descriptors.EnumDescriptor? = currency.descriptorForType
+
+    /**
+     * Finds an enum value by name.
+     *
+     * @param name the name of the value to find
+     * @throws IllegalArgumentException if there is no enum value found
+     */
+    fun findValueByName(name: String): EnumValueDescriptor {
+        return descriptor!!.findValueByName(name)
+            ?: throw newIllegalArgumentException(
+                "There is no enum value found for passed name '%s'",
+                name
+            )
+    }
 }
