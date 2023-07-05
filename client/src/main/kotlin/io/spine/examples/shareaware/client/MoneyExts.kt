@@ -68,22 +68,14 @@ public fun String.validateMoney(): Boolean {
 
 /**
  * Returns the symbol of the provided currency.
- *
- * @throws IllegalArgumentException if there is no `symbol` defined for this `Currency`
  */
 private fun Currency.symbol(): String {
-    val valueDescriptor = CurrencyDescriptor.findValueByName(this.name)
-    val rawOptions = valueDescriptor.options
-    if (rawOptions.hasExtension(MoneyProto.currency)) {
-        val resolvedOptions = rawOptions!!.getExtension(MoneyProto.currency)
-        return resolvedOptions.symbol
-    }
-    throw newIllegalArgumentException(
-        "There is no required `symbol` defined " +
-                "for the passed `Currency` value `%s`.", this
-    )
+    return CurrencyDescriptor
+        .findValueByName(this.name)
+        .options
+        .getExtension(MoneyProto.currency)
+        .symbol
 }
-
 
 /**
  * Enum descriptor for the `Currency` proto type.
