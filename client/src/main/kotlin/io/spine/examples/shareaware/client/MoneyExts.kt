@@ -70,7 +70,7 @@ public fun String.validateMoney(): Boolean {
  * Returns the symbol of the provided currency.
  */
 private fun Currency.symbol(): String {
-    val valueDescriptor = CurrencyDescriptor.findValueByName(this.name)
+    val valueDescriptor = CurrencyDescriptor.findValueOf(this)
     val rawOptions = valueDescriptor.options
     val optionsValue = rawOptions.getExtension(MoneyProto.currency)
     return optionsValue.symbol
@@ -87,16 +87,16 @@ private object CurrencyDescriptor {
     val descriptor: Descriptors.EnumDescriptor? = currency.descriptorForType
 
     /**
-     * Finds an enum value by name.
+     * Finds the value descriptor of `Currency` by its instance.
      *
-     * @param name the name of the value to find
-     * @throws IllegalArgumentException if there is no enum value found
+     * @param currency the `Currency` instance to find the value of
+     * @throws IllegalArgumentException if there is no `Currency` value found
      */
-    fun findValueByName(name: String): EnumValueDescriptor {
-        return descriptor!!.findValueByName(name)
+    fun findValueOf(currency: Currency): EnumValueDescriptor {
+        return descriptor!!.findValueByName(currency.name)
             ?: throw newIllegalArgumentException(
-                "There is no enum value found for passed name '%s'",
-                name
+                "There is no `Currency` value found for passed instance '%s'",
+                currency
             )
     }
 }
