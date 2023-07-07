@@ -38,6 +38,7 @@ option java_multiple_files = true;
 import "spine_examples/shareaware/identifiers.proto";
 import "spine/money/money.proto";
 import "spine_examples/shareaware/share.proto";
+import "google/protobuf/timestamp.proto";
 
 // Shares have been obtained from the market.
 message SharesObtained {
@@ -96,4 +97,7 @@ message MarketSharesUpdated {
 
     // Updated shares.
     repeated Share share = 2 [(required) = true];
+
+    // Time when shares were updated.
+    google.protobuf.Timestamp when_updated = 3 [(required) = true];
 }
