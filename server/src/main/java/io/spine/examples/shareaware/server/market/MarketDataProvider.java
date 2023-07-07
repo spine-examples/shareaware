@@ -39,6 +39,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+import static io.spine.base.Time.currentTime;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -159,6 +160,7 @@ public final class MarketDataProvider {
                 .newBuilder()
                 .setMarket(MarketProcess.ID)
                 .addAllShare(updatedShares)
+                .setWhenUpdated(currentTime())
                 .vBuild();
         marketContext.emittedEvent(event, actor);
         return event;

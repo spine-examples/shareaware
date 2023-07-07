@@ -26,6 +26,7 @@
 
 package io.spine.examples.shareaware.server.market.given;
 
+import io.spine.base.Time;
 import io.spine.core.UserId;
 import io.spine.examples.shareaware.MarketId;
 import io.spine.examples.shareaware.PurchaseId;
@@ -144,6 +145,7 @@ public final class MarketTestEnv {
                 .setMarket(MarketProcess.ID)
                 .addShare(tesla())
                 .addShare(apple())
+                .setWhenUpdated(Time.currentTime())
                 .vBuild();
     }
 
