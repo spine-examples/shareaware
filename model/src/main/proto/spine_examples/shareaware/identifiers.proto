@@ -36,6 +36,8 @@ option java_outer_classname = "IdentifiersProto";
 option java_multiple_files = true;
 
 import "spine/core/user_id.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
 
 // Identifies a watchlist.
 message WatchlistId {
@@ -118,4 +120,13 @@ message ReplenishmentOperationId {
         // that replenishes the wallet by selling the user's shares on the market.
         SaleId sale = 2;
     }
+}
+
+message SharePriceMovementId {
+
+    ShareId share = 1 [(required) = true, (column) = true];
+
+    google.protobuf.Duration time_range = 2 [(required) = true];
+
+    google.protobuf.Timestamp when_created = 3 [(required) = true];
 }
