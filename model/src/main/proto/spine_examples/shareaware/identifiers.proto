@@ -126,7 +126,7 @@ message SharePriceMovementId {
 
     ShareId share = 1;
 
-    google.protobuf.Duration time_range = 2 [(required) = true];
+    google.protobuf.Duration activity_time = 2 [(required) = true];
 
     google.protobuf.Timestamp when_created = 3 [(required) = true];
 }

@@ -77,7 +77,7 @@ public class SharePriceMovementRepository :
     ): SharePriceMovementId {
         var activeProjectionId = sharePriceMovements.find { priceMovement ->
             val timeFromCreation = currentTime().minus(priceMovement.id.whenCreated)
-            priceMovement.id.timeRange.greaterThen(timeFromCreation)
+            priceMovement.id.activityTime.greaterThen(timeFromCreation)
         }?.id
         if (activeProjectionId == null) {
             activeProjectionId = createNewSharePriceMovementId(sharePriceMovements[0].share)
@@ -98,7 +98,7 @@ public class SharePriceMovementRepository :
             .build()
         return this
             .setShare(share)
-            .setTimeRange(duration)
+            .setActivityTime(duration)
             .setWhenCreated(currentTime())
             .vBuild()
     }
