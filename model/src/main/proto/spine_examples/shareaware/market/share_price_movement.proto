@@ -39,7 +39,7 @@ import "spine_examples/shareaware/identifiers.proto";
 import "google/protobuf/timestamp.proto";
 import "spine/money/money.proto";
 
-message SharePriceMovement {
+message SharePriceMovementPerMinute {
     option (entity) = {kind: PROJECTION};
 
     SharePriceMovementId id = 1;

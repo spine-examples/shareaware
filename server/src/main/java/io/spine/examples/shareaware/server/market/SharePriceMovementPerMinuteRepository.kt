@@ -33,15 +33,17 @@ import io.spine.client.Filters.eq
 import io.spine.core.ActorContext
 import io.spine.examples.shareaware.ShareId
 import io.spine.examples.shareaware.SharePriceMovementId
-import io.spine.examples.shareaware.market.SharePriceMovement
+import io.spine.examples.shareaware.market.SharePriceMovementPerMinute
 import io.spine.examples.shareaware.market.event.MarketSharesUpdated
 import io.spine.examples.shareaware.server.ProjectionReader
 import io.spine.examples.shareaware.share.Share
 import io.spine.server.projection.ProjectionRepository
 import io.spine.server.route.EventRouting
 
-public class SharePriceMovementRepository :
-    ProjectionRepository<SharePriceMovementId, SharePriceMovementProjection, SharePriceMovement>() {
+public class SharePriceMovementPerMinuteRepository :
+    ProjectionRepository<SharePriceMovementId,
+            SharePriceMovementPerMinuteProjection,
+            SharePriceMovementPerMinute>() {
 
     override fun setupEventRouting(routing: EventRouting<SharePriceMovementId>) {
         super.setupEventRouting(routing)
@@ -53,12 +55,12 @@ public class SharePriceMovementRepository :
     private fun routeToSharePriceMovements(
         event: MarketSharesUpdated, context: ActorContext
     ): ImmutableSet<SharePriceMovementId> {
-        val reader = ProjectionReader<SharePriceMovementId, SharePriceMovement>(
+        val reader = ProjectionReader<SharePriceMovementId, SharePriceMovementPerMinute>(
             context().stand(),
-            SharePriceMovement::class.java
+            SharePriceMovementPerMinute::class.java
         )
         var activePriceMovementsIds = setOf<SharePriceMovementId>()
-        val shareField = SharePriceMovement.Field.share()
+        val shareField = SharePriceMovementPerMinute.Field.share()
         event.shareList.forEach { share: Share ->
             val sharePriceMovements = reader.read(context, eq(shareField, share.id))
             if (sharePriceMovements.isNotEmpty()) {
@@ -73,7 +75,7 @@ public class SharePriceMovementRepository :
     }
 
     private fun findActiveOrCreate(
-        sharePriceMovements: List<SharePriceMovement>
+        sharePriceMovements: List<SharePriceMovementPerMinute>
     ): SharePriceMovementId {
         var activeProjectionId = sharePriceMovements.find { priceMovement ->
             val timeFromCreation = currentTime().minus(priceMovement.id.whenCreated)

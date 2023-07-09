@@ -30,13 +30,15 @@ import io.spine.core.External
 import io.spine.core.Subscribe
 import io.spine.examples.shareaware.SharePriceMovementId
 import io.spine.examples.shareaware.market.MovementPoint
-import io.spine.examples.shareaware.market.SharePriceMovement
+import io.spine.examples.shareaware.market.SharePriceMovementPerMinute
 import io.spine.examples.shareaware.market.event.MarketSharesUpdated
 import io.spine.examples.shareaware.share.Share
 import io.spine.server.projection.Projection
 
-public class SharePriceMovementProjection :
-    Projection<SharePriceMovementId, SharePriceMovement, SharePriceMovement.Builder>() {
+public class SharePriceMovementPerMinuteProjection :
+    Projection<SharePriceMovementId,
+        SharePriceMovementPerMinute,
+        SharePriceMovementPerMinute.Builder>() {
 
     @Subscribe
     public fun on(@External e: MarketSharesUpdated) {

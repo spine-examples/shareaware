@@ -32,7 +32,7 @@ import io.spine.examples.shareaware.server.investment.SharesPurchaseRepository;
 import io.spine.examples.shareaware.server.investment.SharesSaleRepository;
 import io.spine.examples.shareaware.server.market.AvailableMarketSharesRepository;
 import io.spine.examples.shareaware.server.market.MarketProcess;
-import io.spine.examples.shareaware.server.market.SharePriceMovementRepository;
+import io.spine.examples.shareaware.server.market.SharePriceMovementPerMinuteRepository;
 import io.spine.examples.shareaware.server.paymentgateway.PaymentGatewayProcess;
 import io.spine.examples.shareaware.server.wallet.WalletAggregate;
 import io.spine.examples.shareaware.server.wallet.WalletBalanceRepository;
@@ -77,6 +77,6 @@ public final class TradingContext {
                 .add(new SharesSaleRepository())
                 .add(new InvestmentViewRepository())
                 .add(new AvailableMarketSharesRepository())
-                .add(new SharePriceMovementRepository());
+                .add(new SharePriceMovementPerMinuteRepository());
     }
 }
