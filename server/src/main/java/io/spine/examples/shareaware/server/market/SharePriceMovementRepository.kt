@@ -47,49 +47,59 @@ public class SharePriceMovementRepository :
     override fun setupEventRouting(routing: EventRouting<SharePriceMovementId>) {
         super.setupEventRouting(routing)
         routing.route(MarketSharesUpdated::class.java) { event, context ->
-            updateMovements(event, context.actorContext())
+            routeToSharePriceMovements(event, context.actorContext())
         }
     }
 
-    private fun updateMovements(
+    private fun routeToSharePriceMovements(
         event: MarketSharesUpdated, context: ActorContext
     ): ImmutableSet<SharePriceMovementId> {
         val reader = ProjectionReader<SharePriceMovementId, SharePriceMovement>(
             context().stand(),
             SharePriceMovement::class.java
         )
-        var activeProjections = setOf<SharePriceMovementId>()
+        var activePriceMovementsIds = setOf<SharePriceMovementId>()
         event.shareList.forEach { share: Share ->
-            val shareField = SharePriceMovement.Field.id().share()
-            val priceMovements = reader.read(context, eq(shareField, share.id))
-            if (priceMovements.isNotEmpty()) {
-                var activeProjection = priceMovements.find {
-                    it.id.timeRange.greaterThen(currentTime().minus(it.id.whenCreated))
-                }?.id
-                if (activeProjection == null) {
-                    activeProjection = SharePriceMovementId
-                        .newBuilder()
-                        .buildWith(share.id)
-                }
-                activeProjections = activeProjections.plus(activeProjection)
+            val shareField = SharePriceMovement.Field.share()
+            val sharePriceMovements = reader.read(context, eq(shareField, share.id))
+            if (sharePriceMovements.isNotEmpty()) {
+                val activePriceMovementId = findActiveOrCreate(sharePriceMovements)
+                activePriceMovementsIds = activePriceMovementsIds.plus(activePriceMovementId)
             } else {
-                val id = SharePriceMovementId
-                    .newBuilder()
-                    .buildWith(share.id)
-                activeProjections = activeProjections.plus(id)
+                val id = createNewSharePriceMovementId(share.id)
+                activePriceMovementsIds = activePriceMovementsIds.plus(id)
             }
         }
-        return ImmutableSet.copyOf(activeProjections)
+        return ImmutableSet.copyOf(activePriceMovementsIds)
+    }
+
+    private fun findActiveOrCreate(
+        sharePriceMovements: List<SharePriceMovement>
+    ): SharePriceMovementId {
+        var activeProjectionId = sharePriceMovements.find { priceMovement ->
+            val timeFromCreation = currentTime().minus(priceMovement.id.whenCreated)
+            priceMovement.id.timeRange.greaterThen(timeFromCreation)
+        }?.id
+        if (activeProjectionId == null) {
+            activeProjectionId = createNewSharePriceMovementId(sharePriceMovements[0].share)
+        }
+        return activeProjectionId
+    }
+
+    private fun createNewSharePriceMovementId(share: ShareId): SharePriceMovementId {
+        return SharePriceMovementId
+            .newBuilder()
+            .buildWith(share)
     }
 
     private fun SharePriceMovementId.Builder.buildWith(share: ShareId): SharePriceMovementId {
+        val duration = Duration
+            .newBuilder()
+            .setSeconds(60)
+            .build()
         return this
             .setShare(share)
-            .setTimeRange(
-                Duration.newBuilder()
-                    .setSeconds(60)
-                    .build()
-            )
+            .setTimeRange(duration)
             .setWhenCreated(currentTime())
             .vBuild();
     }
@@ -107,9 +117,7 @@ public class SharePriceMovementRepository :
             duration.seconds -= 1;
             duration.nanos += 1000000000;
         }
-        val build = duration.build()
-        println("Duration $build")
-        return build
+        return duration.build()
     }
 
     private fun Duration.greaterThen(duration: Duration): Boolean {

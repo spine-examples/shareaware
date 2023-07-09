@@ -42,9 +42,11 @@ import "spine/money/money.proto";
 message SharePriceMovement {
     option (entity) = {kind: PROJECTION};
 
-    SharePriceMovementId id = 1 [(column) = true];
+    SharePriceMovementId id = 1;
 
-    repeated MovementPoint movement_point = 2 ;
+    ShareId share = 2 [(required) = true, (column) = true];
+
+    repeated MovementPoint movement_point = 3 ;
 }
 
 message MovementPoint {

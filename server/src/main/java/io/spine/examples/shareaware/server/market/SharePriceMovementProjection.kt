@@ -40,12 +40,14 @@ public class SharePriceMovementProjection :
 
     @Subscribe
     public fun on(@External e: MarketSharesUpdated) {
-        val share = e.shareList.find { share: Share? -> share?.id == builder().id.share }
+        val share = e.shareList.find { share: Share -> share.id == builder().id.share }
         val point: MovementPoint = MovementPoint
             .newBuilder()
             .setPrice(share!!.price)
             .setTime(e.whenUpdated)
             .vBuild()
-        builder().addMovementPoint(point)
+        builder()
+            .setShare(builder().id.share)
+            .addMovementPoint(point)
     }
 }
