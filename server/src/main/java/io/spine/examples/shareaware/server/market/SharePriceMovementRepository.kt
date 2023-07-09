@@ -28,7 +28,6 @@ package io.spine.examples.shareaware.server.market
 
 import com.google.common.collect.ImmutableSet
 import com.google.protobuf.Duration
-import com.google.protobuf.Timestamp
 import io.spine.base.Time.currentTime
 import io.spine.client.Filters.eq
 import io.spine.core.ActorContext
@@ -59,8 +58,8 @@ public class SharePriceMovementRepository :
             SharePriceMovement::class.java
         )
         var activePriceMovementsIds = setOf<SharePriceMovementId>()
+        val shareField = SharePriceMovement.Field.share()
         event.shareList.forEach { share: Share ->
-            val shareField = SharePriceMovement.Field.share()
             val sharePriceMovements = reader.read(context, eq(shareField, share.id))
             if (sharePriceMovements.isNotEmpty()) {
                 val activePriceMovementId = findActiveOrCreate(sharePriceMovements)
@@ -101,32 +100,6 @@ public class SharePriceMovementRepository :
             .setShare(share)
             .setTimeRange(duration)
             .setWhenCreated(currentTime())
-            .vBuild();
-    }
-
-    private fun Timestamp.minus(timestamp: Timestamp): Duration {
-        val duration = Duration.newBuilder();
-
-        duration.seconds = this.seconds - timestamp.seconds;
-        duration.nanos = this.nanos - timestamp.nanos;
-
-        if (duration.seconds < 0 && duration.nanos > 0) {
-            duration.seconds += 1;
-            duration.nanos -= 1000000000;
-        } else if (duration.seconds > 0 && duration.nanos < 0) {
-            duration.seconds -= 1;
-            duration.nanos += 1000000000;
-        }
-        return duration.build()
-    }
-
-    private fun Duration.greaterThen(duration: Duration): Boolean {
-        if (this.seconds > duration.seconds) {
-            return true
-        }
-        if (this.seconds <= duration.seconds) {
-            return false
-        }
-        return this.nanos > duration.nanos
+            .vBuild()
     }
 }
