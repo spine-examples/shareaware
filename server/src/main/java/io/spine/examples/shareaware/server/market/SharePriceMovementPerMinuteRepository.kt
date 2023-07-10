@@ -27,6 +27,7 @@
 package io.spine.examples.shareaware.server.market
 
 import com.google.common.collect.ImmutableSet
+import com.google.common.collect.ImmutableSet.toImmutableSet
 import com.google.protobuf.Duration
 import io.spine.base.Time.currentTime
 import io.spine.client.Filters.eq
@@ -45,46 +46,40 @@ public class SharePriceMovementPerMinuteRepository :
             SharePriceMovementPerMinuteProjection,
             SharePriceMovementPerMinute>() {
 
+    private val sharePriceMovementActivityTime: Long = 60
+
     override fun setupEventRouting(routing: EventRouting<SharePriceMovementId>) {
         super.setupEventRouting(routing)
         routing.route(MarketSharesUpdated::class.java) { event, context ->
-            routeToSharePriceMovements(event, context.actorContext())
+            toSharePriceMovements(event, context.actorContext())
         }
     }
 
-    private fun routeToSharePriceMovements(
+    private fun toSharePriceMovements(
         event: MarketSharesUpdated, context: ActorContext
     ): ImmutableSet<SharePriceMovementId> {
         val reader = ProjectionReader<SharePriceMovementId, SharePriceMovementPerMinute>(
             context().stand(),
             SharePriceMovementPerMinute::class.java
         )
-        var activePriceMovementsIds = setOf<SharePriceMovementId>()
         val shareField = SharePriceMovementPerMinute.Field.share()
-        event.shareList.forEach { share: Share ->
+        return event.shareList.stream().map { share: Share ->
             val sharePriceMovements = reader.read(context, eq(shareField, share.id))
             if (sharePriceMovements.isNotEmpty()) {
-                val activePriceMovementId = findActiveOrCreate(sharePriceMovements)
-                activePriceMovementsIds = activePriceMovementsIds.plus(activePriceMovementId)
+                findActiveOrCreate(sharePriceMovements)
             } else {
-                val id = createNewSharePriceMovementId(share.id)
-                activePriceMovementsIds = activePriceMovementsIds.plus(id)
+                createNewSharePriceMovementId(share.id)
             }
-        }
-        return ImmutableSet.copyOf(activePriceMovementsIds)
+        }.collect(toImmutableSet())
     }
 
     private fun findActiveOrCreate(
         sharePriceMovements: List<SharePriceMovementPerMinute>
     ): SharePriceMovementId {
-        var activeProjectionId = sharePriceMovements.find { priceMovement ->
-            val timeFromCreation = currentTime().minus(priceMovement.id.whenCreated)
-            priceMovement.id.activityTime.greaterThen(timeFromCreation)
-        }?.id
-        if (activeProjectionId == null) {
-            activeProjectionId = createNewSharePriceMovementId(sharePriceMovements[0].share)
-        }
-        return activeProjectionId
+        val activeProjection = sharePriceMovements
+            .find { priceMovement -> priceMovement.isActive() }
+            ?: return createNewSharePriceMovementId(sharePriceMovements[0].share)
+        return activeProjection.id
     }
 
     private fun createNewSharePriceMovementId(share: ShareId): SharePriceMovementId {
@@ -93,10 +88,15 @@ public class SharePriceMovementPerMinuteRepository :
             .buildWith(share)
     }
 
+    private fun SharePriceMovementPerMinute.isActive(): Boolean {
+        val timeFromCreation = currentTime().minus(this.id.whenCreated)
+        return this.id.activityTime.greaterThen(timeFromCreation)
+    }
+
     private fun SharePriceMovementId.Builder.buildWith(share: ShareId): SharePriceMovementId {
         val duration = Duration
             .newBuilder()
-            .setSeconds(60)
+            .setSeconds(sharePriceMovementActivityTime)
             .build()
         return this
             .setShare(share)
