@@ -41,6 +41,9 @@ import io.spine.examples.shareaware.share.Share
 import io.spine.server.projection.ProjectionRepository
 import io.spine.server.route.EventRouting
 
+/**
+ * Manages instances of the [SharePriceMovementPerMinuteProjection].
+ */
 public class SharePriceMovementPerMinuteRepository :
     ProjectionRepository<SharePriceMovementId,
             SharePriceMovementPerMinuteProjection,
@@ -55,10 +58,13 @@ public class SharePriceMovementPerMinuteRepository :
         }
     }
 
+    /**
+     * Routes the `MarketSharesUpdated` event to the `SharePriceMovementPerMinute` projections.
+     */
     private fun toSharePriceMovements(
         event: MarketSharesUpdated, context: ActorContext
     ): ImmutableSet<SharePriceMovementId> {
-        val reader = ProjectionReader<SharePriceMovementId, SharePriceMovementPerMinute>(
+        val reader = ProjectionReader(
             context().stand(),
             SharePriceMovementPerMinute::class.java
         )
@@ -73,6 +79,12 @@ public class SharePriceMovementPerMinuteRepository :
         }.collect(toImmutableSet())
     }
 
+    /**
+     * Finds the ID of the `SharesPriceMovementPerMinute` projection which activity time
+     * has not yet expired, and it is still collecting data about share price movements.
+     *
+     * Whether the ID of the active projection is not found the new ID will be returned.
+     */
     private fun findActiveOrCreate(
         sharePriceMovements: List<SharePriceMovementPerMinute>
     ): SharePriceMovementId {
@@ -82,23 +94,25 @@ public class SharePriceMovementPerMinuteRepository :
         return activeProjection.id
     }
 
-    private fun createNewSharePriceMovementId(share: ShareId): SharePriceMovementId {
-        return SharePriceMovementId
-            .newBuilder()
-            .buildWith(share)
-    }
-
+    /**
+     * Determines whether is the `SharePriceMovementPerMinute` projection still
+     * collecting data about share price movements or not.
+     */
     private fun SharePriceMovementPerMinute.isActive(): Boolean {
         val timeFromCreation = currentTime().minus(this.id.whenCreated)
         return this.id.activityTime.greaterThen(timeFromCreation)
     }
 
-    private fun SharePriceMovementId.Builder.buildWith(share: ShareId): SharePriceMovementId {
+    /**
+     * Returns the new ID for the `SharePriceMovementPerMinute` taking the ID of the share.
+     */
+    private fun createNewSharePriceMovementId(share: ShareId): SharePriceMovementId {
         val duration = Duration
             .newBuilder()
             .setSeconds(sharePriceMovementActivityTime)
             .build()
-        return this
+        return SharePriceMovementId
+            .newBuilder()
             .setShare(share)
             .setActivityTime(duration)
             .setWhenCreated(currentTime())
