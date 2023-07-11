@@ -32,17 +32,19 @@ import io.spine.examples.shareaware.SharePriceMovementId
 import io.spine.examples.shareaware.market.MovementPoint
 import io.spine.examples.shareaware.market.SharePriceMovementPerMinute
 import io.spine.examples.shareaware.market.event.MarketSharesUpdated
-import io.spine.examples.shareaware.share.Share
 import io.spine.server.projection.Projection
 
+/**
+ * The view of the share price movements per minute.
+ */
 public class SharePriceMovementPerMinuteProjection :
     Projection<SharePriceMovementId,
-        SharePriceMovementPerMinute,
-        SharePriceMovementPerMinute.Builder>() {
+            SharePriceMovementPerMinute,
+            SharePriceMovementPerMinute.Builder>() {
 
     @Subscribe
     public fun on(@External e: MarketSharesUpdated) {
-        val share = e.shareList.find { share: Share -> share.id == builder().id.share }
+        val share = e.shareList.find { share -> share.id == builder().id.share }
         val point: MovementPoint = MovementPoint
             .newBuilder()
             .setPrice(share!!.price)
