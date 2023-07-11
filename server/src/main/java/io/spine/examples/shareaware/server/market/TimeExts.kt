@@ -30,6 +30,8 @@ import com.google.protobuf.Duration
 import com.google.protobuf.Timestamp
 import io.spine.protobuf.Durations2
 
+private const val NanosInSecond: Int = 1000000000
+
 /**
  * Calculate the duration of time elapsed between two `Timestamp`s.
  */
@@ -41,10 +43,10 @@ public fun Timestamp.minus(timestamp: Timestamp): Duration {
 
     if (duration.seconds < 0 && duration.nanos > 0) {
         duration.seconds += 1
-        duration.nanos -= 1000000000
+        duration.nanos -= NanosInSecond
     } else if (duration.seconds > 0 && duration.nanos < 0) {
         duration.seconds -= 1
-        duration.nanos += 1000000000
+        duration.nanos += NanosInSecond
     }
     return duration.build()
 }
