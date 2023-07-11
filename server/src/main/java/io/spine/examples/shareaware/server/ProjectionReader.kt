@@ -39,7 +39,12 @@ import io.spine.grpc.MemoizingObserver
 import io.spine.protobuf.AnyPacker
 import io.spine.server.stand.Stand
 
-public class ProjectionReader<I, S : EntityState?> (
+/**
+ * Reader for projections in the bounded context.
+ *
+ * @param S type of the `Projection` to read.
+ */
+public class ProjectionReader<S : EntityState?> (
     private val stand: Stand,
     private val stateClass: Class<S>
 ) {
@@ -55,17 +60,6 @@ public class ProjectionReader<I, S : EntityState?> (
         val query = queryFactory
             .select(stateClass)
             .where(*filters)
-            .build()
-        return executeAndUnpackResponse(query)
-    }
-
-    public fun readAll(ctx: ActorContext): ImmutableList<S> {
-        Preconditions.checkNotNull(ctx)
-        val queryFactory = ActorRequestFactory
-            .fromContext(ctx)
-            .query()
-        val query = queryFactory
-            .select(stateClass)
             .build()
         return executeAndUnpackResponse(query)
     }

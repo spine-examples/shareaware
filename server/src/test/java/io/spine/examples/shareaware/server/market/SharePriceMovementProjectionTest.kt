@@ -30,7 +30,6 @@ import com.google.common.truth.Truth.assertThat
 import com.google.common.truth.extensions.proto.ProtoTruth
 import com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly
 import io.spine.client.Filters.eq
-import io.spine.examples.shareaware.SharePriceMovementId
 import io.spine.examples.shareaware.given.GivenMoney.usd
 import io.spine.examples.shareaware.market.SharePriceMovementPerMinute
 import io.spine.examples.shareaware.server.ProjectionReader
@@ -58,8 +57,7 @@ class SharePriceMovementProjectionTest {
 
     private lateinit var marketData: ThirdPartyContext
 
-    private lateinit var reader: ProjectionReader<SharePriceMovementId,
-            SharePriceMovementPerMinute>
+    private lateinit var reader: ProjectionReader<SharePriceMovementPerMinute>
 
     @BeforeEach
     fun setUp() {
