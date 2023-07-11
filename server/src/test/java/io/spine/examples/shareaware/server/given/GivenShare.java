@@ -28,6 +28,7 @@ package io.spine.examples.shareaware.server.given;
 
 import io.spine.examples.shareaware.share.Share;
 import io.spine.examples.shareaware.ShareId;
+import io.spine.money.Money;
 
 import static io.spine.examples.shareaware.given.GivenMoney.*;
 
@@ -46,20 +47,28 @@ public final class GivenShare {
     }
 
     public static Share tesla() {
+        return tesla(usd(20));
+    }
+
+    public static Share tesla(Money price) {
         return Share
                 .newBuilder()
                 .setId(teslaId)
-                .setPrice(usd(20))
+                .setPrice(price)
                 .setCompanyName("Tesla")
                 .setCompanyLogo("testURL")
                 .vBuild();
     }
 
     public static Share apple() {
+        return apple(usd(20));
+    }
+
+    public static Share apple(Money price) {
         return Share
                 .newBuilder()
                 .setId(appleId)
-                .setPrice(usd(20))
+                .setPrice(price)
                 .setCompanyName("Apple")
                 .setCompanyLogo("testURL")
                 .vBuild();
