@@ -100,7 +100,7 @@ public class SharePriceMovementPerMinuteRepository :
      */
     private fun SharePriceMovementPerMinute.isActive(): Boolean {
         val timeFromCreation = currentTime().minus(this.id.whenCreated)
-        return this.id.activityTime.greaterThen(timeFromCreation)
+        return this.id.activityTime.greaterThan(timeFromCreation)
     }
 
     /**

@@ -28,7 +28,11 @@ package io.spine.examples.shareaware.server.market
 
 import com.google.protobuf.Duration
 import com.google.protobuf.Timestamp
+import io.spine.protobuf.Durations2
 
+/**
+ * Calculate the duration of time elapsed between two `Timestamp`s.
+ */
 public fun Timestamp.minus(timestamp: Timestamp): Duration {
     val duration = Duration.newBuilder()
 
@@ -45,12 +49,9 @@ public fun Timestamp.minus(timestamp: Timestamp): Duration {
     return duration.build()
 }
 
-public fun Duration.greaterThen(duration: Duration): Boolean {
-    if (this.seconds > duration.seconds) {
-        return true
-    }
-    if (this.seconds <= duration.seconds) {
-        return false
-    }
-    return this.nanos > duration.nanos
+/**
+ * Determines whether this `Duration` object is greater than the taken one.
+ */
+public fun Duration.greaterThan(duration: Duration): Boolean {
+    return Durations2.isGreaterThan(this, duration)
 }
