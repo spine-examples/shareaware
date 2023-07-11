@@ -50,11 +50,11 @@ message SharePriceMovementPerMinute {
     ShareId share = 2 [(required) = true, (column) = true];
 
     // The list of the price-to-time points.
-    repeated MovementPoint movement_point = 3 ;
+    repeated PriceAtTime priceAtTime = 3 ;
 }
 
 // The share price at a particular time.
-message MovementPoint {
+message PriceAtTime {
 
     // The share price.
     spine.money.Money price = 1 [(required) = true];

@@ -34,7 +34,7 @@ import io.spine.core.ActorContext
 import io.spine.core.TenantId
 import io.spine.examples.shareaware.ShareId
 import io.spine.examples.shareaware.SharePriceMovementId
-import io.spine.examples.shareaware.market.MovementPoint
+import io.spine.examples.shareaware.market.PriceAtTime
 import io.spine.examples.shareaware.market.SharePriceMovementPerMinute
 import io.spine.money.Money
 import io.spine.testing.core.given.GivenUserId.newUuid
@@ -50,10 +50,10 @@ fun sharePriceMovementPerMinute(
     secondPrice: Money,
     whenSecondPrice: Timestamp
 ): SharePriceMovementPerMinute {
-    val firstPoint = MovementPoint
+    val firstPriceAtTime = PriceAtTime
         .newBuilder()
         .buildWith(firstPrice, whenFirstPrice)
-    val secondPoint = MovementPoint
+    val secondPriceAtTime = PriceAtTime
         .newBuilder()
         .buildWith(secondPrice, whenSecondPrice)
     val activityTime = Duration
@@ -66,8 +66,8 @@ fun sharePriceMovementPerMinute(
     return SharePriceMovementPerMinute
         .newBuilder()
         .setId(sharePriceMovementId)
-        .addMovementPoint(firstPoint)
-        .addMovementPoint(secondPoint)
+        .addPriceAtTime(firstPriceAtTime)
+        .addPriceAtTime(secondPriceAtTime)
         .setShare(share)
         .buildPartial()
 }
@@ -85,10 +85,10 @@ fun actorContext(): ActorContext {
         .vBuild()
 }
 
-private fun MovementPoint.Builder.buildWith(
+private fun PriceAtTime.Builder.buildWith(
     price: Money,
     time: Timestamp
-): MovementPoint {
+): PriceAtTime {
     return this
         .setPrice(price)
         .setTime(time)

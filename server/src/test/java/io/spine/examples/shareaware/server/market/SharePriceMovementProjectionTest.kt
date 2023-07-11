@@ -92,12 +92,12 @@ class SharePriceMovementProjectionTest {
         assertThat(projectionsAfterSecondEmit.size).isEqualTo(2)
 
         assertThat(projectionsAfterSecondEmit[0]).isNotEqualTo(projectionsAfterSecondEmit[1])
-        assertThat(projectionsAfterSecondEmit[0].movementPointCount).isEqualTo(1)
-        assertThat(projectionsAfterSecondEmit[1].movementPointCount).isEqualTo(1)
+        assertThat(projectionsAfterSecondEmit[0].priceAtTimeCount).isEqualTo(1)
+        assertThat(projectionsAfterSecondEmit[1].priceAtTimeCount).isEqualTo(1)
     }
 
     @Test
-    @DisplayName("construct the `MovementPoint`s from the `MarketSharesUpdate` event")
+    @DisplayName("construct the `PriceAtTime` from the `MarketSharesUpdate` event")
     fun state() {
         val shareId = tesla().id
         val shareWithLowerPrice = tesla(usd(10))
