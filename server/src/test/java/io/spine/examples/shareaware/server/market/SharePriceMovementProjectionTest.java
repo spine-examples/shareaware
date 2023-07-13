@@ -96,10 +96,10 @@ final class SharePriceMovementProjectionTest {
         assertThat(projectionsAfterSecondEmit.get(0))
                 .isNotEqualTo(projectionsAfterSecondEmit.get(1));
         assertThat(projectionsAfterSecondEmit.get(0)
-                                             .getPriceAtTimeCount())
+                                             .getPointCount())
                 .isEqualTo(1);
         assertThat(projectionsAfterSecondEmit.get(1)
-                                             .getPriceAtTimeCount())
+                                             .getPointCount())
                 .isEqualTo(1);
     }
 

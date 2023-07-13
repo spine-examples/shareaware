@@ -50,7 +50,7 @@ message SharePriceMovementPerMinute {
     ShareId share = 2 [(required) = true, (column) = true];
 
     // The list of the price-to-time points.
-    repeated PriceAtTime priceAtTime = 3 ;
+    repeated PriceAtTime point = 3;
 }
 
 // The share price at a particular time.

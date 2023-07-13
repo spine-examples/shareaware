@@ -76,8 +76,8 @@ public final class SharesPriceMovementTestEnv {
         return SharePriceMovementPerMinute
                 .newBuilder()
                 .setId(sharePriceMovementId)
-                .addPriceAtTime(firstPriceAtTime)
-                .addPriceAtTime(secondPriceAtTime)
+                .addPoint(firstPriceAtTime)
+                .addPoint(secondPriceAtTime)
                 .setShare(shareId)
                 .buildPartial();
     }
