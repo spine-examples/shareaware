@@ -59,7 +59,7 @@ final class SharePriceMovementPerMinuteProjection extends
         PriceAtTime priceAtTime = PriceAtTime
                 .newBuilder()
                 .setPrice(price)
-                .setTime(e.getWhenUpdated())
+                .setWhen(e.getWhenUpdated())
                 .vBuild();
         builder().setShare(shareId)
                  .addPoint(priceAtTime);

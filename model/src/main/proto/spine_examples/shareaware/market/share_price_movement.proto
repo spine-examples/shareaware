@@ -59,6 +59,6 @@ message PriceAtTime {
     // The share price.
     spine.money.Money price = 1 [(required) = true];
 
-    // The time when the share price was set.
-    google.protobuf.Timestamp time = 2 [(required) = true];
+    // Point in time when the share price was set.
+    google.protobuf.Timestamp when = 2 [(required) = true];
 }
