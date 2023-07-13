@@ -42,6 +42,7 @@ import "spine/money/money.proto";
 // Displays the share price movement per minute on a timeline.
 message SharePriceMovementPerMinute {
     option (entity) = {kind: PROJECTION};
+    option (is).java_type = "io.spine.examples.shareaware.market.SharePriceMovement";
 
     // The ID of the share price movement.
     SharePriceMovementId id = 1;
