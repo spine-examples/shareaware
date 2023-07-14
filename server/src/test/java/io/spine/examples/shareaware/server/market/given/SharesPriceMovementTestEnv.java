@@ -99,7 +99,7 @@ public final class SharesPriceMovementTestEnv {
         return PriceAtTime
                 .newBuilder()
                 .setPrice(price)
-                .setTime(time)
+                .setWhen(time)
                 .vBuild();
     }
 
