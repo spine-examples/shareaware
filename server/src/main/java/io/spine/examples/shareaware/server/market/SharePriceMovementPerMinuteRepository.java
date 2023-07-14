@@ -69,7 +69,7 @@ public final class SharePriceMovementPerMinuteRepository extends
         return event.getShareList()
                 .stream()
                 .map(share -> {
-                    Timestamp whenCreated = roundDownToNearestMinute(currentTime());
+                    var whenCreated = roundDownToNearestMinute(currentTime());
                     return SharePriceMovementId
                             .newBuilder()
                             .setShare(share.getId())
@@ -84,7 +84,7 @@ public final class SharePriceMovementPerMinuteRepository extends
      * Rounds the provided {@code Timestamp} down to the nearest minute.
      */
     private static Timestamp roundDownToNearestMinute(Timestamp timestamp) {
-        long seconds = timestamp.getSeconds() - timestamp.getSeconds() % SECONDS_IN_MINUTE;
+        var seconds = timestamp.getSeconds() - timestamp.getSeconds() % SECONDS_IN_MINUTE;
         return Timestamp
                 .newBuilder()
                 .setSeconds(seconds)

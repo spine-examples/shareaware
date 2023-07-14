@@ -63,8 +63,8 @@ final class SharePriceMovementProjectionTest {
 
     @BeforeEach
     void setUp() {
-        SharePriceMovementPerMinuteRepository repository = new SharePriceMovementPerMinuteRepository();
-        BoundedContext context = BoundedContextBuilder
+        var repository = new SharePriceMovementPerMinuteRepository();
+        var context = BoundedContextBuilder
                 .assumingTests()
                 .add(repository)
                 .build();
@@ -75,11 +75,11 @@ final class SharePriceMovementProjectionTest {
     @Test
     @DisplayName("accept the events only for the activity time")
     void createProjections() {
-        ShareId shareId = tesla().getId();
+        var shareId = tesla().getId();
 
         marketData.emittedEvent(marketSharesUpdated(), newUuid());
         sleepUninterruptibly(ofSeconds(60));
-        List<SharePriceMovementPerMinute> projectionsAfterFirstEmit = reader.read(
+        var projectionsAfterFirstEmit = reader.read(
                 actorContext(),
                 eq(ShareFieldInProjection, shareId)
         );
@@ -87,7 +87,7 @@ final class SharePriceMovementProjectionTest {
 
         marketData.emittedEvent(marketSharesUpdated(), newUuid());
         sleepUninterruptibly(ofSeconds(ProjectionActivityTime));
-        List<SharePriceMovementPerMinute> projectionsAfterSecondEmit = reader.read(
+        var projectionsAfterSecondEmit = reader.read(
                 actorContext(),
                 eq(ShareFieldInProjection, shareId)
         );
@@ -106,19 +106,19 @@ final class SharePriceMovementProjectionTest {
     @Test
     @DisplayName("construct the `PriceAtTime` from the `MarketSharesUpdate` event")
     void state() {
-        ShareId shareId = tesla().getId();
-        Share shareWithLowerPrice = tesla(usd(10));
-        Share shareWithHigherPrice = tesla(usd(20));
-        MarketSharesUpdated eventWithLowerPrice = marketSharesUpdated(shareWithLowerPrice);
-        MarketSharesUpdated eventWithHigherPrice = marketSharesUpdated(shareWithHigherPrice);
+        var shareId = tesla().getId();
+        var shareWithLowerPrice = tesla(usd(10));
+        var shareWithHigherPrice = tesla(usd(20));
+        var eventWithLowerPrice = marketSharesUpdated(shareWithLowerPrice);
+        var eventWithHigherPrice = marketSharesUpdated(shareWithHigherPrice);
 
         marketData.emittedEvent(eventWithLowerPrice, newUuid());
         marketData.emittedEvent(eventWithHigherPrice, newUuid());
         sleepUninterruptibly(ofSeconds(ProjectionActivityTime));
-        SharePriceMovementPerMinute projection = reader
+        var projection = reader
                 .read(actorContext(), eq(ShareFieldInProjection, shareId))
                 .get(0);
-        SharePriceMovementPerMinute expectedProjection =
+        var expectedProjection =
                 sharePriceMovementPerMinute(shareId, eventWithLowerPrice, eventWithHigherPrice);
 
         ProtoTruth.assertThat(projection)

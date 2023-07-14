@@ -145,7 +145,7 @@ public final class MarketTestEnv {
     }
 
     public static MarketSharesUpdated marketSharesUpdated(Share... shares) {
-        MarketSharesUpdated.Builder builder = MarketSharesUpdated
+        var builder = MarketSharesUpdated
                 .newBuilder()
                 .setMarket(MarketProcess.ID)
                 .setWhenUpdated(Time.currentTime());

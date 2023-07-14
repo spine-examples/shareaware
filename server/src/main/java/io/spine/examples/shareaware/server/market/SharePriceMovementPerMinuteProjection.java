@@ -52,11 +52,11 @@ final class SharePriceMovementPerMinuteProjection extends
 
     @Subscribe
     void on(@External MarketSharesUpdated e) {
-        ShareId shareId = builder()
+        var shareId = builder()
                 .getId()
                 .getShare();
-        Money price = retrieveSharePrice(e.getShareList(), shareId);
-        PriceAtTime priceAtTime = PriceAtTime
+        var price = retrieveSharePrice(e.getShareList(), shareId);
+        var priceAtTime = PriceAtTime
                 .newBuilder()
                 .setPrice(price)
                 .setWhen(e.getWhenUpdated())
@@ -69,7 +69,7 @@ final class SharePriceMovementPerMinuteProjection extends
      * Retrieves the share with provided ID from the provided {@code Collection}.
      */
     private static Money retrieveSharePrice(Collection<Share> shares, ShareId id) {
-        Optional<Share> optionalShare = shares
+        var optionalShare = shares
                 .stream()
                 .filter(share -> share.getId().equals(id))
                 .findAny();
