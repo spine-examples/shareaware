@@ -114,7 +114,7 @@ public final class E2EUser {
      */
     public List<Share> looksAtAvailableShares() {
         var shares = availableMarketShares
-                .state()
+                .waitForNewState()
                 .getShareList();
         return shares;
     }
@@ -123,7 +123,7 @@ public final class E2EUser {
      * Describes the user's action to look at the investment.
      */
     public InvestmentView looksAtInvestment() {
-        return investment.state();
+        return investment.waitForNewState();
     }
 
     /**
@@ -132,8 +132,9 @@ public final class E2EUser {
     public WalletBalance replenishesWalletFor(Money amount) {
         var replenishWallet = replenishWallet(walletId, amount);
 
+        wallet.clearState();
         post(replenishWallet);
-        var balanceAfterReplenishment = wallet.state();
+        var balanceAfterReplenishment = wallet.waitForNewState();
         var expectedBalance = walletBalanceWith(usd(500), walletId);
         assertThat(balanceAfterReplenishment).isEqualTo(expectedBalance);
         return balanceAfterReplenishment;
@@ -157,8 +158,9 @@ public final class E2EUser {
             var insufficientFunds = retrieveValueFrom(subscriptionOutcome);
             return EitherOf2.withB(insufficientFunds);
         }
+        wallet.clearState();
         post(purchaseShares);
-        return EitherOf2.withA(wallet.state());
+        return EitherOf2.withA(wallet.waitForNewState());
     }
 
     /**
@@ -176,8 +178,9 @@ public final class E2EUser {
      */
     private WalletBalance withdrawsMoney(Money amount) {
         var withdrawMoney = withdrawMoneyFrom(walletId, amount);
+        wallet.clearState();
         post(withdrawMoney);
-        return wallet.state();
+        return wallet.waitForNewState();
     }
 
     /**
@@ -198,9 +201,10 @@ public final class E2EUser {
      */
     private <S extends KnownMessage> S retrieveValueFrom(SubscriptionOutcome<S> changedState) {
         try {
+            S value = changedState.future()
+                                  .get(10, SECONDS);
             cancel(changedState.subscription());
-            return changedState.future()
-                               .get(10, SECONDS);
+            return value;
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw illegalStateWithCauseOf(e);
         }
@@ -216,8 +220,9 @@ public final class E2EUser {
 
     private void createWalletForUser() {
         var createWallet = createWallet(walletId);
+        wallet.clearState();
         post(createWallet);
-        var initialBalance = wallet.state();
+        var initialBalance = wallet.waitForNewState();
         assertThat(initialBalance).isEqualTo(zeroWalletBalance(walletId));
     }
 }
