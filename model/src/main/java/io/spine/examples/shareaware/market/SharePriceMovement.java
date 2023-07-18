@@ -42,7 +42,7 @@ import io.spine.examples.shareaware.SharePriceMovementId;
 public interface SharePriceMovement extends EntityState {
 
     /**
-     * Returns the ID of the `SharePriceMovement` projection.
+     * Returns the ID of the {@code SharePriceMovement} projection.
      */
     SharePriceMovementId getId();
 
@@ -64,10 +64,6 @@ public interface SharePriceMovement extends EntityState {
 
     /**
      * Returns the ID of the share which price movements the projection displays.
-     *
-     * @implNote do not use this field as a `column` to query the projection.
-     * This field is laying inside the compound ID,
-     * so it is not possible to query projections using this field. Use the full ID instead.
      */
     default ShareId shareFromId() {
         return getId().getShare();
