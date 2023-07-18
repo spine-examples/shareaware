@@ -61,6 +61,13 @@ public class EntitySubscription<S extends EntityState> {
 
     /**
      * Waits for an update of the entity state to arrive and return this state.
+     *
+     * <p>This method will wait for a maximum of 10 seconds for an update of the entity state to arrive.
+     * If the update does not arrive within the specified time, a {@code TimeoutException} will be thrown.
+     *
+     * <p>If the update of the entity arrives before this method is called,
+     * an exception will be thrown as described above. In such cases, you should use the {@link #state()}
+     * method to retrieve the entity state instead.
      */
     S onceUpdated() {
         return entity.onceUpdated();
