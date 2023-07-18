@@ -42,10 +42,10 @@ import static io.spine.base.Time.currentTime;
 /**
  * Manages instances of the {@link SharePriceMovementPerMinuteProjection}.
  */
-public final class SharePriceMovementPerMinuteRepository extends
-                                             ProjectionRepository<SharePriceMovementId,
-                                                     SharePriceMovementPerMinuteProjection,
-                                                     SharePriceMovementPerMinute> {
+public final class SharePriceMovementPerMinuteRepository
+        extends ProjectionRepository<SharePriceMovementId,
+                                     SharePriceMovementPerMinuteProjection,
+                                     SharePriceMovementPerMinute> {
 
     private static final int SECONDS_IN_MINUTE = 60;
 
@@ -54,8 +54,8 @@ public final class SharePriceMovementPerMinuteRepository extends
             .setSeconds(SECONDS_IN_MINUTE)
             .build();
 
-    @OverridingMethodsMustInvokeSuper
     @Override
+    @OverridingMethodsMustInvokeSuper
     protected void setupEventRouting(EventRouting<SharePriceMovementId> routing) {
         super.setupEventRouting(routing);
         routing.route(MarketSharesUpdated.class, (event, context) -> toSharePriceMovements(event));
