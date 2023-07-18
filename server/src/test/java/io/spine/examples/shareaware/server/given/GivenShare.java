@@ -51,13 +51,7 @@ public final class GivenShare {
     }
 
     public static Share tesla(Money price) {
-        return Share
-                .newBuilder()
-                .setId(teslaId)
-                .setPrice(price)
-                .setCompanyName("Tesla")
-                .setCompanyLogo("testURL")
-                .vBuild();
+        return share(teslaId, price, "Tesla");
     }
 
     public static Share apple() {
@@ -65,11 +59,15 @@ public final class GivenShare {
     }
 
     public static Share apple(Money price) {
+        return share(appleId, price, "Apple");
+    }
+
+    private static Share share(ShareId id, Money price, String companyName) {
         return Share
                 .newBuilder()
-                .setId(appleId)
+                .setId(id)
                 .setPrice(price)
-                .setCompanyName("Apple")
+                .setCompanyName(companyName)
                 .setCompanyLogo("testURL")
                 .vBuild();
     }
