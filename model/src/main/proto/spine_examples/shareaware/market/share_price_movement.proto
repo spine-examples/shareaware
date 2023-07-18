@@ -47,7 +47,7 @@ message SharePriceMovementPerMinute {
     // The ID of the share price movement.
     SharePriceMovementId id = 1;
 
-    // The share ID price movement of which to display.
+    // The ID of the share, which price movement to display.
     ShareId share = 2 [(required) = true, (column) = true];
 
     // The list of the price-to-time points.

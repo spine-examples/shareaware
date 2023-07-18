@@ -125,10 +125,10 @@ message ReplenishmentOperationId {
 // Identifies the share price movement view.
 message SharePriceMovementId {
 
-    // The ID of the share which price movement to identify.
+    // The ID of share, for which the movements are collected.
     ShareId share = 1;
 
-    // The time duration while the view will collect information about share price movements.
+    // The duration during which the share price movements are collected.
     google.protobuf.Duration activity_time = 2 [(required) = true];
 
     // The time when the share price movement view was created.
