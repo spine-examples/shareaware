@@ -26,15 +26,19 @@
 
 package io.spine.examples.shareaware.server.e2e.given;
 
+import io.spine.base.CommandMessage;
 import io.spine.base.EntityState;
 import io.spine.client.Client;
+import io.spine.core.Command;
 import io.spine.core.UserId;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import static io.spine.util.Exceptions.illegalArgumentWithCauseOf;
 import static io.spine.util.Exceptions.illegalStateWithCauseOf;
+import static io.spine.util.Exceptions.newIllegalArgumentException;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
@@ -44,7 +48,13 @@ public class EntitySubscription<S extends EntityState> {
 
     private final ObservedEntity<S> entity = new ObservedEntity<>();
 
+    private final Client client;
+
+    private final UserId user;
+
     EntitySubscription(Class<S> entityType, Client client, UserId user) {
+        this.client = client;
+        this.user = user;
         client.onBehalfOf(user)
               .subscribeTo(entityType)
               .observe(entity::setState)
@@ -60,24 +70,18 @@ public class EntitySubscription<S extends EntityState> {
     }
 
     /**
-     * Waits for an update of the entity state to arrive and return this state.
+     * Posts the command on behalf of the user and waits for an update of the entity state that
+     * should happen as a consequence of the posted command.
      *
-     * <p>This method will wait for a maximum of 10 seconds for an update of the entity state to arrive.
-     * If the update does not arrive within the specified time, a {@code TimeoutException} will be thrown.
-     *
-     * <p>If the update of the entity arrives before this method is called,
-     * an exception will be thrown as described above. In such cases, you should use the {@link #state()}
-     * method to retrieve the entity state instead.
+     * <p>If an update of the entity state is not received within 10 seconds,
+     * a {@code TimeoutException} is thrown.
      */
-    S onceUpdated() {
-        return entity.onceUpdated();
-    }
-
-    /**
-     * Clears the state of the entity.
-     */
-    void clearState() {
+    S onceUpdatedAfter(CommandMessage command) {
         entity.clearState();
+        client.onBehalfOf(user)
+                .command(command)
+                .postAndForget();
+        return entity.onceUpdated();
     }
 
     private static final class ObservedEntity<S extends EntityState> {
