@@ -38,17 +38,17 @@ import io.spine.money.Money;
 import io.spine.server.projection.Projection;
 
 import java.util.Collection;
-import java.util.Optional;
 
 import static io.spine.util.Exceptions.newIllegalArgumentException;
+import static java.lang.String.format;
 
 /**
  * The view of the share price movements per minute.
  */
-final class SharePriceMovementPerMinuteProjection extends
-                                          Projection<SharePriceMovementId,
-                                                  SharePriceMovementPerMinute,
-                                                  SharePriceMovementPerMinute.Builder> {
+final class SharePriceMovementPerMinuteProjection
+        extends Projection<SharePriceMovementId,
+                           SharePriceMovementPerMinute,
+                           SharePriceMovementPerMinute.Builder> {
 
     @Subscribe
     void on(@External MarketSharesUpdated e) {
@@ -74,7 +74,9 @@ final class SharePriceMovementPerMinuteProjection extends
                 .filter(share -> share.getId().equals(id))
                 .findAny();
         if (optionalShare.isEmpty()) {
-            throw newIllegalArgumentException("There is no share with provided ID in the list.");
+            String errorMessage =
+                    format("There is no share with provided ID - %s in the list - %s.", id, shares);
+            throw newIllegalArgumentException(errorMessage);
         }
         return optionalShare.get()
                             .getPrice();
