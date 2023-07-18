@@ -35,7 +35,7 @@ import io.spine.examples.shareaware.ShareId;
 import io.spine.examples.shareaware.SharePriceMovementId;
 
 /**
- * Common interface for projections that displays the movements of the share price.
+ * Common interface for projections that display the movements of the share price.
  */
 @Immutable
 @GeneratedMixin

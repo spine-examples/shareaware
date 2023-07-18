@@ -59,9 +59,9 @@ public final class SharesPriceMovementTestEnv {
             MarketSharesUpdated firstEvent,
             MarketSharesUpdated secondEvent
     ) {
-        Money firstPrice = firstEvent.retrieveShare(shareId)
+        Money firstPrice = firstEvent.find(shareId)
                                      .getPrice();
-        Money secondPrice = secondEvent.retrieveShare(shareId)
+        Money secondPrice = secondEvent.find(shareId)
                                        .getPrice();
         PriceAtTime firstPriceAtTime = priceAtTime(firstPrice, firstEvent.getWhenUpdated());
         PriceAtTime secondPriceAtTime = priceAtTime(secondPrice, secondEvent.getWhenUpdated());

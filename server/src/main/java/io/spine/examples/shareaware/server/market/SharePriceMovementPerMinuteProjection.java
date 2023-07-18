@@ -47,7 +47,7 @@ final class SharePriceMovementPerMinuteProjection
         var shareId = builder()
                 .getId()
                 .getShare();
-        var price = e.retrieveShare(shareId)
+        var price = e.find(shareId)
                      .getPrice();
         var priceAtTime = PriceAtTime
                 .newBuilder()

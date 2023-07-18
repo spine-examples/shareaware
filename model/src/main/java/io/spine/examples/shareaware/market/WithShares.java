@@ -49,11 +49,11 @@ public interface WithShares extends EventMessage {
     List<Share> getShareList();
 
     /**
-     * Retrieves the share with provided ID from the shares list.
+     * Finds the share with provided ID from the shares list.
      *
      * @throws IllegalArgumentException when the share with provided ID is not found in the list
      */
-    default Share retrieveShare(ShareId id) {
+    default Share find(ShareId id) {
         List<Share> shares = getShareList();
         var optionalShare = shares
                 .stream()
@@ -61,7 +61,7 @@ public interface WithShares extends EventMessage {
                 .findAny();
         if (optionalShare.isEmpty()) {
             throw newIllegalArgumentException(
-                    "There is no share with provided ID - %s in the list - %s.",
+                    "Cannot find the share with the provided ID `%s` in the list of shares `%s`.",
                     id, shares);
         }
         return optionalShare.get();
