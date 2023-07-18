@@ -45,7 +45,7 @@ import static io.spine.protobuf.AnyPacker.unpack;
  *
  * @param <S> type of the {@code Projection} to read
  */
-public class ProjectionReader<S extends EntityState> {
+public final class ProjectionReader<S extends EntityState> {
 
     private final Stand stand;
     private final Class<S> stateClass;
