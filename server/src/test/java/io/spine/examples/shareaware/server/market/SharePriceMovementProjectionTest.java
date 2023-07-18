@@ -26,22 +26,16 @@
 
 package io.spine.examples.shareaware.server.market;
 
-import com.google.common.truth.extensions.proto.ProtoTruth;
-import io.spine.examples.shareaware.ShareId;
 import io.spine.examples.shareaware.market.SharePriceMovementPerMinute;
-import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
 import io.spine.examples.shareaware.server.ProjectionReader;
-import io.spine.examples.shareaware.share.Share;
-import io.spine.server.BoundedContext;
 import io.spine.server.BoundedContextBuilder;
 import io.spine.server.integration.ThirdPartyContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.extensions.proto.ProtoTruth.assertThat;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static io.spine.client.Filters.eq;
 import static io.spine.examples.shareaware.given.GivenMoney.usd;
@@ -121,7 +115,7 @@ final class SharePriceMovementProjectionTest {
         var expectedProjection =
                 sharePriceMovementPerMinute(shareId, eventWithLowerPrice, eventWithHigherPrice);
 
-        ProtoTruth.assertThat(projection)
+        assertThat(projection)
                   .comparingExpectedFieldsOnly()
                   .isEqualTo(expectedProjection);
     }
