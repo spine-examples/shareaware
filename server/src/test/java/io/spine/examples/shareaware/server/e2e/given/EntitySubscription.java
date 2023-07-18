@@ -60,10 +60,10 @@ public class EntitySubscription<S extends EntityState> {
     }
 
     /**
-     * Waits for a new state of the entity to arrive and return it.
+     * Waits for an update of the entity state to arrive and return this state.
      */
-    S waitForNewState() {
-        return entity.waitForNewState();
+    S onceUpdated() {
+        return entity.onceUpdated();
     }
 
     /**
@@ -93,7 +93,7 @@ public class EntitySubscription<S extends EntityState> {
             }
         }
 
-        private S waitForNewState() {
+        private S onceUpdated() {
             try {
                 return future.whenComplete((value, error) -> {
                                  if (error != null) {

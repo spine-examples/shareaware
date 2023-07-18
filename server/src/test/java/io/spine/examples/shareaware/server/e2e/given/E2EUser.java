@@ -114,7 +114,7 @@ public final class E2EUser {
      */
     public List<Share> looksAtAvailableShares() {
         var shares = availableMarketShares
-                .waitForNewState()
+                .onceUpdated()
                 .getShareList();
         return shares;
     }
@@ -123,7 +123,7 @@ public final class E2EUser {
      * Describes the user's action to look at the investment.
      */
     public InvestmentView looksAtInvestment() {
-        return investment.waitForNewState();
+        return investment.onceUpdated();
     }
 
     /**
@@ -134,7 +134,7 @@ public final class E2EUser {
 
         wallet.clearState();
         post(replenishWallet);
-        var balanceAfterReplenishment = wallet.waitForNewState();
+        var balanceAfterReplenishment = wallet.onceUpdated();
         var expectedBalance = walletBalanceWith(usd(500), walletId);
         assertThat(balanceAfterReplenishment).isEqualTo(expectedBalance);
         return balanceAfterReplenishment;
@@ -160,7 +160,7 @@ public final class E2EUser {
         }
         wallet.clearState();
         post(purchaseShares);
-        return EitherOf2.withA(wallet.waitForNewState());
+        return EitherOf2.withA(wallet.onceUpdated());
     }
 
     /**
@@ -180,7 +180,7 @@ public final class E2EUser {
         var withdrawMoney = withdrawMoneyFrom(walletId, amount);
         wallet.clearState();
         post(withdrawMoney);
-        return wallet.waitForNewState();
+        return wallet.onceUpdated();
     }
 
     /**
@@ -222,7 +222,7 @@ public final class E2EUser {
         var createWallet = createWallet(walletId);
         wallet.clearState();
         post(createWallet);
-        var initialBalance = wallet.waitForNewState();
+        var initialBalance = wallet.onceUpdated();
         assertThat(initialBalance).isEqualTo(zeroWalletBalance(walletId));
     }
 }
