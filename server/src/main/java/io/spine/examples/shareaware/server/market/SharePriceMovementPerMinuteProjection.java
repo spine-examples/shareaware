@@ -28,19 +28,11 @@ package io.spine.examples.shareaware.server.market;
 
 import io.spine.core.External;
 import io.spine.core.Subscribe;
-import io.spine.examples.shareaware.ShareId;
 import io.spine.examples.shareaware.SharePriceMovementId;
 import io.spine.examples.shareaware.market.PriceAtTime;
 import io.spine.examples.shareaware.market.SharePriceMovementPerMinute;
 import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
-import io.spine.examples.shareaware.share.Share;
-import io.spine.money.Money;
 import io.spine.server.projection.Projection;
-
-import java.util.Collection;
-
-import static io.spine.util.Exceptions.newIllegalArgumentException;
-import static java.lang.String.format;
 
 /**
  * The view of the share price movements per minute.
@@ -55,7 +47,8 @@ final class SharePriceMovementPerMinuteProjection
         var shareId = builder()
                 .getId()
                 .getShare();
-        var price = retrieveSharePrice(e.getShareList(), shareId);
+        var price = e.retrieveShare(shareId)
+                     .getPrice();
         var priceAtTime = PriceAtTime
                 .newBuilder()
                 .setPrice(price)
@@ -63,22 +56,5 @@ final class SharePriceMovementPerMinuteProjection
                 .vBuild();
         builder().setShare(shareId)
                  .addPoint(priceAtTime);
-    }
-
-    /**
-     * Retrieves the share with provided ID from the provided {@code Collection}.
-     */
-    private static Money retrieveSharePrice(Collection<Share> shares, ShareId id) {
-        var optionalShare = shares
-                .stream()
-                .filter(share -> share.getId().equals(id))
-                .findAny();
-        if (optionalShare.isEmpty()) {
-            String errorMessage =
-                    format("There is no share with provided ID - %s in the list - %s.", id, shares);
-            throw newIllegalArgumentException(errorMessage);
-        }
-        return optionalShare.get()
-                            .getPrice();
     }
 }

@@ -41,7 +41,7 @@ import static io.spine.client.Filters.eq;
 import static io.spine.examples.shareaware.given.GivenMoney.usd;
 import static io.spine.examples.shareaware.server.given.GivenShare.tesla;
 import static io.spine.examples.shareaware.server.market.given.MarketTestEnv.marketSharesUpdated;
-import static io.spine.examples.shareaware.server.market.given.SharesPriceMovementTestEnv.ProjectionActivityTime;
+import static io.spine.examples.shareaware.server.market.given.SharesPriceMovementTestEnv.projectionActivityTime;
 import static io.spine.examples.shareaware.server.market.given.SharesPriceMovementTestEnv.ShareFieldInProjection;
 import static io.spine.examples.shareaware.server.market.given.SharesPriceMovementTestEnv.actorContext;
 import static io.spine.examples.shareaware.server.market.given.SharesPriceMovementTestEnv.sharePriceMovementPerMinute;
@@ -80,7 +80,7 @@ final class SharePriceMovementProjectionTest {
         assertThat(projectionsAfterFirstEmit.size()).isEqualTo(1);
 
         marketData.emittedEvent(marketSharesUpdated(), newUuid());
-        sleepUninterruptibly(ofSeconds(ProjectionActivityTime));
+        sleepUninterruptibly(ofSeconds(projectionActivityTime));
         var projectionsAfterSecondEmit = reader.read(
                 actorContext(),
                 eq(ShareFieldInProjection, shareId)
@@ -108,7 +108,7 @@ final class SharePriceMovementProjectionTest {
 
         marketData.emittedEvent(eventWithLowerPrice, newUuid());
         marketData.emittedEvent(eventWithHigherPrice, newUuid());
-        sleepUninterruptibly(ofSeconds(ProjectionActivityTime));
+        sleepUninterruptibly(ofSeconds(projectionActivityTime));
         var projection = reader
                 .read(actorContext(), eq(ShareFieldInProjection, shareId))
                 .get(0);

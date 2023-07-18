@@ -36,19 +36,14 @@ import io.spine.examples.shareaware.SharePriceMovementId;
 import io.spine.examples.shareaware.market.PriceAtTime;
 import io.spine.examples.shareaware.market.SharePriceMovementPerMinute;
 import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
-import io.spine.examples.shareaware.share.Share;
 import io.spine.money.Money;
-
-import java.util.List;
-import java.util.Optional;
 
 import static io.spine.base.Time.currentTime;
 import static io.spine.testing.core.given.GivenUserId.newUuid;
-import static io.spine.util.Exceptions.newIllegalArgumentException;
 
 public final class SharesPriceMovementTestEnv {
 
-    public static final long ProjectionActivityTime = 60;
+    public static final long projectionActivityTime = 60;
 
     public static final EntityColumn ShareFieldInProjection =
             SharePriceMovementPerMinute.Column.share();
@@ -64,13 +59,15 @@ public final class SharesPriceMovementTestEnv {
             MarketSharesUpdated firstEvent,
             MarketSharesUpdated secondEvent
     ) {
-        Money firstPrice = retrieveShare(firstEvent.getShareList(), shareId).getPrice();
-        Money secondPrice = retrieveShare(secondEvent.getShareList(), shareId).getPrice();
+        Money firstPrice = firstEvent.retrieveShare(shareId)
+                                     .getPrice();
+        Money secondPrice = secondEvent.retrieveShare(shareId)
+                                       .getPrice();
         PriceAtTime firstPriceAtTime = priceAtTime(firstPrice, firstEvent.getWhenUpdated());
         PriceAtTime secondPriceAtTime = priceAtTime(secondPrice, secondEvent.getWhenUpdated());
         Duration activityTime = Duration
                 .newBuilder()
-                .setSeconds(ProjectionActivityTime)
+                .setSeconds(projectionActivityTime)
                 .build();
         SharePriceMovementId sharePriceMovementId = sharePriceMovementId(shareId, activityTime);
         return SharePriceMovementPerMinute
@@ -112,16 +109,5 @@ public final class SharesPriceMovementTestEnv {
                 .setShare(share)
                 .setActivityTime(activityTime)
                 .buildPartial();
-    }
-
-    private static Share retrieveShare(List<Share> shares, ShareId id) {
-        Optional<Share> optionalShare = shares.stream()
-                .filter(share -> share.getId()
-                                      .equals(id))
-                .findAny();
-        if (optionalShare.isEmpty()) {
-            throw newIllegalArgumentException("There is no share with provided ID in the list.");
-        }
-        return optionalShare.get();
     }
 }

@@ -91,6 +91,7 @@ message MarketClosed {
 
 // Shares on market have been updated.
 message MarketSharesUpdated {
+    option (is).java_type = "io.spine.examples.shareaware.market.WithShares";
 
     // The ID of the shares market.
     MarketId market = 1;
