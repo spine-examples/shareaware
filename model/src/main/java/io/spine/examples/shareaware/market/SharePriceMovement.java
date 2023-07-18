@@ -65,7 +65,7 @@ public interface SharePriceMovement extends EntityState {
     /**
      * Returns the ID of the share which price movements the projection displays.
      */
-    default ShareId shareFromId() {
+    default ShareId share() {
         return getId().getShare();
     }
 }
