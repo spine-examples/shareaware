@@ -26,6 +26,7 @@
 
 package io.spine.examples.shareaware.server.e2e.given;
 
+import com.google.common.base.Preconditions;
 import io.grpc.ManagedChannel;
 import io.spine.base.CommandMessage;
 import io.spine.base.EventMessage;
@@ -113,17 +114,18 @@ public final class E2EUser {
      * Describes the user's action to look at available shares on the market.
      */
     public List<Share> looksAtAvailableShares() {
-        var shares = availableMarketShares
-                .state()
-                .getShareList();
-        return shares;
+        var marketShares = availableMarketShares.state();
+        Preconditions.checkNotNull(marketShares);
+        return marketShares.getShareList();
     }
 
     /**
      * Describes the user's action to look at the investment.
      */
     public InvestmentView looksAtInvestment() {
-        return investment.state();
+        var investmentView = investment.state();
+        Preconditions.checkNotNull(investmentView);
+        return investmentView;
     }
 
     /**

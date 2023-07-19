@@ -29,16 +29,13 @@ package io.spine.examples.shareaware.server.e2e.given;
 import io.spine.base.CommandMessage;
 import io.spine.base.EntityState;
 import io.spine.client.Client;
-import io.spine.core.Command;
 import io.spine.core.UserId;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
-import static io.spine.util.Exceptions.illegalArgumentWithCauseOf;
 import static io.spine.util.Exceptions.illegalStateWithCauseOf;
-import static io.spine.util.Exceptions.newIllegalArgumentException;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
@@ -62,8 +59,10 @@ public class EntitySubscription<S extends EntityState> {
     }
 
     /**
-     * Provides the current state of the subscribed entity.
+     * Provides the current state of the subscribed entity
+     * if it arrived by the time when this method is called, null otherwise.
      */
+    @Nullable
     public S state() {
         S state = entity.state();
         return state;
@@ -89,17 +88,23 @@ public class EntitySubscription<S extends EntityState> {
         private CompletableFuture<S> future = new CompletableFuture<>();
 
         private void setState(S value) {
-            if(future.isDone()) {
+            if (future.isDone()) {
                 future = new CompletableFuture<>();
             }
             future.complete(value);
         }
 
+        /**
+         * Returns the current state of the entity if it exists, null otherwise.
+         */
+        @Nullable
         private S state() {
             try {
-                S value = future.get(10, SECONDS);
-                return value;
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                if (future.isDone()) {
+                    return future.get();
+                }
+                return null;
+            } catch (InterruptedException | ExecutionException e) {
                 throw illegalStateWithCauseOf(e);
             }
         }

@@ -38,6 +38,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static io.grpc.ManagedChannelBuilder.forAddress;
 import static io.spine.server.Server.atPort;
 import static io.spine.util.Exceptions.illegalStateWithCauseOf;
@@ -53,6 +54,7 @@ public abstract class WithServer {
     private Server server;
     private final Collection<ManagedChannel> channels = new ArrayList<>();
     private static final MarketDataProvider provider = MarketDataProvider.instance();
+    private final Duration marketPeriod = Duration.ofSeconds(1);
 
     /**
      * Starts the server and runs the {@link MarketDataProvider}.
@@ -63,7 +65,9 @@ public abstract class WithServer {
                 .add(TradingContext.newBuilder())
                 .build();
         server.start();
-        provider.runWith(Duration.ofSeconds(1));
+        provider.runWith(marketPeriod);
+        // Wait for the `MarketDataProvider` to start work.
+        sleepUninterruptibly(marketPeriod);
     }
 
     /**
