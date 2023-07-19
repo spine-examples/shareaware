@@ -38,7 +38,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static io.grpc.ManagedChannelBuilder.forAddress;
 import static io.spine.server.Server.atPort;
 import static io.spine.util.Exceptions.illegalStateWithCauseOf;
@@ -66,8 +65,6 @@ public abstract class WithServer {
                 .build();
         server.start();
         provider.runWith(marketPeriod);
-        // Wait for the `MarketDataProvider` to start work.
-        sleepUninterruptibly(marketPeriod);
     }
 
     /**
@@ -89,6 +86,10 @@ public abstract class WithServer {
                 .build();
         channels.add(channel);
         return channel;
+    }
+
+    protected Duration marketPeriod() {
+        return marketPeriod;
     }
 
     private static void closeChannel(ManagedChannel channel) {
