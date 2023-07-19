@@ -88,6 +88,9 @@ public abstract class WithServer {
         return channel;
     }
 
+    /**
+     * Returns the period with which the market is updating shares.
+     */
     protected Duration marketPeriod() {
         return marketPeriod;
     }
