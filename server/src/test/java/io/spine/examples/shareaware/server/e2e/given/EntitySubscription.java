@@ -80,7 +80,7 @@ public class EntitySubscription<S extends EntityState> {
         client.onBehalfOf(user)
                 .command(command)
                 .postAndForget();
-        return entity.onceUpdated();
+        return entity.waitForUpdate();
     }
 
     private static final class ObservedEntity<S extends EntityState> {
@@ -109,7 +109,13 @@ public class EntitySubscription<S extends EntityState> {
             }
         }
 
-        private S onceUpdated() {
+        /**
+         * Waits for an update of the entity state to arrive and return this state.
+         *
+         * <p>An update of the entity state should be received within 10 seconds,
+         * otherwise a {@code TimeoutException} will be thrown.
+         */
+        private S waitForUpdate() {
             try {
                 return future.whenComplete((value, error) -> {
                                  if (error != null) {
@@ -123,6 +129,9 @@ public class EntitySubscription<S extends EntityState> {
             }
         }
 
+        /**
+         * Clears the state of the entity.
+         */
         private void clearState() {
             future = new CompletableFuture<>();
         }
