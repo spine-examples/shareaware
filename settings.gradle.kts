@@ -28,3 +28,4 @@ rootProject.name = "ShareAware"
 include("model")
 include("server")
 include("client")
+include("testutil-server")

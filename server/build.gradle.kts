@@ -46,6 +46,7 @@ spine {
 dependencies {
     implementation(project(":model"))
     testImplementation(project(":model", "test"))
+    testImplementation(project(":testutil-server"))
 }
 
 application {
