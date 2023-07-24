@@ -26,7 +26,6 @@
 
 package io.spine.examples.shareaware.server.e2e.given;
 
-import com.google.common.base.Preconditions;
 import io.grpc.ManagedChannel;
 import io.spine.base.CommandMessage;
 import io.spine.base.EventMessage;
@@ -61,6 +60,7 @@ import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.zeroWalletBalance;
 import static io.spine.examples.shareaware.server.given.GivenWallet.createWallet;
 import static io.spine.util.Exceptions.illegalStateWithCauseOf;
+import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
@@ -114,8 +114,7 @@ public final class E2EUser {
      * Describes the user's action to look at available shares on the market.
      */
     public List<Share> looksAtAvailableShares() {
-        var marketShares = availableMarketShares.state();
-        Preconditions.checkNotNull(marketShares);
+        var marketShares = requireNonNull(availableMarketShares.state());
         return marketShares.getShareList();
     }
 
@@ -123,8 +122,7 @@ public final class E2EUser {
      * Describes the user's action to look at the investment.
      */
     public InvestmentView looksAtInvestment() {
-        var investmentView = investment.state();
-        Preconditions.checkNotNull(investmentView);
+        var investmentView = requireNonNull(investment.state());
         return investmentView;
     }
 
