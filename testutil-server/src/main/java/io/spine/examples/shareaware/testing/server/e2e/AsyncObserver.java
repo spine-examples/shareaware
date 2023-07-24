@@ -129,7 +129,7 @@ public class AsyncObserver<S, C> {
      * and these states were introduced to restrict the order of the observing operations.
      */
     private enum ObservationState {
-        OBSERVED, // The state after observation.
-        UPDATED // The state after an update has been received.
+        OBSERVED,
+        UPDATED
     }
 }
