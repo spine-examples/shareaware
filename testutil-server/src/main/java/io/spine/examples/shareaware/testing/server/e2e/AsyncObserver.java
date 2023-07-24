@@ -38,12 +38,12 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 /**
  * Observer for entity state changes.
  *
- * <p>It allows to observe the asynchronous mutations of the entity state.
+ * <p>Allows to observe the asynchronous mutations of the entity state.
  *
  * @param <S>
- *         the state to observe.
+ *         the state to observe
  * @param <C>
- *         the type of the command, the execution of which should lead to changes in the state.
+ *         the type of the command, the execution of which should lead to changes in the state
  */
 public class AsyncObserver<S, C> {
 
@@ -51,9 +51,9 @@ public class AsyncObserver<S, C> {
 
     private CompletableFuture<S> future = new CompletableFuture<>();
 
-    private S state = null;
+    private @Nullable S state = null;
 
-    private ObservationState observationState = null;
+    private @Nullable ObservationState observationState = null;
 
     /**
      * Creates the new instance of the {@code AsyncObserver}.
