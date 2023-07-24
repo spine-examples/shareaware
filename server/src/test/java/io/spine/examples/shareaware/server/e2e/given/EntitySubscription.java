@@ -30,110 +30,21 @@ import io.spine.base.CommandMessage;
 import io.spine.base.EntityState;
 import io.spine.client.Client;
 import io.spine.core.UserId;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-
-import static io.spine.util.Exceptions.illegalStateWithCauseOf;
-import static java.util.concurrent.TimeUnit.SECONDS;
+import io.spine.examples.shareaware.testing.server.e2e.AsyncObserver;
 
 /**
- * Subscription for the {@code EntityState} changes.
+ * Configures the {@code AsyncObserver} with how to send a command
+ * and how to observe the entity state changes using {@code Spine} Client API.
  */
-public class EntitySubscription<S extends EntityState> {
-
-    private final ObservedEntity<S> entity = new ObservedEntity<>();
-
-    private final Client client;
-
-    private final UserId user;
+class EntitySubscription<S extends EntityState> extends AsyncObserver<S, CommandMessage> {
 
     EntitySubscription(Class<S> entityType, Client client, UserId user) {
-        this.client = client;
-        this.user = user;
-        client.onBehalfOf(user)
-              .subscribeTo(entityType)
-              .observe(entity::setState)
-              .post();
-    }
-
-    /**
-     * Provides the current state of the subscribed entity
-     * if it arrived by the time when this method is called, null otherwise.
-     */
-    @Nullable
-    public S state() {
-        S state = entity.state();
-        return state;
-    }
-
-    /**
-     * Posts the command on behalf of the user and waits for an update of the entity state that
-     * should happen as a consequence of the posted command.
-     *
-     * <p>If an update of the entity state is not received within 10 seconds,
-     * a {@code TimeoutException} is thrown.
-     */
-    S onceUpdatedAfter(CommandMessage command) {
-        entity.clearState();
-        client.onBehalfOf(user)
-                .command(command)
-                .postAndForget();
-        return entity.waitForUpdate();
-    }
-
-    private static final class ObservedEntity<S extends EntityState> {
-
-        private CompletableFuture<S> future = new CompletableFuture<>();
-
-        private void setState(S value) {
-            if (future.isDone()) {
-                future = new CompletableFuture<>();
-            }
-            future.complete(value);
-        }
-
-        /**
-         * Returns the current state of the entity if it exists, null otherwise.
-         */
-        @Nullable
-        private S state() {
-            try {
-                if (future.isDone()) {
-                    return future.get();
-                }
-                return null;
-            } catch (InterruptedException | ExecutionException e) {
-                throw illegalStateWithCauseOf(e);
-            }
-        }
-
-        /**
-         * Waits for an update of the entity state to arrive and return this state.
-         *
-         * <p>An update of the entity state should be received within 10 seconds,
-         * otherwise a {@code TimeoutException} will be thrown.
-         */
-        private S waitForUpdate() {
-            try {
-                return future.whenComplete((value, error) -> {
-                                 if (error != null) {
-                                     throw illegalStateWithCauseOf(error);
-                                 }
-                             })
-                             .orTimeout(10, SECONDS)
-                             .get();
-            } catch (InterruptedException | ExecutionException e) {
-                throw illegalStateWithCauseOf(e);
-            }
-        }
-
-        /**
-         * Clears the state of the entity.
-         */
-        private void clearState() {
-            future = new CompletableFuture<>();
-        }
+        super(consumer -> client.onBehalfOf(user)
+                                .subscribeTo(entityType)
+                                .observe(consumer)
+                                .post(),
+              commandMessage -> client.onBehalfOf(user)
+                                      .command(commandMessage)
+                                      .postAndForget());
     }
 }
