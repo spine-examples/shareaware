@@ -27,7 +27,6 @@
 package io.spine.examples.shareaware.testing.server.e2e;
 
 import io.spine.examples.shareaware.testing.server.e2e.given.AsyncStateMutator;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +36,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static java.time.Duration.ofSeconds;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@DisplayName("'AsyncObserver' should")
+@DisplayName("`AsyncObserver` should")
 class AsyncObserverTest {
 
     @Test

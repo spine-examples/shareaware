@@ -63,22 +63,44 @@ public class AsyncStateMutator {
         mutationNotifier = consumer ->
                 thread.execute(() -> {
                     while (keepRunning) {
-                        synchronized (lock) {
-                            while (!isMutated.get() && keepRunning) {
-                                try {
-                                    lock.wait(10000);
-                                } catch (InterruptedException e) {
-                                    throw Exceptions.illegalStateWithCauseOf(e);
-                                }
-                            }
-                        }
-                        if (isMutated.get()) {
-                            sleepUninterruptibly(delay);
-                            consumer.accept(this.state.get());
-                            isMutated.set(false);
-                        }
+                        waitForMutate();
+                        notifyCaller(delay, consumer);
                     }
                 });
+    }
+
+    /**
+     * Waits for the state mutation to occur.
+     *
+     * <p>If the state mutation does not occur within 10 seconds, a
+     * {@code TimeoutException} is thrown.
+     */
+    private void waitForMutate() {
+        synchronized (lock) {
+            while (!isMutated.get() && keepRunning) {
+                try {
+                    lock.wait(10000);
+                } catch (InterruptedException e) {
+                    throw Exceptions.illegalStateWithCauseOf(e);
+                }
+            }
+        }
+    }
+
+    /**
+     * Notifies the caller with the modified state.
+     *
+     * @param delay
+     *         the duration to delay before notifying the caller.
+     * @param consumer
+     *         the consumer to notify with the modified state.
+     */
+    private void notifyCaller(Duration delay, Consumer<String> consumer) {
+        if (isMutated.get()) {
+            sleepUninterruptibly(delay);
+            consumer.accept(this.state.get());
+            isMutated.set(false);
+        }
     }
 
     /**
