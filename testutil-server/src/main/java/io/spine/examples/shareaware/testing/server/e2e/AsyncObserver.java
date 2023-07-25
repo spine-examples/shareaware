@@ -107,16 +107,26 @@ public class AsyncObserver<S, C> {
                 observationState != ObservationState.OBSERVED) {
             future = new CompletableFuture<>();
         }
+        S updatedEntity = waitForFutureToComplete(future);
+        observationState = ObservationState.UPDATED;
+        return updatedEntity;
+    }
+
+    /**
+     * Waits for the provided {@code CompletableFuture} to complete.
+     *
+     * <p>If the completion of the provided {@code CompletableFuture}
+     * does not happen within 10 seconds, a {@code TimeoutException} will be thrown.
+     */
+    private S waitForFutureToComplete(CompletableFuture<S> future) {
         try {
-            S updatedEntity = future.whenComplete((value, error) -> {
-                                        if (error != null) {
-                                            throw illegalStateWithCauseOf(error);
-                                        }
-                                    })
-                                    .orTimeout(10, SECONDS)
-                                    .get();
-            observationState = ObservationState.UPDATED;
-            return updatedEntity;
+            return future.whenComplete((value, error) -> {
+                      if (error != null) {
+                          throw illegalStateWithCauseOf(error);
+                      }
+                  })
+                  .orTimeout(10, SECONDS)
+                  .get();
         } catch (InterruptedException | ExecutionException e) {
             throw illegalStateWithCauseOf(e);
         }
@@ -125,7 +135,7 @@ public class AsyncObserver<S, C> {
     /**
      * Represents the states of the entity observation.
      *
-     * <p>The `AsyncObserver` can observe asynchronous changes of the entity's state,
+     * <p>The {@code AsyncObserver} can observe asynchronous changes of the entity's state,
      * and these states were introduced to restrict the order of the observing operations.
      */
     private enum ObservationState {
