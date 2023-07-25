@@ -30,6 +30,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import static io.spine.util.Exceptions.illegalStateWithCauseOf;
@@ -49,11 +50,12 @@ public class AsyncObserver<S, C> {
 
     private final Consumer<C> howToCommand;
 
-    private CompletableFuture<S> future = new CompletableFuture<>();
+    private CompletableFuture<S> statePack = new CompletableFuture<>();
 
     private @Nullable S state = null;
 
-    private @Nullable ObservationState observationState = null;
+    private final AtomicReference<ObservationState> observationState =
+            new AtomicReference<>(null);
 
     /**
      * Creates the new instance of the {@code AsyncObserver}.
@@ -69,11 +71,11 @@ public class AsyncObserver<S, C> {
         this.howToCommand = howToCommand;
         howToObserve.accept(value -> {
             state = value;
-            if (future.isDone()) {
-                future = new CompletableFuture<>();
+            if (statePack.isDone()) {
+                statePack = new CompletableFuture<>();
             }
-            future.complete(value);
-            observationState = ObservationState.OBSERVED;
+            statePack.complete(value);
+            observationState.set(ObservationState.UPDATE_PACKED);
         });
     }
 
@@ -103,30 +105,41 @@ public class AsyncObserver<S, C> {
      * otherwise a {@code TimeoutException} will be thrown.
      */
     private S waitForUpdate() {
-        if (observationState != null &&
-                observationState != ObservationState.OBSERVED) {
-            future = new CompletableFuture<>();
-        }
-        S updatedEntity = waitForFutureToComplete(future);
-        observationState = ObservationState.UPDATED;
+        checkForUpdate();
+        S updatedEntity = unpackState();
+        observationState.set(ObservationState.UPDATE_UNPACKED);
         return updatedEntity;
     }
 
     /**
-     * Waits for the provided {@code CompletableFuture} to complete.
+     * Checks for the update of the entity state to arrive
+     * at the moment when this method is called.
      *
-     * <p>If the completion of the provided {@code CompletableFuture}
-     * does not happen within 10 seconds, a {@code TimeoutException} will be thrown.
+     * <p>If the update of the entity state has not arrived
+     * this method forces the waiting for update.
      */
-    private S waitForFutureToComplete(CompletableFuture<S> future) {
+    private void checkForUpdate() {
+        if (observationState.get() != null &&
+                observationState.get() != ObservationState.UPDATE_PACKED) {
+            statePack = new CompletableFuture<>();
+        }
+    }
+
+    /**
+     * Unpack the entity state from the {@link #statePack}.
+     *
+     * <p>If the entity state cannot be unpacked within 10 seconds,
+     * a {@code TimeoutException} will be thrown.
+     */
+    private S unpackState() {
         try {
-            return future.whenComplete((value, error) -> {
-                      if (error != null) {
-                          throw illegalStateWithCauseOf(error);
-                      }
-                  })
-                  .orTimeout(10, SECONDS)
-                  .get();
+            return statePack.whenComplete((value, error) -> {
+                                if (error != null) {
+                                    throw illegalStateWithCauseOf(error);
+                                }
+                            })
+                            .orTimeout(10, SECONDS)
+                            .get();
         } catch (InterruptedException | ExecutionException e) {
             throw illegalStateWithCauseOf(e);
         }
@@ -139,7 +152,12 @@ public class AsyncObserver<S, C> {
      * and these states were introduced to restrict the order of the observing operations.
      */
     private enum ObservationState {
-        OBSERVED,
-        UPDATED
+
+        // The update entity state has arrived asynchronously
+        // and packed for synchronization with the main thread.
+        UPDATE_PACKED,
+
+        // The update of the entity state has been unpacked and ready for usage in the main thread.
+        UPDATE_UNPACKED
     }
 }
