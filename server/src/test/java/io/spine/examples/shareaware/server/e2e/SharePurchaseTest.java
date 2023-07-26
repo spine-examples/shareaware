@@ -32,6 +32,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static com.google.common.truth.extensions.proto.ProtoTruth.assertThat;
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static io.spine.examples.shareaware.given.GivenMoney.usd;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.balanceAfterPurchase;
 import static io.spine.examples.shareaware.server.e2e.given.SharePurchaseTestEnv.investmentAfterPurchase;
@@ -56,6 +57,8 @@ final class SharePurchaseTest extends WithServer {
         var channel = openChannel();
         var user = new E2EUser(channel);
 
+        // Wait for the market to release shares.
+        sleepUninterruptibly(marketPeriod());
         var shares = user.looksAtAvailableShares();
         var tesla = pickTesla(shares);
 

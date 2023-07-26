@@ -24,51 +24,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.given;
+package io.spine.examples.shareaware.testing.server.e2e;
 
-import io.spine.examples.shareaware.share.Share;
-import io.spine.examples.shareaware.ShareId;
-import io.spine.money.Money;
-
-import static io.spine.examples.shareaware.given.GivenMoney.*;
+import java.util.function.Consumer;
 
 /**
- * Provides an API to create test instances of the shares.
+ * Represents a recipient of state updates.
+ *
+ * <p>This interface is designed to provide a standardized way of accepting
+ * and handling state updates from various routers or observers.
+ *
+ * @param <S> the type of the state to be received
  */
-public final class GivenShare {
-
-    private static final ShareId teslaId = ShareId.generate();
-    private static final ShareId appleId = ShareId.generate();
+public interface StateRecipient<S> extends Consumer<S> {
 
     /**
-     * Prevents instantiation of this class.
+     * Receives the updated state.
+     *
+     * <p>This method is used to receive state updates
+     * and define how the recipient should handle it.
+     *
+     * @param state the updated state to be received and processed
      */
-    private GivenShare() {
-    }
+    void receive(S state);
 
-    public static Share tesla() {
-        return tesla(usd(20));
-    }
-
-    public static Share tesla(Money price) {
-        return share(teslaId, price, "Tesla");
-    }
-
-    public static Share apple() {
-        return apple(usd(20));
-    }
-
-    public static Share apple(Money price) {
-        return share(appleId, price, "Apple");
-    }
-
-    private static Share share(ShareId id, Money price, String companyName) {
-        return Share
-                .newBuilder()
-                .setId(id)
-                .setPrice(price)
-                .setCompanyName(companyName)
-                .setCompanyLogo("testURL")
-                .vBuild();
-    }
+    /**
+     * {@inheritDoc}
+     *
+     * @implNote Inheritors can choose to override this method or directly implement
+     * the {@link #receive} method to handle the received state.
+     *
+     * @param state the updated state to be received and processed
+     */
+    @Override
+    default void accept(S state) {
+        receive(state);
+    };
 }

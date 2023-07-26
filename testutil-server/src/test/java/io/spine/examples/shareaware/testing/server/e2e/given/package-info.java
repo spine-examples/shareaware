@@ -24,51 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.given;
-
-import io.spine.examples.shareaware.share.Share;
-import io.spine.examples.shareaware.ShareId;
-import io.spine.money.Money;
-
-import static io.spine.examples.shareaware.given.GivenMoney.*;
-
 /**
- * Provides an API to create test instances of the shares.
+ * Provides test environment for the end-to-end testing.
  */
-public final class GivenShare {
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.examples.shareaware.testing.server.e2e.given;
 
-    private static final ShareId teslaId = ShareId.generate();
-    private static final ShareId appleId = ShareId.generate();
-
-    /**
-     * Prevents instantiation of this class.
-     */
-    private GivenShare() {
-    }
-
-    public static Share tesla() {
-        return tesla(usd(20));
-    }
-
-    public static Share tesla(Money price) {
-        return share(teslaId, price, "Tesla");
-    }
-
-    public static Share apple() {
-        return apple(usd(20));
-    }
-
-    public static Share apple(Money price) {
-        return share(appleId, price, "Apple");
-    }
-
-    private static Share share(ShareId id, Money price, String companyName) {
-        return Share
-                .newBuilder()
-                .setId(id)
-                .setPrice(price)
-                .setCompanyName(companyName)
-                .setCompanyLogo("testURL")
-                .vBuild();
-    }
-}
+import com.google.errorprone.annotations.CheckReturnValue;
+import javax.annotation.ParametersAreNonnullByDefault;

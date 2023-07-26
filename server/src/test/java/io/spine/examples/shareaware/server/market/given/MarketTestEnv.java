@@ -26,12 +26,12 @@
 
 package io.spine.examples.shareaware.server.market.given;
 
-import io.spine.core.UserId;
+import io.spine.base.Time;
 import io.spine.examples.shareaware.MarketId;
 import io.spine.examples.shareaware.PurchaseId;
 import io.spine.examples.shareaware.SaleId;
-import io.spine.examples.shareaware.share.Share;
 import io.spine.examples.shareaware.ShareId;
+import io.spine.examples.shareaware.given.GivenMoney;
 import io.spine.examples.shareaware.market.AvailableMarketShares;
 import io.spine.examples.shareaware.market.Market;
 import io.spine.examples.shareaware.market.command.CloseMarket;
@@ -41,13 +41,15 @@ import io.spine.examples.shareaware.market.command.SellSharesOnMarket;
 import io.spine.examples.shareaware.market.event.MarketClosed;
 import io.spine.examples.shareaware.market.event.MarketOpened;
 import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
-import io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeSoldOnMarket;
 import io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeObtained;
-import io.spine.examples.shareaware.given.GivenMoney;
+import io.spine.examples.shareaware.market.rejection.Rejections.SharesCannotBeSoldOnMarket;
 import io.spine.examples.shareaware.server.market.MarketProcess;
+import io.spine.examples.shareaware.share.Share;
 
-import static io.spine.base.Identifier.*;
-import static io.spine.examples.shareaware.server.given.GivenShare.*;
+import java.util.Arrays;
+
+import static io.spine.examples.shareaware.server.given.GivenShare.apple;
+import static io.spine.examples.shareaware.server.given.GivenShare.tesla;
 
 public final class MarketTestEnv {
 
@@ -139,12 +141,17 @@ public final class MarketTestEnv {
     }
 
     public static MarketSharesUpdated marketSharesUpdated() {
-        return MarketSharesUpdated
+        return marketSharesUpdated(tesla(), apple());
+    }
+
+    public static MarketSharesUpdated marketSharesUpdated(Share... shares) {
+        var builder = MarketSharesUpdated
                 .newBuilder()
                 .setMarket(MarketProcess.ID)
-                .addShare(tesla())
-                .addShare(apple())
-                .vBuild();
+                .setWhenUpdated(Time.currentTime());
+        Arrays.stream(shares)
+                .forEach(builder::addShare);
+        return builder.vBuild();
     }
 
     public static AvailableMarketShares

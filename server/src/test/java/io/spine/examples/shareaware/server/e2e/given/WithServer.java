@@ -53,6 +53,7 @@ public abstract class WithServer {
     private Server server;
     private final Collection<ManagedChannel> channels = new ArrayList<>();
     private static final MarketDataProvider provider = MarketDataProvider.instance();
+    private final Duration marketPeriod = Duration.ofSeconds(1);
 
     /**
      * Starts the server and runs the {@link MarketDataProvider}.
@@ -63,7 +64,7 @@ public abstract class WithServer {
                 .add(TradingContext.newBuilder())
                 .build();
         server.start();
-        provider.runWith(Duration.ofSeconds(1));
+        provider.runWith(marketPeriod);
     }
 
     /**
@@ -85,6 +86,13 @@ public abstract class WithServer {
                 .build();
         channels.add(channel);
         return channel;
+    }
+
+    /**
+     * Returns the period with which the market is updating shares.
+     */
+    protected Duration marketPeriod() {
+        return marketPeriod;
     }
 
     private static void closeChannel(ManagedChannel channel) {

@@ -24,51 +24,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.given;
+package io.spine.examples.shareaware.testing.server.e2e;
 
-import io.spine.examples.shareaware.share.Share;
-import io.spine.examples.shareaware.ShareId;
-import io.spine.money.Money;
-
-import static io.spine.examples.shareaware.given.GivenMoney.*;
+import java.util.function.Consumer;
 
 /**
- * Provides an API to create test instances of the shares.
+ * Represents a state router to deliver the state to the {@code StateRecipient}.
+ *
+ * <p>A state router acts as a bridge between the subject that produces the state
+ * and the recipients that are interested in receiving and processing this state.
+ *
+ * @param <S> the type of the state to be routed to the {@code StateRecipient}
  */
-public final class GivenShare {
-
-    private static final ShareId teslaId = ShareId.generate();
-    private static final ShareId appleId = ShareId.generate();
+public interface StateRouter<S> extends Consumer<StateRecipient<S>> {
 
     /**
-     * Prevents instantiation of this class.
+     * Routes the state to the specified recipient.
+     *
+     * @param recipient the recipient to which the state should be routed.
      */
-    private GivenShare() {
-    }
+    void route(StateRecipient<S> recipient);
 
-    public static Share tesla() {
-        return tesla(usd(20));
-    }
-
-    public static Share tesla(Money price) {
-        return share(teslaId, price, "Tesla");
-    }
-
-    public static Share apple() {
-        return apple(usd(20));
-    }
-
-    public static Share apple(Money price) {
-        return share(appleId, price, "Apple");
-    }
-
-    private static Share share(ShareId id, Money price, String companyName) {
-        return Share
-                .newBuilder()
-                .setId(id)
-                .setPrice(price)
-                .setCompanyName(companyName)
-                .setCompanyLogo("testURL")
-                .vBuild();
+    /**
+     * Accepts a {@code StateRecipient} and routes the state to it.
+     *
+     * @param recipient the recipient to which the state should be routed.
+     * @implNote Inheritors can choose to override this method or directly implement
+     * the {@link #route} method to route the state.
+     */
+    @Override
+    default void accept(StateRecipient<S> recipient) {
+        route(recipient);
     }
 }

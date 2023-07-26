@@ -26,52 +26,43 @@
 
 package io.spine.examples.shareaware.server.e2e.given;
 
+import io.spine.base.CommandMessage;
 import io.spine.base.EntityState;
 import io.spine.client.Client;
 import io.spine.core.UserId;
+import io.spine.examples.shareaware.testing.server.e2e.AsyncObserver;
+import io.spine.examples.shareaware.testing.server.e2e.StateRouter;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-
-import static io.spine.util.Exceptions.illegalStateWithCauseOf;
+import java.util.function.Consumer;
 
 /**
- * Subscription for the {@code EntityState} changes.
+ * Configures the {@code AsyncObserver} with how to send a command
+ * and how to observe the entity state changes using {@code Spine} Client API.
  */
-public class EntitySubscription<S extends EntityState> {
-
-    private final ObservedEntity<S> entity = new ObservedEntity<>();
+class EntitySubscription<S extends EntityState> extends AsyncObserver<S, CommandMessage> {
 
     EntitySubscription(Class<S> entityType, Client client, UserId user) {
-        client.onBehalfOf(user)
-              .subscribeTo(entityType)
-              .observe(entity::setState)
-              .post();
+        super(subscribeAndObserve(entityType, client, user), command(client, user));
     }
 
     /**
-     * Provides the current state of the subscribed entity.
+     * Returns callback that defines how to observe an entity state using {@code Spine} Client API.
      */
-    public S state() {
-        return entity.state();
+    @SuppressWarnings("ResultOfMethodCallIgnored") // It's fine as this callback calls once in the constructor.
+    private static
+    <S extends EntityState> StateRouter<S> subscribeAndObserve(Class<S> entityType, Client client, UserId user) {
+        return recipient -> client.onBehalfOf(user)
+                                       .subscribeTo(entityType)
+                                       .observe(recipient)
+                                       .post();
     }
 
-    private static final class ObservedEntity<S extends EntityState> {
-        private CompletableFuture<S> future = new CompletableFuture<>();
-
-        private void setState(S value) {
-            if(future.isDone()) {
-                future = new CompletableFuture<>();
-            }
-            future.complete(value);
-        }
-
-        private S state() {
-            try {
-                return future.get();
-            } catch (InterruptedException | ExecutionException e) {
-                throw illegalStateWithCauseOf(e);
-            }
-        }
+    /**
+     * Returns callback which defines how to send a command using {@code Spine} Client API.
+     */
+    private static Consumer<CommandMessage> command(Client client, UserId user) {
+        return commandMessage -> client.onBehalfOf(user)
+                                       .command(commandMessage)
+                                       .postAndForget();
     }
 }

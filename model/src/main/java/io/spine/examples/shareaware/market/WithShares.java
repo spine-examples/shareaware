@@ -24,51 +24,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.given;
+package io.spine.examples.shareaware.market;
 
-import io.spine.examples.shareaware.share.Share;
+import com.google.errorprone.annotations.Immutable;
+import io.spine.annotation.GeneratedMixin;
+import io.spine.base.EventMessage;
 import io.spine.examples.shareaware.ShareId;
-import io.spine.money.Money;
+import io.spine.examples.shareaware.share.Share;
 
-import static io.spine.examples.shareaware.given.GivenMoney.*;
+import java.util.List;
+
+import static io.spine.util.Exceptions.newIllegalArgumentException;
 
 /**
- * Provides an API to create test instances of the shares.
+ * Common interface for signals which operate with a list of shares.
  */
-public final class GivenShare {
-
-    private static final ShareId teslaId = ShareId.generate();
-    private static final ShareId appleId = ShareId.generate();
+@Immutable
+@GeneratedMixin
+public interface WithShares extends EventMessage {
 
     /**
-     * Prevents instantiation of this class.
+     * Returns the list of shares.
      */
-    private GivenShare() {
-    }
+    List<Share> getShareList();
 
-    public static Share tesla() {
-        return tesla(usd(20));
-    }
-
-    public static Share tesla(Money price) {
-        return share(teslaId, price, "Tesla");
-    }
-
-    public static Share apple() {
-        return apple(usd(20));
-    }
-
-    public static Share apple(Money price) {
-        return share(appleId, price, "Apple");
-    }
-
-    private static Share share(ShareId id, Money price, String companyName) {
-        return Share
-                .newBuilder()
-                .setId(id)
-                .setPrice(price)
-                .setCompanyName(companyName)
-                .setCompanyLogo("testURL")
-                .vBuild();
+    /**
+     * Finds the share with provided ID from the shares list.
+     *
+     * @throws IllegalArgumentException when the share with provided ID is not found in the list
+     */
+    default Share find(ShareId id) {
+        List<Share> shares = getShareList();
+        var optionalShare = shares
+                .stream()
+                .filter(share -> share.getId().equals(id))
+                .findAny();
+        if (optionalShare.isEmpty()) {
+            throw newIllegalArgumentException(
+                    "Cannot find the share with the provided ID `%s` in the list of shares `%s`.",
+                    id, shares);
+        }
+        return optionalShare.get();
     }
 }

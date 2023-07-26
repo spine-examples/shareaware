@@ -38,6 +38,7 @@ option java_multiple_files = true;
 import "spine_examples/shareaware/identifiers.proto";
 import "spine/money/money.proto";
 import "spine_examples/shareaware/share.proto";
+import "google/protobuf/timestamp.proto";
 
 // Shares have been obtained from the market.
 message SharesObtained {
@@ -90,10 +91,14 @@ message MarketClosed {
 
 // Shares on market have been updated.
 message MarketSharesUpdated {
+    option (is).java_type = "io.spine.examples.shareaware.market.WithShares";
 
     // The ID of the shares market.
     MarketId market = 1;
 
     // Updated shares.
     repeated Share share = 2 [(required) = true];
+
+    // Time when shares were updated.
+    google.protobuf.Timestamp when_updated = 3 [(required) = true];
 }

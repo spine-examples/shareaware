@@ -24,51 +24,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.given;
+package io.spine.examples.shareaware.server.market;
 
-import io.spine.examples.shareaware.share.Share;
-import io.spine.examples.shareaware.ShareId;
-import io.spine.money.Money;
-
-import static io.spine.examples.shareaware.given.GivenMoney.*;
+import io.spine.core.External;
+import io.spine.core.Subscribe;
+import io.spine.examples.shareaware.SharePriceMovementId;
+import io.spine.examples.shareaware.market.PriceAtTime;
+import io.spine.examples.shareaware.market.SharePriceMovementPerMinute;
+import io.spine.examples.shareaware.market.event.MarketSharesUpdated;
+import io.spine.server.projection.Projection;
 
 /**
- * Provides an API to create test instances of the shares.
+ * The view of the share price movements per minute.
  */
-public final class GivenShare {
+final class SharePriceMovementPerMinuteProjection
+        extends Projection<SharePriceMovementId,
+                           SharePriceMovementPerMinute,
+                           SharePriceMovementPerMinute.Builder> {
 
-    private static final ShareId teslaId = ShareId.generate();
-    private static final ShareId appleId = ShareId.generate();
-
-    /**
-     * Prevents instantiation of this class.
-     */
-    private GivenShare() {
-    }
-
-    public static Share tesla() {
-        return tesla(usd(20));
-    }
-
-    public static Share tesla(Money price) {
-        return share(teslaId, price, "Tesla");
-    }
-
-    public static Share apple() {
-        return apple(usd(20));
-    }
-
-    public static Share apple(Money price) {
-        return share(appleId, price, "Apple");
-    }
-
-    private static Share share(ShareId id, Money price, String companyName) {
-        return Share
+    @Subscribe
+    void on(@External MarketSharesUpdated e) {
+        var shareId = builder()
+                .getId()
+                .getShare();
+        var price = e.find(shareId)
+                     .getPrice();
+        var priceAtTime = PriceAtTime
                 .newBuilder()
-                .setId(id)
                 .setPrice(price)
-                .setCompanyName(companyName)
-                .setCompanyLogo("testURL")
+                .setWhen(e.getWhenUpdated())
                 .vBuild();
+        builder().setShare(shareId)
+                 .addPoint(priceAtTime);
     }
 }

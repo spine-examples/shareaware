@@ -24,51 +24,42 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.given;
+syntax = "proto3";
 
-import io.spine.examples.shareaware.share.Share;
-import io.spine.examples.shareaware.ShareId;
-import io.spine.money.Money;
+package spine_examples.shareaware.market;
 
-import static io.spine.examples.shareaware.given.GivenMoney.*;
+import "spine/options.proto";
 
-/**
- * Provides an API to create test instances of the shares.
- */
-public final class GivenShare {
+option (type_url_prefix) = "type.shareaware.spine.io";
+option java_package = "io.spine.examples.shareaware.market";
+option java_outer_classname = "SharesPriceMovementPerMinuteProto";
+option java_multiple_files = true;
 
-    private static final ShareId teslaId = ShareId.generate();
-    private static final ShareId appleId = ShareId.generate();
+import "spine_examples/shareaware/identifiers.proto";
+import "google/protobuf/timestamp.proto";
+import "spine/money/money.proto";
 
-    /**
-     * Prevents instantiation of this class.
-     */
-    private GivenShare() {
-    }
+// Displays the share price movement per minute on a timeline.
+message SharePriceMovementPerMinute {
+    option (entity) = {kind: PROJECTION};
+    option (is).java_type = "io.spine.examples.shareaware.market.SharePriceMovement";
 
-    public static Share tesla() {
-        return tesla(usd(20));
-    }
+    // The ID of the share price movement.
+    SharePriceMovementId id = 1;
 
-    public static Share tesla(Money price) {
-        return share(teslaId, price, "Tesla");
-    }
+    // The ID of the share, which price movement to display.
+    ShareId share = 2 [(required) = true, (column) = true];
 
-    public static Share apple() {
-        return apple(usd(20));
-    }
+    // The list of the price-to-time points.
+    repeated PriceAtTime point = 3;
+}
 
-    public static Share apple(Money price) {
-        return share(appleId, price, "Apple");
-    }
+// The share price at a particular time.
+message PriceAtTime {
 
-    private static Share share(ShareId id, Money price, String companyName) {
-        return Share
-                .newBuilder()
-                .setId(id)
-                .setPrice(price)
-                .setCompanyName(companyName)
-                .setCompanyLogo("testURL")
-                .vBuild();
-    }
+    // The share price.
+    spine.money.Money price = 1 [(required) = true];
+
+    // Point in time when the share price was set.
+    google.protobuf.Timestamp when = 2 [(required) = true];
 }

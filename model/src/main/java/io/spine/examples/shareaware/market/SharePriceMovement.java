@@ -24,51 +24,48 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.examples.shareaware.server.given;
+package io.spine.examples.shareaware.market;
 
-import io.spine.examples.shareaware.share.Share;
+import com.google.errorprone.annotations.Immutable;
+import com.google.protobuf.Duration;
+import com.google.protobuf.Timestamp;
+import io.spine.annotation.GeneratedMixin;
+import io.spine.base.EntityState;
 import io.spine.examples.shareaware.ShareId;
-import io.spine.money.Money;
-
-import static io.spine.examples.shareaware.given.GivenMoney.*;
+import io.spine.examples.shareaware.SharePriceMovementId;
 
 /**
- * Provides an API to create test instances of the shares.
+ * Common interface for projections that display the movements of the share price.
  */
-public final class GivenShare {
-
-    private static final ShareId teslaId = ShareId.generate();
-    private static final ShareId appleId = ShareId.generate();
+@Immutable
+@GeneratedMixin
+public interface SharePriceMovement extends EntityState {
 
     /**
-     * Prevents instantiation of this class.
+     * Returns the ID of the {@code SharePriceMovement} projection.
      */
-    private GivenShare() {
+    SharePriceMovementId getId();
+
+    /**
+     * Returns the time when the projection was created.
+     */
+    default Timestamp whenCreated() {
+        return getId().getWhenCreated();
     }
 
-    public static Share tesla() {
-        return tesla(usd(20));
+    /**
+     * Returns the activity period of the projection.
+     *
+     * <p>The period when it is collecting data about the share price movements.
+     */
+    default Duration activityTime() {
+        return getId().getActivityTime();
     }
 
-    public static Share tesla(Money price) {
-        return share(teslaId, price, "Tesla");
-    }
-
-    public static Share apple() {
-        return apple(usd(20));
-    }
-
-    public static Share apple(Money price) {
-        return share(appleId, price, "Apple");
-    }
-
-    private static Share share(ShareId id, Money price, String companyName) {
-        return Share
-                .newBuilder()
-                .setId(id)
-                .setPrice(price)
-                .setCompanyName(companyName)
-                .setCompanyLogo("testURL")
-                .vBuild();
+    /**
+     * Returns the ID of the share which price movements the projection displays.
+     */
+    default ShareId share() {
+        return getId().getShare();
     }
 }
