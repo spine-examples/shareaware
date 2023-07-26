@@ -45,7 +45,7 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
  */
 public class AsyncStateMutator {
 
-    private final StateRouter<String> mutationNotifier;
+    private final StateRouter<String> mutationRouter;
 
     private final AtomicBoolean isMutated = new AtomicBoolean(false);
 
@@ -61,11 +61,11 @@ public class AsyncStateMutator {
 
     public AsyncStateMutator(String state, Duration delay) {
         this.state.set(state);
-        mutationNotifier = consumer ->
+        mutationRouter = recipient ->
                 thread.execute(() -> {
                     while (keepRunning) {
                         waitForMutate();
-                        notifyCaller(delay, consumer);
+                        routeState(delay, recipient);
                     }
                 });
     }
@@ -89,17 +89,17 @@ public class AsyncStateMutator {
     }
 
     /**
-     * Notifies the caller with the modified state.
+     * Routes the modified state to receiver.
      *
      * @param delay
-     *         the duration to delay before notifying the caller.
-     * @param consumer
-     *         the consumer to notify with the modified state.
+     *         the duration to delay before routing the state
+     * @param recipient
+     *         the recipient to route the modified state to
      */
-    private void notifyCaller(Duration delay, StateRecipient<String> consumer) {
+    private void routeState(Duration delay, StateRecipient<String> recipient) {
         if (isMutated.get()) {
             sleepUninterruptibly(delay);
-            consumer.accept(this.state.get());
+            recipient.receive(this.state.get());
             isMutated.set(false);
         }
     }
@@ -139,9 +139,9 @@ public class AsyncStateMutator {
     }
 
     /**
-     * Returns the callback that notifies the caller when the state has been mutated.
+     * Returns the callback that routes the mutated state to the recipient.
      */
-    public StateRouter<String> mutationNotifier() {
-        return mutationNotifier;
+    public StateRouter<String> mutationRouter() {
+        return mutationRouter;
     }
 }

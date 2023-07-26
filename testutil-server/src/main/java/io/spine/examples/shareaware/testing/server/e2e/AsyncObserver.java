@@ -61,7 +61,7 @@ public class AsyncObserver<S, C> {
      * Creates the new instance of the {@code AsyncObserver}.
      *
      * @param howToObserve
-     *         a callback that defines how to observe the state {@link S}.
+     *         a callback that defines how to observe and route the state {@link S}.
      * @param howToCommand
      *         a callback that defines how to send a command {@link C}.
      */

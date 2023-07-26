@@ -43,7 +43,7 @@ class AsyncObserverTest {
     @DisplayName("observe mutation of the state with the slow response from the mutator")
     void observeMutationWithDelay() {
         var stateMutator = new AsyncStateMutator("state", ofSeconds(5));
-        var observer = new AsyncObserver<>(stateMutator.mutationNotifier(),
+        var observer = new AsyncObserver<>(stateMutator.mutationRouter(),
                                            stateMutator::mutateState);
 
         var actualStateAfterFirstMutation = observer.onceUpdatedAfter(true);
@@ -63,7 +63,7 @@ class AsyncObserverTest {
     @DisplayName("observe mutation of the state with the fast response from the mutator")
     void observeMutationWithoutDelay() {
         var stateMutator = new AsyncStateMutator("state", ofSeconds(0));
-        var observer = new AsyncObserver<>(stateMutator.mutationNotifier(),
+        var observer = new AsyncObserver<>(stateMutator.mutationRouter(),
                                            stateMutator::mutateState);
 
         var actualStateAfterFirstMutation = observer.onceUpdatedAfter(true);
@@ -79,7 +79,7 @@ class AsyncObserverTest {
             "when the state mutation were not received in 10 seconds")
     void throwExceptionWithoutMutation() {
         var stateMutator = new AsyncStateMutator("", ofSeconds(0));
-        var observer = new AsyncObserver<>(stateMutator.mutationNotifier(),
+        var observer = new AsyncObserver<>(stateMutator.mutationRouter(),
                                            stateMutator::mutateState);
 
         IllegalStateException exception =
