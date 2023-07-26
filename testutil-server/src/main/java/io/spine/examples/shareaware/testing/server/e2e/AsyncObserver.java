@@ -66,10 +66,10 @@ public class AsyncObserver<S, C> {
      *         a callback that defines how to send a command {@link C}.
      */
     public AsyncObserver(
-            Consumer<Consumer<S>> howToObserve,
+            StateRouter<S> howToObserve,
             Consumer<C> howToCommand) {
         this.howToCommand = howToCommand;
-        howToObserve.accept(value -> {
+        howToObserve.route(value -> {
             state = value;
             if (statePack.isDone()) {
                 statePack = new CompletableFuture<>();

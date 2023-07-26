@@ -26,6 +26,8 @@
 
 package io.spine.examples.shareaware.testing.server.e2e.given;
 
+import io.spine.examples.shareaware.testing.server.e2e.StateRecipient;
+import io.spine.examples.shareaware.testing.server.e2e.StateRouter;
 import io.spine.util.Exceptions;
 
 import java.security.SecureRandom;
@@ -34,7 +36,6 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
@@ -44,7 +45,7 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
  */
 public class AsyncStateMutator {
 
-    private final Consumer<Consumer<String>> mutationNotifier;
+    private final StateRouter<String> mutationNotifier;
 
     private final AtomicBoolean isMutated = new AtomicBoolean(false);
 
@@ -95,7 +96,7 @@ public class AsyncStateMutator {
      * @param consumer
      *         the consumer to notify with the modified state.
      */
-    private void notifyCaller(Duration delay, Consumer<String> consumer) {
+    private void notifyCaller(Duration delay, StateRecipient<String> consumer) {
         if (isMutated.get()) {
             sleepUninterruptibly(delay);
             consumer.accept(this.state.get());
@@ -138,9 +139,9 @@ public class AsyncStateMutator {
     }
 
     /**
-     * Returns the {@code Consumer} that notifies the caller when the state has been mutated.
+     * Returns the callback that notifies the caller when the state has been mutated.
      */
-    public Consumer<Consumer<String>> mutationNotifier() {
+    public StateRouter<String> mutationNotifier() {
         return mutationNotifier;
     }
 }

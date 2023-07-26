@@ -31,6 +31,9 @@ import io.spine.base.EntityState;
 import io.spine.client.Client;
 import io.spine.core.UserId;
 import io.spine.examples.shareaware.testing.server.e2e.AsyncObserver;
+import io.spine.examples.shareaware.testing.server.e2e.StateRouter;
+
+import java.util.function.Consumer;
 
 /**
  * Configures the {@code AsyncObserver} with how to send a command
@@ -39,12 +42,27 @@ import io.spine.examples.shareaware.testing.server.e2e.AsyncObserver;
 class EntitySubscription<S extends EntityState> extends AsyncObserver<S, CommandMessage> {
 
     EntitySubscription(Class<S> entityType, Client client, UserId user) {
-        super(consumer -> client.onBehalfOf(user)
-                                .subscribeTo(entityType)
-                                .observe(consumer)
-                                .post(),
-              commandMessage -> client.onBehalfOf(user)
-                                      .command(commandMessage)
-                                      .postAndForget());
+        super(subscribeAndObserve(entityType, client, user), command(client, user));
+    }
+
+    /**
+     * Returns callback that defines how to observe an entity state using {@code Spine} Client API.
+     */
+    @SuppressWarnings("ResultOfMethodCallIgnored") // It's fine as this callback calls once in the constructor.
+    private static
+    <S extends EntityState> StateRouter<S> subscribeAndObserve(Class<S> entityType, Client client, UserId user) {
+        return recipient -> client.onBehalfOf(user)
+                                       .subscribeTo(entityType)
+                                       .observe(recipient)
+                                       .post();
+    }
+
+    /**
+     * Returns callback which defines how to send a command using {@code Spine} Client API.
+     */
+    private static Consumer<CommandMessage> command(Client client, UserId user) {
+        return commandMessage -> client.onBehalfOf(user)
+                                       .command(commandMessage)
+                                       .postAndForget();
     }
 }
