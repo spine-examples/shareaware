@@ -132,7 +132,10 @@ private fun ShareProfile(
 }
 
 /**
- * Displays information about particular share.
+ * Displays information about a particular share.
+ *
+ * @param share the share to display info about
+ * @param previousPrice the previous price of the share
  */
 @Composable
 private fun ShareInfo(share: Share, previousPrice: Money?) {
@@ -152,7 +155,9 @@ private fun ShareInfo(share: Share, previousPrice: Money?) {
 }
 
 /**
- * Displays container purposed for rendering chart inside it.
+ * Displays container purposed for drawing chart inside it.
+ *
+ * @param chart the chart to draw inside the container
  */
 @Composable
 private fun ChartContainer(chart: @Composable () -> Unit) {
