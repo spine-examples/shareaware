@@ -68,27 +68,27 @@ public fun DrawScope.drawXAxis(
 }
 
 /**
- * Maps a list of points from their original range to pixel coordinates within the drawing area.
+ * Scales a list of points to fit the given size of the drawing area.
  *
- * @param points the list of points to map
+ * @param points the list of points to scale
  */
-public fun DrawScope.mapToPixelPoints(points: List<Point>): List<Point> {
+public fun DrawScope.scalePoints(points: List<Point>): List<Point> {
     val minXValue = points.minOf { it.x }
     val maxXValue = points.maxOf { it.x }
     val minYValue = points.minOf { it.y }
     val maxYValue = points.maxOf { it.y }
     return points.map {
         val x = it.x.mapToDifferentRange(
-            inMin = minXValue,
-            inMax = maxXValue,
-            outMin = 0f,
-            outMax = size.width
+            originalMin = minXValue,
+            originalMax = maxXValue,
+            targetMin = 0f,
+            targetMax = size.width
         )
         val y = it.y.mapToDifferentRange(
-            inMin = minYValue,
-            inMax = maxYValue,
-            outMin = size.height,
-            outMax = 0f
+            originalMin = minYValue,
+            originalMax = maxYValue,
+            targetMin = size.height,
+            targetMax = 0f
         )
         Point(x, y)
     }
@@ -97,14 +97,14 @@ public fun DrawScope.mapToPixelPoints(points: List<Point>): List<Point> {
 /**
  * Remaps a value from one range to another.
  *
- * @param inMin The minimum value of the original range
- * @param inMax The maximum value of the original range
- * @param outMin The minimum value of the target range
- * @param outMax The maximum value of the target range
+ * @param originalMin the minimum value of the original range
+ * @param originalMax the maximum value of the original range
+ * @param targetMin the minimum value of the target range
+ * @param targetMax the maximum value of the target range
  */
 private fun Float.mapToDifferentRange(
-    inMin: Float,
-    inMax: Float,
-    outMin: Float,
-    outMax: Float
-): Float = (this - inMin) * (outMax - outMin) / (inMax - inMin) + outMin
+    originalMin: Float,
+    originalMax: Float,
+    targetMin: Float,
+    targetMax: Float
+): Float = (this - originalMin) * (targetMax - targetMin) / (originalMax - originalMin) + targetMin

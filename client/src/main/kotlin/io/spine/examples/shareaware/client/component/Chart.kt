@@ -35,7 +35,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import io.spine.examples.shareaware.client.drawXAxis
 import io.spine.examples.shareaware.client.drawYAxis
-import io.spine.examples.shareaware.client.mapToPixelPoints
+import io.spine.examples.shareaware.client.scalePoints
 import org.jetbrains.skia.Point
 
 /**
@@ -52,9 +52,9 @@ public fun Chart(points: List<Point>) {
     ) {
         drawYAxis(axisColor)
         drawXAxis(axisColor)
-        val pixelPoints = mapToPixelPoints(points)
+        val scaledPoints = scalePoints(points)
         val path = Path()
-        pixelPoints.forEachIndexed { index, point ->
+        scaledPoints.forEachIndexed { index, point ->
             if (index == 0) {
                 path.moveTo(point.x, point.y)
             } else {
