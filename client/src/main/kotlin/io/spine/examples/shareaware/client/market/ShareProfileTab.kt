@@ -45,7 +45,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.spine.examples.shareaware.client.component.ContainerWithPopup
 import io.spine.examples.shareaware.client.component.PopupConfig
 import io.spine.examples.shareaware.client.component.PrimaryButton
@@ -146,8 +145,7 @@ private fun ShareInfo(share: Share, previousPrice: Money?) {
     ) {
         Text(
             text = share.companyName,
-            fontSize = 30.sp,
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.padding(top = 10.dp)
         )
         SharePrice(share.price, previousPrice)

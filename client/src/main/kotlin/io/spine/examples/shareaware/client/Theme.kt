@@ -118,6 +118,12 @@ private val typography: Typography = Typography(
         fontWeight = FontWeight.Normal,
         fontFamily = sanFrancisco
     ),
+    headlineLarge = TextStyle(
+        fontSize = 30.sp,
+        fontWeight = FontWeight.SemiBold,
+        letterSpacing = 0.5.sp,
+        fontFamily = sanFrancisco
+    ),
     bodyMedium = TextStyle(
         fontSize = 14.sp,
         fontWeight = FontWeight.SemiBold,
