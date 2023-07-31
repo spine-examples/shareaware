@@ -97,10 +97,10 @@ public fun DrawScope.mapToPixelPoints(points: List<Point>): List<Point> {
 /**
  * Remaps a value from one range to another.
  *
- * @param inMin The minimum value of the original range.
- * @param inMax The maximum value of the original range.
- * @param outMin The minimum value of the target range.
- * @param outMax The maximum value of the target range.
+ * @param inMin The minimum value of the original range
+ * @param inMax The maximum value of the original range
+ * @param outMin The minimum value of the target range
+ * @param outMax The maximum value of the target range
  */
 private fun Float.mapToDifferentRange(
     inMin: Float,
