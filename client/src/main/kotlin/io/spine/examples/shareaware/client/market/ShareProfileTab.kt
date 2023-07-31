@@ -26,11 +26,13 @@
 
 package io.spine.examples.shareaware.client.market
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -43,10 +45,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.spine.examples.shareaware.client.component.ContainerWithPopup
 import io.spine.examples.shareaware.client.component.PopupConfig
 import io.spine.examples.shareaware.client.component.PrimaryButton
-import io.spine.examples.shareaware.client.share.ShareLogo
 import io.spine.examples.shareaware.client.share.SharePrice
 import io.spine.examples.shareaware.share.Share
 import io.spine.money.Money
@@ -121,17 +123,47 @@ private fun ShareProfile(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ShareLogo(share)
-        Text(
-            text = share.companyName,
-            style = MaterialTheme.typography.labelMedium,
-            modifier = Modifier.padding(top = 10.dp)
-        )
-        SharePrice(share.price, previousPrice)
+        ShareInfo(share, previousPrice)
         ButtonSection(
             share = share,
             purchaseModel = purchaseModel
         )
+    }
+}
+
+/**
+ * Displays information about particular share.
+ */
+@Composable
+private fun ShareInfo(share: Share, previousPrice: Money?) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Bottom
+    ) {
+        Text(
+            text = share.companyName,
+            fontSize = 30.sp,
+            style = MaterialTheme.typography.labelMedium,
+            modifier = Modifier.padding(top = 10.dp)
+        )
+        SharePrice(share.price, previousPrice)
+    }
+}
+
+/**
+ * Displays container purposed for rendering chart inside it.
+ */
+@Composable
+private fun ChartContainer(chart: @Composable () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(250.dp)
+            .background(MaterialTheme.colorScheme.secondary)
+            .padding(10.dp)
+    ) {
+        chart()
     }
 }
 
